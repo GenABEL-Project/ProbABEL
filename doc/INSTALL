@@ -1,0 +1,16 @@
+Compiling the programs:
+
+Extract the files in distribution by typing
+
+user@server:~$ tar -xzvf ProbABLE_0.0-1.tar.gz 
+
+Change to ProbABEL directory:
+
+user@server:~$ cd ProbABEL
+
+Compile the program:
+
+user@server:~/ProbABEL$ make
+
+Executables and scripts can be found in ProbABEL/bin/
+

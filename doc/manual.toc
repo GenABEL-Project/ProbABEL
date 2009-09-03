@@ -1,0 +1,15 @@
+\contentsline {section}{\numberline {1}Motivation}{2}
+\contentsline {section}{\numberline {2}Input files}{3}
+\contentsline {subsection}{\numberline {2.1}SNP information file}{3}
+\contentsline {subsection}{\numberline {2.2}Genomic predictor file}{3}
+\contentsline {subsection}{\numberline {2.3}Phenotypic file}{4}
+\contentsline {subsection}{\numberline {2.4}Optional map file}{6}
+\contentsline {section}{\numberline {3}Running analysis}{6}
+\contentsline {section}{\numberline {4}Output file format}{9}
+\contentsline {section}{\numberline {5}Preparing input files}{10}
+\contentsline {section}{\numberline {6}Memory use and performance}{10}
+\contentsline {section}{\numberline {7}Methodology}{11}
+\contentsline {subsection}{\numberline {7.1}Linear regression}{11}
+\contentsline {subsection}{\numberline {7.2}Logistic regression}{11}
+\contentsline {subsection}{\numberline {7.3}Cox proportional hazards model}{11}
+\contentsline {section}{\numberline {8}How to cite}{12}
