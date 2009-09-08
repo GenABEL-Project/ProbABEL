@@ -1,0 +1,107 @@
+***** v.0.1-0 (2009.08.15)
+
+fixed a bug in phedata class: if ID was starting with 'N' or 'n', it 
+was counted as NA (thanks to Youfan & Ida Surakka for pointing the 
+bug out)
+
+
+***** v.0.0-9 (2009.07.20)
+
+mmscore bug fixed (ses of betas were inflated by sd of the trait's distribution)
+
+
+***** v.0.0-8 (2009.06.09)
+
+1. New interaction option added. Key --interaction_only=<number> allows you to perform interaction analysis without covariate acting in ineraction.
+Examlple: trait ~ cov1 + cov2 + cov3*SNP
+In previos versions only models like trait ~ cov1 + cov2 + cov3 + cov3*SNP were possible
+
+2. mmoscore option modified. Now any amount of covariates is possible.
+
+
+***** v.0.0-7 (2009.03.19)
+
+Bug with interaction in survival analysis fixed. 
+
+
+***** v.0.0-6 (2009.01.28)
+
+Added score test for association between a trait and genetic
+polymorphism, in samples of related individuals.
+Use key --mmscore <file with inverse of variance-covariance matrix>
+File must contain the first column with id names like in phenotype file.
+The rest is the matrix itself.
+In case of mmscore phenotype file contain only two columns - id names and trait.
+
+See example/mmscore.R and example/mmscore.sh.
+
+
+***** v.0.0-5d (2009.01.11)
+
+Possibility of analysis for SNP interaction has been added. 
+New key is --interaction=<covariate number>.
+Default is --interaction=0. The first covariate is --interaction=1.
+
+Output organizing has been changed. Now there is one file per one model.
+Output file names consist of prefix which goes together with input 
+parameter --out and one of following postfixes:
+"_2df.out.txt", "_add.out.txt", "_domin.out.txt", "_recess.out.txt", "_over_domin.out.txt".
+If postfix is not given name "regression" is used.
+
+
+File bin/probabel_system_example.pl has been changedand renamed 
+to probabel.pl_example. This script combines all ProbABEL functions and allows 
+you to organize work with your MACH output files. Just change configuration 
+file probabel_config.cfg_example and probabel.pl_example like it is written in manual.
+
+Now chi2 is likelihood ration test when null model is without SNP and alternative - with SNP and interaction.
+
+
+***** v.0.0-5c (2008.12.05)
+
+Changed presentation of output: effective allele (A1) is mentioned 
+in exact manner
+
+
+***** v.0.0-5b (2008.11.20)
+
+Output from analysis with ngpred=2 (MLPROB files) fixed (models were 
+named wrongly)
+
+
+***** v.0.0-5a (2008.10.05)
+
+--allcov option added (allows output of estimates for all covariates)
+
+example system-wide perl script running the analysis for 
+(potentially multiple cohorts) and joining single-chomosome 
+outputs to single file provided
+
+A change in the procedure to read genotypic files, read format of the 
+beging of every line changed from "%d->%s" to "%[^->]->%[^->]" (thanks to 
+Bertram Muller-Myhsok & Benno Puetz)
+
+
+***** v.0.0-5 (2008.06.07)
+
+More than one genomic predictor per point: possibility to 
+work with MLPROB files (options --ngpreds added). 
+
+
+***** v.0.0-4 (2008.05.20)
+
+Score test implemented (palinear, palogistic)
+
+Logistic regression: eps-loglikelihood change as convergence criterium
+
+
+***** v.0.0-3
+
+Survival analysis added
+
+SNP Z and Chi-square statistics added to output
+
+Output generated in tab-delimited format
+
+Documentation updated
+
