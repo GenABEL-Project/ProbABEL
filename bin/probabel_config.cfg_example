@@ -1,3 +1,0 @@
-cohort,mlinfo_path,mldose_path,mlprobe_path,legend_path
-ERGO,script_test/merlin._._chr_._.collected.ped.out.mlinfo,script_test/merlin._._chr_._.collected.ped.out.mldose,script_test/merlin._._chr_._.collected.ped.out.mlprob,script_test/genotypes_chr_._chr_.__CEU_r22_nr.b36_fwd_legend.txt
-ERGOPLUS,/mnt/space/ergoplus/ergoplus.chr_._chr_._.mach.mlinfo,/mnt/space/ergoplus/ergoplus.chr_._chr_._.mach.mldose,/mnt/space/ergoplus/ergoplus.chr_._chr_._.mach.mlprob,/mnt/impute/impute_b36/collected/genotypes_chr_._chr_.__CEU_r22_nr.b36_fwd_legend.txt
