@@ -286,7 +286,7 @@ public:
 //*/
 //
 //	}
-	void estimate(regdata &rdata,int verbose, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> & invvarmatrix, int nullmodel=0)
+	void estimate(regdata &rdata,int verbose, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> & invvarmatrix, int robust, int nullmodel=0)
 	{
 		//suda ineraction parameter
 		// model should come here
@@ -399,10 +399,27 @@ public:
 //
 		if(invvarmatrix.nrow!=0 && invvarmatrix.ncol!=0) sigma2_internal=1.0;
 
+		mematrix<double> robust_sigma2(X.ncol,X.ncol);
+		if (robust) {
+			mematrix<double> XbyR = X;
+			for (int i=0;i<X.nrow;i++) for (int j=0;j<X.ncol;j++) {
+				double tmpval = XbyR.get(i,j)*residuals[i];
+				XbyR.put(tmpval,i,j);
+			}
+			XbyR = transpose(XbyR)*XbyR;
+			robust_sigma2 = tXX_i*XbyR;
+			robust_sigma2 = robust_sigma2*tXX_i;
+		}
+
 		for (int i=0;i<(length_beta);i++)
 		{	
-			double value = sqrt(sigma2_internal*tXX_i.get(i,i));
-			sebeta.put(value,i,0);
+			if (robust) {
+				double value = sqrt(robust_sigma2.get(i,i));
+				sebeta.put(value,i,0);
+			} else {
+				double value = sqrt(sigma2_internal*tXX_i.get(i,i));
+				sebeta.put(value,i,0);
+			}
 		}
 		if (verbose) {printf("sebeta (%d):\n",sebeta.nrow);sebeta.print();}
 	}
@@ -479,7 +496,7 @@ public:
 //		delete beta;
 //		delete sebeta;
 	}
-	void estimate(regdata &rdata, int verbose, int maxiter, double eps, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> & invvarmatrix, int nullmodel=0)
+	void estimate(regdata &rdata, int verbose, int maxiter, double eps, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> & invvarmatrix, int robust, int nullmodel=0)
 	{
 		mematrix<double> X = apply_model(rdata.X,model, interaction, ngpreds, false, nullmodel);
 		int length_beta = X.ncol;
@@ -559,10 +576,27 @@ public:
 		}
 		sigma2 = 0.;
 
+		mematrix<double> robust_sigma2(X.ncol,X.ncol);
+		if (robust) {
+			mematrix<double> XbyR = X;
+			for (int i=0;i<X.nrow;i++) for (int j=0;j<X.ncol;j++) {
+				double tmpval = XbyR.get(i,j)*residuals[i];
+				XbyR.put(tmpval,i,j);
+			}
+			XbyR = transpose(XbyR)*XbyR;
+			robust_sigma2 = tXWX_i*XbyR;
+			robust_sigma2 = robust_sigma2*tXWX_i;
+		}
+
 		for (int i=0;i<(length_beta);i++)
 		{	
-			double value = sqrt(tXWX_i.get(i,i));
-			sebeta.put(value,i,0);
+			if (robust) {
+				double value = sqrt(robust_sigma2.get(i,i));
+				sebeta.put(value,i,0);
+			} else {
+				double value = sqrt(tXWX_i.get(i,i));
+				sebeta.put(value,i,0);
+			}
 		}
 		if (verbose) {printf("sebeta (%d):\n",sebeta.nrow);sebeta.print();}
 	}

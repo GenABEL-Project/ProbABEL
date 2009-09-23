@@ -1,3 +1,10 @@
+***** v.0.1-1 (2009.09.22)
+
+Added "robust" option, which computes SEs using formula
+(X'X)^(-1) (X' V X) (X'X)^(-1) where V is diagonal matrix containing
+squares of residuals. In standard analysis, V is diagonal matrix 
+containing constant = RSS/N
+
 ***** v.0.1-0 (2009.08.15)
 
 fixed a bug in phedata class: if ID was starting with 'N' or 'n', it 

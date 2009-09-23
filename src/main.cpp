@@ -14,7 +14,7 @@
 // modified 14-May-2009 by MVS: interaction with SNP, interaction with SNP with exclusion of interacted covariates,
 //                              mmscore implemented (poor me)
 // modified 20-Jul-2009 by YSA: small changes, bug fix in mmscore option
-// modified 20-Jul-2009 by YSA: small changes, bug fix in mmscore option
+// modified 22-Sep-2009 by YSA: "robust" option added
 //
 //            Company:  Department of Epidemiology, ErasmusMC Rotterdam, The Netherlands.
 //              Email:  i.aoultchenko@erasmusmc.nl, m.struchalin@erasmusmc.nl
@@ -52,7 +52,7 @@ int main(int argc, char * argv [])
 {
 
 	int next_option;
-	const char * const short_options = "p:i:d:m:n:c:o:s:t:g:a:erlh:b:v";
+	const char * const short_options = "p:i:d:m:n:c:o:s:t:g:a:erlh:b:vu";
 //b - interaction parameter
 
 	const struct option long_options [] =
@@ -75,6 +75,7 @@ int main(int argc, char * argv [])
 		{"interaction",   1, NULL, 'b'},
 		{"interaction_only",   1, NULL, 'k'},
 		{"mmscore",   1, NULL, 'v'},
+		{"robust",   0, NULL, 'u'},
 		{NULL  ,   0, NULL, 0  }
 	};
 	char * program_name = argv[0];
@@ -92,6 +93,7 @@ int main(int argc, char * argv [])
 	int ngpreds=1;
 	int interaction=0;
 	int interaction_excluded=0;
+	int robust = 0;
 	string chrom = "-1";
 	int neco[] = {0,0,0};
 	bool iscox=false;
@@ -163,6 +165,9 @@ int main(int argc, char * argv [])
 			case 'v':
 				 inverse_filename=optarg; 
 				 break;
+			case 'u':
+				 robust=1;
+				 break;
 
 
 			case '?': print_usage(program_name,1);
@@ -214,6 +219,10 @@ int main(int argc, char * argv [])
 		fprintf(stdout,"\t --allcov  = ON\n");
 	else
 		fprintf(stdout,"\t --allcov  = OFF\n");
+	if (robust)
+		fprintf(stdout,"\t --robust  = ON\n");
+	else
+		fprintf(stdout,"\t --robust  = OFF\n");
 
 	if (ngpreds!=1 && ngpreds!=2) 
 	{
@@ -274,11 +283,12 @@ int main(int argc, char * argv [])
 	 mematrix<double> invvarmatrix;
 
 #if LOGISTIC		
-	if(inverse_filename != NULL) {std::cerr<<"ERROR: mmsocre is forbidden for logistic regression\n";exit(1);}
+	if(inverse_filename != NULL) {std::cerr<<"ERROR: mmscore is forbidden for logistic regression\n";exit(1);}
 #endif
 
 #if COXPH
 	if(inverse_filename != NULL) {std::cerr<<"ERROR: mmscore is forbidden for cox regression\n";exit(1);}
+	if (robust) {std::cerr<<"ERROR: robust standard errors not implemented for Cox regression (drop us e-mail if you really need that)\n";exit(1);}
 #endif
 
 
@@ -315,10 +325,10 @@ int main(int argc, char * argv [])
 #endif
 #if LOGISTIC
 	logistic_reg nrd(nrgd);
-	nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, interaction, ngpreds, invvarmatrix, 1);
+	nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, interaction, ngpreds, invvarmatrix, robust, 1);
 #elif LINEAR
 	linear_reg nrd(nrgd);
-	nrd.estimate(nrgd,0,CHOLTOL,0, interaction, ngpreds, invvarmatrix, 1);
+	nrd.estimate(nrgd,0,CHOLTOL,0, interaction, ngpreds, invvarmatrix, robust, 1);
 #elif COXPH
 	coxph_reg nrd(nrgd);
 	nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, interaction, ngpreds, 1);
@@ -621,7 +631,7 @@ for (int csnp=0;csnp<nsnps;csnp++)
 				if (score)
 					rd.score(nrd.residuals,rgd,0,CHOLTOL,model, interaction, ngpreds, invvarmatrix);
 				else
-					rd.estimate(rgd,0,MAXITER,EPS,CHOLTOL,model, interaction, ngpreds, invvarmatrix);
+					rd.estimate(rgd,0,MAXITER,EPS,CHOLTOL,model, interaction, ngpreds, invvarmatrix, robust);
 				#elif LINEAR
 				linear_reg rd(rgd);
 				if(score)
@@ -629,7 +639,7 @@ for (int csnp=0;csnp<nsnps;csnp++)
 				else
 				{
 				//	rd.mmscore(rgd,0,CHOLTOL,model, interaction, ngpreds, invvarmatrix);
-					rd.estimate(rgd,0,CHOLTOL,model, interaction, ngpreds, invvarmatrix);
+					rd.estimate(rgd,0,CHOLTOL,model, interaction, ngpreds, invvarmatrix, robust);
 				}
 				#elif COXPH
 				coxph_reg rd(rgd);
@@ -712,7 +722,7 @@ for (int csnp=0;csnp<nsnps;csnp++)
 			if (score)
 				rd.score(nrd.residuals,rgd,0,CHOLTOL,model, interaction, ngpreds, invvarmatrix);
 			else
-				rd.estimate(rgd,0,MAXITER,EPS,CHOLTOL,model, interaction, ngpreds, invvarmatrix);
+				rd.estimate(rgd,0,MAXITER,EPS,CHOLTOL,model, interaction, ngpreds, invvarmatrix, robust);
 			#elif LINEAR
 			linear_reg rd(rgd);
 			if (score)
@@ -721,7 +731,7 @@ for (int csnp=0;csnp<nsnps;csnp++)
 				{
 //					if(inverse_filename == NULL)
 //						{
-						rd.estimate(rgd,0,CHOLTOL,model, interaction, ngpreds, invvarmatrix);
+						rd.estimate(rgd,0,CHOLTOL,model, interaction, ngpreds, invvarmatrix, robust);
 //						}
 //					else
 //						{

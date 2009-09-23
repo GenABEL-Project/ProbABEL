@@ -239,12 +239,14 @@ Options:
 									  (default is no ineraction, 0)
 		--mmscore     : score test for association between a trait and genetic
                     polymorphism, in samples of related individuals	
+		--robust      : report robust (aka sandwich, aka Hubert-White) standard 
+                    errors
 		--help        : print help
 
 \end{verbatim}
 
 
-%\subsection{Basic analysis options}
+\subsection{Basic analysis options}
 However, for 
 a simple run you can use only three, which specify the necessary files 
 needed to run regression analysis.
@@ -294,14 +296,38 @@ user@server~/ProbABEL/example/$ ../bin/palinear -p height.txt
                                  -d test.mlprob -i test.mlinfo --ngpreds=2
 \end{verbatim}
 
+\subsection{Advanced analysis options}
+
 Option \texttt{--interaction} allows you to include interaction between SNP 
 and any covariate. If e.g. your model is \texttt{trait ~ sex + age + SNP}, 
 running the program with option \texttt{--interaction=2} will model 
 \texttt{trait ~ sex + age + SNP + age*SNP}.
 
-Option \texttt{--interaction\_only} is like \texttt{--interaction} but does not include covariate acting in interaction with SNP.
-If you have one covariate in input phenotype file for example and would like to exclude this covariate from model itself (hold only interaction term) than use
-option \texttt{--interaction\_only1}.
+Option \texttt{--robust} allows you to compute so-called ''robust'' (aka
+''sandwich'', aka Hubert-White) standard errors (see section ``Methodology''
+for details).
+
+With option \texttt{--mmscore} score test for association between a trait and genetic
+polymorphism  in samples of related individuals is performed. File with inverse of variance-covarince matrix goes as input parameter
+with that key. Like \texttt{--mmscore <filename>}. The file has to contain the first column with id names exactly like in phenotype file, BUT OMITTING people with no measured phenotype. The rest is a matrix.
+Phenotype file in case of using key --mscore may contain any amount of covariates (opposed to previous versions). The first is id names, the second - trait. 
+Otheres are covariates.
+
+An example how polygenic object estimated by GenABEL can be used with ProbABEL
+is provided here: example/mmscore.R
+
+Though technically \texttt{--mmscore} allows for inclusion of multiple 
+covariates, these should be kept to minimum as this is score test. We suggest 
+that any covariates explaining essential proportion of variance should be 
+fit as part of the \texttt{GenABEL}'s \texttt{polygenic} procedure.
+
+Option \texttt{--interaction\_only} is like \texttt{--interaction} but does not
+include in the model the main effect of the covariate, which is acting in
+interaction with SNP. This option is useful when running \texttt{--mmscore}, 
+in whch case the main effect should normally estimated in the polygenic 
+model and only the interaction term in the \texttt{ProbABEL} analysis.
+
+\subsection{Running multiple analyses at once: probabel.pl}
 
 Perl script \texttt{bin/probabel.pl\_example} represents a handy wraper for ProbABEL functions. 
 To start using it you have to change config file \\
@@ -315,17 +341,6 @@ are paths and patterns for "mldose", "mlprob" and "legend" files.
 Probably you also have to change variable \texttt{\$config} in sript to point full path to 
 configuration file and variable \texttt{@anprog } to point full path to ProbABEL scripts.
 
-
-With option \texttt{--mmscore} score test for association between a trait and genetic
-polymorphism  in samples of related individuals is performed. File with inverse of variance-covarince matrix goes as input parameter
-with that key. Like \texttt{--mmscore <filename>}. The file has to contain the first column with id names exactly like in phenotype file, BUT OMITTING people with no measured phenotype. The rest is a matrix.
-Phenotype file in case of using key --mscore may contain any amount of covariates (opposed to previous versions). The first is id names, the second - trait. 
-Otheres are covariates.
-
-An example how polygenic object estimated by GenABEL can be used with ProbABEL is provided here: example/mmscore.R
-
-
-%\subsection{Extended analysis options}
 
 \section{Output file format}
 
@@ -432,6 +447,19 @@ library \texttt{survival} code developed by Thomas Lumley
 (function \texttt{coxfit2}). 
 
 Many thanks to Thomas for making his code available under GNU GPL!
+
+\subsection{Robust standard errors}
+
+These are computed using formula
+
+$$
+((\mathbf{X}^T\mathbf{X})^{-1} (\mathbf{X}^T\mathbf{V}\mathbf{X})
+(\mathbf{X}^T\mathbf{X})^{-1})_{jj} $$
+
+where $\mathbf{V}$ is a diagonal marix containing residuals. The 
+same formula may be used for ``standard'' analysis, in which case
+the elements of the $\mathbf{V}$ matrix are constant, namely mean 
+residual sum of squares (the estimte of $\sigma^2$).
 
 \section{How to cite}
 

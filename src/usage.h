@@ -23,6 +23,7 @@ void print_usage (char * program_name, int exit_code)
 	fprintf(stdout,"\t --interaction: Which covariate to use for interaction with SNP analysys (default is no ineraction, 0)\n");
 	fprintf(stdout,"\t --interaction_only: like previos but without covariate acting in interaction with SNP (default is no ineraction, 0)\n");
 	fprintf(stdout,"\t --mmscore : score test in samples of related individuals. File with inverse of variance-covariance matrix as input parameter\n");
+	fprintf(stdout,"\t --robust  : report robust (aka sandwich, aka Hubert-White) standard errors\n");
 	fprintf(stdout,"\t --help    : print help\n");
 	exit(exit_code);
 }
