@@ -600,7 +600,7 @@ for (int csnp=0;csnp<nsnps;csnp++)
 	rgd.update_snp(gtd,csnp);
 	double freq;
 	if (ngpreds==2)
-			freq = ((gtd.G).column_mean(csnp*2)+2.*(gtd.G).column_mean(csnp*2+1))/2.;
+			freq = ((gtd.G).column_mean(csnp*2)*2.+(gtd.G).column_mean(csnp*2+1))/2.;
 	else
 			freq = (gtd.G).column_mean(csnp)/2.;
 	int poly = 1;

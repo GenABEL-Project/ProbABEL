@@ -1,3 +1,10 @@
+***** v.0.1-2 (2009.10.19)
+
+Minor bug fix: allele frequency was estimated wrongly when oprion --ngpreds=2 
+was used. The bug had no effect anything else (betas, ses, chi2s were correct).
+Many thanks to Han Chen (Boston University) for identification of this bug 
+and providing us with an excellent summary which allowed fixing the bug easily!
+
 ***** v.0.1-1 (2009.09.22)
 
 Added "robust" option, which computes SEs using formula
