@@ -4,13 +4,17 @@
 //
 //        Description:  ProbABEL
 //
-//            Version:  0.2
+//            Version:  0.2-plus
 //            Created:  ---
 //           Revision:  none
 //  last modification:  11-Jan-2009
 //
 //             Author:  Yurii S. Aulchenko
 //			  modified by: 	Maksim V. Struchalin, 11-Jan-2009 
+//
+// Modified by Han Chen (hanchen@bu.edu) on Nov 9, 2009
+// based on src/reg1.h version 0.2 as of Oct 19, 2009
+//
 //            Company:  ErasmusMC, Epidemiology & Biostatistics Department, The Netherlands.
 //              Email:  i.aoultchenko@erasmusmc.nl, m.struchalin@erasmusmc.nl
 //
@@ -61,12 +65,22 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction, in
 					nX_without_interact_phe.reinit(nX.nrow,nX.ncol-1);
 					for(int row=0 ; row < nX.nrow ; row++)
 						{
+//Han Chen
+                        col_new=-1;
 						for(int col=0 ; col<nX.ncol ; col++)
 							{
-							col_new++;
-							if(col != interaction && iscox) nX_without_interact_phe[row*nX_without_interact_phe.ncol+col_new] = nX[row*nX.ncol+col];
-							if(col != interaction-1 && !iscox) nX_without_interact_phe[row*nX_without_interact_phe.ncol+col_new] = nX[row*nX.ncol+col];
-							}
+							if(col != interaction && !iscox)
+                                    {
+                                   	col_new++;
+                                    nX_without_interact_phe[row*nX_without_interact_phe.ncol+col_new] = nX[row*nX.ncol+col];
+                                    }
+							if(col != interaction-1 && iscox)
+                                    {
+                                   	col_new++;
+                                    nX_without_interact_phe[row*nX_without_interact_phe.ncol+col_new] = nX[row*nX.ncol+col];
+                                    }
+							}//interaction_only, model==0, ngpreds==2
+//Oct 26, 2009
 						}
 					return nX_without_interact_phe;
 					}//end of is_interaction_excluded
@@ -163,6 +177,33 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction, in
 		if(interaction != 0)	
 		nX[i*nX.ncol+c2] = X[i*nX.ncol+interaction] * nX[i*nX.ncol+c1];//Maksim: interaction with SNP
 		}
+//Han Chen
+				int col_new=-1;
+				if(is_interaction_excluded)
+					{
+					mematrix<double> nX_without_interact_phe;
+					nX_without_interact_phe.reinit(nX.nrow,nX.ncol-1);
+					for(int row=0 ; row < nX.nrow ; row++)
+						{
+						col_new=-1;
+						for(int col=0 ; col<nX.ncol ; col++)
+							{
+							if(col != interaction && !iscox) 
+								{
+								col_new++;
+								nX_without_interact_phe[row*nX_without_interact_phe.ncol+col_new] = nX[row*nX.ncol+col];
+								}
+							if(col != interaction-1 && iscox)
+								{
+								col_new++;
+								nX_without_interact_phe[row*nX_without_interact_phe.ncol+col_new] = nX[row*nX.ncol+col];
+								}
+
+							}
+						}
+					return nX_without_interact_phe;
+					}//interaction_only, model!=0, ngpreds==2
+//Oct 26, 2009
 	return nX;
 }
 
@@ -179,6 +220,9 @@ class linear_reg
 public:
 	mematrix<double> beta;
 	mematrix<double> sebeta;
+//Han Chen
+	mematrix<double> covariance;
+//Oct 26, 2009
 	mematrix<double> residuals;
 	double sigma2;
 	double loglik;
@@ -189,6 +233,10 @@ public:
 		int length_beta = (rdata.X).ncol;
 		beta.reinit(length_beta,1);
 		sebeta.reinit(length_beta,1);
+//Han Chen
+		if (length_beta>1)
+		{covariance.reinit(length_beta-1,1);}
+//Oct 26, 2009
 		residuals.reinit(rdata.nids,1);
 		sigma2=-1.;
 		loglik=-9.999e+32;
@@ -295,6 +343,14 @@ public:
 		int length_beta = X.ncol;
 		beta.reinit(length_beta,1);
 		sebeta.reinit(length_beta,1);
+//Han Chen
+		if (length_beta>1)
+		   {if (model==0 && interaction!=0 && ngpreds==2 && length_beta>2)
+               {covariance.reinit(length_beta-2,1);}
+            else                 
+               {covariance.reinit(length_beta-1,1);}
+            }
+//Oct 26, 2009
 		mematrix<double> tX = transpose(X);
 	
 
@@ -416,9 +472,39 @@ public:
 			if (robust) {
 				double value = sqrt(robust_sigma2.get(i,i));
 				sebeta.put(value,i,0);
+//Han Chen
+			if (i>0)
+			{
+                    if (model==0 && interaction!=0 && ngpreds==2 && length_beta>2)
+                    {if (i>1)
+                        {double covval=robust_sigma2.get(i,i-2);
+                        covariance.put(covval,i-2,0);}
+                    }
+                    else
+                    {
+                    double covval=robust_sigma2.get(i,i-1);
+                    covariance.put(covval,i-1,0);
+                    }
+             }
+//Oct 26, 2009
 			} else {
 				double value = sqrt(sigma2_internal*tXX_i.get(i,i));
 				sebeta.put(value,i,0);
+//Han Chen
+			if (i>0)
+			{
+                    if (model==0 && interaction!=0 && ngpreds==2 && length_beta>2)
+                    {if (i>1)
+                        {double covval=sigma2_internal*tXX_i.get(i,i-2);
+                        covariance.put(covval,i-2,0);}
+                    }
+                    else
+                    {
+                    double covval=sigma2_internal*tXX_i.get(i,i-1);
+                    covariance.put(covval,i-1,0);
+                    }
+             }
+//Oct 26, 2009
 			}
 		}
 		if (verbose) {printf("sebeta (%d):\n",sebeta.nrow);sebeta.print();}
@@ -474,6 +560,9 @@ class logistic_reg
 public:
 	mematrix<double> beta;
 	mematrix<double> sebeta;
+//Han Chen
+	mematrix<double> covariance;
+//Oct 26, 2009
 	mematrix<double> residuals;
 	double sigma2;
 	double loglik;
@@ -485,6 +574,10 @@ public:
 		int length_beta = (rdata.X).ncol;
 		beta.reinit(length_beta,1);
 		sebeta.reinit(length_beta,1);
+//Han Chen
+		if (length_beta>1)
+		{covariance.reinit(length_beta-1,1);}
+//Oct 26, 2009
 		residuals.reinit((rdata.X).nrow,1);
 		sigma2=-1.;
 		loglik=-9.999e+32;
@@ -502,6 +595,14 @@ public:
 		int length_beta = X.ncol;
 		beta.reinit(length_beta,1);
 		sebeta.reinit(length_beta,1);
+//Han Chen
+		if (length_beta>1)
+		   {if (model==0 && interaction!=0 && ngpreds==2 && length_beta>2)
+               {covariance.reinit(length_beta-2,1);}
+            else                 
+               {covariance.reinit(length_beta-1,1);}
+            }
+//Oct 26, 2009
 		mematrix<double> W((X).nrow,1);
 		mematrix<double> z((X).nrow,1);
 		mematrix<double> tXWX(length_beta,length_beta);
@@ -590,12 +691,44 @@ public:
 
 		for (int i=0;i<(length_beta);i++)
 		{	
-			if (robust) {
+			if (robust) 
+            {
 				double value = sqrt(robust_sigma2.get(i,i));
 				sebeta.put(value,i,0);
-			} else {
+//Han Chen
+			if (i>0)
+			{
+                    if (model==0 && interaction!=0 && ngpreds==2 && length_beta>2)
+                    {if (i>1)
+                        {double covval=robust_sigma2.get(i,i-2);
+                        covariance.put(covval,i-2,0);}
+                    }
+                    else
+                    {
+                    double covval=robust_sigma2.get(i,i-1);
+                    covariance.put(covval,i-1,0);
+                    }
+             }
+//Oct 26, 2009
+			} 
+            else {
 				double value = sqrt(tXWX_i.get(i,i));
 				sebeta.put(value,i,0);
+//Han Chen
+			if (i>0)
+			{
+                    if (model==0 && interaction!=0 && ngpreds==2 && length_beta>2)
+                    {if (i>1)
+                        {double covval=tXWX_i.get(i,i-2);
+                        covariance.put(covval,i-2,0);}
+                    }
+                    else
+                    {
+                    double covval=tXWX_i.get(i,i-1);
+                    covariance.put(covval,i-1,0);
+                    }
+             }
+//Oct 26, 2009
 			}
 		}
 		if (verbose) {printf("sebeta (%d):\n",sebeta.nrow);sebeta.print();}

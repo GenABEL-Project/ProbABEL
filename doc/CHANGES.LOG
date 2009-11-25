@@ -1,6 +1,37 @@
+***** v.0.1-3 (2009.11.25)
+
+This version is courtesy of Han Chen (Nov 9, 2009). The modifications allow
+to extract the covariance between the estimate of beta(SNP) and the estimate 
+of beta(interaction). This information can be used to, e.g., to perform a 
+rigorous 2df meta-analysis of interactions later on.
+
+Here is a more detailed description of what the changes concern (by Han Chen):
+
+For model 
+
+Y = b_0 + b_cov1 * cov1 + b_cov2 * cov2 + ... + b_covN * covN + b_SNP * SNP + b_covX_SNP * covX * SNP
+
+(1<=X<=N, covX can be any covariate in the phenotype file, from cov1 to covN, 
+option --interaction=X, see ProbABEL manual for details) 
+Or model 
+
+Y = b_0 + b_cov1 * cov1 + b_cov2 * cov2 + ... + b_covX-1 * covX-1 + b_covX+1 * covX+1 + ... + b_covN * covN + b_SNP * SNP + b_covX_SNP * covX * SNP
+
+(1<=X<=N, covX can be any covariate in the phenotype file, from cov1 to covN, 
+option --interaction_only=X, see ProbABEL manual for details)
+This "plus" version reports naive covariance (default) or robust covariance 
+(option --robust) between b_SNP and b_covX_SNP estimates, for palinear and 
+palogist (can NOT report covariance for pacoxph, Cox regression).
+Covariances are no reported for options --score, --allcov, --mmscore
+
+LINEAR REGRESSION OR LOGISTIC REGRESSION ONLY 
+
+Bravo, Han! -- and many thanks! 
+
+
 ***** v.0.1-2 (2009.10.19)
 
-Minor bug fix: allele frequency was estimated wrongly when oprion --ngpreds=2 
+Minor bug fix: allele frequency was estimated wrongly when option --ngpreds=2 
 was used. The bug had no effect anything else (betas, ses, chi2s were correct).
 Many thanks to Han Chen (Boston University) for identification of this bug 
 and providing us with an excellent summary which allowed fixing the bug easily!
