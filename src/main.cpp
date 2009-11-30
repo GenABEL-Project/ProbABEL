@@ -4,7 +4,7 @@
 //
 //        Description:  ProbABEL head file.
 //
-//            Version:  0.1-0-plus
+//            Version:  0.1-3
 //            Created:  ---
 //           Revision:  none
 //

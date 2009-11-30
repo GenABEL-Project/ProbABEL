@@ -4,7 +4,7 @@
 //
 //        Description:  ProbABEL
 //
-//            Version:  0.2-plus
+//            Version:  0.1-3
 //            Created:  ---
 //           Revision:  none
 //  last modification:  11-Jan-2009
