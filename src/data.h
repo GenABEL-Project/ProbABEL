@@ -22,7 +22,7 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
 	for (int i=0;i<nphenocols;i++) 
 	{
 		fscanf(infile,"%s",&tmp);
-//		printf("%s ",tmp);
+		//		printf("%s ",tmp);
 	} 	//printf("\n");
 
 	unsigned short int * allmeasured = new unsigned short int [npeople];	
@@ -68,15 +68,15 @@ public:
 		int savenpeople = npeople;
 		npeople=0;
 		if (myfile.is_open())
-  		{
+		{
 			myfile.getline(line,BFS);
 			std::stringstream line_stream(line);
-//			std::cout << line << "\n ";
+			//			std::cout << line << "\n ";
 			while (line_stream >> tmp)
 			{
 
 				nphenocols++;
-//				std::cout << tmp << " " << nphenocols << " ";
+				//				std::cout << tmp << " " << nphenocols << " ";
 			}
 			while (myfile.getline(line,BFS)) {
 				int tmplins = 0;
@@ -146,9 +146,9 @@ public:
 			for (int i=(2+noutcomes);i<nphenocols;i++) 
 			{
 				fscanf(infile,"%s",&tmp);
-			
-//				if(iscox && ) {if(n_model_terms+1 == interaction-1) {continue;} }
-//				else      {if(n_model_terms+1 == interaction) {continue;} }
+
+				//				if(iscox && ) {if(n_model_terms+1 == interaction-1) {continue;} }
+				//				else      {if(n_model_terms+1 == interaction) {continue;} }
 				model = model + " + ";
 				model = model + tmp;
 				model_terms[n_model_terms++] = tmp;
@@ -156,17 +156,17 @@ public:
 		}
 		model = model + " + SNP_A1";
 		if(interaction!=0)
-			{
+		{
 			if(iscox) {model = model + " + " +model_terms[interaction-1]+"*SNP_A1";}
 			else      {model = model + " + " +model_terms[interaction]+"*SNP_A1";}
-			}
+		}
 		model_terms[n_model_terms++] = "SNP_A1";
 
 		if(is_interaction_excluded) // exclude covariates from covariate names
-			{
+		{
 			if(iscox) {std::cout<<"model is running without "<<model_terms[interaction-1]<<", term\n";}
 			else      {std::cout<<"model is running without "<<model_terms[interaction]<<", term\n";}
-			}
+		}
 
 
 #if LOGISTIC
@@ -193,7 +193,7 @@ public:
 			if (allmeasured[i]==1) nids++;
 		}
 		fclose(infile);
-//		printf("npeople = %d, no. all measured = %d\n",nids_all,nids);
+		//		printf("npeople = %d, no. all measured = %d\n",nids_all,nids);
 
 		// allocate objects
 		int ntmpcov = 1;
@@ -201,7 +201,7 @@ public:
 		idnames = new std::string [nids];
 		X.reinit(nids,ntmpcov);
 		Y.reinit(nids,noutcomes);
-		
+
 		// second pass -- read the data
 		if ((infile=fopen(fname,"r"))==NULL) {
 			fprintf(stderr,"phedata: can not open file %s\n",fname);
@@ -216,31 +216,31 @@ public:
 		int k =0;
 		int m =0;
 		for (int i = 0;i<npeople;i++)
-		if (allmeasured[i]==1) 
-		{
-			fscanf(infile,"%s",&tmp);
-			idnames[m] = tmp;
-			for (int j=0;j<noutcomes;j++)
+			if (allmeasured[i]==1)
 			{
 				fscanf(infile,"%s",&tmp);
-				Y.put(atof(tmp),m,j);
+				idnames[m] = tmp;
+				for (int j=0;j<noutcomes;j++)
+				{
+					fscanf(infile,"%s",&tmp);
+					Y.put(atof(tmp),m,j);
+				}
+				for (int j=(1+noutcomes);j<nphenocols;j++)
+				{
+					fscanf(infile,"%s",&tmp);
+					X.put(atof(tmp),m,(j-1-noutcomes));
+				}
+				m++;
 			}
-			for (int j=(1+noutcomes);j<nphenocols;j++) 
-			{
-				fscanf(infile,"%s",&tmp);
-				X.put(atof(tmp),m,(j-1-noutcomes));
-			}
-			m++;
-		} 
-		else 
-			for (int j=0;j<nphenocols;j++) fscanf(infile,"%s",&tmp);
+			else
+				for (int j=0;j<nphenocols;j++) fscanf(infile,"%s",&tmp);
 		fclose(infile);
 	}
 	~phedata()
 	{
-//		delete X;
-//		delete Y;
-//		delete [] allmeasured;
+		//		delete X;
+		//		delete Y;
+		//		delete [] allmeasured;
 	}
 };
 
@@ -251,14 +251,14 @@ public:
 	int nids;
 	int ngpreds;
 	mematrix<float> G;
-//	mematrix<double> G;
+	//	mematrix<double> G;
 	gendata(char * fname, int insnps, int ingpreds, int npeople, int nmeasured, unsigned short int * allmeasured, int skipd, std::string * idnames)
 	{
 		nids = nmeasured;
 		nsnps = insnps;
 		ngpreds = ingpreds;
 		int nids_all = npeople;
-		
+
 		G.reinit(nids,(nsnps*ngpreds));
 
 		FILE * infile;
@@ -268,58 +268,63 @@ public:
 		}
 
 		char tmp[100],tmpn[100];
-		std::string tmpid;
+		std::string tmpid,tmpstr;
 
 		int k = 0;
 		for (int i = 0;i<npeople;i++)
-		if (allmeasured[i]==1) 
-		{
-			if (skipd>0)
+			if (allmeasured[i]==1)
 			{
-//				int ttt;
-				char ttt[100];
-				fscanf(infile,"%s",&tmp);
-//				sscanf(tmp,"%d->%s",&ttt,&tmpn);
-//		these changes are thanks to BMM & BP :)
-//				sscanf(tmp,"%s->%s",&ttt,&tmpn);
-//				sscanf(tmp,"%[^->]->%[^->]",&ttt,&tmpn);
-				sscanf(tmp,"%[^->]->%s",ttt, tmpn);
-//				fprintf(stdout,"%s;%s;%s\n",tmp,ttt,tmpn);
-				tmpid = tmpn;
-				if (tmpid != idnames[k])
+				if (skipd>0)
 				{
-					fprintf(stderr,"phenofile and dosefile did not match at line %d ",i+2);
-					cerr << "(" << tmpid << " != " << idnames[k] << ")\n";
-					fclose(infile);
-					exit(1);
+					//				int ttt;
+					char ttt[100];
+					fscanf(infile,"%s",&tmp);
+					//				sscanf(tmp,"%d->%s",&ttt,&tmpn);
+					//		these changes are thanks to BMM & BP :)
+					//				sscanf(tmp,"%s->%s",&ttt,&tmpn);
+					//				sscanf(tmp,"%[^->]->%[^->]",&ttt,&tmpn);
+					tmpstr = tmp;
+					if (tmpstr.find("->")!=string::npos) {
+						sscanf(tmp,"%[^->]->%s",ttt, tmpn);
+						tmpid = tmpn;
+					} else {
+						tmpid = tmpstr;
+						//fprintf(stdout,"%s;%s;%s;%s;%s\n",tmp,ttt,tmpn,tmpid.c_str(),idnames[k].c_str());
+					}
+					if (tmpid != idnames[k])
+					{
+						fprintf(stderr,"phenofile and dosefile did not match at line %d ",i+2);
+						cerr << "(" << tmpid << " != " << idnames[k] << ")\n";
+						fclose(infile);
+						exit(1);
+					}
 				}
+				for (int j=1;j<skipd;j++) {
+					fscanf(infile,"%s",&tmp);
+				}
+				for (int j=0;j<(nsnps*ngpreds);j++)
+				{
+					int a = fscanf(infile,"%s",&tmp);
+					if (!a || a==EOF)
+					{
+						fprintf(stderr,"cannot read dose-file: check skipd and ngpreds parameters\n");
+						fclose(infile);
+						exit(1);
+					}
+					G.put(atof(tmp),k,j);
+				}
+				k++;
 			}
-			for (int j=1;j<skipd;j++) { 
-				fscanf(infile,"%s",&tmp);
-			}
-			for (int j=0;j<(nsnps*ngpreds);j++) 
+			else
 			{
-				int a = fscanf(infile,"%s",&tmp);
-				if (!a || a==EOF)
-				{
-					fprintf(stderr,"cannot read dose-file: check skipd and ngpreds parameters\n");
-					fclose(infile);
-					exit(1);
-				}
-				G.put(atof(tmp),k,j);
+				for (int j=0;j<skipd;j++) fscanf(infile,"%s",&tmp);
+				for (int j=0;j<(nsnps*ngpreds);j++) fscanf(infile,"%s",&tmp);
 			}
-			k++;
-		} 
-		else 
-		{
-			for (int j=0;j<skipd;j++) fscanf(infile,"%s",&tmp);
-			for (int j=0;j<(nsnps*ngpreds);j++) fscanf(infile,"%s",&tmp);
-		}
 		fclose(infile);
 	}
 	~gendata()
 	{
-//		delete G;
+		//		delete G;
 	}
 
 };
@@ -351,35 +356,35 @@ public:
 			Y.put((phed.Y).get(i,0),i,0);
 		}
 		for (int j=1;j<=phed.ncov;j++) 
-		for (int i=0;i<nids;i++) 
-			X.put((phed.X).get(i,j-1),i,j);
+			for (int i=0;i<nids;i++)
+				X.put((phed.X).get(i,j-1),i,j);
 		if (snpnum>0) 
 			for (int i=0;i<nids;i++) 
-			for (int j=0;j<ngpreds;j++) 
-				X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+j));
+				for (int j=0;j<ngpreds;j++)
+					X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+j));
 	}
 	void update_snp(gendata &gend, int snpnum)
 	{
 		for (int i=0;i<nids;i++) 
-		for (int j=0;j<ngpreds;j++) 
-			X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov+1-j-1));
-//			X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+(ngpreds-j+1)));
-//			X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+j));
+			for (int j=0;j<ngpreds;j++)
+				X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov+1-j-1));
+		//			X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+(ngpreds-j+1)));
+		//			X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+j));
 	}
 	~regdata()
 	{
-//		delete X;
-//		delete Y;
+		//		delete X;
+		//		delete Y;
 	}
 	mematrix<double> extract_genotypes(void)
-	{
+					{
 		mematrix<double> out;
 		out.reinit(X.nrow,ngpreds);
 		for (int i=0;i<X.nrow;i++)
-		for (int j=0;j<ngpreds;j++)
-			out[i*ngpreds+j] = X.get(i,(ncov-ngpreds+1+j));
+			for (int j=0;j<ngpreds;j++)
+				out[i*ngpreds+j] = X.get(i,(ncov-ngpreds+1+j));
 		return out;
-	}
+					}
 };
 
 // compare for sort of times
@@ -419,7 +424,7 @@ public:
 			fprintf(stderr,"coxph_data: number of outcomes should be 2 (now: %d)\n",phed.noutcomes);
 			exit(1);
 		}
-//		X.reinit(nids,(ncov+1));		
+		//		X.reinit(nids,(ncov+1));
 		X.reinit(nids,ncov);		
 		stime.reinit(nids,1);
 		sstat.reinit(nids,1);
@@ -429,7 +434,7 @@ public:
 		order.reinit(nids,1);
 		for (int i=0;i<nids;i++) 
 		{
-//			X.put(1.,i,0);
+			//			X.put(1.,i,0);
 			stime[i] = (phed.Y).get(i,0);
 			sstat[i] = int((phed.Y).get(i,1));
 			if (sstat[i] != 1 & sstat[i]!=0) 
@@ -439,13 +444,13 @@ public:
 			}
 		}
 		for (int j=0;j<phed.ncov;j++) 
-		for (int i=0;i<nids;i++) 
-			X.put((phed.X).get(i,j),i,j);
+			for (int i=0;i<nids;i++)
+				X.put((phed.X).get(i,j),i,j);
 
 		if (snpnum>0) 
 			for (int i=0;i<nids;i++) 
-			for (int j=0;j<ngpreds;j++) 
-				X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+j));
+				for (int j=0;j<ngpreds;j++)
+					X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+j));
 
 		for (int i=0;i<nids;i++) 
 		{
@@ -453,7 +458,7 @@ public:
 			offset[i] = 0.0;
 			strata[i] = 0;
 		}
-// sort by time
+		// sort by time
 		double tmptime[nids];
 		int passed_sorted[nids];
 		for (int i=0;i<nids;i++) {tmptime[i] = stime[i];passed_sorted[i]=0;}
@@ -463,13 +468,13 @@ public:
 			int passed = 0;
 			for (int j=0;j<nids;j++)
 				if (tmptime[j] == stime[i]) 
-				if (!passed_sorted[j])
-				{
-					order[i] = j;
-					passed_sorted[j] = 1;
-					passed = 1;
-					break;
-				}
+					if (!passed_sorted[j])
+					{
+						order[i] = j;
+						passed_sorted[j] = 1;
+						passed = 1;
+						break;
+					}
 			if (passed != 1) 
 			{
 				fprintf(stderr,"can not recover element %d\n",i);
@@ -483,28 +488,28 @@ public:
 		offset = reorder(offset,order);
 		X = reorder(X,order);
 		X = transpose(X);
-//		X.print();
-//		offset.print();
-//		weights.print();
-//		stime.print();
-//		sstat.print();
+		//		X.print();
+		//		offset.print();
+		//		weights.print();
+		//		stime.print();
+		//		sstat.print();
 	}
 	void update_snp(gendata &gend, int snpnum)
 	{
 		// note this sorts by "order"!!!
 		for (int i=0;i<nids;i++) 
-		for (int j=0;j<ngpreds;j++) 
-			X.put((gend.G).get(i,(snpnum*ngpreds+j)),(ncov-ngpreds+j),order[i]);
+			for (int j=0;j<ngpreds;j++)
+				X.put((gend.G).get(i,(snpnum*ngpreds+j)),(ncov-ngpreds+j),order[i]);
 	}
 	~coxph_data()
 	{
-//		delete X;
-//		delete sstat;
-//		delete stime;
-//		delete weights;
-//		delete offset;
-//		delete strata;
-//		delete order;
+		//		delete X;
+		//		delete sstat;
+		//		delete stime;
+		//		delete weights;
+		//		delete offset;
+		//		delete strata;
+		//		delete order;
 	}
 };
 
@@ -613,12 +618,12 @@ public:
 //_________________________________________Maksim_start
 
 class InvSigma
-	{
+{
 
-	 public:
+public:
 
 	InvSigma(const char * filename_, phedata * phe)
-		{
+	{
 		filename = filename_;
 		npeople  = phe->nids;
 		std::ifstream myfile(filename_);
@@ -629,60 +634,60 @@ class InvSigma
 
 		matrix.reinit(npeople,npeople);
 
-		
+
 		//idnames[k], if (allmeasured[i]==1)
 
 		if (myfile.is_open())
+		{
+			while(myfile.getline(line,MAXIMUM_PEOPLE_AMOUNT))
 			{
-				while(myfile.getline(line,MAXIMUM_PEOPLE_AMOUNT)) 
-					{
-	
-					
 
-					std::stringstream line_stream(line);
-					line_stream >> id;
-					
-					if(phe->idnames[row] != id) {std::cerr<<"error:in row "<<row<<" id="<<phe->idnames[row]<<" in inverce variance matrix but id="<<id<<" must be there. Wrong inverce variance matrix (only measured id must be there)\n";exit(1);}
 
-					while (line_stream >> val)
-						{
-						matrix.put(val, row, col);
-						col++;
-						}
-		
-					if(col != npeople)
-						{
-						fprintf(stderr,"error: inv file: Number of columns in row %d equals to %d but people amount is %d\n", row, col, npeople);
-						myfile.close();
-						exit(1);
-						}
-					col=0;
-					row++;
-					}
+
+				std::stringstream line_stream(line);
+				line_stream >> id;
+
+				if(phe->idnames[row] != id) {std::cerr<<"error:in row "<<row<<" id="<<phe->idnames[row]<<" in inverce variance matrix but id="<<id<<" must be there. Wrong inverce variance matrix (only measured id must be there)\n";exit(1);}
+
+				while (line_stream >> val)
+				{
+					matrix.put(val, row, col);
+					col++;
+				}
+
+				if(col != npeople)
+				{
+					fprintf(stderr,"error: inv file: Number of columns in row %d equals to %d but people amount is %d\n", row, col, npeople);
+					myfile.close();
+					exit(1);
+				}
+				col=0;
+				row++;
+			}
 			myfile.close();
-			}
+		}
 		else
-			{
+		{
 			fprintf(stderr,"error: inv file: can not open file\n");
-			}
+		}
 
 
-		};	
+	};
 
 
-		~InvSigma()
-		{
+	~InvSigma()
+	{
 		//af af
-		}
+	}
 
 
-		mematrix<double> & get_matrix(void)
-		{
+	mematrix<double> & get_matrix(void)
+						{
 		return matrix;
-		}
+						}
 
 
-	private:
+private:
 
 	static const unsigned MAXIMUM_PEOPLE_AMOUNT = 1000000;
 	unsigned npeople; //amount of people
