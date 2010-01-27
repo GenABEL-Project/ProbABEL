@@ -14,7 +14,7 @@ COXSRC = $(COXBASE:=.c)
 COXOBJ = $(COXBASE:=.o)
 
 CPP = g++
-CFLAGS = -I $(SRCDIR)/include -O3
+CFLAGS = -I $(SRCDIR)/include -O2
 
 all: $(EXECUTABLES)
 	cp $(SRCDIR)/extIDS.pl $(BINDIR)/.

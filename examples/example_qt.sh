@@ -22,3 +22,5 @@ echo "Option --ngp=2 --robust"
 echo "Option --ngp=2 --robust --interaction=1"
 ../bin/palinear -p height.txt -d test.mlprob -i test.mlinfo -m test.map -c 19 --ngp=2 --robust --interaction=1 -o height_ngp2_robust_int1
 
+echo "Test with missing data"
+../bin/palinear -p impute_with_missing.PHE -d impute_with_missing.dose.fvi -i impute_with_missing.mlinfo -c 23 -o impute_with_missing

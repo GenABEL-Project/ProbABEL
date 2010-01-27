@@ -304,7 +304,7 @@ gendata::gendata()
 }
 
 void gendata::re_gendata(string filename, int insnps, int ingpreds, int npeople,
-		 int nmeasured, unsigned short int * allmeasured,
+		int nmeasured, unsigned short int * allmeasured,
 		std::string * idnames)
 {
 	nsnps = insnps;
@@ -416,6 +416,7 @@ gendata::~gendata()
 
 
 
+
 class regdata
 {
 public:
@@ -423,12 +424,29 @@ public:
 	int ncov;
 	int ngpreds;
 	int noutcomes;
+	unsigned short int * masked_data;
 	mematrix<double> X;
 	mematrix<double> Y;
 
+	regdata()
+	{
+	}
+	regdata(const regdata &obj)
+	{
+		nids = obj.nids;
+		ncov = obj.ncov;
+		ngpreds = obj.ngpreds;
+		noutcomes = obj.noutcomes;
+		X = obj.X;
+		Y = obj.Y;
+		masked_data = new unsigned short int [nids];
+		for (int i=0;i<nids;i++) masked_data[i] = 0;
+	}
 	regdata(phedata &phed, gendata &gend, int snpnum) 
 	{
 		nids = gend.nids;
+		masked_data = new unsigned short int [nids];
+		for (int i=0;i<nids;i++) masked_data[i] = 0;
 		ngpreds = gend.ngpreds;
 		if (snpnum>=0) 
 			ncov = phed.ncov + ngpreds;
@@ -462,25 +480,65 @@ public:
 		for (int j=0;j<ngpreds;j++)
 		{
 			float snpdata[nids];
+			for (int i=0;i<nids;i++) masked_data[i]=0;
 			gend.get_var(snpnum*ngpreds+j,snpdata);
-			for (int i=0;i<nids;i++)
+			for (int i=0;i<nids;i++) {
 				X.put(snpdata[i],i,(ncov+1-j-1));
+				if (isnan(snpdata[i])) masked_data[i]=1;
+			}
 		}
 	}
 	~regdata()
 	{
+		delete [] masked_data;
 		//		delete X;
 		//		delete Y;
 	}
+
+	regdata get_unmasked_data()
+	{
+		regdata to; // = regdata(*this);
+		int nmeasured = 0;
+		for (int i=0;i<nids;i++)
+			if (masked_data[i]==0) nmeasured++;
+		to.nids = nmeasured;
+		//cout << to.nids << " in get_unmasked_data\n";
+		to.ncov = ncov;
+		to.ngpreds = ngpreds;
+		to.noutcomes = noutcomes;
+		int dim2Y = Y.ncol;
+		int dim2X = X.ncol;
+		(to.X).reinit(to.nids,dim2X);
+		(to.Y).reinit(to.nids,dim2Y);
+
+		int j = 0;
+		for (int i=0;i<nids;i++)
+		{
+			if (masked_data[i]==0) {
+				for (int nc=0;nc<dim2X;nc++)
+					(to.X).put(X.get(i,nc),j,nc);
+				for (int nc=0;nc<dim2Y;nc++)
+					(to.Y).put(Y.get(i,nc),j,nc);
+				j++;
+			}
+		}
+
+		//delete [] to.masked_data;
+		to.masked_data = new unsigned short int [to.nids];
+		for (int i=0;i<to.nids;i++) to.masked_data[i] = 0;
+		//fprintf(stdout,"get_unmasked: %i %i %i\n",to.nids,dim2X,dim2Y);
+		return(to);
+	}
+
 	mematrix<double> extract_genotypes(void)
-											{
+																					{
 		mematrix<double> out;
 		out.reinit(X.nrow,ngpreds);
 		for (int i=0;i<X.nrow;i++)
 			for (int j=0;j<ngpreds;j++)
 				out[i*ngpreds+j] = X.get(i,(ncov-ngpreds+1+j));
 		return out;
-											}
+																					}
 };
 
 // compare for sort of times
@@ -492,6 +550,11 @@ int cmpfun(const void *a, const void *b)
 	if (el1<el2) return -1;
 	if (el1==el2) return 0;
 }
+
+
+
+
+
 
 class coxph_data
 {
@@ -506,10 +569,30 @@ public:
 	mematrix<int>    strata;
 	mematrix<double> X;
 	mematrix<int>    order;
+	unsigned short int * masked_data;
 
+	coxph_data(){}
+
+	coxph_data(const coxph_data &obj)
+	{
+		nids = obj.nids;
+		ncov = obj.ncov;
+		ngpreds = obj.ngpreds;
+		weights = obj.weights;
+		stime = obj.stime;
+		sstat = obj.sstat;
+		offset = obj.offset;
+		strata = obj.strata;
+		X = obj.X;
+		order = obj.order;
+		masked_data = new unsigned short int [nids];
+		for (int i=0;i<nids;i++) masked_data[i] = 0;
+	}
 	coxph_data(phedata &phed, gendata &gend, int snpnum) 
 	{
 		nids = gend.nids;
+		masked_data = new unsigned short int [nids];
+		for (int i=0;i<nids;i++) masked_data[i] = 0;
 		ngpreds = gend.ngpreds;
 		if (snpnum>=0) 
 			ncov = phed.ncov + ngpreds;
@@ -605,10 +688,12 @@ public:
 		for (int j=0;j<ngpreds;j++)
 		{
 			float snpdata[nids];
+			for (int i=0;i<nids;i++) masked_data[i]=0;
 			gend.get_var(snpnum*ngpreds+j,snpdata);
-			for (int i=0;i<nids;i++)
+			for (int i=0;i<nids;i++) {
 				X.put(snpdata[i],(ncov-ngpreds+j),order[i]);
-
+				if (isnan(snpdata[i])) masked_data[order[i]]=1;
+			}
 		}
 		//		for (int i=0;i<nids;i++)
 		//			for (int j=0;j<ngpreds;j++)
@@ -616,6 +701,7 @@ public:
 	}
 	~coxph_data()
 	{
+		delete [] masked_data;
 		//		delete X;
 		//		delete sstat;
 		//		delete stime;
@@ -624,7 +710,54 @@ public:
 		//		delete strata;
 		//		delete order;
 	}
+	coxph_data get_unmasked_data()
+	{
+		coxph_data to = coxph_data(*this);
+		// filter missing data
+
+		int nmeasured = 0;
+		for (int i=0;i<nids;i++)
+			if (masked_data[i]==0) nmeasured++;
+		to.nids = nmeasured;
+		to.ncov = ncov;
+		to.ngpreds = ngpreds;
+		int dim2X = X.ncol;
+		(to.weights).reinit(to.nids,1);
+		(to.stime).reinit(to.nids,1);
+		(to.sstat).reinit(to.nids,1);
+		(to.offset).reinit(to.nids,1);
+		(to.strata).reinit(to.nids,1);
+		(to.order).reinit(to.nids,1);
+		(to.X).reinit(to.nids,dim2X);
+
+		int j = 0;
+		for (int i=0;i<nids;i++)
+		{
+			if (masked_data[i]==0) {
+				(to.weights).put(weights.get(i,1),j,1);
+				(to.stime).put(stime.get(i,1),j,1);
+				(to.sstat).put(sstat.get(i,1),j,1);
+				(to.offset).put(offset.get(i,1),j,1);
+				(to.strata).put(strata.get(i,1),j,1);
+				(to.order).put(order.get(i,1),j,1);
+				for (int nc=0;nc<dim2X;nc++)
+					(to.X).put(X.get(i,nc),j,nc);
+				j++;
+			}
+		}
+
+		//delete [] to.masked_data;
+		to.masked_data = new unsigned short int [to.nids];
+		for (int i=0;i<to.nids;i++) to.masked_data[i] = 0;
+		//fprintf(stdout,"get_unmasked: %i %i %i\n",to.nids,dim2X,dim2Y);
+		return(to);
+	}
 };
+
+
+
+
+
 
 class mlinfo
 {
@@ -795,9 +928,9 @@ public:
 
 
 	mematrix<double> & get_matrix(void)
-												{
+																						{
 		return matrix;
-												}
+																						}
 
 
 private:

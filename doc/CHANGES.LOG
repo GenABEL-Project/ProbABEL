@@ -1,8 +1,10 @@
-***** v.0.1-4 (2010.01.27)
+***** v.0.1-4 (2010.01.28)
 
 ProbABEL can now work in very low memory mode, using filevector library
 (see examples/prepare_data.R for examples how to convert data from 
 MACH to filevector format).
+
+Can also treat missing values (NA, nan)
 
 ***** v.0.1-3 (2009.11.25)
 

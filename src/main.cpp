@@ -679,8 +679,9 @@ int main(int argc, char * argv [])
 			for(int file=0 ; file<outfile.size() ; file++)
 			{
 				*outfile[file] << mli.name[csnp] << sep << mli.A1[csnp] << sep << mli.A2[csnp] << sep
-						<< mli.Freq1[csnp] << sep << mli.MAF[csnp] << sep << mli.Quality[csnp] << sep << mli.Rsq[csnp] << sep
-						<< phd.nids << sep << freq;
+						<< mli.Freq1[csnp] << sep << mli.MAF[csnp] << sep << mli.Quality[csnp] << sep
+						<< mli.Rsq[csnp] << sep
+						<< gcount << sep << freq;
 				if (chrom != "-1") *outfile[file] << sep << chrom;
 				if (mapfilename != NULL) *outfile[file] << sep << mli.map[csnp];
 			}
@@ -838,7 +839,7 @@ int main(int argc, char * argv [])
 			//Write mlinfo to output:
 			*outfile[0] << mli.name[csnp] << sep << mli.A1[csnp] << sep << mli.A2[csnp] << sep;
 			*outfile[0] << mli.Freq1[csnp] << sep << mli.MAF[csnp] << sep << mli.Quality[csnp] << sep << mli.Rsq[csnp] << sep;
-			*outfile[0] << phd.nids << sep << freq;
+			*outfile[0] << gcount << sep << freq;
 			if (chrom != "-1") *outfile[0] << sep << chrom;
 			if (mapfilename != NULL) *outfile[0] << sep << mli.map[csnp];
 			int model=0;
@@ -851,14 +852,18 @@ int main(int argc, char * argv [])
 				else
 					rd.estimate(rgd,0,MAXITER,EPS,CHOLTOL,model, interaction, ngpreds, invvarmatrix, robust);
 #elif LINEAR
+				//cout << (rgd.get_unmasked_data()).nids << " 1\n";
 				linear_reg rd(rgd);
+				//cout << (rgd.get_unmasked_data()).nids << " 2\n";
 				if (score)
 					rd.score(nrd.residuals,rgd,0,CHOLTOL,model, interaction, ngpreds, invvarmatrix);
 				else
 				{
 					//					if(inverse_filename == NULL)
 					//						{
+					//cout << (rgd.get_unmasked_data()).nids << " 3\n";
 					rd.estimate(rgd,0,CHOLTOL,model, interaction, ngpreds, invvarmatrix, robust);
+					//cout << (rgd.get_unmasked_data()).nids << " 4\n";
 					//						}
 					//					else
 					//						{

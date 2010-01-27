@@ -77,6 +77,12 @@ and a file containing phenotype of interest and covariates.
 Optionally, the map information can be supplied (e.g. "legend" 
 files of HapMap). 
 
+The dose/probbaility file may be supplied in filevector format 
+in which case \texttt{ProbABEL} will operate much faster, and 
+in low-RAM mode (approx. 128 Mb). See R libraries GenABEL and 
+DatABEL on how to convert MACH and IMPUTE files to 
+filevector format (functions: mach2databel, impute2databel).
+
 \subsection{SNP information file}
 \label{ssec:infoin}
 In the simplest scenario, SNP information file is an MLINFO 
