@@ -3,6 +3,18 @@
 #include <fstream>
 #include "mematrix.h"
 
+#include "fvlib/const.h"
+#include "fvlib/convert_util.h"
+#include "fvlib/convert_util.cpp"
+#include "fvlib/DatABELBaseCPP.h"
+#include "fvlib/DatABELBaseCPP.cpp"
+#include "fvlib/filevector.h"
+#include "fvlib/filevector.cpp"
+#include "fvlib/frerror.h"
+#include "fvlib/frerror.cpp"
+#include "fvlib/frutil.h"
+#include "fvlib/frutil.cpp"
+#include "fvlib/frversion.h"
 
 
 extern bool is_interaction_excluded;
@@ -250,84 +262,159 @@ public:
 	int nsnps;
 	int nids;
 	int ngpreds;
+	gendata();
+	void re_gendata(char * fname, int insnps, int ingpreds,
+			int npeople, int nmeasured,
+			unsigned short int * allmeasured,
+			int skipd,
+			std::string * idnames);
+	void re_gendata(string filename, int insnps, int ingpreds,
+			int npeople, int nmeasured,
+			unsigned short int * allmeasured,
+			std::string * idnames);
+	~gendata();
+	void get_var(int var, float * data);
+	// MAKE THAT PRIVATE, ACCESS THROUGH GET_SNP
+	// ANOTHER PRIVATE OBJECT IS A POINTER TO DATABELBASECPP
+	// UPDATE SNP, ALL REGRESSION METHODS: ACCOUNT FOR MISSING
+private:
 	mematrix<float> G;
+	DatABELBaseCPP * DAG;
+	unsigned short int * DAGmask;
 	//	mematrix<double> G;
-	gendata(char * fname, int insnps, int ingpreds, int npeople, int nmeasured, unsigned short int * allmeasured, int skipd, std::string * idnames)
-	{
-		nids = nmeasured;
-		nsnps = insnps;
-		ngpreds = ingpreds;
-		int nids_all = npeople;
-
-		G.reinit(nids,(nsnps*ngpreds));
-
-		FILE * infile;
-
-		if ((infile=fopen(fname,"r"))==NULL) {
-			fprintf(stderr,"gendata: can not open file %s\n",fname);
-		}
-
-		char tmp[100],tmpn[100];
-		std::string tmpid,tmpstr;
-
-		int k = 0;
-		for (int i = 0;i<npeople;i++)
-			if (allmeasured[i]==1)
-			{
-				if (skipd>0)
-				{
-					//				int ttt;
-					char ttt[100];
-					fscanf(infile,"%s",&tmp);
-					//				sscanf(tmp,"%d->%s",&ttt,&tmpn);
-					//		these changes are thanks to BMM & BP :)
-					//				sscanf(tmp,"%s->%s",&ttt,&tmpn);
-					//				sscanf(tmp,"%[^->]->%[^->]",&ttt,&tmpn);
-					tmpstr = tmp;
-					if (tmpstr.find("->")!=string::npos) {
-						sscanf(tmp,"%[^->]->%s",ttt, tmpn);
-						tmpid = tmpn;
-					} else {
-						tmpid = tmpstr;
-						//fprintf(stdout,"%s;%s;%s;%s;%s\n",tmp,ttt,tmpn,tmpid.c_str(),idnames[k].c_str());
-					}
-					if (tmpid != idnames[k])
-					{
-						fprintf(stderr,"phenofile and dosefile did not match at line %d ",i+2);
-						cerr << "(" << tmpid << " != " << idnames[k] << ")\n";
-						fclose(infile);
-						exit(1);
-					}
-				}
-				for (int j=1;j<skipd;j++) {
-					fscanf(infile,"%s",&tmp);
-				}
-				for (int j=0;j<(nsnps*ngpreds);j++)
-				{
-					int a = fscanf(infile,"%s",&tmp);
-					if (!a || a==EOF)
-					{
-						fprintf(stderr,"cannot read dose-file: check skipd and ngpreds parameters\n");
-						fclose(infile);
-						exit(1);
-					}
-					G.put(atof(tmp),k,j);
-				}
-				k++;
-			}
-			else
-			{
-				for (int j=0;j<skipd;j++) fscanf(infile,"%s",&tmp);
-				for (int j=0;j<(nsnps*ngpreds);j++) fscanf(infile,"%s",&tmp);
-			}
-		fclose(infile);
-	}
-	~gendata()
-	{
-		//		delete G;
-	}
-
 };
+
+void gendata::get_var(int var, float * data)
+{
+	if (DAG == NULL)
+		for (int i=0;i<G.nrow;i++) data[i] = G.get(i,var);
+	else if (DAG != NULL) {
+		float tmpdata[DAG->get_nobservations()];
+		DAG->read_variable_as((unsigned long int) var, tmpdata);
+		unsigned int j = 0;
+		for (unsigned int i=0;i<DAG->get_nobservations();i++) if (!DAGmask[i]) data[j++] = tmpdata[i];
+		//fprintf(stdout,"%i %i %i\n",j,DAG->get_nobservations(),nids);
+	}
+	else error("can not get gendata");
+}
+
+gendata::gendata()
+{
+	nsnps=nids=ngpreds=0;
+}
+
+void gendata::re_gendata(string filename, int insnps, int ingpreds, int npeople,
+		 int nmeasured, unsigned short int * allmeasured,
+		std::string * idnames)
+{
+	nsnps = insnps;
+	ngpreds = ingpreds;
+	DAG = new filevector(filename,128,DB_RDONLY);
+	DAGmask = new unsigned short int [DAG->get_nobservations()];
+	if (DAG->get_nobservations() != npeople) error("dimension of fvf-data and phenotype data do not match\n");
+	if (DAG->get_nvariables() != insnps*ingpreds) error("dimension of fvf-data and mlinfo data do not match\n");
+	unsigned int j = -1;
+	for (unsigned int i=0;i<npeople;i++)
+	{
+		if (allmeasured[i]==0) DAGmask[i]=1; else {DAGmask[i]=0;j++;}
+		string DAGobsname = DAG->read_observation_name(i).name;
+		if (allmeasured[i] && idnames[j] != DAGobsname)
+			error("names do not match for observation at phenofile line (phe/geno) %i/+1 (%s/%s)\n",
+					i+1,idnames[i].c_str(),DAGobsname.c_str());
+	}
+	nids = j+1;
+	//fprintf(stdout,"in INI: %i %i\n",nids,npeople);
+	if (nids != nmeasured) error("nids != mneasured (%i != %i)\n",nids,nmeasured);
+
+}
+void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
+		int nmeasured, unsigned short int * allmeasured, int skipd,
+		std::string * idnames)
+{
+	nids = nmeasured;
+	nsnps = insnps;
+	ngpreds = ingpreds;
+	DAG = NULL;
+	//	int nids_all = npeople;
+
+	G.reinit(nids,(nsnps*ngpreds));
+
+	FILE * infile;
+
+	if ((infile=fopen(fname,"r"))==NULL) {
+		fprintf(stderr,"gendata: can not open file %s\n",fname);
+	}
+
+	char tmp[100],tmpn[100];
+	std::string tmpid,tmpstr;
+
+	int k = 0;
+	for (int i = 0;i<npeople;i++)
+		if (allmeasured[i]==1)
+		{
+			if (skipd>0)
+			{
+				//				int ttt;
+				char ttt[100];
+				fscanf(infile,"%s",&tmp);
+				//				sscanf(tmp,"%d->%s",&ttt,&tmpn);
+				//		these changes are thanks to BMM & BP :)
+				//				sscanf(tmp,"%s->%s",&ttt,&tmpn);
+				//				sscanf(tmp,"%[^->]->%[^->]",&ttt,&tmpn);
+				tmpstr = tmp;
+				if (tmpstr.find("->")!=string::npos) {
+					sscanf(tmp,"%[^->]->%s",ttt, tmpn);
+					tmpid = tmpn;
+				} else {
+					tmpid = tmpstr;
+					//fprintf(stdout,"%s;%s;%s;%s;%s\n",tmp,ttt,tmpn,tmpid.c_str(),idnames[k].c_str());
+				}
+				if (tmpid != idnames[k])
+				{
+					fprintf(stderr,"phenofile and dosefile did not match at line %d ",i+2);
+					cerr << "(" << tmpid << " != " << idnames[k] << ")\n";
+					fclose(infile);
+					exit(1);
+				}
+			}
+			for (int j=1;j<skipd;j++) {
+				fscanf(infile,"%s",&tmp);
+			}
+			for (int j=0;j<(nsnps*ngpreds);j++)
+			{
+				int a = fscanf(infile,"%s",&tmp);
+				if (!a || a==EOF)
+				{
+					fprintf(stderr,"cannot read dose-file: check skipd and ngpreds parameters\n");
+					fclose(infile);
+					exit(1);
+				}
+				G.put(atof(tmp),k,j);
+			}
+			k++;
+		}
+		else
+		{
+			for (int j=0;j<skipd;j++) fscanf(infile,"%s",&tmp);
+			for (int j=0;j<(nsnps*ngpreds);j++) fscanf(infile,"%s",&tmp);
+		}
+	fclose(infile);
+}
+// HERE NEED A NEW CONSTRUCTOR BASED ON DATABELBASECPP OBJECT
+gendata::~gendata()
+{
+
+	if (DAG != NULL) {delete DAG;delete [] DAGmask;}
+
+	//		delete G;
+}
+
+
+
+
+
+
+
 
 class regdata
 {
@@ -359,17 +446,26 @@ public:
 			for (int i=0;i<nids;i++)
 				X.put((phed.X).get(i,j-1),i,j);
 		if (snpnum>0) 
-			for (int i=0;i<nids;i++) 
-				for (int j=0;j<ngpreds;j++)
-					X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+j));
+			for (int j=0;j<ngpreds;j++)
+			{
+				float snpdata[nids];
+				gend.get_var(snpnum*ngpreds+j,snpdata);
+				for (int i=0;i<nids;i++)
+					X.put(snpdata[i],i,(ncov-ngpreds+1+j));
+			}
+		//			for (int i=0;i<nids;i++)
+		//				for (int j=0;j<ngpreds;j++)
+		//					X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+j));
 	}
 	void update_snp(gendata &gend, int snpnum)
 	{
-		for (int i=0;i<nids;i++) 
-			for (int j=0;j<ngpreds;j++)
-				X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov+1-j-1));
-		//			X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+(ngpreds-j+1)));
-		//			X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+j));
+		for (int j=0;j<ngpreds;j++)
+		{
+			float snpdata[nids];
+			gend.get_var(snpnum*ngpreds+j,snpdata);
+			for (int i=0;i<nids;i++)
+				X.put(snpdata[i],i,(ncov+1-j-1));
+		}
 	}
 	~regdata()
 	{
@@ -377,14 +473,14 @@ public:
 		//		delete Y;
 	}
 	mematrix<double> extract_genotypes(void)
-					{
+											{
 		mematrix<double> out;
 		out.reinit(X.nrow,ngpreds);
 		for (int i=0;i<X.nrow;i++)
 			for (int j=0;j<ngpreds;j++)
 				out[i*ngpreds+j] = X.get(i,(ncov-ngpreds+1+j));
 		return out;
-					}
+											}
 };
 
 // compare for sort of times
@@ -448,9 +544,17 @@ public:
 				X.put((phed.X).get(i,j),i,j);
 
 		if (snpnum>0) 
-			for (int i=0;i<nids;i++) 
-				for (int j=0;j<ngpreds;j++)
-					X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+j));
+			for (int j=0;j<ngpreds;j++)
+			{
+				float snpdata[nids];
+				gend.get_var(snpnum*ngpreds+j,snpdata);
+				for (int i=0;i<nids;i++)
+					X.put(snpdata[i],i,(ncov-ngpreds+j));
+			}
+
+		//			for (int i=0;i<nids;i++)
+		//				for (int j=0;j<ngpreds;j++)
+		//					X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+j));
 
 		for (int i=0;i<nids;i++) 
 		{
@@ -497,9 +601,18 @@ public:
 	void update_snp(gendata &gend, int snpnum)
 	{
 		// note this sorts by "order"!!!
-		for (int i=0;i<nids;i++) 
-			for (int j=0;j<ngpreds;j++)
-				X.put((gend.G).get(i,(snpnum*ngpreds+j)),(ncov-ngpreds+j),order[i]);
+
+		for (int j=0;j<ngpreds;j++)
+		{
+			float snpdata[nids];
+			gend.get_var(snpnum*ngpreds+j,snpdata);
+			for (int i=0;i<nids;i++)
+				X.put(snpdata[i],(ncov-ngpreds+j),order[i]);
+
+		}
+		//		for (int i=0;i<nids;i++)
+		//			for (int j=0;j<ngpreds;j++)
+		//				X.put((gend.G).get(i,(snpnum*ngpreds+j)),(ncov-ngpreds+j),order[i]);
 	}
 	~coxph_data()
 	{
@@ -668,7 +781,7 @@ public:
 		}
 		else
 		{
-			fprintf(stderr,"error: inv file: can not open file\n");
+			fprintf(stderr,"error: inv file: can not open file '%s'\n",filename_);
 		}
 
 
@@ -682,9 +795,9 @@ public:
 
 
 	mematrix<double> & get_matrix(void)
-						{
+												{
 		return matrix;
-						}
+												}
 
 
 private:

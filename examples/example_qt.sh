@@ -1,6 +1,7 @@
 echo "analysing QT"
 echo "base analysis"
 ../bin/palinear -p height.txt -d test.mldose -i test.mlinfo -m test.map -c 19 -o height_base
+../bin/palinear -p height.txt -d test.mldose_fvf.fvi -i test.mlinfo -m test.map -c 19 -o height_base_fvf
 echo "Option --allcov"
 ../bin/palinear -p height.txt -d test.mldose -i test.mlinfo -m test.map -c 19 --allcov -o height_allcov
 echo "Option --interaction=1"

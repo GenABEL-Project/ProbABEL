@@ -43,3 +43,9 @@ newphe <- ophe[idso,c("id",trait,covars)]
 
 write.table(newphe,file=output_phenofile)
 
+### convert mach 2 fvf
+
+library(GenABEL)
+mach2databel("test.mldose","test.mlinfo","test.mldose_fvf")
+mach2databel("mmscore_gen.mldose","mmscore_gen.mlinfo","mmscore_gen.mldose_fvf")
+
