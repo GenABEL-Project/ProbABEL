@@ -318,6 +318,9 @@ void gendata::re_gendata(string filename, int insnps, int ingpreds, int npeople,
 	{
 		if (allmeasured[i]==0) DAGmask[i]=1; else {DAGmask[i]=0;j++;}
 		string DAGobsname = DAG->read_observation_name(i).name;
+
+		if (DAGobsname.find("->")!=string::npos) DAGobsname = DAGobsname.substr(DAGobsname.find("->")+2);
+
 		if (allmeasured[i] && idnames[j] != DAGobsname)
 			error("names do not match for observation at phenofile line (phe/geno) %i/+1 (%s/%s)\n",
 					i+1,idnames[i].c_str(),DAGobsname.c_str());
