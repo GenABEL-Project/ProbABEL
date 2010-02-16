@@ -780,7 +780,7 @@ public:
 		FILE * infile = fopen(filename,"r");
 		if (infile == NULL) 
 		{
-			fprintf(stderr,"can not open file %s",filename);
+			fprintf(stderr,"mlinfo: can not open file %s",filename);
 			exit(1);
 		}
 		char tmp[100];
@@ -791,7 +791,7 @@ public:
 		fclose(infile);
 		if (nlin % 7)
 		{
-			fprintf(stderr,"number of columns != 7 in %s",filename);
+			fprintf(stderr,"mlinfo: number of columns != 7 in %s",filename);
 			exit(1);
 		}
 		nsnps = int(nlin/7) - 1;
@@ -806,7 +806,7 @@ public:
 		map = new std::string [nsnps];
 		if ((infile = fopen(filename,"r"))==NULL)
 		{
-			fprintf(stderr,"can not open file %s",filename);
+			fprintf(stderr,"mlinfo: can not open file %s",filename);
 			exit(1);
 		}
 		for (int i =0;i<7;i++) fscanf(infile,"%s",&tmp);
@@ -836,7 +836,7 @@ public:
 			char line [BFS], tmp[BFS];
 			if (!instr.is_open()) 
 			{
-				fprintf(stderr,"can not open file %s",filename);
+				fprintf(stderr,"mlinfo: can not open file %s",filename);
 				exit(1);
 			}
 			instr.getline(line,BFS);

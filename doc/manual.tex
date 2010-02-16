@@ -244,9 +244,6 @@ Options:
 		--allcov      : report estimates for all covariates (large outputs!)
 		--interaction : which covariate to use for interaction with SNP
 									  (default is no ineraction, 0)
-		--interaction_only: like previos but without covariate acting in
-                    interaction with SNP
-									  (default is no ineraction, 0)
 		--mmscore     : score test for association between a trait and genetic
                     polymorphism, in samples of related individuals	
 		--robust      : report robust (aka sandwich, aka Hubert-White) standard 
@@ -254,6 +251,9 @@ Options:
 		--help        : print help
 
 \end{verbatim}
+%%		--interaction_only: like previos but without covariate acting in
+%%                    interaction with SNP
+%%									  (default is no ineraction, 0)
 
 
 \subsection{Basic analysis options}
@@ -331,11 +331,11 @@ covariates, these should be kept to minimum as this is score test. We suggest
 that any covariates explaining essential proportion of variance should be 
 fit as part of the \texttt{GenABEL}'s \texttt{polygenic} procedure.
 
-Option \texttt{--interaction\_only} is like \texttt{--interaction} but does not
-include in the model the main effect of the covariate, which is acting in
-interaction with SNP. This option is useful when running \texttt{--mmscore}, 
-in whch case the main effect should normally estimated in the polygenic 
-model and only the interaction term in the \texttt{ProbABEL} analysis.
+%Option \texttt{--interaction\_only} is like \texttt{--interaction} but does not
+%include in the model the main effect of the covariate, which is acting in
+%interaction with SNP. This option is useful when running \texttt{--mmscore}, 
+%in whch case the main effect should normally estimated in the polygenic 
+%model and only the interaction term in the \texttt{ProbABEL} analysis.
 
 \subsection{Running multiple analyses at once: probabel.pl}
 
@@ -389,8 +389,8 @@ If ''--chrom'' option was used, in the next column you will find the
 value specified by this option. If ''--map'' option was used, in next 
 column you will find map location brought from the map-file. Next 
 columns provide coefficients of regression  of the phenotype 
-onto genotype, corresponding standard errors, and the $\chi^2$ 
-of the Likelihood Ratio Test for deviation from zero.
+onto genotype, corresponding standard errors, and log-likelihood % $\chi^2$ 
+of the model at the point of MLEs.
 
 \section{Preparing input files}
 

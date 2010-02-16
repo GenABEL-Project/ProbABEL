@@ -1,4 +1,6 @@
-***** v.0.1-4 (2010.01.28)
+***** v.0.1-4 (2010.02.12)
+
+Instead chi2, log-likelihood is reported 
 
 ProbABEL can now work in very low memory mode, using filevector library
 (see examples/prepare_data.R for examples how to convert data from 

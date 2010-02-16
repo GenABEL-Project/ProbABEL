@@ -462,11 +462,11 @@ int main(int argc, char * argv [])
 					//Oct 26, 2009
 				}
 			}
-			*outfile[0] << sep << "chi2_SNP_2df\n";
-			*outfile[1] << sep << "chi2_SNP_A1\n";
-			*outfile[2] << sep << "chi2_SNP_domA1\n";
-			*outfile[3] << sep << "chi2_SNP_recA1\n";
-			*outfile[4] << sep << "chi2_SNP_odom\n";
+			*outfile[0] << sep << "loglik\n"; //"chi2_SNP_2df\n";
+			*outfile[1] << sep << "loglik\n"; //"chi2_SNP_A1\n";
+			*outfile[2] << sep << "loglik\n"; //"chi2_SNP_domA1\n";
+			*outfile[3] << sep << "loglik\n"; //"chi2_SNP_recA1\n";
+			*outfile[4] << sep << "loglik\n"; //"chi2_SNP_odom\n";
 
 
 		}
@@ -519,7 +519,7 @@ int main(int argc, char * argv [])
 #if !COXPH
 				if(interaction != 0 && !allcov) *outfile[0] << sep << "cov_SNP_int_SNP_" << phd.model_terms[interaction_cox];
 #endif
-				*outfile[0] << sep << "chi2_SNP";
+				*outfile[0] << sep << "loglik"; //"chi2_SNP";
 			}
 			//Oct 26, 2009
 			*outfile[0] << "\n";
@@ -742,11 +742,13 @@ int main(int argc, char * argv [])
 					//________________________________
 					if (score==0)
 					{
-						*chi2[model] << 2.*(rd.loglik-null_loglik);
+						//*chi2[model] << 2.*(rd.loglik-null_loglik);
+						*chi2[model] << rd.loglik;
 					}
 					else
 					{
-						*chi2[model] << rd.chi2_score;
+						//*chi2[model] << rd.chi2_score;
+						*chi2[model] << "nan";
 					}
 					//________________________________
 
@@ -904,11 +906,11 @@ int main(int argc, char * argv [])
 				{
 					if(score==0)
 					{
-						*chi2[0] << 2.*(rd.loglik-null_loglik);
+						*chi2[0] << rd.loglik; //2.*(rd.loglik-null_loglik);
 					}
 					else
 					{
-						*chi2[0] << rd.chi2_score;
+						*chi2[0] << "nan"; //rd.chi2_score;
 					}
 				}
 				//________________________________
