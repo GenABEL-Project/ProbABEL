@@ -1,3 +1,9 @@
+***** v.0.1-5 (2010.03.07)
+
+Use of updated FILEVECTOR (r300)
+
+Fixed bug preventing coxph to run
+
 ***** v.0.1-4 (2010.02.12)
 
 Instead chi2, log-likelihood is reported 

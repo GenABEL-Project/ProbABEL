@@ -318,6 +318,7 @@ int main(int argc, char * argv [])
 		invvarmatrix = inv.get_matrix();
 		double par=1.; //var(phd.Y)*phd.nids/(phd.nids-phd.ncov-1);
 		invvarmatrix = invvarmatrix*par;
+		std::cout << " loaded InvSigma ...";
 		//	matrix.print();
 	}
 
@@ -332,6 +333,8 @@ int main(int argc, char * argv [])
 	else
 		gtd.re_gendata(str_genfilename,nsnps,ngpreds,phd.nids_all,phd.nids,phd.allmeasured,phd.idnames);
 
+	std::cout << " loaded genotypic data ...";
+
 	/**
 	if (isFVF)
 		gendata gtd (str_genfilename,nsnps,ngpreds,phd.nids_all,phd.allmeasured,phd.idnames);
@@ -345,6 +348,9 @@ int main(int argc, char * argv [])
 #else 
 	regdata nrgd(phd,gtd,-1);
 #endif
+
+	std::cout << " loaded null data ...";
+
 #if LOGISTIC
 	logistic_reg nrd(nrgd);
 	nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, interaction, ngpreds, invvarmatrix, robust, 1);
@@ -356,9 +362,12 @@ int main(int argc, char * argv [])
 	//fprintf(stdout,"HERE 0\n");
 #elif COXPH
 	coxph_reg nrd(nrgd);
+//	std::cout << " !!! AAA !!! ";
 	nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, interaction, ngpreds, 1);
 #endif
 	null_loglik = nrd.loglik;
+
+	std::cout << " estimated null model ...";
 
 	// end null
 #if COXPH
@@ -366,6 +375,9 @@ int main(int argc, char * argv [])
 #else 
 	regdata rgd(phd,gtd,0);
 #endif
+
+	std::cout << " formed regression object ...";
+
 	std::cout << " done\n";
 	std::cout.flush();
 

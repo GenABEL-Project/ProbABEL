@@ -3,11 +3,13 @@
 #include <fstream>
 #include "mematrix.h"
 
+#include "fvlib/AbstractMatrix.h"
+#include "fvlib/AbstractMatrix.cpp"
+#include "fvlib/CastUtils.h"
+#include "fvlib/CastUtils.cpp"
 #include "fvlib/const.h"
 #include "fvlib/convert_util.h"
 #include "fvlib/convert_util.cpp"
-#include "fvlib/DatABELBaseCPP.h"
-#include "fvlib/DatABELBaseCPP.cpp"
 #include "fvlib/filevector.h"
 #include "fvlib/filevector.cpp"
 #include "fvlib/frerror.h"
@@ -15,6 +17,10 @@
 #include "fvlib/frutil.h"
 #include "fvlib/frutil.cpp"
 #include "fvlib/frversion.h"
+#include "fvlib/Logger.h"
+#include "fvlib/Logger.cpp"
+#include "fvlib/Transposer.h"
+#include "fvlib/Transposer.cpp"
 
 
 extern bool is_interaction_excluded;
@@ -279,7 +285,7 @@ public:
 	// UPDATE SNP, ALL REGRESSION METHODS: ACCOUNT FOR MISSING
 private:
 	mematrix<float> G;
-	DatABELBaseCPP * DAG;
+	AbstractMatrix * DAG;
 	unsigned short int * DAGmask;
 	//	mematrix<double> G;
 };
@@ -713,29 +719,40 @@ public:
 		//		delete strata;
 		//		delete order;
 	}
+
+
 	coxph_data get_unmasked_data()
 	{
-		coxph_data to = coxph_data(*this);
+//		std::cout << " !!! in get_unmasked_data !!! ";
+		coxph_data to; // = coxph_data(*this);
 		// filter missing data
 
 		int nmeasured = 0;
 		for (int i=0;i<nids;i++)
 			if (masked_data[i]==0) nmeasured++;
 		to.nids = nmeasured;
+//		std::cout << "nmeasured=" << nmeasured << "\n";
 		to.ncov = ncov;
+//		std::cout << "ncov=" << ncov << "\n";
 		to.ngpreds = ngpreds;
-		int dim2X = X.ncol;
+		int dim1X = X.nrow;
+//		std::cout << "X.ncol=" << X.ncol << "\n";
+//		std::cout << "X.nrow=" << X.nrow << "\n";
 		(to.weights).reinit(to.nids,1);
 		(to.stime).reinit(to.nids,1);
 		(to.sstat).reinit(to.nids,1);
 		(to.offset).reinit(to.nids,1);
 		(to.strata).reinit(to.nids,1);
 		(to.order).reinit(to.nids,1);
-		(to.X).reinit(to.nids,dim2X);
+		(to.X).reinit(dim1X,to.nids);
 
+//		std::cout << "(to.X).ncol=" << (to.X).ncol << "\n";
+//		std::cout << "(to.X).nrow=" << (to.X).nrow << "\n";
+//		std::cout << " !!! just before cycle !!! ";
 		int j = 0;
 		for (int i=0;i<nids;i++)
 		{
+//			std::cout << nids << " " << i << " " << masked_data[i] << "\n";
 			if (masked_data[i]==0) {
 				(to.weights).put(weights.get(i,1),j,1);
 				(to.stime).put(stime.get(i,1),j,1);
@@ -743,11 +760,12 @@ public:
 				(to.offset).put(offset.get(i,1),j,1);
 				(to.strata).put(strata.get(i,1),j,1);
 				(to.order).put(order.get(i,1),j,1);
-				for (int nc=0;nc<dim2X;nc++)
-					(to.X).put(X.get(i,nc),j,nc);
+				for (int nc=0;nc<dim1X;nc++)
+					(to.X).put(X.get(nc,i),nc,j);
 				j++;
 			}
 		}
+//		std::cout << " !!! just after cycle !!! ";
 
 		//delete [] to.masked_data;
 		to.masked_data = new unsigned short int [to.nids];
