@@ -295,10 +295,10 @@ void gendata::get_var(int var, float * data)
 	if (DAG == NULL)
 		for (int i=0;i<G.nrow;i++) data[i] = G.get(i,var);
 	else if (DAG != NULL) {
-		float tmpdata[DAG->get_nobservations()];
-		DAG->read_variable_as((unsigned long int) var, tmpdata);
+		float tmpdata[DAG->getNumObservations()];
+		DAG->readVariableAs((unsigned long int) var, tmpdata);
 		unsigned int j = 0;
-		for (unsigned int i=0;i<DAG->get_nobservations();i++) if (!DAGmask[i]) data[j++] = tmpdata[i];
+		for (unsigned int i=0;i<DAG->getNumObservations();i++) if (!DAGmask[i]) data[j++] = tmpdata[i];
 		//fprintf(stdout,"%i %i %i\n",j,DAG->get_nobservations(),nids);
 	}
 	else error("can not get gendata");
@@ -315,15 +315,15 @@ void gendata::re_gendata(string filename, int insnps, int ingpreds, int npeople,
 {
 	nsnps = insnps;
 	ngpreds = ingpreds;
-	DAG = new filevector(filename,128,DB_RDONLY);
-	DAGmask = new unsigned short int [DAG->get_nobservations()];
-	if (DAG->get_nobservations() != npeople) error("dimension of fvf-data and phenotype data do not match\n");
-	if (DAG->get_nvariables() != insnps*ingpreds) error("dimension of fvf-data and mlinfo data do not match\n");
+	DAG = new FileVector(filename,128,true);
+	DAGmask = new unsigned short int [DAG->getNumObservations()];
+	if (DAG->getNumObservations() != npeople) error("dimension of fvf-data and phenotype data do not match\n");
+	if (DAG->getNumVariables() != insnps*ingpreds) error("dimension of fvf-data and mlinfo data do not match\n");
 	unsigned int j = -1;
 	for (unsigned int i=0;i<npeople;i++)
 	{
 		if (allmeasured[i]==0) DAGmask[i]=1; else {DAGmask[i]=0;j++;}
-		string DAGobsname = DAG->read_observation_name(i).name;
+		string DAGobsname = DAG->readObservationName(i).name;
 
 		if (DAGobsname.find("->")!=string::npos) DAGobsname = DAGobsname.substr(DAGobsname.find("->")+2);
 
