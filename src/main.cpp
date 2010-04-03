@@ -190,6 +190,11 @@ int main(int argc, char * argv [])
 		print_usage(program_name,1);
 	}
 
+	if (score) {
+		cout << "option --score supressed from v 0.1-6\n";
+		exit(1);
+	}
+
 	string str_genfilename = genfilename;
 	if (str_genfilename.find(FILEVECTOR_INDEX_FILE_SUFFIX)!=string::npos ||
 			str_genfilename.find(FILEVECTOR_DATA_FILE_SUFFIX)!=string::npos) isFVF = 1;
@@ -669,7 +674,7 @@ int main(int argc, char * argv [])
 			gtd.get_var(csnp*2,snpdata1);
 			gtd.get_var(csnp*2+1,snpdata2);
 			for (int ii=0;ii<gtd.nids;ii++)
-				if (!isnan(snpdata1[ii] && !isnan(snpdata2[ii])))
+				if (!isnan(snpdata1[ii]) && !isnan(snpdata2[ii]))
 				{gcount++;freq+=snpdata1[ii]+snpdata2[ii]*0.5;}
 		} else {
 			//		freq = (gtd.G).column_mean(csnp)/2.;

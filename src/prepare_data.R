@@ -43,3 +43,10 @@ newphe <- ophe[idso,c("id",trait,covars)]
 
 write.table(newphe,file=output_phenofile,quote=F,row.names=F)
 
+if (!require(GenABEL)) stop("further code requres GenABEL library installed")
+if (!require(DatABEL)) stop("further code requres DatABEL library installed")
+unlink("*.fv?")
+fvdose <- mach2databel(imputedg="test.mldose",mlinfo="test.mlinfo",out="test.dose")
+mach2databel("mmscore_gen.mldose","mmscore_gen.mlinfo","mmscore_gen.dose")
+fvprob <- mach2databel(imputedg="test.mlprob",mlinfo="test.mlinfo",out="test.prob",isprob=TRUE)
+

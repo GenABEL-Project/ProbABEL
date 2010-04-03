@@ -631,8 +631,10 @@ public:
 		//		delete beta;
 		//		delete sebeta;
 	}
-	void estimate(regdata &rdata, int verbose, int maxiter, double eps, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> & invvarmatrix, int robust, int nullmodel=0)
+	void estimate(regdata &rdatain, int verbose, int maxiter, double eps, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> & invvarmatrix, int robust, int nullmodel=0)
 	{
+		regdata rdata = rdatain.get_unmasked_data();
+
 		mematrix<double> X = apply_model(rdata.X,model, interaction, ngpreds, false, nullmodel);
 		int length_beta = X.ncol;
 		beta.reinit(length_beta,1);
@@ -852,10 +854,11 @@ public:
 		//		delete beta;
 		//		delete sebeta;
 	}
-	void estimate(coxph_data &cdata, int verbose, int maxiter, double eps, double tol_chol, int model, int interaction, int ngpreds, bool iscox, int nullmodel=0)
+	void estimate(coxph_data &cdatain, int verbose, int maxiter, double eps, double tol_chol, int model, int interaction, int ngpreds, bool iscox, int nullmodel=0)
 	{
 		//		cout << "model = " << model << "\n";
 		//		cdata.X.print();
+		coxph_data cdata = cdatain.get_unmasked_data();
 		mematrix<double> X = t_apply_model(cdata.X,model, interaction, ngpreds, iscox, nullmodel);
 		//		X.print();
 		int length_beta = X.nrow;

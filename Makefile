@@ -1,5 +1,5 @@
 
-VERSION = 0.1-3
+VERSION = 0.1-6
 SRCDIR = src
 BINDIR = bin
 DOCDIR = doc
@@ -32,7 +32,7 @@ $(COXREG): $(COXSRC) $(REGFILES)
 	$(CPP) $(CFLAGS) -DCOXPH $(COXSRC) $(SRCDIR)/main.cpp -o $(COXREG)
 
 clean:
-	rm -f $(BINDIR)/* $(SRCDIR)/*~ $(SRCDIR)/*.o $(DOCDIR)/*~ *.zip *.tar.gz
+	rm -f $(BINDIR)/* $(SRCDIR)/*~ $(SRCDIR)/*.o $(DOCDIR)/*~ *.zip *.tar.gz examples/*.out.txt examples/*out
 
 linux_distrib: clean
 	cd .. ; tar -czvf ProbABEL_$(VERSION).tar.gz ProbABEL
