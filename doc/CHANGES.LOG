@@ -2,6 +2,8 @@
 
 bug fix in palogist, coxph (would not run with missing genotypic data present)
 
+Thanks to Ida Surakka, Pau Navarro and Kati Kristiansson for spotting the problem!
+
 ***** v.0.1-5 (2010.03.07)
 
 Use of updated FILEVECTOR (r300)
