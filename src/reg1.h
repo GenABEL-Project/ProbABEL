@@ -448,7 +448,7 @@ public:
 
 		//	std::cout<<"N="<<N<<", length_beta="<<length_beta<<"\n";
 
-		if (verbose) {printf("sigma2 = %lf\n",sigma2);}
+		if (verbose) {printf("sigma2 = %Lf\n",sigma2);}
 
 		/*
 		loglik = 0.;
