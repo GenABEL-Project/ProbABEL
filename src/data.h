@@ -319,7 +319,7 @@ void gendata::re_gendata(string filename, int insnps, int ingpreds, int npeople,
 	DAGmask = new unsigned short int [DAG->getNumObservations()];
 	if (DAG->getNumObservations() != npeople) error("dimension of fvf-data and phenotype data do not match\n");
 	if (DAG->getNumVariables() != insnps*ingpreds) error("dimension of fvf-data and mlinfo data do not match\n");
-	unsigned int j = -1;
+	long int j = -1;
 	for (unsigned int i=0;i<npeople;i++)
 	{
 		if (allmeasured[i]==0) DAGmask[i]=1; else {DAGmask[i]=0;j++;}

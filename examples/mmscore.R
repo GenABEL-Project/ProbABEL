@@ -6,7 +6,7 @@
 #
 #        Version:  1.0
 #        Created:  26_Jan-2009
-#       Revision:  none
+#       Revision:  2010.04.18 (YA)
 #       
 #
 #         Author:  Maksim V. Struchalin
@@ -18,7 +18,6 @@
 
 #You have to have GenABEL installed on your computer
 library(GenABEL)
-data(ge03d2.clean)
 
 
 
@@ -42,10 +41,11 @@ data <- data[!is.na(data@phdata$age),]
 
 
 
-for (snp in snps) {
-   data <- data[!is.na(as.numeric(data@gtdata[,snp])),]
-   }
+#for (snp in snps) {
+#   data <- data[!is.na(as.numeric(data@gtdata[,snp])),]
+#   }
 
+#take only 500 people for this exercise
 data <- data[1:500,]
 
 
@@ -74,14 +74,14 @@ pheno <- data@phdata[,c("id", "height","sex","age")]
 
 
 #get rid of na
-pheno_no_na <- na.omit(pheno)
+#pheno_no_na <- na.omit(pheno)
 
 #give row names to inverse of the variance-covariance matrix
-rownames(InvSigma) <- pheno_no_na$id
+#rownames(InvSigma) <- pheno_no_na$id
 
 
 #save it to file. We'll use it in ProbABEL for mmscore
-write.table(InvSigma, file="mmscore_InvSigma_aj.sex.age.dat", col.names=F, quote=F)
+write.table(InvSigma, file="mmscore_InvSigma_aj.sex.age.dat", row.names=T, col.names=F, quote=F)
 
 
 #Get residuals from analysis, based on covariate effects only.
@@ -121,13 +121,14 @@ data_cut <- data[,snps]
 
 gen_table <- as.numeric(data_cut)
 
+prob_table <- matrix()
 
 #Replace NA by mean for each snp. NA is forbiden in genotypes in ProbABEL input (!).
-for(snpnum in 1:dim(gen_table)[2]) 
-	{
-	mean <- mean(gen_table[,snpnum], na.rm=T)	
-	gen_table[is.na(gen_table[,snpnum]),snpnum]	<- mean
-	}
+#for(snpnum in 1:dim(gen_table)[2]) 
+#	{
+#	mean <- mean(gen_table[,snpnum], na.rm=T)	
+#	gen_table[is.na(gen_table[,snpnum]),snpnum]	<- mean
+#	}
 
 
 gen_table_df <- data.frame(gen_table)
@@ -153,7 +154,7 @@ rownames <- rownames(gen_table_df)
 rownames <- paste("1->", rownames, sep="")
 rownames(gen_table_df) <- rownames
 
-write.table(file="mmscore_gen.mldose", gen_table_df, col.names=F, quote=F)
+write.table(file="mmscore_gen.mldose", gen_table_df, row.names=T, col.names=F, quote=F, na="NaN")
 
 mlinfo <- data.frame(SNP=colnam[2:length(colnam)])
 mlinfo$Al1 <- "A"
@@ -164,4 +165,22 @@ mlinfo$Quality <- 0.5847
 mlinfo$Rsq <- 0.5847
 
 write.table(mlinfo, "mmscore_gen.mlinfo", row.names=F, quote=F)
+
+# arrange probability-file
+prob_table <- matrix(NA,ncol=(dim(gen_table_df)[2]-1)*2,nrow=dim(gen_table_df)[1])
+j <- 1
+for (i in (1:(dim(gen_table_df)[2]-1))) {
+  prob_table[,j] <- rep(0,dim(prob_table)[1])
+  prob_table[gen_table_df[,i+1]==2,j] <- 1
+  prob_table[is.na(gen_table_df[,i+1]),j] <- NA
+  j <- j + 1
+  prob_table[,j] <- rep(0,dim(prob_table)[1])
+  prob_table[gen_table_df[,i+1]==1,j] <- 1
+  prob_table[is.na(gen_table_df[,i+1]),j] <- NA
+  j <- j + 1
+}
+prob_table_df <- data.frame(MLPROB="MLPROB",prob_table)
+rownames(prob_table_df) <- rownames(gen_table_df)
+
+write.table(file="mmscore_gen.mlprob", prob_table_df, row.names=T, col.names=F, quote=F, na="NaN")
 
