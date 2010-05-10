@@ -854,7 +854,7 @@ public:
 			char line [BFS], tmp[BFS];
 			if (!instr.is_open()) 
 			{
-				fprintf(stderr,"mlinfo: can not open file %s",filename);
+				fprintf(stderr,"mlinfo: can not open file %s",mapname);
 				exit(1);
 			}
 			instr.getline(line,BFS);
