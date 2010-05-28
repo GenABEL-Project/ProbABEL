@@ -398,7 +398,7 @@ int main(int argc, char * argv [])
 
 	if (outfilename==NULL)
 	{
-		outfilename = string("regression").c_str;
+		outfilename = (char *) string("regression").c_str();
 	}
 
 	std::string outfilename_str(outfilename);
