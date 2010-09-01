@@ -327,9 +327,16 @@ void gendata::re_gendata(string filename, int insnps, int ingpreds, int npeople,
 
 		if (DAGobsname.find("->")!=string::npos) DAGobsname = DAGobsname.substr(DAGobsname.find("->")+2);
 
+//if (allmeasured[i] && idnames[j] != DAGobsname)
+	//		error("names do not match for observation at phenofile line (phe/geno) %i/+1 (%s/%s)\n",
+		//			i+1,idnames[i].c_str(),DAGobsname.c_str());
+		// fix thanks to Vadym Pinchuk
 		if (allmeasured[i] && idnames[j] != DAGobsname)
-			error("names do not match for observation at phenofile line (phe/geno) %i/+1 (%s/%s)\n",
-					i+1,idnames[i].c_str(),DAGobsname.c_str());
+			error("names do not match for observation at phenofile line(phe/geno) %i/+1 (%s/%s)\n",
+					i+1,idnames[j].c_str(),DAGobsname.c_str());
+
+
+
 	}
 	nids = j+1;
 	//fprintf(stdout,"in INI: %i %i\n",nids,npeople);

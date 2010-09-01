@@ -1,3 +1,17 @@
+***** v.0.1-9c (2010.08.01)
+
+Bug identification and fix by Vadim Pinchuk (McGill). Here is his report:
+
+I have found a small bug that caused reporting of incorrect
+subject IDs in the error message when I tried to run palinear
+analysis. It caused a bit of confusion on my side.
+... I fixed it in downloaded copy of the source code and it reports
+correct subject IDs. We were able to overcome the problems in the data
+after the fix and submit analysis successfully.
+
+Bravo, Vadim! Thumbs up, and many thanks from us (and of cause all users)!
+
+
 ***** v.0.1-9b (2010.06.02)
 
 changes in filevector part
@@ -16,8 +30,6 @@ changes in filevector part
 
 error message with missing map-file reported absence of 
 other file, fixed: thanks to N. Pirastu for noticing!
-
-***** v.0.1-6b (2010.04.18)
 
 ***** v.0.1-6 (2010.04.02)
 
