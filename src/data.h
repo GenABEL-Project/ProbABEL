@@ -4,24 +4,15 @@
 #include "mematrix.h"
 
 #include "fvlib/AbstractMatrix.h"
-#include "fvlib/AbstractMatrix.cpp"
 #include "fvlib/CastUtils.h"
-#include "fvlib/CastUtils.cpp"
 #include "fvlib/const.h"
 #include "fvlib/convert_util.h"
-#include "fvlib/convert_util.cpp"
 #include "fvlib/FileVector.h"
-#include "fvlib/FileVector.cpp"
 #include "fvlib/frerror.h"
-#include "fvlib/frerror.cpp"
 #include "fvlib/frutil.h"
-#include "fvlib/frutil.cpp"
 #include "fvlib/frversion.h"
 #include "fvlib/Logger.h"
-#include "fvlib/Logger.cpp"
 #include "fvlib/Transposer.h"
-#include "fvlib/Transposer.cpp"
-
 
 extern bool is_interaction_excluded;
 

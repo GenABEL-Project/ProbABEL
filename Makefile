@@ -23,13 +23,13 @@ all: $(EXECUTABLES)
 	cp $(SRCDIR)/probabel_config.cfg $(BINDIR)/probabel_config.cfg_example
 
 $(LINREG): $(REGFILES) 
-	$(CPP) $(CFLAGS) -DLINEAR $(SRCDIR)/main.cpp -o $(LINREG)
+	$(CPP) $(CFLAGS) -DLINEAR $(SRCDIR)/main.cpp $(SRCDIR)/fvlib/*.cpp -o $(LINREG)
 
 $(LOGREG): $(REGFILES) 
-	$(CPP) $(CFLAGS) -DLOGISTIC $(SRCDIR)/main.cpp -o $(LOGREG)
+	$(CPP) $(CFLAGS) -DLOGISTIC $(SRCDIR)/main.cpp $(SRCDIR)/fvlib/*.cpp -o $(LOGREG)
 
 $(COXREG): $(COXSRC) $(REGFILES) 
-	$(CPP) $(CFLAGS) -DCOXPH $(COXSRC) $(SRCDIR)/main.cpp -o $(COXREG)
+	$(CPP) $(CFLAGS) -DCOXPH $(COXSRC) $(SRCDIR)/main.cpp $(SRCDIR)/fvlib/*.cpp -o $(COXREG)
 
 clean:
 	rm -f $(BINDIR)/* $(SRCDIR)/*~ $(SRCDIR)/*.o $(DOCDIR)/*~ *.zip *.tar.gz examples/*.out.txt examples/*out
