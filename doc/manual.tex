@@ -1,13 +1,29 @@
 \title{ProbABEL manual}
-\author{Yurii Aulchenko, Maksim Struchalin \\
+\author{Yurii Aulchenko, Maksim Struchalin, Lennart Karssen \\
 	Erasmus MC Rotterdam
 }
 \date{\today}
 
-\documentclass[12pt]{article}
+\documentclass[12pt,a4paper]{article}
 \usepackage{verbatim}
 \usepackage{titleref}
 \usepackage{makeidx}
+\usepackage[pdftex,hyperfootnotes=false,pdfpagelabels]{hyperref}
+\hypersetup{%
+  linktocpage=false, % If true the page numbers in the toc are links
+  % instead of the section headings.
+  pdfstartview=FitH,% pdfstartpage=3, 
+  breaklinks=true, pageanchor=true, %
+  pdfpagemode=UseOutlines, plainpages=false, bookmarksnumbered, %
+  bookmarksopen=true, bookmarksopenlevel=1, hypertexnames=true, %
+  pdfhighlight=/O, %hyperfootnotes=true,%nesting=true,%frenchlinks,%
+  pdfauthor={\textcopyright\ Y.~Aulchenko, M.~Struchalin, L.C.~Karssen},
+  pdfsubject={ProbABEL manual}
+}     
+% get the links to the figures and tables right:
+\usepackage[all]{hypcap} % to be loaded after hyperref package
+
+
 
 \makeindex
 
