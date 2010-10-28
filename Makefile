@@ -1,4 +1,3 @@
-
 VERSION = 0.1-9c
 SRCDIR = src
 BINDIR = bin
@@ -22,17 +21,20 @@ all: $(EXECUTABLES)
 	cp $(SRCDIR)/probabel.pl $(BINDIR)/probabel.pl_example
 	cp $(SRCDIR)/probabel_config.cfg $(BINDIR)/probabel_config.cfg_example
 
-$(LINREG): $(REGFILES) 
+$(LINREG): $(REGFILES)
 	$(CPP) $(CFLAGS) -DLINEAR $(SRCDIR)/main.cpp $(SRCDIR)/fvlib/*.cpp -o $(LINREG)
 
-$(LOGREG): $(REGFILES) 
+$(LOGREG): $(REGFILES)
 	$(CPP) $(CFLAGS) -DLOGISTIC $(SRCDIR)/main.cpp $(SRCDIR)/fvlib/*.cpp -o $(LOGREG)
 
-$(COXREG): $(COXSRC) $(REGFILES) 
+$(COXREG): $(COXSRC) $(REGFILES)
 	$(CPP) $(CFLAGS) -DCOXPH $(COXSRC) $(SRCDIR)/main.cpp $(SRCDIR)/fvlib/*.cpp -o $(COXREG)
 
-clean:
-	rm -f $(BINDIR)/* $(SRCDIR)/*~ $(SRCDIR)/*.o $(DOCDIR)/*~ *.zip *.tar.gz examples/*.out.txt examples/*out
+clean: clean_doc
+	rm -f $(BINDIR)/* $(SRCDIR)/*~ $(SRCDIR)/*.o *.zip *.tar.gz examples/*.out.txt examples/*out
+
+clean_doc:
+	rm -f $(DOCDIR)/*~ $(DOCDIR)/*.log $(DOCDIR)/*.idx $(DOCDIR)/*.out
 
 linux_distrib: clean
 	cd .. ; tar -czvf ProbABEL_$(VERSION).tar.gz ProbABEL
@@ -42,3 +44,4 @@ win_distrib: all
 
 distrib: linux_distrib clean win_distrib clean
 
+.PHONY:	distrib linux_distrib win_distrib clean clean_doc
