@@ -1,3 +1,7 @@
+***** v.0.1-9d (2010.10.08)
+
+fix related to compilation with updated 'filevector' library
+
 ***** v.0.1-9c (2010.08.01)
 
 Bug identification and fix by Vadim Pinchuk (McGill). Here is his report:
