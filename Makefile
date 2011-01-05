@@ -34,7 +34,8 @@ clean: clean_doc
 	rm -f $(BINDIR)/* $(SRCDIR)/*~ $(SRCDIR)/*.o *.zip *.tar.gz examples/*.out.txt examples/*out
 
 clean_doc:
-	rm -f $(DOCDIR)/*~ $(DOCDIR)/*.log $(DOCDIR)/*.idx $(DOCDIR)/*.out
+	rm -f $(DOCDIR)/*~ $(DOCDIR)/*.log $(DOCDIR)/*.idx $(DOCDIR)/*.out $(DOCDIR)/*.toc $(DOCDIR)/*.aux
+	rm -rf $(DOCDIR)/auto
 
 linux_distrib: clean
 	cd .. ; tar -czvf ProbABEL_$(VERSION).tar.gz ProbABEL
