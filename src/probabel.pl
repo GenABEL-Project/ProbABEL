@@ -1,27 +1,33 @@
-#! /usr/bin/perl 
+#! /usr/bin/perl
 
-#=====================================================================================
+#============================================================================
 #
 #           Filename:  probabel.pl
 #
-#        Description: Handy perl wraper for ProbABEL functions
+#        Description: Handy perl wrapper for ProbABEL functions
 #
-#            Version:  1.1
+#            Version:  1.4
 #            Created:  28-Oct-2008
 #           Revision:  none
-#  last modification:  12-Jan-2009
+#  last modification:  07-Jan-2011
 #
-#             Author:  Maksim V. Struchalin, Yurii S. Aulchenko
-#            Company:  ErasmusMC, Epidemiology & Biostatistics Department, The Netherlands.
-#              Email:  m.struchalin@erasmusmc.nl, i.aoultchenko@erasmusmc.nl
+#             Author:  Lennart C. Karssen,
+#                      Maksim V. Struchalin,
+#                      Yurii S. Aulchenko
+#            Company:  Erasmus MC,
+#                      Epidemiology & Biostatistics Department,
+#                      The Netherlands.
+#              Email:  l.karssen@erasmusmc.nl,
+#                      m.struchalin@erasmusmc.nl,
+#                      i.aoultchenko@erasmusmc.nl
 #
-#=====================================================================================
+#============================================================================
 
 
 
 
-$version="1.1";
-$release_data="11-Jan-2009";
+$version="1.4";
+$release_data="07-Jan-2011";
 
 $_2df_file_postfix = "_2df.out.txt";
 $_add_file_postfix = "_add.out.txt";
@@ -35,11 +41,11 @@ $_over_domin_file_postfix = "_over_domin.out.txt";
 $separator_cfg = ",";
 $separator_filename = "_._chr_._";
 
-
-$config = "probabel_config.cfg";
+$base_path = "./";
+$config = $base_path . "probabel_config.cfg";
 
 @method = ("linear","logistic","coxph");
-@anprog = ("./palinear","./palogist","./pacoxph");
+@anprog = ($base_path . "palinear", $base_path . "palogist", $base_path . "pacoxph");
 
 %cohorts;
 @mlinfo;
@@ -72,52 +78,50 @@ for(my $i=0 ; my $line = <CFG> ; $i++)
 close(CFG);
 
 
-
-
-if(@ARGV<6 || $ARGV[0] == "--help")
+if(@ARGV<6 || $ARGV[0] eq "--help")
 	{
 	print "\nUsage:
 	probabel.pl chrom-start chrom-end method cohort <--allmodels OR --additive> trait <other available keys of ProbABEL functions>\n";
 	print "\n	* chrom-start - the first chromosome number, chrom-end - the last one";
 	print "\n	* method can be ";
 	foreach $me(@method) {print "\"".$me."\", "};
-	print "\n	* use --allmodels if you need dominant, recessive and heterozygous models 
+	print "\n	* use --allmodels if you need dominant, recessive and heterozygous models
 	  and --additive if additive only\n";
 	print "	* Available cohorts is ";
- 	foreach $coh(keys %cohorts) {print "\"".$coh."\", "};	
+ 	foreach $coh(keys %cohorts) {print "\"".$coh."\", "};
 	print "\n	* example:
-	  probabel.pl 1 22 linear \"ERF\" --additive filename1 filename2 
+	  probabel.pl 1 22 linear \"ERF\" --additive filename1 filename2
 	  (filename has to be saved as filename.PHE)\n\n";
-	
-	
+
+
 	print "\n Details:\n";
-	print "   Script probabel.pl is used for analysis of imputed data. 
-   Firstly you have to create file with phenotypes which you are going to use.
-   The first column is ids in special order, the second - trait which you are going analyze, rest - covariates.
+	print "   The probabel.pl script is used for analysis of imputed data.
+   First you have to create file with the phenotypes that you are going to use.
+   The first column contains ids in special order, the second: the trait which you are going analyze, the others containd covariates.
    Like this =>
-   
-   id         phen1 covariate1  covariate2 
+
+   id         phen1 covariate1  covariate2
    1_2094  0     334         0
    1_5060  1     56          1
    1_4077  1     346         6
    .
-   .  
    .
-   
-   That means model:
+   .
+
+   This implies the model:
    phen1 ~ covariate1 + covariate2 + SNP
-   
-   
-   Then save it to folder where you are doing analysis. Name of file must be name_of_file.PHE.
-   Where name_of_file is any name.
-   
-   Then perform in bash (Linux) comand line
+
+
+   Then save it to folder where you are doing the analysis. The name of the file must be name_of_file.PHE, where name_of_file is any name.
+
+   Then run the following on the Linux command line:
    probabel.pl 1 22 \"method\" \"cohort\" --model name_of_file
-   Change \"method\" \"cohort\" --model on appropriate values\n";
-	print "\n	Version: $version";	
-	print "\n	Release data: $release_data";	
-	print "\n\n	Autors:	Maksim Struchalin - m.struchalin\@erasmusmc.nl,
-		Yurii Aulchenko - i.aoultchenko\@erasmusmc.nl.\n\n";
+   Change \"method\" \"cohort\" --model to appropriate values\n";
+	print "\n	Version: $version";
+	print "\n	Release data: $release_data";
+	print "\n\n	Authors: Lennart Karssen   - l.karssen\@erasmusmc.nl,
+ 		 Maksim Struchalin - m.struchalin\@erasmusmc.nl,
+		 Yurii Aulchenko   - i.aoultchenko\@erasmusmc.nl.\n\n";
 	exit;
 	}
 
@@ -130,13 +134,9 @@ $model = $ARGV[4];
 
 
 
-die "error: chrom-start is > 22" if($startchr > 22);
-die "error: chrom-end is > 22" if($endchr > 22);
+die "error: chrom-start is > 22" if($startchr > 22 && $startchr != "X") ;
+die "error: chrom-end is > 22" if($endchr > 22 && $endchr != "X");
 die "error: chrom-start > chrom-end" if($startchr > $endchr);
-
-
-
-
 
 
 $cohort_position = $cohorts{$chohort};
@@ -144,8 +144,8 @@ $cohort_position = $cohorts{$chohort};
 
 if(!defined($cohort_position))
 {
-print "\nerror: Wrong cohort name
-Available cohorts is ";
+print "\nerror: Wrong cohort name, \"$chohort\" is not an available cohort.
+Available cohorts are ";
 foreach $coh(keys %cohorts) {print "\"".$coh."\", "};
 print "\n\n";
 exit;
@@ -176,7 +176,7 @@ $phename = $ARGV[5];
 $keys="";
 
 
-for ($i=6;$i<@ARGV;$i++) 
+for ($i=6;$i<@ARGV;$i++)
 	{
 	$keys = $keys.$ARGV[$i]." ";
 	}
@@ -207,12 +207,20 @@ else
 
 print "Start...\n";
 
-	$chr = $startchr;
-	print `$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_split[0]${chr}$mlinfo_split[1] -d $mldose_probe_split1${chr}$mldose_probe_split2 -m $legend_split[0]${chr}$legend_split[1] --chrom $chr -o $phename $keys`;
+$chr = $startchr;
+
+# Separate command for the X chromosome.
+if ($chr eq "X") {
+    print `$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_split[0]$mlinfo_split[1] -d $mldose_probe_split1$mldose_probe_split2 -m $legend_split[0]$legend_split[1] --chrom $chr -o $phename $keys`;
+    exit;
+}
+
+# Commands for the autosomes
+print `$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_split[0]${chr}$mlinfo_split[1] -d $mldose_probe_split1${chr}$mldose_probe_split2 -m $legend_split[0]${chr}$legend_split[1] --chrom $chr -o $phename $keys`;
 	for($chr=($startchr+1);$chr<=$endchr;$chr++)
 		{
 		print `$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_split[0]${chr}$mlinfo_split[1] -d $mldose_probe_split1${chr}$mldose_probe_split2 -m $legend_split[0]${chr}$legend_split[1] --chrom $chr -o $phename.$chr --no-head $keys`;
-		
+
 		if($model_option_num==2)
 			{
 			`cat $phename.${chr}$_2df_file_postfix >> ${phename}${_2df_file_postfix}`;
@@ -220,7 +228,7 @@ print "Start...\n";
 
 			`cat $phename.${chr}$_add_file_postfix >> ${phename}${_add_file_postfix}`;
 			`rm $phename.${chr}$_add_file_postfix`;
-			
+
 			`cat $phename.${chr}$_domin_file_postfix >> ${phename}${_domin_file_postfix}`;
 			`rm $phename.${chr}$_domin_file_postfix`;
 
