@@ -1,6 +1,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <cstdarg>
 #include "mematrix.h"
 
 #include "fvlib/AbstractMatrix.h"
@@ -8,13 +9,24 @@
 #include "fvlib/const.h"
 #include "fvlib/convert_util.h"
 #include "fvlib/FileVector.h"
-#include "fvlib/frerror.h"
 #include "fvlib/frutil.h"
 #include "fvlib/frversion.h"
 #include "fvlib/Logger.h"
 #include "fvlib/Transposer.h"
 
 extern bool is_interaction_excluded;
+
+void error(const char * format, ...)
+{
+    va_list args;
+    char buffer[256];
+    va_start(args, format);
+    vsprintf(buffer, format, args);
+    va_end(args);
+
+    printf("ERROR: %s\n",buffer);
+    exit(EXIT_FAILURE);
+}
 
 unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
 {
@@ -28,19 +40,19 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
 	}
 	char tmp[100];
 
-	for (int i=0;i<nphenocols;i++) 
+	for (int i=0;i<nphenocols;i++)
 	{
 		fscanf(infile,"%s",&tmp);
 		//		printf("%s ",tmp);
 	} 	//printf("\n");
 
-	unsigned short int * allmeasured = new unsigned short int [npeople];	
+	unsigned short int * allmeasured = new unsigned short int [npeople];
 	int nids = 0;
 	for (int i = 0;i<npeople;i++)
 	{
 		allmeasured[i] = 1;
 		fscanf(infile,"%s",&tmp);
-		for (int j=1;j<nphenocols;j++) 
+		for (int j=1;j<nphenocols;j++)
 		{
 			fscanf(infile,"%s",&tmp);
 			if (tmp[0]=='N' || tmp[0]=='n') allmeasured[i]=0;
@@ -51,7 +63,7 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
 	return(nids);
 }
 
-class phedata 
+class phedata
 {
 public:
 	int nids_all;
@@ -65,7 +77,7 @@ public:
 	std::string model;
 	std::string * model_terms;
 	int n_model_terms;
-	phedata(char * fname, int noutc, int npeople, int interaction, bool iscox) 
+	phedata(char * fname, int noutc, int npeople, int interaction, bool iscox)
 	{
 		static const unsigned int BFS = 1000;
 		std::ifstream myfile(fname);
@@ -102,18 +114,18 @@ public:
 			};
 			myfile.close();
 		}
-		else 
+		else
 		{
-			fprintf(stderr,"Unable to open file %s\n",fname); 
+			fprintf(stderr,"Unable to open file %s\n",fname);
 			exit(1);
 		}
 		fprintf(stdout,"Actual number of people in phenofile = %d",npeople);
-		if (savenpeople>0) 
+		if (savenpeople>0)
 		{
 			npeople = savenpeople;
 			fprintf(stdout,"; using only %d first\n",npeople);
 		}
-		else 
+		else
 		{
 			fprintf(stdout,"; using all of these\n");
 		}
@@ -133,7 +145,7 @@ public:
 		model = "( ";
 		fscanf(infile,"%s",&tmp);
 		model = model + tmp;
-		for (int i = 1;i < noutcomes;i++) 
+		for (int i = 1;i < noutcomes;i++)
 		{
 			fscanf(infile,"%s",&tmp);
 			model = model + " , ";
@@ -147,12 +159,12 @@ public:
 		model_terms[n_model_terms++] = "mu";
 #endif
 
-		if (nphenocols>noutcomes+1) 
+		if (nphenocols>noutcomes+1)
 		{
 			fscanf(infile,"%s",&tmp);
 			model = model + tmp;
 			model_terms[n_model_terms++] = tmp;
-			for (int i=(2+noutcomes);i<nphenocols;i++) 
+			for (int i=(2+noutcomes);i<nphenocols;i++)
 			{
 				fscanf(infile,"%s",&tmp);
 
@@ -189,12 +201,12 @@ public:
 #endif
 		std::cout << "model: " << model << "\n";
 
-		allmeasured = new unsigned short int [npeople];	
+		allmeasured = new unsigned short int [npeople];
 		nids = 0;
 		for (int i = 0;i<npeople;i++)
 		{
 			allmeasured[i] = 1;
-			for (int j=0;j<nphenocols;j++) 
+			for (int j=0;j<nphenocols;j++)
 			{
 				fscanf(infile,"%s",&tmp);
 				if (j>0 && (tmp[0]=='N' || tmp[0]=='n')) allmeasured[i]=0;
@@ -217,7 +229,7 @@ public:
 			exit(1);
 		}
 
-		for (int i=0;i<nphenocols;i++) 
+		for (int i=0;i<nphenocols;i++)
 		{
 			fscanf(infile,"%s",&tmp);
 		}
@@ -449,28 +461,28 @@ public:
 		masked_data = new unsigned short int [nids];
 		for (int i=0;i<nids;i++) masked_data[i] = 0;
 	}
-	regdata(phedata &phed, gendata &gend, int snpnum) 
+	regdata(phedata &phed, gendata &gend, int snpnum)
 	{
 		nids = gend.nids;
 		masked_data = new unsigned short int [nids];
 		for (int i=0;i<nids;i++) masked_data[i] = 0;
 		ngpreds = gend.ngpreds;
-		if (snpnum>=0) 
+		if (snpnum>=0)
 			ncov = phed.ncov + ngpreds;
-		else 
+		else
 			ncov = phed.ncov;
 		noutcomes = phed.noutcomes;
 		X.reinit(nids,(ncov+1));
 		Y.reinit(nids,noutcomes);
-		for (int i=0;i<nids;i++) 
+		for (int i=0;i<nids;i++)
 		{
 			X.put(1.,i,0);
 			Y.put((phed.Y).get(i,0),i,0);
 		}
-		for (int j=1;j<=phed.ncov;j++) 
+		for (int j=1;j<=phed.ncov;j++)
 			for (int i=0;i<nids;i++)
 				X.put((phed.X).get(i,j-1),i,j);
-		if (snpnum>0) 
+		if (snpnum>0)
 			for (int j=0;j<ngpreds;j++)
 			{
 				float snpdata[nids];
@@ -595,15 +607,15 @@ public:
 		masked_data = new unsigned short int [nids];
 		for (int i=0;i<nids;i++) masked_data[i] = 0;
 	}
-	coxph_data(phedata &phed, gendata &gend, int snpnum) 
+	coxph_data(phedata &phed, gendata &gend, int snpnum)
 	{
 		nids = gend.nids;
 		masked_data = new unsigned short int [nids];
 		for (int i=0;i<nids;i++) masked_data[i] = 0;
 		ngpreds = gend.ngpreds;
-		if (snpnum>=0) 
+		if (snpnum>=0)
 			ncov = phed.ncov + ngpreds;
-		else 
+		else
 			ncov = phed.ncov;
 		if (phed.noutcomes != 2)
 		{
@@ -611,29 +623,29 @@ public:
 			exit(1);
 		}
 		//		X.reinit(nids,(ncov+1));
-		X.reinit(nids,ncov);		
+		X.reinit(nids,ncov);
 		stime.reinit(nids,1);
 		sstat.reinit(nids,1);
 		weights.reinit(nids,1);
 		offset.reinit(nids,1);
 		strata.reinit(nids,1);
 		order.reinit(nids,1);
-		for (int i=0;i<nids;i++) 
+		for (int i=0;i<nids;i++)
 		{
 			//			X.put(1.,i,0);
 			stime[i] = (phed.Y).get(i,0);
 			sstat[i] = int((phed.Y).get(i,1));
-			if (sstat[i] != 1 & sstat[i]!=0) 
+			if (sstat[i] != 1 & sstat[i]!=0)
 			{
 				fprintf(stderr,"coxph_data: status not 0/1 (right order: id, fuptime, status ...)\n",phed.noutcomes);
 				exit(1);
 			}
 		}
-		for (int j=0;j<phed.ncov;j++) 
+		for (int j=0;j<phed.ncov;j++)
 			for (int i=0;i<nids;i++)
 				X.put((phed.X).get(i,j),i,j);
 
-		if (snpnum>0) 
+		if (snpnum>0)
 			for (int j=0;j<ngpreds;j++)
 			{
 				float snpdata[nids];
@@ -646,7 +658,7 @@ public:
 		//				for (int j=0;j<ngpreds;j++)
 		//					X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+j));
 
-		for (int i=0;i<nids;i++) 
+		for (int i=0;i<nids;i++)
 		{
 			weights[i] = 1.0;
 			offset[i] = 0.0;
@@ -657,11 +669,11 @@ public:
 		int passed_sorted[nids];
 		for (int i=0;i<nids;i++) {tmptime[i] = stime[i];passed_sorted[i]=0;}
 		qsort(tmptime,nids,sizeof(double),cmpfun);
-		for (int i=0;i<nids;i++) 
+		for (int i=0;i<nids;i++)
 		{
 			int passed = 0;
 			for (int j=0;j<nids;j++)
-				if (tmptime[j] == stime[i]) 
+				if (tmptime[j] == stime[i])
 					if (!passed_sorted[j])
 					{
 						order[i] = j;
@@ -669,7 +681,7 @@ public:
 						passed = 1;
 						break;
 					}
-			if (passed != 1) 
+			if (passed != 1)
 			{
 				fprintf(stderr,"can not recover element %d\n",i);
 				exit(1);
@@ -794,7 +806,7 @@ public:
 	mlinfo(char * filename, char * mapname)
 	{
 		FILE * infile = fopen(filename,"r");
-		if (infile == NULL) 
+		if (infile == NULL)
 		{
 			fprintf(stderr,"mlinfo: can not open file %s",filename);
 			exit(1);
@@ -826,7 +838,7 @@ public:
 			exit(1);
 		}
 		for (int i =0;i<7;i++) fscanf(infile,"%s",&tmp);
-		for (int i =0;i<nsnps;i++) 
+		for (int i =0;i<nsnps;i++)
 		{
 			fscanf(infile,"%s",&tmp);
 			name[i] = tmp;
@@ -850,7 +862,7 @@ public:
 			std::ifstream instr(mapname);
 			int BFS = 1000;
 			char line [BFS], tmp[BFS];
-			if (!instr.is_open()) 
+			if (!instr.is_open())
 			{
 				fprintf(stderr,"mlinfo: can not open file %s",mapname);
 				exit(1);
@@ -956,14 +968,8 @@ private:
 
 	static const unsigned MAXIMUM_PEOPLE_AMOUNT = 1000000;
 	unsigned npeople; //amount of people
-	std::string filename; 
+	std::string filename;
 	mematrix<double> matrix; //file is stored here
 
 };
 //________________________________________Maksim_end
-
-
-
-
-
-
