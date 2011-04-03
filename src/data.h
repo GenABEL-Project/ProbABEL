@@ -42,7 +42,7 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
 
 	for (int i=0;i<nphenocols;i++)
 	{
-		fscanf(infile,"%s",&tmp);
+		fscanf(infile,"%s", tmp);
 		//		printf("%s ",tmp);
 	} 	//printf("\n");
 
@@ -51,10 +51,10 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
 	for (int i = 0;i<npeople;i++)
 	{
 		allmeasured[i] = 1;
-		fscanf(infile,"%s",&tmp);
+		fscanf(infile,"%s", tmp);
 		for (int j=1;j<nphenocols;j++)
 		{
-			fscanf(infile,"%s",&tmp);
+			fscanf(infile,"%s", tmp);
 			if (tmp[0]=='N' || tmp[0]=='n') allmeasured[i]=0;
 		}
 		if (allmeasured[i]==1) nids++;
@@ -141,13 +141,13 @@ public:
 		}
 
 
-		fscanf(infile,"%s",&tmp);
+		fscanf(infile,"%s", tmp);
 		model = "( ";
-		fscanf(infile,"%s",&tmp);
+		fscanf(infile,"%s", tmp);
 		model = model + tmp;
 		for (int i = 1;i < noutcomes;i++)
 		{
-			fscanf(infile,"%s",&tmp);
+			fscanf(infile,"%s", tmp);
 			model = model + " , ";
 			model = model + tmp;
 		}
@@ -161,12 +161,12 @@ public:
 
 		if (nphenocols>noutcomes+1)
 		{
-			fscanf(infile,"%s",&tmp);
+			fscanf(infile,"%s", tmp);
 			model = model + tmp;
 			model_terms[n_model_terms++] = tmp;
 			for (int i=(2+noutcomes);i<nphenocols;i++)
 			{
-				fscanf(infile,"%s",&tmp);
+				fscanf(infile,"%s", tmp);
 
 				//				if(iscox && ) {if(n_model_terms+1 == interaction-1) {continue;} }
 				//				else      {if(n_model_terms+1 == interaction) {continue;} }
@@ -208,7 +208,7 @@ public:
 			allmeasured[i] = 1;
 			for (int j=0;j<nphenocols;j++)
 			{
-				fscanf(infile,"%s",&tmp);
+				fscanf(infile,"%s", tmp);
 				if (j>0 && (tmp[0]=='N' || tmp[0]=='n')) allmeasured[i]=0;
 			}
 			if (allmeasured[i]==1) nids++;
@@ -231,7 +231,7 @@ public:
 
 		for (int i=0;i<nphenocols;i++)
 		{
-			fscanf(infile,"%s",&tmp);
+			fscanf(infile,"%s", tmp);
 		}
 
 		int k =0;
@@ -239,22 +239,22 @@ public:
 		for (int i = 0;i<npeople;i++)
 			if (allmeasured[i]==1)
 			{
-				fscanf(infile,"%s",&tmp);
+				fscanf(infile,"%s", tmp);
 				idnames[m] = tmp;
 				for (int j=0;j<noutcomes;j++)
 				{
-					fscanf(infile,"%s",&tmp);
+					fscanf(infile,"%s", tmp);
 					Y.put(atof(tmp),m,j);
 				}
 				for (int j=(1+noutcomes);j<nphenocols;j++)
 				{
-					fscanf(infile,"%s",&tmp);
+					fscanf(infile,"%s", tmp);
 					X.put(atof(tmp),m,(j-1-noutcomes));
 				}
 				m++;
 			}
 			else
-				for (int j=0;j<nphenocols;j++) fscanf(infile,"%s",&tmp);
+				for (int j=0;j<nphenocols;j++) fscanf(infile,"%s", tmp);
 		fclose(infile);
 	}
 	~phedata()
@@ -375,11 +375,11 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
 			{
 				//				int ttt;
 				char ttt[100];
-				fscanf(infile,"%s",&tmp);
-				//				sscanf(tmp,"%d->%s",&ttt,&tmpn);
+				fscanf(infile,"%s", tmp);
+				//				sscanf(tmp,"%d->%s",&ttt, tmpn);
 				//		these changes are thanks to BMM & BP :)
-				//				sscanf(tmp,"%s->%s",&ttt,&tmpn);
-				//				sscanf(tmp,"%[^->]->%[^->]",&ttt,&tmpn);
+				//				sscanf(tmp,"%s->%s",&ttt, tmpn);
+				//				sscanf(tmp,"%[^->]->%[^->]",&ttt, tmpn);
 				tmpstr = tmp;
 				if (tmpstr.find("->")!=string::npos) {
 					sscanf(tmp,"%[^->]->%s",ttt, tmpn);
@@ -397,11 +397,11 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
 				}
 			}
 			for (int j=1;j<skipd;j++) {
-				fscanf(infile,"%s",&tmp);
+				fscanf(infile,"%s", tmp);
 			}
 			for (int j=0;j<(nsnps*ngpreds);j++)
 			{
-				int a = fscanf(infile,"%s",&tmp);
+				int a = fscanf(infile,"%s", tmp);
 				if (!a || a==EOF)
 				{
 					fprintf(stderr,"cannot read dose-file: check skipd and ngpreds parameters\n");
@@ -414,8 +414,8 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
 		}
 		else
 		{
-			for (int j=0;j<skipd;j++) fscanf(infile,"%s",&tmp);
-			for (int j=0;j<(nsnps*ngpreds);j++) fscanf(infile,"%s",&tmp);
+			for (int j=0;j<skipd;j++) fscanf(infile,"%s", tmp);
+			for (int j=0;j<(nsnps*ngpreds);j++) fscanf(infile,"%s", tmp);
 		}
 	fclose(infile);
 }
@@ -813,7 +813,7 @@ public:
 		}
 		char tmp[100];
 		unsigned int nlin=0;
-		while (fscanf(infile,"%s",&tmp)!=EOF) {
+		while (fscanf(infile,"%s", tmp)!=EOF) {
 			nlin++;
 		}
 		fclose(infile);
@@ -837,22 +837,22 @@ public:
 			fprintf(stderr,"mlinfo: can not open file %s",filename);
 			exit(1);
 		}
-		for (int i =0;i<7;i++) fscanf(infile,"%s",&tmp);
+		for (int i =0;i<7;i++) fscanf(infile,"%s", tmp);
 		for (int i =0;i<nsnps;i++)
 		{
-			fscanf(infile,"%s",&tmp);
+			fscanf(infile,"%s", tmp);
 			name[i] = tmp;
-			fscanf(infile,"%s",&tmp);
+			fscanf(infile,"%s", tmp);
 			A1[i] = tmp;
-			fscanf(infile,"%s",&tmp);
+			fscanf(infile,"%s", tmp);
 			A2[i] = tmp;
-			fscanf(infile,"%s",&tmp);
+			fscanf(infile,"%s", tmp);
 			Freq1[i] = atof(tmp);
-			fscanf(infile,"%s",&tmp);
+			fscanf(infile,"%s", tmp);
 			MAF[i] = atof(tmp);
-			fscanf(infile,"%s",&tmp);
+			fscanf(infile,"%s", tmp);
 			Quality[i] = atof(tmp);
-			fscanf(infile,"%s",&tmp);
+			fscanf(infile,"%s", tmp);
 			Rsq[i] = atof(tmp);
 			map[i] = "-999";
 		}
