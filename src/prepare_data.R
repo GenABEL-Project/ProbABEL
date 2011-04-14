@@ -1,7 +1,7 @@
 #
 # file containing all phenotypes
 # variables should be separated by space or tab, missing values coded as NA
-# header line should contain variable names. 
+# header line should contain variable names.
 # Compulsory key variable should be named "id"
 # All people listed in ids_order_file should be present in original_phenofile
 #
@@ -9,7 +9,7 @@ original_phenofile <- "allheight.txt"
 
 #
 # IDs present in mldose file (in mldoes file order)
-# normally generated with getIDS.pl
+# normally generated with extIDS.pl
 #
 ids_order_file <- "mldose.IDS"
 
@@ -19,7 +19,7 @@ ids_order_file <- "mldose.IDS"
 output_phenofile <- "height.txt"
 
 #
-# trait to be analysied 
+# trait to be analysed
 # (name should be the same as in the header line of original_phenofile)
 # the analysed trait comes first
 #
@@ -50,4 +50,3 @@ fvdose <- mach2databel(imputedg="test.mldose",mlinfo="test.mlinfo",out="test.dos
 fvprob <- mach2databel(imputedg="test.mlprob",mlinfo="test.mlinfo",out="test.prob",isprob=TRUE)
 mmdose <- mach2databel("mmscore_gen.mldose","mmscore_gen.mlinfo","mmscore_gen.dose")
 mmprob <- mach2databel("mmscore_gen.mlprob","mmscore_gen.mlinfo","mmscore_gen.prob",isprob=TRUE)
-
