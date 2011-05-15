@@ -1,3 +1,8 @@
+***** v.0.1-9e (2011.05.15)
+Previous version wouldn't compile because of missing frerror. file.
+Fixes bug #1339 (the bug fix was done a month ago, but no package had
+been release since then).
+
 ***** v.0.1-9d (2010.10.08)
 
 fix related to compilation with updated 'filevector' library
@@ -13,7 +18,7 @@ analysis. It caused a bit of confusion on my side.
 correct subject IDs. We were able to overcome the problems in the data
 after the fix and submit analysis successfully.
 
-Bravo, Vadim! Thumbs up, and many thanks from us (and of cause all users)!
+Bravo, Vadim! Thumbs up, and many thanks from us (and of course all users)!
 
 
 ***** v.0.1-9b (2010.06.02)
@@ -32,7 +37,7 @@ changes in filevector part
 
 ***** v.0.1-6b (2010.04.22)
 
-error message with missing map-file reported absence of 
+error message with missing map-file reported absence of
 other file, fixed: thanks to N. Pirastu for noticing!
 
 ***** v.0.1-6 (2010.04.02)
@@ -49,10 +54,10 @@ Fixed bug preventing coxph to run
 
 ***** v.0.1-4 (2010.02.12)
 
-Instead chi2, log-likelihood is reported 
+Instead chi2, log-likelihood is reported
 
 ProbABEL can now work in very low memory mode, using filevector library
-(see examples/prepare_data.R for examples how to convert data from 
+(see examples/prepare_data.R for examples how to convert data from
 MACH to filevector format).
 
 Can also treat missing values (NA, nan)
@@ -60,52 +65,52 @@ Can also treat missing values (NA, nan)
 ***** v.0.1-3 (2009.11.25)
 
 This version is courtesy of Han Chen (Nov 9, 2009). The modifications allow
-to extract the covariance between the estimate of beta(SNP) and the estimate 
-of beta(interaction). This information can be used to, e.g., to perform a 
+to extract the covariance between the estimate of beta(SNP) and the estimate
+of beta(interaction). This information can be used to, e.g., to perform a
 rigorous 2df meta-analysis of interactions later on.
 
 Here is a more detailed description of what the changes concern (by Han Chen):
 
-For model 
+For model
 
 Y = b_0 + b_cov1 * cov1 + b_cov2 * cov2 + ... + b_covN * covN + b_SNP * SNP + b_covX_SNP * covX * SNP
 
-(1<=X<=N, covX can be any covariate in the phenotype file, from cov1 to covN, 
-option --interaction=X, see ProbABEL manual for details) 
-Or model 
+(1<=X<=N, covX can be any covariate in the phenotype file, from cov1 to covN,
+option --interaction=X, see ProbABEL manual for details)
+Or model
 
 Y = b_0 + b_cov1 * cov1 + b_cov2 * cov2 + ... + b_covX-1 * covX-1 + b_covX+1 * covX+1 + ... + b_covN * covN + b_SNP * SNP + b_covX_SNP * covX * SNP
 
-(1<=X<=N, covX can be any covariate in the phenotype file, from cov1 to covN, 
+(1<=X<=N, covX can be any covariate in the phenotype file, from cov1 to covN,
 option --interaction_only=X, see ProbABEL manual for details)
-This "plus" version reports naive covariance (default) or robust covariance 
-(option --robust) between b_SNP and b_covX_SNP estimates, for palinear and 
+This "plus" version reports naive covariance (default) or robust covariance
+(option --robust) between b_SNP and b_covX_SNP estimates, for palinear and
 palogist (can NOT report covariance for pacoxph, Cox regression).
 Covariances are no reported for options --score, --allcov, --mmscore
 
-LINEAR REGRESSION OR LOGISTIC REGRESSION ONLY 
+LINEAR REGRESSION OR LOGISTIC REGRESSION ONLY
 
-Bravo, Han! -- and many thanks! 
+Bravo, Han! -- and many thanks!
 
 
 ***** v.0.1-2 (2009.10.19)
 
-Minor bug fix: allele frequency was estimated wrongly when option --ngpreds=2 
+Minor bug fix: allele frequency was estimated wrongly when option --ngpreds=2
 was used. The bug had no effect anything else (betas, ses, chi2s were correct).
-Many thanks to Han Chen (Boston University) for identification of this bug 
+Many thanks to Han Chen (Boston University) for identification of this bug
 and providing us with an excellent summary which allowed fixing the bug easily!
 
 ***** v.0.1-1 (2009.09.22)
 
 Added "robust" option, which computes SEs using formula
 (X'X)^(-1) (X' V X) (X'X)^(-1) where V is diagonal matrix containing
-squares of residuals. In standard analysis, V is diagonal matrix 
+squares of residuals. In standard analysis, V is diagonal matrix
 containing constant = RSS/N
 
 ***** v.0.1-0 (2009.08.15)
 
-fixed a bug in phedata class: if ID was starting with 'N' or 'n', it 
-was counted as NA (thanks to Youfan & Ida Surakka for pointing the 
+fixed a bug in phedata class: if ID was starting with 'N' or 'n', it
+was counted as NA (thanks to Youfan & Ida Surakka for pointing the
 bug out)
 
 
@@ -125,7 +130,7 @@ In previos versions only models like trait ~ cov1 + cov2 + cov3 + cov3*SNP were 
 
 ***** v.0.0-7 (2009.03.19)
 
-Bug with interaction in survival analysis fixed. 
+Bug with interaction in survival analysis fixed.
 
 
 ***** v.0.0-6 (2009.01.28)
@@ -142,20 +147,20 @@ See example/mmscore.R and example/mmscore.sh.
 
 ***** v.0.0-5d (2009.01.11)
 
-Possibility of analysis for SNP interaction has been added. 
+Possibility of analysis for SNP interaction has been added.
 New key is --interaction=<covariate number>.
 Default is --interaction=0. The first covariate is --interaction=1.
 
 Output organizing has been changed. Now there is one file per one model.
-Output file names consist of prefix which goes together with input 
+Output file names consist of prefix which goes together with input
 parameter --out and one of following postfixes:
 "_2df.out.txt", "_add.out.txt", "_domin.out.txt", "_recess.out.txt", "_over_domin.out.txt".
 If postfix is not given name "regression" is used.
 
 
-File bin/probabel_system_example.pl has been changedand renamed 
-to probabel.pl_example. This script combines all ProbABEL functions and allows 
-you to organize work with your MACH output files. Just change configuration 
+File bin/probabel_system_example.pl has been changedand renamed
+to probabel.pl_example. This script combines all ProbABEL functions and allows
+you to organize work with your MACH output files. Just change configuration
 file probabel_config.cfg_example and probabel.pl_example like it is written in manual.
 
 Now chi2 is likelihood ration test when null model is without SNP and alternative - with SNP and interaction.
@@ -163,13 +168,13 @@ Now chi2 is likelihood ration test when null model is without SNP and alternativ
 
 ***** v.0.0-5c (2008.12.05)
 
-Changed presentation of output: effective allele (A1) is mentioned 
+Changed presentation of output: effective allele (A1) is mentioned
 in exact manner
 
 
 ***** v.0.0-5b (2008.11.20)
 
-Output from analysis with ngpred=2 (MLPROB files) fixed (models were 
+Output from analysis with ngpred=2 (MLPROB files) fixed (models were
 named wrongly)
 
 
@@ -177,19 +182,19 @@ named wrongly)
 
 --allcov option added (allows output of estimates for all covariates)
 
-example system-wide perl script running the analysis for 
-(potentially multiple cohorts) and joining single-chomosome 
+example system-wide perl script running the analysis for
+(potentially multiple cohorts) and joining single-chomosome
 outputs to single file provided
 
-A change in the procedure to read genotypic files, read format of the 
-beging of every line changed from "%d->%s" to "%[^->]->%[^->]" (thanks to 
+A change in the procedure to read genotypic files, read format of the
+beging of every line changed from "%d->%s" to "%[^->]->%[^->]" (thanks to
 Bertram Muller-Myhsok & Benno Puetz)
 
 
 ***** v.0.0-5 (2008.06.07)
 
-More than one genomic predictor per point: possibility to 
-work with MLPROB files (options --ngpreds added). 
+More than one genomic predictor per point: possibility to
+work with MLPROB files (options --ngpreds added).
 
 
 ***** v.0.0-4 (2008.05.20)
@@ -208,4 +213,3 @@ SNP Z and Chi-square statistics added to output
 Output generated in tab-delimited format
 
 Documentation updated
-

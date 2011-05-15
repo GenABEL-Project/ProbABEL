@@ -1,4 +1,4 @@
-VERSION = 0.1-9d
+VERSION = 0.1-9e
 SRCDIR = src
 BINDIR = bin
 DOCDIR = doc
