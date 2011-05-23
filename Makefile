@@ -15,7 +15,7 @@ COXOBJ = $(COXBASE:=.o)
 CPP = g++
 CFLAGS = -I $(SRCDIR)/include -O2
 
-all: $(EXECUTABLES)
+all: $(EXECUTABLES) doc
 	cp $(SRCDIR)/extIDS.pl $(BINDIR)/.
 	cp $(SRCDIR)/prepare_data.R $(BINDIR)/.
 	cp $(SRCDIR)/probabel.pl $(BINDIR)/probabel.pl_example
@@ -30,12 +30,15 @@ $(LOGREG): $(REGFILES)
 $(COXREG): $(COXSRC) $(REGFILES)
 	$(CPP) $(CFLAGS) -DCOXPH $(COXSRC) $(SRCDIR)/main.cpp $(SRCDIR)/fvlib/*.cpp -o $(COXREG)
 
+doc:
+	$(MAKE) -C $(DOCDIR)/
+
 clean: clean_doc
 	rm -f $(BINDIR)/* $(SRCDIR)/*~ $(SRCDIR)/*.o *.zip *.tar.gz examples/*.out.txt examples/*out
+	$(MAKE) clean -C $(DOCDIR)/
 
 clean_doc:
-	rm -f $(DOCDIR)/*~ $(DOCDIR)/*.log $(DOCDIR)/*.idx $(DOCDIR)/*.out $(DOCDIR)/*.toc $(DOCDIR)/*.aux
-	rm -rf $(DOCDIR)/auto
+	$(MAKE) clean_doc -C $(DOCDIR)/
 
 linux_distrib: clean
 	cd .. ; tar -czvf ProbABEL_$(VERSION).tar.gz ProbABEL
@@ -45,4 +48,4 @@ win_distrib: all
 
 distrib: linux_distrib clean win_distrib clean
 
-.PHONY:	distrib linux_distrib win_distrib clean clean_doc
+.PHONY:	distrib linux_distrib win_distrib clean clean_doc doc
