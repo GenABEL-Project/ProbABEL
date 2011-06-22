@@ -33,7 +33,7 @@ palogist_CXXFLAGS = -DLOGISTIC
 # pacoxph_CXXFLAGS = -DCOXPH -I include
 # pacoxph_CFLAGS = -DCOXPH -I include
 
-bin_SCRIPTS = probabel.pl extIDS.pl
+dist_bin_SCRIPTS = probabel.pl extIDS.pl
 
 ## Old Makefile rules
 # palinear: $(REGFILES)
