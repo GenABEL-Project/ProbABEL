@@ -1,0 +1,34 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.67])
+AC_INIT(ProbABEL, 0.1-9e, genabel-devel@r-forge.wu-wien.ac.at)
+AM_INIT_AUTOMAKE(ProbABEL, 0.1-9e)
+AC_CONFIG_SRCDIR([src/data.h])
+AC_CONFIG_HEADERS([src/config.h])
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+AM_PROG_CC_C_O
+AC_PROG_INSTALL
+AC_PROG_LN_S
+
+# Checks for libraries.
+
+# Checks for header files.
+AC_FUNC_ALLOCA
+AC_CHECK_HEADERS([float.h inttypes.h libintl.h limits.h stddef.h stdint.h stdlib.h string.h sys/param.h wchar.h wctype.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_INLINE
+AC_TYPE_OFF_T
+AC_TYPE_SIZE_T
+
+# Checks for library functions.
+AC_FUNC_ERROR_AT_LINE
+AC_FUNC_MALLOC
+AC_CHECK_FUNCS([pow putenv sqrt strdup strncasecmp])
+
+AC_OUTPUT(Makefile src/Makefile)
