@@ -7,9 +7,7 @@ AM_LDFLAGS =
 ## I tried :-).
 REGFILES = data.h mematrix.h reg1.h usage.h main.cpp version.h mematri1.h
 
-COXBASE = chinv2 cholesky2 chsolve2 dmatrix
-COXSRC = $(COXBASE:=.c) coxfit2.c
-
+## Filevector files:
 FVSRC = fvlib/AbstractMatrix.cpp fvlib/CastUtils.cpp			\
  fvlib/convert_util.cpp fvlib/FileVector.cpp fvlib/FilteredMatrix.cpp	\
  fvlib/frutil.cpp fvlib/Logger.cpp fvlib/RealHandlerWrapper.cpp		\
@@ -20,8 +18,13 @@ FVHEADERS = fvlib/AbstractMatrix.h fvlib/CastUtils.h fvlib/const.h	\
  fvlib/ReusableFileHandle.h fvlib/RealHandlerWrapper.h			\
  fvlib/FilteredMatrix.h
 
+## Extra files for pacoxph
+COXBASE = chinv2 cholesky2 chsolve2 dmatrix
+COXSRC = $(COXBASE:=.c) coxfit2.c
+
+
 bin_PROGRAMS = palinear palogist
-#pacoxph
+#bin_PROGRAMS = pacoxph
 
 palinear_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
 palinear_CXXFLAGS = -DLINEAR
@@ -33,14 +36,19 @@ palogist_CXXFLAGS = -DLOGISTIC
 # pacoxph_CXXFLAGS = -DCOXPH -I include
 # pacoxph_CFLAGS = -DCOXPH -I include
 
+## Install these scripts in the bin directory as well:
 dist_bin_SCRIPTS = probabel.pl extIDS.pl
 
+## Install the config file
+dist_sysconf_DATA = probabel_config.cfg
+
+
 ## Old Makefile rules
-# palinear: $(REGFILES)
-# 	$(CXX) $(CXXFLAGS) -DLINEAR main.cpp $(FVSRC) -o $@
+## palinear: $(REGFILES)
+## 	$(CXX) $(CXXFLAGS) -DLINEAR main.cpp $(FVSRC) -o $@
 
-# palogist: $(REGFILES)
-# 	$(CPP) $(CFLAGS) -DLOGISTIC main.cpp fvlib/*.cpp -o $(LOGREG)
+## palogist: $(REGFILES)
+## 	$(CPP) $(CFLAGS) -DLOGISTIC main.cpp fvlib/*.cpp -o $(LOGREG)
 
-# pacoxph: $(COXSRC) $(REGFILES)
-# 	$(CPP) $(CFLAGS) -DCOXPH $(COXSRC) main.cpp fvlib/*.cpp -o $(COXREG)
+## pacoxph: $(COXSRC) $(REGFILES)
+## 	$(CPP) $(CFLAGS) -DCOXPH $(COXSRC) main.cpp fvlib/*.cpp -o $(COXREG)
