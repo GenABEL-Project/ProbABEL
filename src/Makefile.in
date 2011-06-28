@@ -34,7 +34,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = pacoxph$(EXEEXT)
+bin_PROGRAMS = palinear$(EXEEXT) palogist$(EXEEXT) pacoxph$(EXEEXT)
 subdir = src
 DIST_COMMON = $(dist_bin_SCRIPTS) $(dist_sysconf_DATA) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
@@ -50,24 +50,55 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(sysconfdir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__objects_1 = pacoxph-main.$(OBJEXT)
-am__objects_2 = pacoxph-AbstractMatrix.$(OBJEXT) \
+am__objects_1 = pacoxph-coxfit2.$(OBJEXT) pacoxph-chinv2.$(OBJEXT) \
+	pacoxph-cholesky2.$(OBJEXT) pacoxph-chsolve2.$(OBJEXT) \
+	pacoxph-dmatrix.$(OBJEXT)
+am__objects_2 = $(am__objects_1)
+am__objects_3 = pacoxph-main.$(OBJEXT)
+am__objects_4 = pacoxph-AbstractMatrix.$(OBJEXT) \
 	pacoxph-CastUtils.$(OBJEXT) pacoxph-convert_util.$(OBJEXT) \
 	pacoxph-FileVector.$(OBJEXT) pacoxph-FilteredMatrix.$(OBJEXT) \
 	pacoxph-frutil.$(OBJEXT) pacoxph-Logger.$(OBJEXT) \
 	pacoxph-RealHandlerWrapper.$(OBJEXT) \
 	pacoxph-ReusableFileHandle.$(OBJEXT) \
 	pacoxph-Transposer.$(OBJEXT)
-am__objects_3 =
-am__objects_4 = pacoxph-chinv2.$(OBJEXT) pacoxph-cholesky2.$(OBJEXT) \
-	pacoxph-chsolve2.$(OBJEXT) pacoxph-dmatrix.$(OBJEXT)
-am__objects_5 = $(am__objects_4) pacoxph-coxfit2.$(OBJEXT)
-am_pacoxph_OBJECTS = $(am__objects_1) $(am__objects_2) \
-	$(am__objects_3) $(am__objects_5)
+am__objects_5 =
+am_pacoxph_OBJECTS = $(am__objects_2) $(am__objects_3) \
+	$(am__objects_4) $(am__objects_5) $(am__objects_5)
 pacoxph_OBJECTS = $(am_pacoxph_OBJECTS)
 pacoxph_LDADD = $(LDADD)
 pacoxph_LINK = $(CXXLD) $(pacoxph_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am__objects_6 = palinear-main.$(OBJEXT)
+am__objects_7 = palinear-AbstractMatrix.$(OBJEXT) \
+	palinear-CastUtils.$(OBJEXT) palinear-convert_util.$(OBJEXT) \
+	palinear-FileVector.$(OBJEXT) \
+	palinear-FilteredMatrix.$(OBJEXT) palinear-frutil.$(OBJEXT) \
+	palinear-Logger.$(OBJEXT) \
+	palinear-RealHandlerWrapper.$(OBJEXT) \
+	palinear-ReusableFileHandle.$(OBJEXT) \
+	palinear-Transposer.$(OBJEXT)
+am_palinear_OBJECTS = $(am__objects_6) $(am__objects_7) \
+	$(am__objects_5)
+palinear_OBJECTS = $(am_palinear_OBJECTS)
+palinear_LDADD = $(LDADD)
+palinear_LINK = $(CXXLD) $(palinear_CXXFLAGS) $(CXXFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+am__objects_8 = palogist-main.$(OBJEXT)
+am__objects_9 = palogist-AbstractMatrix.$(OBJEXT) \
+	palogist-CastUtils.$(OBJEXT) palogist-convert_util.$(OBJEXT) \
+	palogist-FileVector.$(OBJEXT) \
+	palogist-FilteredMatrix.$(OBJEXT) palogist-frutil.$(OBJEXT) \
+	palogist-Logger.$(OBJEXT) \
+	palogist-RealHandlerWrapper.$(OBJEXT) \
+	palogist-ReusableFileHandle.$(OBJEXT) \
+	palogist-Transposer.$(OBJEXT)
+am_palogist_OBJECTS = $(am__objects_8) $(am__objects_9) \
+	$(am__objects_5)
+palogist_OBJECTS = $(am_palogist_OBJECTS)
+palogist_LDADD = $(LDADD)
+palogist_LINK = $(CXXLD) $(palogist_CXXFLAGS) $(CXXFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -103,8 +134,9 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(pacoxph_SOURCES)
-DIST_SOURCES = $(pacoxph_SOURCES)
+SOURCES = $(pacoxph_SOURCES) $(palinear_SOURCES) $(palogist_SOURCES)
+DIST_SOURCES = $(pacoxph_SOURCES) $(palinear_SOURCES) \
+	$(palogist_SOURCES)
 DATA = $(dist_sysconf_DATA)
 ETAGS = etags
 CTAGS = ctags
@@ -201,9 +233,6 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CXXFLAGS = -I include -O2
-AM_CFLAGS = -I include -O2
-AM_LDFLAGS = 
 REGFILES = data.h mematrix.h reg1.h usage.h main.cpp version.h mematri1.h
 FVSRC = fvlib/AbstractMatrix.cpp fvlib/CastUtils.cpp			\
  fvlib/convert_util.cpp fvlib/FileVector.cpp fvlib/FilteredMatrix.cpp	\
@@ -216,17 +245,25 @@ FVHEADERS = fvlib/AbstractMatrix.h fvlib/CastUtils.h fvlib/const.h	\
  fvlib/ReusableFileHandle.h fvlib/RealHandlerWrapper.h			\
  fvlib/FilteredMatrix.h
 
-COXBASE = chinv2 cholesky2 chsolve2 dmatrix
-COXSRC = $(COXBASE:=.c) coxfit2.c
+RHEADERS = include/R.h include/Rmath.h include/R_ext/Arith.h		\
+ include/R_ext/Boolean.h include/Rconfig.h include/R_ext/Complex.h	\
+ include/R_ext/Constants.h include/R_ext/Error.h			\
+ include/R_ext/libextern.h include/R_ext/Memory.h			\
+ include/R_ext/Print.h include/R_ext/Random.h include/R_ext/Utils.h	\
+ include/R_ext/RS.h
 
-# palinear_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
-# palinear_CXXFLAGS = -DLINEAR
+COXBASE = coxfit2 chinv2 cholesky2 chsolve2 dmatrix
+COXSRC = $(COXBASE:=.c)
+#bin_PROGRAMS = pacoxph
+palinear_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
+palinear_CXXFLAGS = -DLINEAR
+palogist_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
+palogist_CXXFLAGS = -DLOGISTIC
+pacoxph_SOURCES = $(COXSRC) $(REGFILES) $(FVSRC) $(FVHEADERS)	\
+ $(RHEADERS) survS.h survproto.h
 
-# palogist_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
-# palogist_CXXFLAGS = -DLOGISTIC
-pacoxph_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS) $(COXSRC)
-pacoxph_CXXFLAGS = -DCOXPH -I include
-pacoxph_CFLAGS = -DCOXPH -I include
+pacoxph_CXXFLAGS = -DCOXPH -I $(top_srcdir)/src/include
+pacoxph_CFLAGS = -DCOXPH -I $(top_srcdir)/src/include
 dist_bin_SCRIPTS = probabel.pl extIDS.pl
 dist_sysconf_DATA = probabel_config.cfg
 all: config.h
@@ -321,6 +358,12 @@ clean-binPROGRAMS:
 pacoxph$(EXEEXT): $(pacoxph_OBJECTS) $(pacoxph_DEPENDENCIES) 
 	@rm -f pacoxph$(EXEEXT)
 	$(pacoxph_LINK) $(pacoxph_OBJECTS) $(pacoxph_LDADD) $(LIBS)
+palinear$(EXEEXT): $(palinear_OBJECTS) $(palinear_DEPENDENCIES) 
+	@rm -f palinear$(EXEEXT)
+	$(palinear_LINK) $(palinear_OBJECTS) $(palinear_LDADD) $(LIBS)
+palogist$(EXEEXT): $(palogist_OBJECTS) $(palogist_DEPENDENCIES) 
+	@rm -f palogist$(EXEEXT)
+	$(palogist_LINK) $(palogist_OBJECTS) $(palogist_LDADD) $(LIBS)
 install-dist_binSCRIPTS: $(dist_bin_SCRIPTS)
 	@$(NORMAL_INSTALL)
 	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
@@ -378,6 +421,28 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pacoxph-dmatrix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pacoxph-frutil.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pacoxph-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palinear-AbstractMatrix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palinear-CastUtils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palinear-FileVector.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palinear-FilteredMatrix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palinear-Logger.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palinear-RealHandlerWrapper.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palinear-ReusableFileHandle.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palinear-Transposer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palinear-convert_util.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palinear-frutil.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palinear-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palogist-AbstractMatrix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palogist-CastUtils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palogist-FileVector.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palogist-FilteredMatrix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palogist-Logger.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palogist-RealHandlerWrapper.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palogist-ReusableFileHandle.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palogist-Transposer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palogist-convert_util.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palogist-frutil.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palogist-main.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -392,6 +457,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+pacoxph-coxfit2.o: coxfit2.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pacoxph_CFLAGS) $(CFLAGS) -MT pacoxph-coxfit2.o -MD -MP -MF $(DEPDIR)/pacoxph-coxfit2.Tpo -c -o pacoxph-coxfit2.o `test -f 'coxfit2.c' || echo '$(srcdir)/'`coxfit2.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/pacoxph-coxfit2.Tpo $(DEPDIR)/pacoxph-coxfit2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='coxfit2.c' object='pacoxph-coxfit2.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pacoxph_CFLAGS) $(CFLAGS) -c -o pacoxph-coxfit2.o `test -f 'coxfit2.c' || echo '$(srcdir)/'`coxfit2.c
+
+pacoxph-coxfit2.obj: coxfit2.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pacoxph_CFLAGS) $(CFLAGS) -MT pacoxph-coxfit2.obj -MD -MP -MF $(DEPDIR)/pacoxph-coxfit2.Tpo -c -o pacoxph-coxfit2.obj `if test -f 'coxfit2.c'; then $(CYGPATH_W) 'coxfit2.c'; else $(CYGPATH_W) '$(srcdir)/coxfit2.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/pacoxph-coxfit2.Tpo $(DEPDIR)/pacoxph-coxfit2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='coxfit2.c' object='pacoxph-coxfit2.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pacoxph_CFLAGS) $(CFLAGS) -c -o pacoxph-coxfit2.obj `if test -f 'coxfit2.c'; then $(CYGPATH_W) 'coxfit2.c'; else $(CYGPATH_W) '$(srcdir)/coxfit2.c'; fi`
 
 pacoxph-chinv2.o: chinv2.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pacoxph_CFLAGS) $(CFLAGS) -MT pacoxph-chinv2.o -MD -MP -MF $(DEPDIR)/pacoxph-chinv2.Tpo -c -o pacoxph-chinv2.o `test -f 'chinv2.c' || echo '$(srcdir)/'`chinv2.c
@@ -448,20 +527,6 @@ pacoxph-dmatrix.obj: dmatrix.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dmatrix.c' object='pacoxph-dmatrix.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pacoxph_CFLAGS) $(CFLAGS) -c -o pacoxph-dmatrix.obj `if test -f 'dmatrix.c'; then $(CYGPATH_W) 'dmatrix.c'; else $(CYGPATH_W) '$(srcdir)/dmatrix.c'; fi`
-
-pacoxph-coxfit2.o: coxfit2.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pacoxph_CFLAGS) $(CFLAGS) -MT pacoxph-coxfit2.o -MD -MP -MF $(DEPDIR)/pacoxph-coxfit2.Tpo -c -o pacoxph-coxfit2.o `test -f 'coxfit2.c' || echo '$(srcdir)/'`coxfit2.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/pacoxph-coxfit2.Tpo $(DEPDIR)/pacoxph-coxfit2.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='coxfit2.c' object='pacoxph-coxfit2.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pacoxph_CFLAGS) $(CFLAGS) -c -o pacoxph-coxfit2.o `test -f 'coxfit2.c' || echo '$(srcdir)/'`coxfit2.c
-
-pacoxph-coxfit2.obj: coxfit2.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pacoxph_CFLAGS) $(CFLAGS) -MT pacoxph-coxfit2.obj -MD -MP -MF $(DEPDIR)/pacoxph-coxfit2.Tpo -c -o pacoxph-coxfit2.obj `if test -f 'coxfit2.c'; then $(CYGPATH_W) 'coxfit2.c'; else $(CYGPATH_W) '$(srcdir)/coxfit2.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/pacoxph-coxfit2.Tpo $(DEPDIR)/pacoxph-coxfit2.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='coxfit2.c' object='pacoxph-coxfit2.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pacoxph_CFLAGS) $(CFLAGS) -c -o pacoxph-coxfit2.obj `if test -f 'coxfit2.c'; then $(CYGPATH_W) 'coxfit2.c'; else $(CYGPATH_W) '$(srcdir)/coxfit2.c'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -630,6 +695,314 @@ pacoxph-Transposer.obj: fvlib/Transposer.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/Transposer.cpp' object='pacoxph-Transposer.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pacoxph_CXXFLAGS) $(CXXFLAGS) -c -o pacoxph-Transposer.obj `if test -f 'fvlib/Transposer.cpp'; then $(CYGPATH_W) 'fvlib/Transposer.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/Transposer.cpp'; fi`
+
+palinear-main.o: main.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-main.o -MD -MP -MF $(DEPDIR)/palinear-main.Tpo -c -o palinear-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-main.Tpo $(DEPDIR)/palinear-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='main.cpp' object='palinear-main.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
+
+palinear-main.obj: main.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-main.obj -MD -MP -MF $(DEPDIR)/palinear-main.Tpo -c -o palinear-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-main.Tpo $(DEPDIR)/palinear-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='main.cpp' object='palinear-main.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
+
+palinear-AbstractMatrix.o: fvlib/AbstractMatrix.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-AbstractMatrix.o -MD -MP -MF $(DEPDIR)/palinear-AbstractMatrix.Tpo -c -o palinear-AbstractMatrix.o `test -f 'fvlib/AbstractMatrix.cpp' || echo '$(srcdir)/'`fvlib/AbstractMatrix.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-AbstractMatrix.Tpo $(DEPDIR)/palinear-AbstractMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/AbstractMatrix.cpp' object='palinear-AbstractMatrix.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-AbstractMatrix.o `test -f 'fvlib/AbstractMatrix.cpp' || echo '$(srcdir)/'`fvlib/AbstractMatrix.cpp
+
+palinear-AbstractMatrix.obj: fvlib/AbstractMatrix.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-AbstractMatrix.obj -MD -MP -MF $(DEPDIR)/palinear-AbstractMatrix.Tpo -c -o palinear-AbstractMatrix.obj `if test -f 'fvlib/AbstractMatrix.cpp'; then $(CYGPATH_W) 'fvlib/AbstractMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/AbstractMatrix.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-AbstractMatrix.Tpo $(DEPDIR)/palinear-AbstractMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/AbstractMatrix.cpp' object='palinear-AbstractMatrix.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-AbstractMatrix.obj `if test -f 'fvlib/AbstractMatrix.cpp'; then $(CYGPATH_W) 'fvlib/AbstractMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/AbstractMatrix.cpp'; fi`
+
+palinear-CastUtils.o: fvlib/CastUtils.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-CastUtils.o -MD -MP -MF $(DEPDIR)/palinear-CastUtils.Tpo -c -o palinear-CastUtils.o `test -f 'fvlib/CastUtils.cpp' || echo '$(srcdir)/'`fvlib/CastUtils.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-CastUtils.Tpo $(DEPDIR)/palinear-CastUtils.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/CastUtils.cpp' object='palinear-CastUtils.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-CastUtils.o `test -f 'fvlib/CastUtils.cpp' || echo '$(srcdir)/'`fvlib/CastUtils.cpp
+
+palinear-CastUtils.obj: fvlib/CastUtils.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-CastUtils.obj -MD -MP -MF $(DEPDIR)/palinear-CastUtils.Tpo -c -o palinear-CastUtils.obj `if test -f 'fvlib/CastUtils.cpp'; then $(CYGPATH_W) 'fvlib/CastUtils.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/CastUtils.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-CastUtils.Tpo $(DEPDIR)/palinear-CastUtils.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/CastUtils.cpp' object='palinear-CastUtils.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-CastUtils.obj `if test -f 'fvlib/CastUtils.cpp'; then $(CYGPATH_W) 'fvlib/CastUtils.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/CastUtils.cpp'; fi`
+
+palinear-convert_util.o: fvlib/convert_util.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-convert_util.o -MD -MP -MF $(DEPDIR)/palinear-convert_util.Tpo -c -o palinear-convert_util.o `test -f 'fvlib/convert_util.cpp' || echo '$(srcdir)/'`fvlib/convert_util.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-convert_util.Tpo $(DEPDIR)/palinear-convert_util.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/convert_util.cpp' object='palinear-convert_util.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-convert_util.o `test -f 'fvlib/convert_util.cpp' || echo '$(srcdir)/'`fvlib/convert_util.cpp
+
+palinear-convert_util.obj: fvlib/convert_util.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-convert_util.obj -MD -MP -MF $(DEPDIR)/palinear-convert_util.Tpo -c -o palinear-convert_util.obj `if test -f 'fvlib/convert_util.cpp'; then $(CYGPATH_W) 'fvlib/convert_util.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/convert_util.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-convert_util.Tpo $(DEPDIR)/palinear-convert_util.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/convert_util.cpp' object='palinear-convert_util.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-convert_util.obj `if test -f 'fvlib/convert_util.cpp'; then $(CYGPATH_W) 'fvlib/convert_util.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/convert_util.cpp'; fi`
+
+palinear-FileVector.o: fvlib/FileVector.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-FileVector.o -MD -MP -MF $(DEPDIR)/palinear-FileVector.Tpo -c -o palinear-FileVector.o `test -f 'fvlib/FileVector.cpp' || echo '$(srcdir)/'`fvlib/FileVector.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-FileVector.Tpo $(DEPDIR)/palinear-FileVector.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/FileVector.cpp' object='palinear-FileVector.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-FileVector.o `test -f 'fvlib/FileVector.cpp' || echo '$(srcdir)/'`fvlib/FileVector.cpp
+
+palinear-FileVector.obj: fvlib/FileVector.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-FileVector.obj -MD -MP -MF $(DEPDIR)/palinear-FileVector.Tpo -c -o palinear-FileVector.obj `if test -f 'fvlib/FileVector.cpp'; then $(CYGPATH_W) 'fvlib/FileVector.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/FileVector.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-FileVector.Tpo $(DEPDIR)/palinear-FileVector.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/FileVector.cpp' object='palinear-FileVector.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-FileVector.obj `if test -f 'fvlib/FileVector.cpp'; then $(CYGPATH_W) 'fvlib/FileVector.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/FileVector.cpp'; fi`
+
+palinear-FilteredMatrix.o: fvlib/FilteredMatrix.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-FilteredMatrix.o -MD -MP -MF $(DEPDIR)/palinear-FilteredMatrix.Tpo -c -o palinear-FilteredMatrix.o `test -f 'fvlib/FilteredMatrix.cpp' || echo '$(srcdir)/'`fvlib/FilteredMatrix.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-FilteredMatrix.Tpo $(DEPDIR)/palinear-FilteredMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/FilteredMatrix.cpp' object='palinear-FilteredMatrix.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-FilteredMatrix.o `test -f 'fvlib/FilteredMatrix.cpp' || echo '$(srcdir)/'`fvlib/FilteredMatrix.cpp
+
+palinear-FilteredMatrix.obj: fvlib/FilteredMatrix.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-FilteredMatrix.obj -MD -MP -MF $(DEPDIR)/palinear-FilteredMatrix.Tpo -c -o palinear-FilteredMatrix.obj `if test -f 'fvlib/FilteredMatrix.cpp'; then $(CYGPATH_W) 'fvlib/FilteredMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/FilteredMatrix.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-FilteredMatrix.Tpo $(DEPDIR)/palinear-FilteredMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/FilteredMatrix.cpp' object='palinear-FilteredMatrix.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-FilteredMatrix.obj `if test -f 'fvlib/FilteredMatrix.cpp'; then $(CYGPATH_W) 'fvlib/FilteredMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/FilteredMatrix.cpp'; fi`
+
+palinear-frutil.o: fvlib/frutil.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-frutil.o -MD -MP -MF $(DEPDIR)/palinear-frutil.Tpo -c -o palinear-frutil.o `test -f 'fvlib/frutil.cpp' || echo '$(srcdir)/'`fvlib/frutil.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-frutil.Tpo $(DEPDIR)/palinear-frutil.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/frutil.cpp' object='palinear-frutil.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-frutil.o `test -f 'fvlib/frutil.cpp' || echo '$(srcdir)/'`fvlib/frutil.cpp
+
+palinear-frutil.obj: fvlib/frutil.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-frutil.obj -MD -MP -MF $(DEPDIR)/palinear-frutil.Tpo -c -o palinear-frutil.obj `if test -f 'fvlib/frutil.cpp'; then $(CYGPATH_W) 'fvlib/frutil.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/frutil.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-frutil.Tpo $(DEPDIR)/palinear-frutil.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/frutil.cpp' object='palinear-frutil.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-frutil.obj `if test -f 'fvlib/frutil.cpp'; then $(CYGPATH_W) 'fvlib/frutil.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/frutil.cpp'; fi`
+
+palinear-Logger.o: fvlib/Logger.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-Logger.o -MD -MP -MF $(DEPDIR)/palinear-Logger.Tpo -c -o palinear-Logger.o `test -f 'fvlib/Logger.cpp' || echo '$(srcdir)/'`fvlib/Logger.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-Logger.Tpo $(DEPDIR)/palinear-Logger.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/Logger.cpp' object='palinear-Logger.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-Logger.o `test -f 'fvlib/Logger.cpp' || echo '$(srcdir)/'`fvlib/Logger.cpp
+
+palinear-Logger.obj: fvlib/Logger.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-Logger.obj -MD -MP -MF $(DEPDIR)/palinear-Logger.Tpo -c -o palinear-Logger.obj `if test -f 'fvlib/Logger.cpp'; then $(CYGPATH_W) 'fvlib/Logger.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/Logger.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-Logger.Tpo $(DEPDIR)/palinear-Logger.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/Logger.cpp' object='palinear-Logger.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-Logger.obj `if test -f 'fvlib/Logger.cpp'; then $(CYGPATH_W) 'fvlib/Logger.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/Logger.cpp'; fi`
+
+palinear-RealHandlerWrapper.o: fvlib/RealHandlerWrapper.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-RealHandlerWrapper.o -MD -MP -MF $(DEPDIR)/palinear-RealHandlerWrapper.Tpo -c -o palinear-RealHandlerWrapper.o `test -f 'fvlib/RealHandlerWrapper.cpp' || echo '$(srcdir)/'`fvlib/RealHandlerWrapper.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-RealHandlerWrapper.Tpo $(DEPDIR)/palinear-RealHandlerWrapper.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/RealHandlerWrapper.cpp' object='palinear-RealHandlerWrapper.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-RealHandlerWrapper.o `test -f 'fvlib/RealHandlerWrapper.cpp' || echo '$(srcdir)/'`fvlib/RealHandlerWrapper.cpp
+
+palinear-RealHandlerWrapper.obj: fvlib/RealHandlerWrapper.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-RealHandlerWrapper.obj -MD -MP -MF $(DEPDIR)/palinear-RealHandlerWrapper.Tpo -c -o palinear-RealHandlerWrapper.obj `if test -f 'fvlib/RealHandlerWrapper.cpp'; then $(CYGPATH_W) 'fvlib/RealHandlerWrapper.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/RealHandlerWrapper.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-RealHandlerWrapper.Tpo $(DEPDIR)/palinear-RealHandlerWrapper.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/RealHandlerWrapper.cpp' object='palinear-RealHandlerWrapper.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-RealHandlerWrapper.obj `if test -f 'fvlib/RealHandlerWrapper.cpp'; then $(CYGPATH_W) 'fvlib/RealHandlerWrapper.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/RealHandlerWrapper.cpp'; fi`
+
+palinear-ReusableFileHandle.o: fvlib/ReusableFileHandle.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-ReusableFileHandle.o -MD -MP -MF $(DEPDIR)/palinear-ReusableFileHandle.Tpo -c -o palinear-ReusableFileHandle.o `test -f 'fvlib/ReusableFileHandle.cpp' || echo '$(srcdir)/'`fvlib/ReusableFileHandle.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-ReusableFileHandle.Tpo $(DEPDIR)/palinear-ReusableFileHandle.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/ReusableFileHandle.cpp' object='palinear-ReusableFileHandle.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-ReusableFileHandle.o `test -f 'fvlib/ReusableFileHandle.cpp' || echo '$(srcdir)/'`fvlib/ReusableFileHandle.cpp
+
+palinear-ReusableFileHandle.obj: fvlib/ReusableFileHandle.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-ReusableFileHandle.obj -MD -MP -MF $(DEPDIR)/palinear-ReusableFileHandle.Tpo -c -o palinear-ReusableFileHandle.obj `if test -f 'fvlib/ReusableFileHandle.cpp'; then $(CYGPATH_W) 'fvlib/ReusableFileHandle.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/ReusableFileHandle.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-ReusableFileHandle.Tpo $(DEPDIR)/palinear-ReusableFileHandle.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/ReusableFileHandle.cpp' object='palinear-ReusableFileHandle.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-ReusableFileHandle.obj `if test -f 'fvlib/ReusableFileHandle.cpp'; then $(CYGPATH_W) 'fvlib/ReusableFileHandle.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/ReusableFileHandle.cpp'; fi`
+
+palinear-Transposer.o: fvlib/Transposer.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-Transposer.o -MD -MP -MF $(DEPDIR)/palinear-Transposer.Tpo -c -o palinear-Transposer.o `test -f 'fvlib/Transposer.cpp' || echo '$(srcdir)/'`fvlib/Transposer.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-Transposer.Tpo $(DEPDIR)/palinear-Transposer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/Transposer.cpp' object='palinear-Transposer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-Transposer.o `test -f 'fvlib/Transposer.cpp' || echo '$(srcdir)/'`fvlib/Transposer.cpp
+
+palinear-Transposer.obj: fvlib/Transposer.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -MT palinear-Transposer.obj -MD -MP -MF $(DEPDIR)/palinear-Transposer.Tpo -c -o palinear-Transposer.obj `if test -f 'fvlib/Transposer.cpp'; then $(CYGPATH_W) 'fvlib/Transposer.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/Transposer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palinear-Transposer.Tpo $(DEPDIR)/palinear-Transposer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/Transposer.cpp' object='palinear-Transposer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palinear_CXXFLAGS) $(CXXFLAGS) -c -o palinear-Transposer.obj `if test -f 'fvlib/Transposer.cpp'; then $(CYGPATH_W) 'fvlib/Transposer.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/Transposer.cpp'; fi`
+
+palogist-main.o: main.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-main.o -MD -MP -MF $(DEPDIR)/palogist-main.Tpo -c -o palogist-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-main.Tpo $(DEPDIR)/palogist-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='main.cpp' object='palogist-main.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
+
+palogist-main.obj: main.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-main.obj -MD -MP -MF $(DEPDIR)/palogist-main.Tpo -c -o palogist-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-main.Tpo $(DEPDIR)/palogist-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='main.cpp' object='palogist-main.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
+
+palogist-AbstractMatrix.o: fvlib/AbstractMatrix.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-AbstractMatrix.o -MD -MP -MF $(DEPDIR)/palogist-AbstractMatrix.Tpo -c -o palogist-AbstractMatrix.o `test -f 'fvlib/AbstractMatrix.cpp' || echo '$(srcdir)/'`fvlib/AbstractMatrix.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-AbstractMatrix.Tpo $(DEPDIR)/palogist-AbstractMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/AbstractMatrix.cpp' object='palogist-AbstractMatrix.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-AbstractMatrix.o `test -f 'fvlib/AbstractMatrix.cpp' || echo '$(srcdir)/'`fvlib/AbstractMatrix.cpp
+
+palogist-AbstractMatrix.obj: fvlib/AbstractMatrix.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-AbstractMatrix.obj -MD -MP -MF $(DEPDIR)/palogist-AbstractMatrix.Tpo -c -o palogist-AbstractMatrix.obj `if test -f 'fvlib/AbstractMatrix.cpp'; then $(CYGPATH_W) 'fvlib/AbstractMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/AbstractMatrix.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-AbstractMatrix.Tpo $(DEPDIR)/palogist-AbstractMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/AbstractMatrix.cpp' object='palogist-AbstractMatrix.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-AbstractMatrix.obj `if test -f 'fvlib/AbstractMatrix.cpp'; then $(CYGPATH_W) 'fvlib/AbstractMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/AbstractMatrix.cpp'; fi`
+
+palogist-CastUtils.o: fvlib/CastUtils.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-CastUtils.o -MD -MP -MF $(DEPDIR)/palogist-CastUtils.Tpo -c -o palogist-CastUtils.o `test -f 'fvlib/CastUtils.cpp' || echo '$(srcdir)/'`fvlib/CastUtils.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-CastUtils.Tpo $(DEPDIR)/palogist-CastUtils.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/CastUtils.cpp' object='palogist-CastUtils.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-CastUtils.o `test -f 'fvlib/CastUtils.cpp' || echo '$(srcdir)/'`fvlib/CastUtils.cpp
+
+palogist-CastUtils.obj: fvlib/CastUtils.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-CastUtils.obj -MD -MP -MF $(DEPDIR)/palogist-CastUtils.Tpo -c -o palogist-CastUtils.obj `if test -f 'fvlib/CastUtils.cpp'; then $(CYGPATH_W) 'fvlib/CastUtils.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/CastUtils.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-CastUtils.Tpo $(DEPDIR)/palogist-CastUtils.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/CastUtils.cpp' object='palogist-CastUtils.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-CastUtils.obj `if test -f 'fvlib/CastUtils.cpp'; then $(CYGPATH_W) 'fvlib/CastUtils.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/CastUtils.cpp'; fi`
+
+palogist-convert_util.o: fvlib/convert_util.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-convert_util.o -MD -MP -MF $(DEPDIR)/palogist-convert_util.Tpo -c -o palogist-convert_util.o `test -f 'fvlib/convert_util.cpp' || echo '$(srcdir)/'`fvlib/convert_util.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-convert_util.Tpo $(DEPDIR)/palogist-convert_util.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/convert_util.cpp' object='palogist-convert_util.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-convert_util.o `test -f 'fvlib/convert_util.cpp' || echo '$(srcdir)/'`fvlib/convert_util.cpp
+
+palogist-convert_util.obj: fvlib/convert_util.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-convert_util.obj -MD -MP -MF $(DEPDIR)/palogist-convert_util.Tpo -c -o palogist-convert_util.obj `if test -f 'fvlib/convert_util.cpp'; then $(CYGPATH_W) 'fvlib/convert_util.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/convert_util.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-convert_util.Tpo $(DEPDIR)/palogist-convert_util.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/convert_util.cpp' object='palogist-convert_util.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-convert_util.obj `if test -f 'fvlib/convert_util.cpp'; then $(CYGPATH_W) 'fvlib/convert_util.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/convert_util.cpp'; fi`
+
+palogist-FileVector.o: fvlib/FileVector.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-FileVector.o -MD -MP -MF $(DEPDIR)/palogist-FileVector.Tpo -c -o palogist-FileVector.o `test -f 'fvlib/FileVector.cpp' || echo '$(srcdir)/'`fvlib/FileVector.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-FileVector.Tpo $(DEPDIR)/palogist-FileVector.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/FileVector.cpp' object='palogist-FileVector.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-FileVector.o `test -f 'fvlib/FileVector.cpp' || echo '$(srcdir)/'`fvlib/FileVector.cpp
+
+palogist-FileVector.obj: fvlib/FileVector.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-FileVector.obj -MD -MP -MF $(DEPDIR)/palogist-FileVector.Tpo -c -o palogist-FileVector.obj `if test -f 'fvlib/FileVector.cpp'; then $(CYGPATH_W) 'fvlib/FileVector.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/FileVector.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-FileVector.Tpo $(DEPDIR)/palogist-FileVector.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/FileVector.cpp' object='palogist-FileVector.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-FileVector.obj `if test -f 'fvlib/FileVector.cpp'; then $(CYGPATH_W) 'fvlib/FileVector.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/FileVector.cpp'; fi`
+
+palogist-FilteredMatrix.o: fvlib/FilteredMatrix.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-FilteredMatrix.o -MD -MP -MF $(DEPDIR)/palogist-FilteredMatrix.Tpo -c -o palogist-FilteredMatrix.o `test -f 'fvlib/FilteredMatrix.cpp' || echo '$(srcdir)/'`fvlib/FilteredMatrix.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-FilteredMatrix.Tpo $(DEPDIR)/palogist-FilteredMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/FilteredMatrix.cpp' object='palogist-FilteredMatrix.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-FilteredMatrix.o `test -f 'fvlib/FilteredMatrix.cpp' || echo '$(srcdir)/'`fvlib/FilteredMatrix.cpp
+
+palogist-FilteredMatrix.obj: fvlib/FilteredMatrix.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-FilteredMatrix.obj -MD -MP -MF $(DEPDIR)/palogist-FilteredMatrix.Tpo -c -o palogist-FilteredMatrix.obj `if test -f 'fvlib/FilteredMatrix.cpp'; then $(CYGPATH_W) 'fvlib/FilteredMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/FilteredMatrix.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-FilteredMatrix.Tpo $(DEPDIR)/palogist-FilteredMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/FilteredMatrix.cpp' object='palogist-FilteredMatrix.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-FilteredMatrix.obj `if test -f 'fvlib/FilteredMatrix.cpp'; then $(CYGPATH_W) 'fvlib/FilteredMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/FilteredMatrix.cpp'; fi`
+
+palogist-frutil.o: fvlib/frutil.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-frutil.o -MD -MP -MF $(DEPDIR)/palogist-frutil.Tpo -c -o palogist-frutil.o `test -f 'fvlib/frutil.cpp' || echo '$(srcdir)/'`fvlib/frutil.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-frutil.Tpo $(DEPDIR)/palogist-frutil.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/frutil.cpp' object='palogist-frutil.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-frutil.o `test -f 'fvlib/frutil.cpp' || echo '$(srcdir)/'`fvlib/frutil.cpp
+
+palogist-frutil.obj: fvlib/frutil.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-frutil.obj -MD -MP -MF $(DEPDIR)/palogist-frutil.Tpo -c -o palogist-frutil.obj `if test -f 'fvlib/frutil.cpp'; then $(CYGPATH_W) 'fvlib/frutil.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/frutil.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-frutil.Tpo $(DEPDIR)/palogist-frutil.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/frutil.cpp' object='palogist-frutil.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-frutil.obj `if test -f 'fvlib/frutil.cpp'; then $(CYGPATH_W) 'fvlib/frutil.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/frutil.cpp'; fi`
+
+palogist-Logger.o: fvlib/Logger.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-Logger.o -MD -MP -MF $(DEPDIR)/palogist-Logger.Tpo -c -o palogist-Logger.o `test -f 'fvlib/Logger.cpp' || echo '$(srcdir)/'`fvlib/Logger.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-Logger.Tpo $(DEPDIR)/palogist-Logger.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/Logger.cpp' object='palogist-Logger.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-Logger.o `test -f 'fvlib/Logger.cpp' || echo '$(srcdir)/'`fvlib/Logger.cpp
+
+palogist-Logger.obj: fvlib/Logger.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-Logger.obj -MD -MP -MF $(DEPDIR)/palogist-Logger.Tpo -c -o palogist-Logger.obj `if test -f 'fvlib/Logger.cpp'; then $(CYGPATH_W) 'fvlib/Logger.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/Logger.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-Logger.Tpo $(DEPDIR)/palogist-Logger.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/Logger.cpp' object='palogist-Logger.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-Logger.obj `if test -f 'fvlib/Logger.cpp'; then $(CYGPATH_W) 'fvlib/Logger.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/Logger.cpp'; fi`
+
+palogist-RealHandlerWrapper.o: fvlib/RealHandlerWrapper.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-RealHandlerWrapper.o -MD -MP -MF $(DEPDIR)/palogist-RealHandlerWrapper.Tpo -c -o palogist-RealHandlerWrapper.o `test -f 'fvlib/RealHandlerWrapper.cpp' || echo '$(srcdir)/'`fvlib/RealHandlerWrapper.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-RealHandlerWrapper.Tpo $(DEPDIR)/palogist-RealHandlerWrapper.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/RealHandlerWrapper.cpp' object='palogist-RealHandlerWrapper.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-RealHandlerWrapper.o `test -f 'fvlib/RealHandlerWrapper.cpp' || echo '$(srcdir)/'`fvlib/RealHandlerWrapper.cpp
+
+palogist-RealHandlerWrapper.obj: fvlib/RealHandlerWrapper.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-RealHandlerWrapper.obj -MD -MP -MF $(DEPDIR)/palogist-RealHandlerWrapper.Tpo -c -o palogist-RealHandlerWrapper.obj `if test -f 'fvlib/RealHandlerWrapper.cpp'; then $(CYGPATH_W) 'fvlib/RealHandlerWrapper.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/RealHandlerWrapper.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-RealHandlerWrapper.Tpo $(DEPDIR)/palogist-RealHandlerWrapper.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/RealHandlerWrapper.cpp' object='palogist-RealHandlerWrapper.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-RealHandlerWrapper.obj `if test -f 'fvlib/RealHandlerWrapper.cpp'; then $(CYGPATH_W) 'fvlib/RealHandlerWrapper.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/RealHandlerWrapper.cpp'; fi`
+
+palogist-ReusableFileHandle.o: fvlib/ReusableFileHandle.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-ReusableFileHandle.o -MD -MP -MF $(DEPDIR)/palogist-ReusableFileHandle.Tpo -c -o palogist-ReusableFileHandle.o `test -f 'fvlib/ReusableFileHandle.cpp' || echo '$(srcdir)/'`fvlib/ReusableFileHandle.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-ReusableFileHandle.Tpo $(DEPDIR)/palogist-ReusableFileHandle.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/ReusableFileHandle.cpp' object='palogist-ReusableFileHandle.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-ReusableFileHandle.o `test -f 'fvlib/ReusableFileHandle.cpp' || echo '$(srcdir)/'`fvlib/ReusableFileHandle.cpp
+
+palogist-ReusableFileHandle.obj: fvlib/ReusableFileHandle.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-ReusableFileHandle.obj -MD -MP -MF $(DEPDIR)/palogist-ReusableFileHandle.Tpo -c -o palogist-ReusableFileHandle.obj `if test -f 'fvlib/ReusableFileHandle.cpp'; then $(CYGPATH_W) 'fvlib/ReusableFileHandle.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/ReusableFileHandle.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-ReusableFileHandle.Tpo $(DEPDIR)/palogist-ReusableFileHandle.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/ReusableFileHandle.cpp' object='palogist-ReusableFileHandle.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-ReusableFileHandle.obj `if test -f 'fvlib/ReusableFileHandle.cpp'; then $(CYGPATH_W) 'fvlib/ReusableFileHandle.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/ReusableFileHandle.cpp'; fi`
+
+palogist-Transposer.o: fvlib/Transposer.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-Transposer.o -MD -MP -MF $(DEPDIR)/palogist-Transposer.Tpo -c -o palogist-Transposer.o `test -f 'fvlib/Transposer.cpp' || echo '$(srcdir)/'`fvlib/Transposer.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-Transposer.Tpo $(DEPDIR)/palogist-Transposer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/Transposer.cpp' object='palogist-Transposer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-Transposer.o `test -f 'fvlib/Transposer.cpp' || echo '$(srcdir)/'`fvlib/Transposer.cpp
+
+palogist-Transposer.obj: fvlib/Transposer.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -MT palogist-Transposer.obj -MD -MP -MF $(DEPDIR)/palogist-Transposer.Tpo -c -o palogist-Transposer.obj `if test -f 'fvlib/Transposer.cpp'; then $(CYGPATH_W) 'fvlib/Transposer.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/Transposer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/palogist-Transposer.Tpo $(DEPDIR)/palogist-Transposer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='fvlib/Transposer.cpp' object='palogist-Transposer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(palogist_CXXFLAGS) $(CXXFLAGS) -c -o palogist-Transposer.obj `if test -f 'fvlib/Transposer.cpp'; then $(CYGPATH_W) 'fvlib/Transposer.cpp'; else $(CYGPATH_W) '$(srcdir)/fvlib/Transposer.cpp'; fi`
 install-dist_sysconfDATA: $(dist_sysconf_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(sysconfdir)" || $(MKDIR_P) "$(DESTDIR)$(sysconfdir)"

@@ -22,6 +22,10 @@
 
 #include <cmath>
 
+extern "C" {
+#include "survproto.h"
+}
+
 mematrix<double> apply_model(mematrix<double> &X, int model, int interaction, int ngpreds, bool iscox=false, int nullmodel = 0)
 // model 0 = 2 df
 // model 1 = additive 1 df
@@ -448,7 +452,7 @@ public:
 
 		//	std::cout<<"N="<<N<<", length_beta="<<length_beta<<"\n";
 
-		if (verbose) {printf("sigma2 = %Lf\n",sigma2);}
+		if (verbose) {printf("sigma2 = %f\n",sigma2);}
 
 		/*
 		loglik = 0.;
@@ -819,14 +823,6 @@ public:
 	}
 };
 
-
-void coxfit2(int   *maxiter,   int   *nusedx,    int   *nvarx,
-		double *time,      int   *status,    double *covar2,
-		double *offset,	double *weights,   int   *strata,
-		double *means,     double *beta,      double *u,
-		double *imat2,     double loglik[2],  int   *flag,
-		double *work,	double *eps,       double *tol_chol,
-		double *sctest);
 
 class coxph_reg
 {

@@ -1,34 +1,3 @@
-#include <iostream>
-void print_dmatrix(double **matr, int nrow, int ncol)
-{
-	for (int j=0;j<ncol;j++)
-	{
-		std::cout << "nc=" << j << ":";
-		for (int i=0;i<nrow;i++)
-			std::cout << "\t" << matr[j][i];
-		std::cout << "\n";
-	}
-}
-void print_prematrix(double *matr, int nrow, int ncol)
-{
-	for (int i=0;i<nrow;i++)
-	{
-		std::cout << "nr=" << i << ":";
-		for (int j=0;j<ncol;j++)
-			std::cout << "\t" << matr[i*ncol+j];
-		std::cout << "\n";
-	}
-}
-void print_prematrix(int *matr, int nrow, int ncol)
-{
-	for (int i=0;i<nrow;i++)
-	{
-		std::cout << "nr=" << i << ":";
-		for (int j=0;j<ncol;j++)
-			std::cout << "\t" << matr[i*ncol+j];
-		std::cout << "\n";
-	}
-}
 /*  SCCS @(#)coxfit2.c	5.1 08/30/98*/
 /*
 ** here is a cox regression program, written in c
