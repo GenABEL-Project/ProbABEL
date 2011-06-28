@@ -10,7 +10,7 @@
 //  last modification:  11-Jan-2009
 //
 //             Author:  Yurii S. Aulchenko
-//			  modified by: 	Maksim V. Struchalin, 11-Jan-2009 
+//			  modified by: 	Maksim V. Struchalin, 11-Jan-2009
 //
 // Modified by Han Chen (hanchen@bu.edu) on Nov 9, 2009
 // based on src/reg1.h version 0.2 as of Oct 19, 2009
@@ -174,7 +174,7 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction, in
 			nX[i*nX.ncol+c1] = X[i*X.ncol+c2];
 		else if (model==4)
 			nX[i*nX.ncol+c1] = X[i*X.ncol+c1];
-		if(interaction != 0)	
+		if(interaction != 0)
 			nX[i*nX.ncol+c2] = X[i*nX.ncol+interaction] * nX[i*nX.ncol+c1];//Maksim: interaction with SNP
 	}
 	//Han Chen
@@ -378,9 +378,9 @@ public:
 
 
 
-		if(invvarmatrix.nrow!=0 && invvarmatrix.ncol!=0) 
+		if(invvarmatrix.nrow!=0 && invvarmatrix.ncol!=0)
 		{
-			tX = tX*invvarmatrix; 
+			tX = tX*invvarmatrix;
 			//			X = invvarmatrix*X; std::cout<<"new tX.nrow="<<X.nrow<<" tX.ncol="<<X.ncol<<"\n";
 		}
 
@@ -390,7 +390,7 @@ public:
 		//		double N = tXX.get(0,0);
 		double N = X.nrow;
 		if (verbose) {printf("tXX:\n");tXX.print();}
-		// 
+		//
 		// use cholesky to invert
 		//
 		mematrix<double> tXX_i = tXX;
@@ -443,7 +443,7 @@ public:
 		//	std::cout<<"sigma2_internal="<<sigma2_internal<<"\n";
 
 		//		replaced for ML
-		//	        sigma2_internal	= sigma2/(N - double(length_beta) - 1);
+		//		sigma2_internal	= sigma2/(N - double(length_beta) - 1);
 		sigma2 /= N;
 
 		//	std::cout<<"N="<<N<<", length_beta="<<length_beta<<"\n";
@@ -501,7 +501,7 @@ public:
 		//cout << "estimate 0\n";
 
 		for (int i=0;i<(length_beta);i++)
-		{	
+		{
 			if (robust) {
 				double value = sqrt(robust_sigma2.get(i,i));
 				sebeta.put(value,i,0);
@@ -579,7 +579,7 @@ public:
 		beta = v_i*u;
 		double sr = 0.;
 		double srr =0.;
-		for (int i=0;i<resid.nrow;i++) 
+		for (int i=0;i<resid.nrow;i++)
 		{
 			sr += resid[i];
 			srr += resid[i]*resid[i];
@@ -650,7 +650,7 @@ public:
 		mematrix<double> W((X).nrow,1);
 		mematrix<double> z((X).nrow,1);
 		mematrix<double> tXWX(length_beta,length_beta);
-		mematrix<double> tXWX_i(length_beta,length_beta); 
+		mematrix<double> tXWX_i(length_beta,length_beta);
 		mematrix<double> tXWz(length_beta,1);
 
 		double prev = (rdata.Y).column_mean(0);
@@ -696,7 +696,7 @@ public:
 			N = tXWX.get(0,0);
 
 			if (verbose) {printf("tXWX:\n");tXWX.print();}
-			// 
+			//
 			// use cholesky to invert
 			//
 			tXWX_i = tXWX;
@@ -734,8 +734,8 @@ public:
 		}
 
 		for (int i=0;i<(length_beta);i++)
-		{	
-			if (robust) 
+		{
+			if (robust)
 			{
 				double value = sqrt(robust_sigma2.get(i,i));
 				sebeta.put(value,i,0);
@@ -754,7 +754,7 @@ public:
 					}
 				}
 				//Oct 26, 2009
-			} 
+			}
 			else {
 				double value = sqrt(tXWX_i.get(i,i));
 				sebeta.put(value,i,0);
@@ -804,7 +804,7 @@ public:
 		beta = v_i*u;
 		double sr = 0.;
 		double srr =0.;
-		for (int i=0;i<resid.nrow;i++) 
+		for (int i=0;i<resid.nrow;i++)
 		{
 			sr += resid[i];
 			srr += resid[i]*resid[i];
@@ -820,7 +820,7 @@ public:
 };
 
 
-void coxfit2(int   *maxiter,   int   *nusedx,    int   *nvarx, 
+void coxfit2(int   *maxiter,   int   *nusedx,    int   *nvarx,
 		double *time,      int   *status,    double *covar2,
 		double *offset,	double *weights,   int   *strata,
 		double *means,     double *beta,      double *u,
