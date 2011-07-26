@@ -1,34 +1,3 @@
-#include <iostream>
-void print_dmatrix(double **matr, int nrow, int ncol)
-{
-	for (int j=0;j<ncol;j++)
-	{
-		std::cout << "nc=" << j << ":";
-		for (int i=0;i<nrow;i++)
-			std::cout << "\t" << matr[j][i];
-		std::cout << "\n";
-	}
-}
-void print_prematrix(double *matr, int nrow, int ncol)
-{
-	for (int i=0;i<nrow;i++)
-	{
-		std::cout << "nr=" << i << ":";
-		for (int j=0;j<ncol;j++)
-			std::cout << "\t" << matr[i*ncol+j];
-		std::cout << "\n";
-	}
-}
-void print_prematrix(int *matr, int nrow, int ncol)
-{
-	for (int i=0;i<nrow;i++)
-	{
-		std::cout << "nr=" << i << ":";
-		for (int j=0;j<ncol;j++)
-			std::cout << "\t" << matr[i*ncol+j];
-		std::cout << "\n";
-	}
-}
 /*  SCCS @(#)coxfit2.c	5.1 08/30/98*/
 /*
 ** here is a cox regression program, written in c
@@ -84,11 +53,11 @@ void print_prematrix(int *matr, int nrow, int ncol)
 #include "survS.h"
 #include "survproto.h"
 
-void coxfit2(int   *maxiter,   int   *nusedx,    int   *nvarx, 
-	     double *time,      int   *status,    double *covar2, 
+void coxfit2(int   *maxiter,   int   *nusedx,    int   *nvarx,
+	     double *time,      int   *status,    double *covar2,
 	     double *offset,	double *weights,   int   *strata,
-	     double *means,     double *beta,      double *u, 
-	     double *imat2,     double loglik[2],  int   *flag, 
+	     double *means,     double *beta,      double *u,
+	     double *imat2,     double loglik[2],  int   *flag,
 	     double *work,	double *eps,       double *tol_chol,
 	     double *sctest)
 {
@@ -100,7 +69,7 @@ void coxfit2(int   *maxiter,   int   *nusedx,    int   *nvarx,
     double *mark, *wtave;
     double *a, *newbeta;
     double *a2, **cmat2;
-    double  denom=0/*-Wall*/, zbeta, risk; 
+    double  denom=0/*-Wall*/, zbeta, risk;
     double  temp, temp2;
     double  ndead;
     double  newlk=0;/*-Wall*/
