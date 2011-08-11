@@ -1,7 +1,9 @@
+## Process this file with automake to produce Makefile.in
+
 ## Using wildcards in these lists doesn't work. Also GNU make's ($wildcard,) doesn't
 ## work. It gives warning message about portability, but in the end doesn't work,
 ## I tried :-).
-REGFILES = data.h mematrix.h reg1.h usage.h main.cpp version.h mematri1.h
+REGFILES = data.h mematrix.h reg1.h usage.h main.cpp mematri1.h version.h
 
 ## Filevector files:
 FVSRC = fvlib/AbstractMatrix.cpp fvlib/CastUtils.cpp			\
@@ -28,7 +30,6 @@ COXSRC = $(COXBASE:=.c)
 
 
 bin_PROGRAMS = palinear palogist pacoxph
-#bin_PROGRAMS = pacoxph
 
 palinear_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
 palinear_CXXFLAGS = -DLINEAR

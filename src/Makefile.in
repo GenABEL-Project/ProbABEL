@@ -186,6 +186,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PDFLATEX = @PDFLATEX@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -233,7 +234,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-REGFILES = data.h mematrix.h reg1.h usage.h main.cpp version.h mematri1.h
+REGFILES = data.h mematrix.h reg1.h usage.h main.cpp mematri1.h version.h
 FVSRC = fvlib/AbstractMatrix.cpp fvlib/CastUtils.cpp			\
  fvlib/convert_util.cpp fvlib/FileVector.cpp fvlib/FilteredMatrix.cpp	\
  fvlib/frutil.cpp fvlib/Logger.cpp fvlib/RealHandlerWrapper.cpp		\
@@ -254,7 +255,6 @@ RHEADERS = include/R.h include/Rmath.h include/R_ext/Arith.h		\
 
 COXBASE = coxfit2 chinv2 cholesky2 chsolve2 dmatrix
 COXSRC = $(COXBASE:=.c)
-#bin_PROGRAMS = pacoxph
 palinear_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
 palinear_CXXFLAGS = -DLINEAR
 palogist_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
@@ -280,9 +280,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/Makefile
+	  $(AUTOMAKE) --gnu src/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

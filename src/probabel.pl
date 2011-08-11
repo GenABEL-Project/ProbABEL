@@ -6,16 +6,16 @@
 #
 #        Description: Handy perl wrapper for ProbABEL functions
 #
-#            Version:  1.4
+#            Version:  1.5
 #            Created:  28-Oct-2008
 #           Revision:  none
-#  last modification:  07-Jan-2011
+#  last modification:  11-Aug-2011
 #
 #             Author:  Lennart C. Karssen,
 #                      Maksim V. Struchalin,
 #                      Yurii S. Aulchenko
 #            Company:  Erasmus MC,
-#                      Epidemiology & Biostatistics Department,
+#                      Department of Epidemiology,
 #                      The Netherlands.
 #              Email:  l.karssen@erasmusmc.nl,
 #                      m.struchalin@erasmusmc.nl,
@@ -26,8 +26,8 @@
 
 
 
-$version="1.4";
-$release_data="07-Jan-2011";
+$version="1.5";
+$release_data="11-Aug-2011";
 
 $_2df_file_postfix = "_2df.out.txt";
 $_add_file_postfix = "_add.out.txt";
@@ -42,7 +42,7 @@ $separator_cfg = ",";
 $separator_filename = "_._chr_._";
 
 $base_path = "./";
-$config = $base_path . "probabel_config.cfg";
+$config = "/etc/probabel_config.cfg";
 
 @method = ("linear","logistic","coxph");
 @anprog = ($base_path . "palinear", $base_path . "palogist", $base_path . "pacoxph");

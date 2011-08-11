@@ -1,10 +1,8 @@
-AUTOMAKE_OPTIONS = foreign
-SUBDIRS = src
+## Process this file with automake to produce Makefile.in
 
-docfiles = doc/ProbABEL_manual.pdf doc/ProbABEL_manual.tex		\
- doc/QuickStart.txt doc/short_coxph_data.txt doc/short_height.out.csv	\
- doc/short_height.txt doc/short_logist_data.txt doc/test_regression.R	\
- doc/COPYING doc/LICENSE doc/INSTALL doc/CHANGES.LOG doc/TODO
+AUTOMAKE_OPTIONS = foreign
+SUBDIRS = src doc
+
 examplefiles =								\
  examples/height_ngp2_robust_int1_over_domin.out.txt.save		\
  examples/test.prob.fvi examples/mmscore_gen.prob.fvd			\
@@ -59,8 +57,6 @@ examplefiles =								\
  examples/height_ngp2_int1_2df.out.txt.save				\
  examples/impute_with_missing_add.out.txt.save				\
  examples/height_ngp2_robust_domin.out.txt.save examples/height.txt
-
-dist_doc_DATA = $(docfiles)
 
 exampledir = $(pkgdatadir)/examples
 dist_example_DATA = $(examplefiles)
