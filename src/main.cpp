@@ -9,7 +9,8 @@
 //           Revision:  none
 //
 //             Author:  Yurii S. Aulchenko (cox, log, lin regressions)
-//             Modified by: Maksim V. Struchalin, 
+//             Modified by: L.C. Karssen,
+//                          Maksim V. Struchalin
 // 
 // modified 14-May-2009 by MVS: interaction with SNP, interaction with SNP with exclusion of interacted covariates,
 //                              mmscore implemented (poor me)
@@ -38,7 +39,7 @@
 #include <sstream>
 
 
-#include "version.h"
+#include "config.h"
 #include "mematrix.h"
 #include "mematri1.h"
 #include "data.h"
@@ -184,7 +185,11 @@ int main(int argc, char * argv [])
 	while (next_option != -1);
 
 
-	fprintf(stdout,"ProbABEL v. %s (%s) (C) Yurii Aulchenko, Maksim Struchalin, EMCR\n\n",VERSION,DATE);
+	fprintf(stdout, 
+		"%s v. %s (C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EMCR\n\n", 
+		PACKAGE, 
+		PACKAGE_VERSION);
+
 	if (neco[0]!=1 || neco[1]!=1 || neco[2]!=1)
 	{
 		print_usage(program_name,1);

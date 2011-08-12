@@ -234,7 +234,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-REGFILES = data.h mematrix.h reg1.h usage.h main.cpp mematri1.h version.h
+REGFILES = data.h mematrix.h reg1.h usage.h main.cpp mematri1.h
 FVSRC = fvlib/AbstractMatrix.cpp fvlib/CastUtils.cpp			\
  fvlib/convert_util.cpp fvlib/FileVector.cpp fvlib/FilteredMatrix.cpp	\
  fvlib/frutil.cpp fvlib/Logger.cpp fvlib/RealHandlerWrapper.cpp		\

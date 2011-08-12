@@ -93,13 +93,6 @@ and a file containing the phenotype of interest and covariates.
 Optionally, the map information can be supplied (e.g.~the "legend"
 files of HapMap).
 
-The dose/probbaility file may be supplied in filevector format
-in which case \texttt{ProbABEL} will operate much faster, and
-in low-RAM mode (approx.~128 MB). See the R libraries GenABEL and
-DatABEL on how to convert MACH and IMPUTE files to
-filevector format (functions: \texttt{mach2databel()} and
-\texttt{impute2databel()}, respectively).
-
 \subsection{SNP information file}
 \label{ssec:infoin}
 In the simplest scenario, the SNP information file is an MLINFO
@@ -148,6 +141,18 @@ must be the same}. This should be the case if you just used MACH outputs.
 
 Therefore, by all means, the number of columns in the genomic predictor file
 must be the same as the number of lines in the SNP information file plus one.
+
+The dose/probability file may be supplied in filevector format
+(\texttt{.fvi} and \texttt{.fvd} files) in which case
+\texttt{ProbABEL} will operate much faster, and in low-RAM mode
+(approx.~128 MB). On the command line simply specify the \texttt{.fvi}
+file as argument for the \texttt{--dose} option
+(cf.~section~\ref{sec:runanalysis} for more information on the options
+accepted by \texttt{ProbABEL}). See the R libraries GenABEL and
+DatABEL on how to convert MACH and IMPUTE files to filevector format
+(functions: \texttt{mach2databel()} and \texttt{impute2databel()},
+respectively).
+
 
 \subsection{Phenotypic file}
 \label{ssec:phenoin}
@@ -226,6 +231,7 @@ file. Only information from the second column -- the SNP location -- is
 actually used to generate the output.
 
 \section{Running an analysis}
+\label{sec:runanalysis}
 To run linear regression, you should use the program called
 \texttt{palinear}; for logistic analysis use \texttt{palogist}, and
 for the Cox proportional hazards model use \texttt{pacoxph} (all are
