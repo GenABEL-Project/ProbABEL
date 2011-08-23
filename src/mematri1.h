@@ -368,7 +368,7 @@ mematrix<DT> invert(mematrix <DT> &M)
   {
 	if (M.ncol != M.nrow) 
 	{
-		fprintf(stderr,"invert: only suare matrices possible\n");
+		fprintf(stderr,"invert: only square matrices possible\n");
 		exit(1);
 	}
 	if (M.ncol == 1) 
@@ -376,12 +376,19 @@ mematrix<DT> invert(mematrix <DT> &M)
 		mematrix<DT> temp(1,1);
 		temp[0] = 1./M[0];
 	}
+	/*
 	for (int i=0;i<M.ncol;i++) 
 		if (M.data[i*M.ncol+i]==0) 
 		{
 			fprintf(stderr,"invert: zero elements in diagonal\n");
-			exit(1);
+			mematrix<DT> temp = M;
+			for (int i = 0; i < M.ncol; i++)
+				for (int j = 0; j < M.ncol; j++)
+					temp.put(NAN,i,j);
+			return temp;
+			//exit(1);
 		}
+		*/
 	int actualsize = M.ncol;
 	int maxsize = M.ncol;
 	mematrix<DT> temp = M;

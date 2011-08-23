@@ -626,7 +626,7 @@ public:
 		//Oct 26, 2009
 		residuals.reinit((rdata.X).nrow,1);
 		sigma2=-1.;
-		loglik=-9.999e+32;
+		loglik=-9.999e+32; // should actually be MAX of the corresponding type
 		niter=-1;
 		chi2_score=-1.;
 	}
@@ -635,9 +635,35 @@ public:
 		//		delete beta;
 		//		delete sebeta;
 	}
-	void estimate(regdata &rdatain, int verbose, int maxiter, double eps, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> & invvarmatrix, int robust, int nullmodel=0)
+
+	void estimate(regdata &rdatain, int verbose, int maxiter, double eps, double tol_chol,
+			int model, int interaction, int ngpreds, mematrix<double> & invvarmatrixin, int robust,
+			int nullmodel=0)
 	{
+		// on the contrast to the 'linear' 'invvarmatrix' contains
+		// inverse of correlation matrix (not the inverse of var-cov matrix)
+		// h2.object$InvSigma * h.object2$h2an$estimate[length(h2$h2an$estimate)]
+		// the inverse of var-cov matrix scaled by total variance
 		regdata rdata = rdatain.get_unmasked_data();
+
+		// a lot of code duplicated between linear and logistic...
+		// e.g. a piece below...
+		mematrix<double> invvarmatrix;
+		if(invvarmatrixin.nrow!=0 && invvarmatrixin.ncol!=0)
+		{
+			invvarmatrix.reinit(rdata.nids,rdata.nids);
+			int i1=0, j1=0;
+			for (int i=0;i<rdata.nids;i++)
+				if (rdatain.masked_data[i]==0) {
+					j1 = 0;
+					for (int j=0;j<rdata.nids;j++) if (rdatain.masked_data[j]==0) {
+						invvarmatrix.put(invvarmatrixin.get(i,j),i1,j1);
+						j1++;
+					}
+					i1++;
+				}
+
+		}
 
 		mematrix<double> X = apply_model(rdata.X,model, interaction, ngpreds, false, nullmodel);
 		int length_beta = X.ncol;
@@ -668,9 +694,19 @@ public:
 
 		mematrix<double> tX = transpose(X);
 
-		//		if(invvarmatrix.nrow!=0 && invvarmatrix.ncol!=0) tX = X*invvarmatrix;
-
-
+		if(invvarmatrix.nrow!=0 && invvarmatrix.ncol!=0)
+		{
+			tX = tX*invvarmatrix;
+		}
+		/*
+		fprintf(stdout,"\n");
+		fprintf(stdout,"X %f %f %f\n",X.get(0,0),X.get(0,1),X.get(0,2));
+		if (X.ncol==4) fprintf(stdout,"X[4] %f\n",X.get(0,3));
+		fprintf(stdout,"Inv %f %f %f\n",invvarmatrix.get(0,0),invvarmatrix.get(0,1),invvarmatrix.get(0,2));
+		if (X.ncol==4) fprintf(stdout,"X[4] %f\n",invvarmatrix.get(0,3));
+		fprintf(stdout,"tXInv %f %f %f\n",tX.get(0,0),tX.get(1,0),tX.get(2,0));
+		if (X.ncol==4) fprintf(stdout,"X[4] %f\n",tX.get(3,0));
+		*/
 
 		double N;
 
@@ -700,21 +736,29 @@ public:
 			N = tXWX.get(0,0);
 
 			if (verbose) {printf("tXWX:\n");tXWX.print();}
+			//printf("tXWX:\n");tXWX.print();
 			//
 			// use cholesky to invert
 			//
 			tXWX_i = tXWX;
-			cholesky2_mm(tXWX_i,tol_chol);
-			if (verbose) {printf("chole tXWX:\n");tXWX_i.print();}
-			chinv2_mm(tXWX_i);
+			//cholesky2_mm(tXWX_i,tol_chol);
+			//if (verbose) {printf("chole tXWX:\n");tXWX_i.print();}
+			//printf("chole tXWX:\n");tXWX_i.print();
+			//chinv2_mm(tXWX_i);
 			// was before
-			// tXWX_i=invert(tXWX);
+			tXWX_i=invert(tXWX);
 			if (verbose) {printf("tXWX-1:\n");tXWX_i.print();}
+			//fprintf(stdout,"*** tXWX_i\n");tXWX_i.print();
 			mematrix<double> tmp1 = productMatrDiag(tX,W);
 			mematrix<double> tXWz = tmp1*z;
 			if (verbose) {printf("tXWz:\n");tXWz.print();}
 			beta = tXWX_i*tXWz;
+			//fprintf(stdout,"*** res: %f %f %f\n",residuals[0],residuals[1],residuals[2]);
+			//mematrix<double> txres = tx * residuals;
+			//fprintf(stdout,"*** txres\n");txres.print();
+			//beta = txwx_i* txres;
 			if (verbose) {printf("beta:\n");beta.print();}
+			//printf("beta:\n");beta.print();
 			// compute likelihood
 			prevlik = loglik;
 			loglik=0.;
@@ -780,6 +824,9 @@ public:
 			}
 		}
 		if (verbose) {printf("sebeta (%d):\n",sebeta.nrow);sebeta.print();}
+		//printf("sebeta (%d):\n",beta.nrow);beta.print();
+		//printf("sebeta (%d):\n",sebeta.nrow);sebeta.print();
+		//exit(1);
 	}
 	// just a stupid copy from linear_reg
 	void score(mematrix<double> &resid,regdata &rdata,int verbose, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> & invvarmatrix, int nullmodel=0)

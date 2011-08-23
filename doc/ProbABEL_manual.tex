@@ -1,6 +1,9 @@
 \title{ProbABEL manual}
-\author{Yurii Aulchenko, Maksim Struchalin, Lennart Karssen \\
-	Erasmus MC Rotterdam
+\author{
+Maksim Struchalin$^{1}$, Lennart Karssen$^{1}$, Yurii Aulchenko$^{1,2}$ \\ 
+\\
+$^{1}$Erasmus MC Rotterdam \\ 
+$^{2}$Institute of Cytology and Genetics SD RAS 
 }
 \date{\today}
 
@@ -27,6 +30,10 @@
 \DeclareMathOperator{\var}{\mathbf{var}}
 
 \makeindex
+
+\newcommand{\PA}{\texttt{ProbABEL-package}}
+\newcommand{\GA}{\texttt{GenABEL-package}}
+\newcommand{\DA}{\texttt{DatABEL-package}}
 
 \begin{document}
 \maketitle
@@ -76,22 +83,29 @@ probability distribution into account is achieved by
 performing association analysis by means of regression of the
 outcome of interest onto estimated genotypic probabilities.
 
-The \texttt{ProbABEL} package was designed to perform such regression
+The \PA{} package was designed to perform such regression
 in a fast, memory-efficient and consequently genome-wide feasible manner.
-Currently, \texttt{ProbABEL} implements linear, logistic regression,
+Currently, \PA{} implements linear, logistic regression,
 and Cox proportional hazards models. The corresponding analysis
 programs are called \texttt{palinear},  \texttt{palogist},
 and \texttt{pacoxph}.
 
 
 \section{Input files}
-\texttt{ProbABEL} takes three files as input: a file containing SNP
+\PA{} takes three files as input: a file containing SNP
 information (e.g.~the MLINFO file of MACH), a file with genome- or
 chromosome-wide predictor information (e.g.~the MLDOSE or MLPROB file of MACH),
 and a file containing the phenotype of interest and covariates.
 
 Optionally, the map information can be supplied (e.g.~the "legend"
 files of HapMap).
+
+The dose/probability file may be supplied in filevector format
+in which case \PA{} will operate much faster, and
+in low-RAM mode (approx. $\approx$ 128 MB). See the R libraries \GA{} and
+\DA{} on how to convert MACH and IMPUTE files to
+filevector format (functions: \texttt{mach2databel()} and
+\texttt{impute2databel()}, respectively).
 
 \subsection{SNP information file}
 \label{ssec:infoin}
@@ -103,7 +117,7 @@ metrics (``Quality'', the average maximum posterior probability and
 ``Rsq'', the proportion of variance decrease after imputations).
 
 Actually,
-for \texttt{ProbABEL}, it does not matter what is written in this file --
+for \PA{}, it does not matter what is written in this file --
 this information is just brought forward to the output. However,
 \textbf{it is critical} that the number of columns is seven and the number
 of lines in the file is equal to the number of SNPs in the
@@ -239,7 +253,7 @@ found in the \texttt{ProbABEL/bin/} directory after you have compiled
 the program).
 
 There are in total 11 command line options you can specify to the
-\texttt{ProbABEL} analysis functions \texttt{palinear} or
+\PA{} analysis functions \texttt{palinear} or
 \texttt{palogist}. If you run either program without any argument, you
 will get a short explanation to command line options:
 \begin{verbatim}
@@ -350,25 +364,25 @@ amount of covariates (this is different from previous versions). The
 first column contains id names, the second the trait. The others are
 covariates.
 
-An example of how a polygenic object estimated by GenABEL can be used
+An example of how a polygenic object estimated by \GA{} can be used
 with ProbABEL is provided in \texttt{../example/mmscore.R}
 
 Though technically \texttt{--mmscore} allows for inclusion of multiple
 covariates, these should be kept to minimum as this is a score test. We
 suggest that any covariates explaining an essential proportion of
-variance should be fit as part of \texttt{GenABEL}'s
+variance should be fit as part of \GA{}'s
 \texttt{polygenic} procedure.
 
 %Option \texttt{--interaction\_only} is like \texttt{--interaction} but does not
 %include in the model the main effect of the covariate, which is acting in
 %interaction with SNP. This option is useful when running \texttt{--mmscore},
 %in whch case the main effect should normally estimated in the polygenic
-%model and only the interaction term in the \texttt{ProbABEL} analysis.
+%model and only the interaction term in the \PA{} analysis.
 
 \subsection{Running multiple analyses at once: \texttt{probabel.pl}}
 
 The Perl script \texttt{bin/probabel.pl\_example} represents a handy
-wraper for \texttt{ProbABEL} functions.  To start using it the
+wraper for \PA{} functions.  To start using it the
 configuration file \texttt{bin/probabel\_config.cfg\_example} needs to
 be edited. The configuration file consists of five columns. Each
 column except the first is a pattern for files produced by
@@ -383,7 +397,7 @@ need to include the pattern for the chromosome as used in the column
 for the ``mlinfo'' files. Probably you also have to change the variable
 \texttt{\$config} in the script to point to the full path of the
 configuration file and the variable \texttt{@anprog} to point full
-path to the \texttt{ProbABEL} scripts.
+path to the \PA{} scripts.
 
 
 \section{Output file format}
@@ -412,7 +426,7 @@ number of subjects for whom complete phenotypic information was available.
 At this point, unless you have complete measurements on all
 subjects, you should feel alarmed if the number here is exactly the
 number of people in the file -- this probably indicates you did not code
-missing values according to \texttt{ProbABEL} format ('NA', 'NaN', or 'N').
+missing values according to \PA{} format ('NA', 'NaN', or 'N').
 
 The next column, nine (``Mean\_predictor\_allele''), gives the estimated
 frequency of the predictor allele in subjects with complete phenotypic data.
@@ -433,13 +447,23 @@ data in right format. Please read this script for details.
 
 \section{Memory use and performance}
 Maximum likelihood regression is implemented in
-\texttt{ProbABEL}. With 6,000 people and 2.5 millions SNPs, a
+\PA{}. With 6,000 people and 2.5 millions SNPs, a
 genome-wide scan is completed in less that an hour for a linear model
 with 1-2 covariates and overnight for logistic regression or the Cox
-proportional hazards model.
+proportional hazards model (figures for a PC bought back in 2007).
 
-Memory is an issue with \texttt{ProbABEL} -- large chromosomes,
+Memory may be an issue with \PA{} if you use 
+MACH text dose/probability files, e.g. for large chromosomes,
 such as chromosome one consumed up to 5 GB of RAM with 6,000 people.
+
+We suggest that dose/probability file is to be supplied in filevector format
+in which case \PA{} will operate about 2-3 times faster, and
+in low-RAM mode (approx.~128 MB). See the R libraries \GA{} and
+\DA{} on how to convert MACH and IMPUTE files to
+filevector format (functions: \texttt{mach2databel()} and
+\texttt{impute2databel()}, respectively).
+
+When '--mmscore' option is used, the analysis may take quite some time. 
 
 \section{Methodology}
 \label{sec:methodology}
@@ -598,7 +622,7 @@ The implementation of the Cox proportional hazard model used
 \index{Cox proportional hazards model}
 \index{proportional hazards model}
 \index{regression!Cox proportional hazards}
-in \texttt{ProbABEL} is entirely based on the code of \texttt{R}
+in \PA{} is entirely based on the code of \texttt{R}
 library \texttt{survival} developed by Thomas Lumley
 (function \texttt{coxfit2}), and is therefore not described here.
 
@@ -742,14 +766,14 @@ which, when homozygous, corresponds to the genotype coded as ``1''.
 
 \section{How to cite}
 
-If you used \texttt{ProbABEL} for
-your analysis please give a link to the \texttt{ABEL} home
+If you used \PA{} for
+your analysis please give a link to the \texttt{GenABEL project} home
 page
 
 \begin{quote}
 \url{http://www.genabel.org/}
 \end{quote}
-and cite the \texttt{ProbABEL} paper to give us some credit:
+and cite the \PA{} paper to give us some credit:
 \begin{quote}
 Aulchenko YS, Struchalin MV, van Duijn CM.\\
 \emph{ProbABEL package for genome-wide association analysis of imputed data.}\\
@@ -757,15 +781,15 @@ BMC Bioinformatics. 2010, 11:134.
 \end{quote}
 A proper reference may look like
 \begin{quote}
-For the analysis of imputed data, we used the \texttt{ProbABEL} package
-from the GenABEL suite of programs (Aulchenko \emph{et al.}, 2010).
+For the analysis of imputed data, we used the \PA{} 
+from the \texttt{GenABEL} suite of programs (Aulchenko \emph{et al.}, 2010).
 \end{quote}
 
 If you have used the Cox proportional hazard model, please mention the
 \texttt{R} package \texttt{survival} by Thomas Lumley. Additionally
 to the above citation, please tell that
 \begin{quote}
-The Cox proportional hazards model implemented in \texttt{ProbABEL}
+The Cox proportional hazards model implemented in \PA{}
 makes use of the source code of the \texttt{R} package ''\texttt{survival}''
 as implemented by T. Lumley.
 \end{quote}

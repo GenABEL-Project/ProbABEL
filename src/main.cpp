@@ -303,9 +303,12 @@ int main(int argc, char * argv [])
 
 	mematrix<double> invvarmatrix;
 
+/*
+ * now should be possible... delete this part later when everything works
 #if LOGISTIC		
 	if(inverse_filename != NULL) {std::cerr<<"ERROR: mmscore is forbidden for logistic regression\n";exit(1);}
 #endif
+*/
 
 #if COXPH
 	if(inverse_filename != NULL) {std::cerr<<"ERROR: mmscore is forbidden for cox regression\n";exit(1);}
