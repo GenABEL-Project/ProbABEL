@@ -1,8 +1,10 @@
 ## Process this file with automake to produce Makefile.in
 
-dist_doc_DATA = ProbABEL_manual.tex QuickStart.txt			\
- short_coxph_data.txt short_height.out.csv			\
- short_height.txt short_logist_data.txt test_regression.R	\
+dist_doc_DATA = ProbABEL_manual.tex QuickStart.txt \
+ short_coxph_data.txt short_height_base_add.out.txt.save	\
+ short_height.txt short_logist_data.txt short_test.mldose \
+ test.map test.mlinfo \ 
+ test_regression.R	\
  COPYING LICENSE INSTALL CHANGES.LOG TODO
 
 

@@ -1,0 +1,6 @@
+name A1 A2 Freq1 MAF Quality Rsq n Mean_predictor_allele chrom 
++>  position beta_SNP_add sebeta_SNP_add chi2_SNP
+rs7247199 G A 0.5847 0.415 0.9299 0.8666 182 0.564439 19
++>  204938 -0.218693 0.734966 0.0905063
+rs8102643 C T 0.5847 0.415 0.9308 0.8685 182 0.564412 19
++>  207859 -0.218352 0.734214 0.0904094

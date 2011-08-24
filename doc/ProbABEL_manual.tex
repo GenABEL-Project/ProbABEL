@@ -124,9 +124,9 @@ of lines in the file is equal to the number of SNPs in the
 corresponding DOSE file (plus one for the header line).
 
 The example of SNP information file content follows here (also
-to be found in \texttt{ProbABEL/example/test.mlinfo})
+to be found in \texttt{ProbABEL/examples/test.mlinfo})
 
-\verbatiminput{../example/test.mlinfo}
+\verbatiminput{test.mlinfo}
 
 Note that header line is present in the file. The file describes
 five SNPs.
@@ -146,9 +146,11 @@ MACH input files). The second column contains the method  keyword
 
 An example of the few first lines of an MLDOSE file for
 five SNPs described in SNP information file follows here (also
-to be found in the file \texttt{../example/test.mldose})
+to be found in the file \texttt{ProbABEL/examples/test.mldose})
 
 \verbatiminput{short_test.mldose}
+%\immediate\write18{head -n 10 INSTALL > tmp.txt}
+
 
 \textbf{The order of SNPs in the SNP information file and DOSE-file
 must be the same}. This should be the case if you just used MACH outputs.
@@ -190,7 +192,7 @@ under analysis, while the third, fourth, etc.~provide information on
 covariates to be included into analysis.
 An example few lines of phenotypic information file designed for
 linear regression analysis follow here (also
-to be found in \texttt{../example/height.txt})
+to be found in \texttt{ProbABEL/examples/height.txt})
 
 \verbatiminput{short_height.txt}
 
@@ -204,7 +206,7 @@ specifying another column having a product of sex and age here.
 For logistic regression, it is assumed that in the second column cases are
 coded as ``1'' and controls as ``0''. An couple of example lines of a phenotypic
 information file designed for logistic regression analysis follow here (also
-to be found in \texttt{../example/logist\_data.txt})
+to be found in \texttt{ProbABEL/examples/logist\_data.txt})
 
 \verbatiminput{short_logist_data.txt}
 
@@ -220,7 +222,7 @@ and zero if censored). Columns starting from four (inclusive) specify
 covariates to be included into the analysis. An example few lines of
 a phenotypic information file designed for the Cox proportional hazards model
 analysis follow here (also to be found in
-\texttt{../example/coxph\_data.txt})
+\texttt{ProbABEL/examples/coxph\_data.txt})
 
 \verbatiminput{short_coxph_data.txt}
 
@@ -236,9 +238,10 @@ at baseline), sex and ``othercov''; thus the model, in terms of
 If you would like map information (e.g.~base pair position) to
 be included in your outputs, you can supply a map file. These follow
 HapMap "legend" file format. For example, for the five SNPs we considered
-the map-file may look like
+the map-file may look like (example can be found in
+\texttt{ProbABEL/examples/test.map})
 
-\verbatiminput{../example/test.map}
+\verbatiminput{test.map}
 
 The order of the SNPs in the map file should follow that in the SNP information
 file. Only information from the second column -- the SNP location -- is
@@ -303,10 +306,10 @@ specifying the phenotypic data file described in sub-section \ref{ssec:phenoin};
 \texttt{--info} (or \texttt{-i}),
 specifying the SNP information file described in sub-section \ref{ssec:infoin}.
 
-If you change to the \texttt{ProbABEL/example} directory you can run
+If you change to the \texttt{ProbABEL/examples} directory you can run
 an analysis of height by running
 \begin{verbatim}
-user@server:~/ProbABEL/example/$ ../bin/palinear -p height.txt
+user@server:~/ProbABEL/examples/$ ../bin/palinear -p height.txt
 -d test.mldose -i test.mlinfo
 \end{verbatim}
 Output from the analysis will be directed to the
@@ -314,13 +317,13 @@ Output from the analysis will be directed to the
 
 The analysis of a binary trait (e.g.~chd) can be run with
 \begin{verbatim}
-user@server:~/ProbABEL/example/$ ../bin/palogist -p logist_data.txt
+user@server:~/ProbABEL/examples/$ ../bin/palogist -p logist_data.txt
 				 -d test.mldose -i test.mlinfo
 \end{verbatim}
 
 To run a Cox proportional hazards model, try
 \begin{verbatim}
-user@server:~/ProbABEL/example/$ ../bin/pacoxph -p coxph_data.txt
+user@server:~/ProbABEL/examples/$ ../bin/pacoxph -p coxph_data.txt
 				 -d test.mldose -i test.mlinfo
 \end{verbatim}
 
@@ -332,7 +335,7 @@ To run an analysis with MLPROB files, you need specify the MLPROB file
 with the \texttt{-d} option and also specify that there are two
 genetic predictors per SNP, e.g.~you can run linear model with
 \begin{verbatim}
-user@server:~/ProbABEL/example/$ ../bin/palinear -p height.txt
+user@server:~/ProbABEL/examples/$ ../bin/palinear -p height.txt
 				 -d test.mlprob -i test.mlinfo
 				 --ngpreds=2
 \end{verbatim}
@@ -365,7 +368,7 @@ first column contains id names, the second the trait. The others are
 covariates.
 
 An example of how a polygenic object estimated by \GA{} can be used
-with ProbABEL is provided in \texttt{../example/mmscore.R}
+with ProbABEL is provided in \texttt{ProbABEL/examples/mmscore.R}
 
 Though technically \texttt{--mmscore} allows for inclusion of multiple
 covariates, these should be kept to minimum as this is a score test. We
@@ -405,11 +408,11 @@ Let us consider what comes out of the linear regression analysis
 described in the previous section. After the analysis has run, in
 the output file you will find something like
 \begin{small}
-\verbatiminput{short_height.out.csv}
+\verbatiminput{short_height_base_add.out.txt.save}
 \end{small}
 
 Here, only the first three lines of output have been shown. Note that lines
-starting with \texttt{...} are actually the ones continuing the
+starting with \texttt{+>} are actually the ones continuing the
 previous line -- they have just been wrapped so we can see
 these long lines.
 
@@ -422,22 +425,22 @@ analysis.
 
 In contrast, starting with the next column, named \texttt{n},
 the output concerns the data analysed. Column 8 (\texttt{n}) tells the
-number of subjects for whom complete phenotypic information was available.
-At this point, unless you have complete measurements on all
+number of subjects for whom complete phenotypic information was
+available. At this point, unless you have complete measurements on all
 subjects, you should feel alarmed if the number here is exactly the
-number of people in the file -- this probably indicates you did not code
+number of people in the file -- this may indicate you did not code
 missing values according to \PA{} format ('NA', 'NaN', or 'N').
 
 The next column, nine (``Mean\_predictor\_allele''), gives the estimated
-frequency of the predictor allele in subjects with complete phenotypic data.
+frequency of the predictor allele (\texttt{A1}) in subjects with complete
+phenotypic data.
 
 If the \texttt{--chrom} option was used, in the next column you will
 find the value specified by this option. If \texttt{--map} option was
 used, in the subsequent column you will find map location taken from
 the map-file. The subsequent columns provide coefficients of
-regression of the phenotype onto genotype corresponding standard
-errors, and log-likelihood % $\chi^2$
-of the model at the point of MLEs.
+regression of the phenotype onto genotype, corresponding standard
+errors, and Wald $\chi^2$ test value.
 
 
 \section{Preparing input files}
