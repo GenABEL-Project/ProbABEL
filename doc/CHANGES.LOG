@@ -1,18 +1,19 @@
 ***** v.0.2-0 (2011.08.23)
 
-* ProbABEL can now (experimentally!) analyze binary traits accounting for relationship 
-structure (thanks to Yurii and Nicola Pirastu). This adds '--mmscore' 
-option for logistic regression. Important: on the contrast to the 
-'palinear' the matrix which should be supplied to palogist with 
---mmscore should contain an inverse of the correlation matrix (not 
-the inverse of var-cov matrix, as is the case for 'palinear' with 
---mmscore). This matrix can be obtained through (GenABEL notation):
+* ProbABEL can now (experimentally!) analyze binary traits accounting
+for relationship structure (thanks to Yurii and Nicola Pirastu). This
+adds '--mmscore' option for logistic regression. Important: on the
+contrast to the 'palinear' the matrix which should be supplied to
+palogist with --mmscore should contain an inverse of the correlation
+matrix (not the inverse of var-cov matrix, as is the case for
+'palinear' with --mmscore). This matrix can be obtained through
+(GenABEL notation):
 
 h2.object$InvSigma * h.object2$h2an$estimate[length(h2$h2an$estimate)]
 
-where h2.object is the object returned by 'polygenic()'. Documentation 
-explains this procedure in more details; a wrapper function to prepare 
-and export correct objects for ProbABEL is planned. (thanks to Yurii) 
+where h2.object is the object returned by 'polygenic()'. Documentation
+explains this procedure in more details; a wrapper function to prepare
+and export correct objects for ProbABEL is planned. (thanks to Yurii)
 
 - in probabel.pl the location for the probabel config file is now set
   to /etc/, the default location it will end up. Before it still
@@ -24,19 +25,24 @@ and export correct objects for ProbABEL is planned. (thanks to Yurii)
   using autotools.
 
 
-* ProbABEL uses autoconf and automake now (thanks to Lennart). To
-  install the package from source run
+* ProbABEL uses autoconf and automake now (thanks to Lennart).
+  After downloading the source from SVN run
+autoreconf -i
 
+  to generate the ./configure script and some other files (this is not
+  necessary when installing from the distributed .tar.gz file).
+
+  To compile and install the package run
 ./configure
 make
 make install
 
   This will install the binaries (palinear etc.) in /usr/local/bin/,
-  the documentation in /usr/local/share/doc/, the probabel_config.cfg
-  file in /usr/local/etc/, and the examples in
-  /usr/local/share/probabel/. The ./configure script tests for the
-  presence of the pdflatex program. If it is not present the PDF
-  version of the documentation will not be built.
+  the documentation in /usr/local/share/doc/probabel/, the
+  probabel_config.cfg file in /usr/local/etc/, and the examples in
+  /usr/local/share/ProbABEL/examples/. The ./configure script tests
+  for the presence of the pdflatex program. If it is not present the
+  PDF version of the documentation will not be built.
 
   NOTE: make install will OVERWRITE any file with the same name if it
   already exists. Also the probabel_config.cfg file in
