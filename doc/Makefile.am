@@ -1,11 +1,10 @@
 ## Process this file with automake to produce Makefile.in
 
-dist_doc_DATA = ProbABEL_manual.tex QuickStart.txt \
- short_coxph_data.txt short_height_base_add.out.txt.save	\
- short_height.txt short_logist_data.txt short_test.mldose \
- test.map test.mlinfo \ 
- test_regression.R	\
- COPYING LICENSE INSTALL CHANGES.LOG TODO
+dist_doc_DATA = ProbABEL_manual.tex QuickStart.txt			\
+ short_coxph_data.txt short_height_base_add.out.txt.save		\
+ short_height.txt short_logist_data.txt short_test.mldose test.map	\
+ test.mlinfo test_regression.R COPYING LICENSE INSTALL CHANGES.LOG	\
+ TODO
 
 
 if HAVE_PDFLATEX
