@@ -1,5 +1,6 @@
 These instructions show how to build ProbABEL.
 
+* Compiling for Linux
 
   If you downloaded the source from SVN (this is not
   necessary when installing from the distributed .tar.gz file), run:
@@ -54,3 +55,25 @@ make distclean
 make uninstall
 
   will uninstall the files previously installed by 'make install'.
+
+
+* Cross-compiling for Windows on Linux
+
+  The following steps show how to compile 32bit windows binaries on a
+  Linux machine.
+  First, install the necessary MINGW32 packages. On Debian/Ubuntu this
+  can be done in the following way:
+apt-get install mingw32{,-binutils,-runtime}
+
+  Now the binaries can be compiled (I've added a prefix so that when
+  running 'make install' the whole directory structure can be zipped
+  easily):
+./configure --host=i586-mingw32msvc --prefix=/tmp/PA
+make
+make install
+
+  This creates the binaries pacoxph.exe, palinear.exe and
+  palogist.exe (as well as the examples and documentation). The
+  contents of /tmp/PA can then be zipped and distributed. Note that
+  the directory structure of bin/, etc/ and share/ is still intact. We
+  probably want to change it to a flatter structure.
