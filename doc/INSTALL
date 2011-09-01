@@ -63,17 +63,32 @@ make uninstall
   Linux machine.
   First, install the necessary MINGW32 packages. On Debian/Ubuntu this
   can be done in the following way:
-apt-get install mingw32{,-binutils,-runtime}
+apt-get install mingw32{-binutils,-runtime} gcc-mingw32
 
   Now the binaries can be compiled (I've added a prefix so that when
   running 'make install' the whole directory structure can be zipped
   easily):
-./configure --host=i586-mingw32msvc --prefix=/tmp/PA
+./configure --host=i586-mingw32msvc --build=i686-linux-gnu \
+	    --prefix=/tmp/PA --sysconfdir=/tmp/PA/ \
+	    --datarootdir=/tmp/PA --docdir=/tmp/PA/doc
+
+  The --host option sets the type of the host the programs will be run
+  on, the --build option sets the type of machine you are building the
+  package on (cf. the Autoconf manual:
+  http://www.gnu.org/software/hello/manual/autoconf/Specifying-Target-Triplets.html). In
+  this example I was using a 32bit Ubuntu install. For a 64 bit linux
+  system this will be x86_64-linux-gnu. Note that the values for both
+  these options can be derived from the names of the compiler
+  executables, e.g. the gcc-mingw32 Debian package installs the
+  folowing C++ compiler: /usr/bin/i586-mingw32msvc-c++.
+  The --[somedir] options are used to make the directory structure as
+  flat as possible so that we don't bother Windows users with
+  subdirectories like 'share/' and 'etc/'.
+
+  Now you can run
 make
 make install
 
   This creates the binaries pacoxph.exe, palinear.exe and
   palogist.exe (as well as the examples and documentation). The
-  contents of /tmp/PA can then be zipped and distributed. Note that
-  the directory structure of bin/, etc/ and share/ is still intact. We
-  probably want to change it to a flatter structure.
+  contents of /tmp/PA can then be zipped and distributed.
