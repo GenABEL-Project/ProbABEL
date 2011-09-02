@@ -47,3 +47,8 @@ dist_bin_SCRIPTS = probabel.pl extIDS.pl
 
 ## Install the config file
 dist_sysconf_DATA = probabel_config.cfg
+
+## Insert the correct path to the configure file in probabel.pl
+install-exec-hook:
+	$(SED) -i "s;probabel_config.cfg;@sysconfdir@/probabel_config.cfg;" \
+		 $(DESTDIR)$(bindir)/probabel.pl

@@ -32,6 +32,9 @@ AC_FUNC_MALLOC
 AC_CHECK_FUNCS([pow putenv sqrt strdup strncasecmp])
 
 
+# Check for presence of sed. Needed to replace path to /etc in probabel.pl
+AC_PROG_SED
+
 # Check for presence of pdfLaTeX
 AC_CHECK_PROG(PDFLATEX, pdflatex, pdflatex)
 if test -z "$PDFLATEX"; then

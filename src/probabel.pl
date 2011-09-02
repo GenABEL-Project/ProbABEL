@@ -9,7 +9,7 @@
 #            Version:  1.5
 #            Created:  28-Oct-2008
 #           Revision:  none
-#  last modification:  11-Aug-2011
+#  last modification:  02-Sep-2011
 #
 #             Author:  Lennart C. Karssen,
 #                      Maksim V. Struchalin,
@@ -27,7 +27,7 @@
 
 
 $version="1.5";
-$release_data="11-Aug-2011";
+$release_data="02-Sep-2011";
 
 $_2df_file_postfix = "_2df.out.txt";
 $_add_file_postfix = "_add.out.txt";
@@ -42,7 +42,7 @@ $separator_cfg = ",";
 $separator_filename = "_._chr_._";
 
 $base_path = "./";
-$config = "/etc/probabel_config.cfg";
+$config = "probabel_config.cfg";
 
 @method = ("linear","logistic","coxph");
 @anprog = ($base_path . "palinear", $base_path . "palogist", $base_path . "pacoxph");
