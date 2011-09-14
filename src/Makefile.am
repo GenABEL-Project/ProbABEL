@@ -46,9 +46,11 @@ pacoxph_CFLAGS = -DCOXPH -I $(top_srcdir)/src/include
 dist_bin_SCRIPTS = probabel.pl extIDS.pl
 
 ## Install the config file
-dist_sysconf_DATA = probabel_config.cfg
+dist_sysconf_DATA = probabel_config.cfg.example
 
-## Insert the correct path to the configure file in probabel.pl
+## Insert the correct values of several variables in the installed probabel.pl
 install-exec-hook:
 	$(SED) -i "s;probabel_config.cfg;@sysconfdir@/probabel_config.cfg;" \
 		 $(DESTDIR)$(bindir)/probabel.pl
+	$(SED) -i "s;\./;@bindir@/;" $(DESTDIR)$(bindir)/probabel.pl
+	$(SED) -i "s;PROBABEL_VERSION;@VERSION@;" $(DESTDIR)$(bindir)/probabel.pl

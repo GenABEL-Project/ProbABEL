@@ -1,34 +1,18 @@
 #! /usr/bin/perl
 
-#============================================================================
+#==========================================================================
 #
 #           Filename:  probabel.pl
 #
 #        Description: Handy perl wrapper for ProbABEL functions
 #
-#            Version:  1.5
-#            Created:  28-Oct-2008
-#           Revision:  none
-#  last modification:  02-Sep-2011
-#
-#             Author:  Lennart C. Karssen,
-#                      Maksim V. Struchalin,
-#                      Yurii S. Aulchenko
-#            Company:  Erasmus MC,
-#                      Department of Epidemiology,
-#                      The Netherlands.
-#              Email:  l.karssen@erasmusmc.nl,
-#                      m.struchalin@erasmusmc.nl,
-#                      i.aoultchenko@erasmusmc.nl
-#
-#============================================================================
+#==========================================================================
 
+#==========================================================================
+# Set variables
+$version="PROBABEL_VERSION";
 
-
-
-$version="1.5";
-$release_data="02-Sep-2011";
-
+# Define some filename postfixes
 $_2df_file_postfix = "_2df.out.txt";
 $_add_file_postfix = "_add.out.txt";
 $_domin_file_postfix = "_domin.out.txt";
@@ -36,16 +20,19 @@ $_recess_file_postfix = "_recess.out.txt";
 $_over_domin_file_postfix = "_over_domin.out.txt";
 
 
-
-
+# Separators in the config file
 $separator_cfg = ",";
 $separator_filename = "_._chr_._";
 
+# Set file locations
 $base_path = "./";
+@anprog = ($base_path . "palinear",
+	   $base_path . "palogist",
+	   $base_path . "pacoxph");
 $config = "probabel_config.cfg";
 
-@method = ("linear","logistic","coxph");
-@anprog = ($base_path . "palinear", $base_path . "palogist", $base_path . "pacoxph");
+# Define the regression methods that are implemented
+@method = ("linear", "logistic", "coxph");
 
 %cohorts;
 @mlinfo;
@@ -54,9 +41,10 @@ $config = "probabel_config.cfg";
 @legend;
 
 
-
-#read config file
-open(CFG,"$config") or die "$!";
+#==========================================================================
+# Read config file
+open(CFG,"$config") or die "Reading configuration file failed: $!" .
+    "\nDid you forget to edit and rename the probabel_config.cfg.example file?\n";
 
 <CFG>; #skip the first line (header)
 
@@ -65,19 +53,17 @@ for(my $i=0 ; my $line = <CFG> ; $i++)
 	next if (/^#/);
 	chomp($line);
 	@line_array = split(/$separator_cfg/, $line);
-#	foreach (@line_array) {print $_."\n"}
-#	print "\n";
 	$cohorts{$line_array[0]} = $i;
 	$mlinfo[$i]  = $line_array[1];
 	$mldose[$i]  = $line_array[2];
 	$mlprobe[$i] = $line_array[3];
 	$legend[$i]  = $line_array[4];
-#	print "legend[$i]=".$legend[$i]."\n";
-#	print "mlprobe[$i]=".$mlprobe[$i]."\n";
 	}
 close(CFG);
 
 
+#==========================================================================
+# Print usage info if arguments are not correct
 if(@ARGV<6 || $ARGV[0] eq "--help")
 	{
 	print "\nUsage:
@@ -96,8 +82,9 @@ if(@ARGV<6 || $ARGV[0] eq "--help")
 
 	print "\n Details:\n";
 	print "   The probabel.pl script is used for analysis of imputed data.
-   First you have to create file with the phenotypes that you are going to use.
-   The first column contains ids in special order, the second: the trait which you are going analyze, the others containd covariates.
+   First you have to create a file with the phenotypes that you are going to use.
+   The first column contains ids in special order, the second: the trait which
+   you are going analyze, the others contains covariates.
    Like this =>
 
    id         phen1 covariate1  covariate2
@@ -114,25 +101,24 @@ if(@ARGV<6 || $ARGV[0] eq "--help")
 
    Then save it to folder where you are doing the analysis. The name of the file must be name_of_file.PHE, where name_of_file is any name.
 
-   Then run the following on the Linux command line:
+   Then run the following on the command line:
    probabel.pl 1 22 \"method\" \"cohort\" --model name_of_file
    Change \"method\" \"cohort\" --model to appropriate values\n";
 	print "\n	Version: $version";
-	print "\n	Release data: $release_data";
 	print "\n\n	Authors: Lennart Karssen   - l.karssen\@erasmusmc.nl,
  		 Maksim Struchalin - m.struchalin\@erasmusmc.nl,
-		 Yurii Aulchenko   - i.aoultchenko\@erasmusmc.nl.\n\n";
+		 Yurii Aulchenko   - yurii.aulchenko@gmail.com.\n\n";
 	exit;
 	}
 
 
+#==========================================================================
+# Put the command line arguments into variables and verify them
 $startchr = $ARGV[0];
 $endchr = $ARGV[1];
 $method = $ARGV[2];
 $chohort = $ARGV[3];
 $model = $ARGV[4];
-
-
 
 die "error: chrom-start is > 22" if($startchr > 22 && $startchr != "X") ;
 die "error: chrom-end is > 22" if($endchr > 22 && $endchr != "X");
@@ -169,9 +155,6 @@ for (my $i=0;$i<@method;$i++) {
 die "error: Wrong method. method has to be one of: @method\n" if (!$passed);
 
 
-
-
-
 $phename = $ARGV[5];
 $keys="";
 
@@ -204,7 +187,8 @@ else
 	}
 
 
-
+#==========================================================================
+# Start the analysis now that the input has been validated
 print "Start...\n";
 
 $chr = $startchr;
