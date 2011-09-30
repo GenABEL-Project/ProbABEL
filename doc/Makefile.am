@@ -15,7 +15,7 @@ MANAUX = $(MANNAME).aux
 doc_DATA = $(MANPDF)
 
 CLEANFILES = $(MANPDF) $(MANNAME).log $(MANNAME).idx $(MANNAME).out \
- $(MANNAME).toc $(MANAUX) .btmp
+ $(MANNAME).toc $(MANNAME).idx $(MANNAME).ilg $(MANNAME).ind $(MANAUX) .btmp
 
 endif
 
@@ -24,6 +24,7 @@ endif
 .aux.pdf:
 	@echo === Making final PDF ===
 	$(PDFLATEX) $(srcdir)/$(MANTEXSRC)
+	makeindex $(srcdir)/$(MANNAME)
 	@while ( grep "Rerun to " 			\
 		$(srcdir)/$(MANNAME).log  ); do		\
 		echo '** Re-running LaTeX **';		\
