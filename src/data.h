@@ -924,7 +924,7 @@ public:
 				std::stringstream line_stream(line);
 				line_stream >> id;
 
-				if(phe->idnames[row] != id) {std::cerr<<"error:in row "<<row<<" id="<<phe->idnames[row]<<" in inverce variance matrix but id="<<id<<" must be there. Wrong inverce variance matrix (only measured id must be there)\n";exit(1);}
+				if(phe->idnames[row] != id) {std::cerr<<"error:in row "<<row<<" id="<<phe->idnames[row]<<" in inverse variance matrix but id="<<id<<" must be there. Wrong inverse variance matrix (only measured id must be there)\n";exit(1);}
 
 				while (line_stream >> val)
 				{
