@@ -22,14 +22,16 @@ endif
 
 # Several make rules to generate the PDF from the LaTeX source
 .aux.pdf:
-	@echo === Making final PDF ===
+	@echo === Making PDF ===
 	$(PDFLATEX) $(srcdir)/$(MANTEXSRC)
-	makeindex $(srcdir)/$(MANNAME)
 	@while ( grep "Rerun to " 			\
-		$(srcdir)/$(MANNAME).log  ); do		\
+		$(MANNAME).log  ); do		\
 		echo '** Re-running LaTeX **';		\
-		$(PDFLATEX) $(srcdir)/$(MANTEXSRC);		\
+		$(PDFLATEX) $(srcdir)/$(MANTEXSRC);	\
 	done
+	@echo === Making index ===
+	makeindex $(MANNAME)
+	@echo === Making final PDF ===
 	$(PDFLATEX) $(srcdir)/$(MANTEXSRC)
 
 .tex.aux:
