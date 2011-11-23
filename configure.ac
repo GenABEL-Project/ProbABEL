@@ -31,6 +31,12 @@ AC_FUNC_ERROR_AT_LINE
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([pow putenv sqrt strdup strncasecmp])
 
+# Check if we can use large (>2GB) files on 32 bit platforms
+AC_SYS_LARGEFILE
+if test $ac_cv_sys_file_offset_bits != 'no'; then
+  CPPFLAGS="$CPPFLAGS -D_FILE_OFFSET_BITS=$ac_cv_sys_file_offset_bits"
+fi
+AC_FUNC_FSEEKO
 
 # Check for presence of sed. Needed to replace path to /etc in probabel.pl
 AC_PROG_SED
