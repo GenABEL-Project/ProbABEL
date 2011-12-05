@@ -385,6 +385,8 @@ public:
 		if(invvarmatrix.nrow!=0 && invvarmatrix.ncol!=0)
 		{
 			tX = tX*invvarmatrix;
+			//!check if quicker
+			//tX = productXbySymM(tX,invvarmatrix);
 			//			X = invvarmatrix*X; std::cout<<"new tX.nrow="<<X.nrow<<" tX.ncol="<<X.ncol<<"\n";
 		}
 

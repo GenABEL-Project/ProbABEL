@@ -23,7 +23,7 @@ mematrix<DT>::mematrix(int nr, int nc)
 		fprintf(stderr,"mematrix(nr,nc): cannot allocate memory (%d,%d)\n",nrow,ncol);
 		exit(1);
 	}
-//	fprintf(stderr,"mematrix(nr,nc): can allocate memory (%d,%d)\n",nrow,ncol);
+	//	fprintf(stderr,"mematrix(nr,nc): can allocate memory (%d,%d)\n",nrow,ncol);
 }
 template <class DT> 
 mematrix<DT>::mematrix(const mematrix <DT> & M)
@@ -37,7 +37,7 @@ mematrix<DT>::mematrix(const mematrix <DT> & M)
 		fprintf(stderr,"mematrix const(mematrix): cannot allocate memory (%d,%d)\n",M.nrow,M.ncol);
 		exit(1);
 	}
-//	fprintf(stderr,"mematrix const(mematrix): can allocate memory (%d,%d)\n",M.nrow,M.ncol);
+	//	fprintf(stderr,"mematrix const(mematrix): can allocate memory (%d,%d)\n",M.nrow,M.ncol);
 	for(int i=0 ; i<M.ncol*M.nrow;i++) data[i] = M.data[i];
 }	
 // 
@@ -60,7 +60,7 @@ mematrix<DT> &mematrix<DT>::operator=(const mematrix<DT> &M)
 		nrow = M.nrow;
 		nelements = M.nelements;
 		for(int i=0 ; i<M.ncol*M.nrow;i++) data[i] = M.data[i];
-//		fprintf(stderr,"mematrix=: can allocate memory (%d,%d)\n",M.nrow,M.ncol);
+		//		fprintf(stderr,"mematrix=: can allocate memory (%d,%d)\n",M.nrow,M.ncol);
 	}
 	return *this;
 }
@@ -115,7 +115,7 @@ mematrix<DT> mematrix<DT>::operator-(mematrix<DT> &M)
 template <class DT> 
 mematrix<DT> mematrix<DT>::operator*(DT toadd)
 {
-  // A che naschet std::string vmesto DT? Maksim.
+	// A che naschet std::string vmesto DT? Maksim.
 	mematrix<DT> temp(nrow,ncol);
 	for (int i=0;i<nelements;i++) temp.data[i] = data[i] * toadd;
 	return temp;
@@ -348,24 +348,66 @@ mematrix<DT> productMatrDiag(mematrix <DT> &M, mematrix <DT> &D)
 	for (int i=0;i<temp.nrow;i++)
 		for (int j=0;j<temp.ncol;j++)
 			temp.data[i*temp.ncol+j] = M.data[i*M.ncol+j]*D.data[j];
-//			temp.put(M.get(i,j)*D.get(j,0),i,j);
+	//			temp.put(M.get(i,j)*D.get(j,0),i,j);
 	return temp;
 }
- 
+
 template <class DT> 
 mematrix<double> todouble(mematrix <DT> &M)
 {
 	mematrix<double> temp(M.nrow,M.ncol);
 	for (int i=0;i<temp.nelements;i++)
-			temp.data[i] = double(M.data[i]);
+		temp.data[i] = double(M.data[i]);
 	return temp;
+}
+
+template <class DT>
+mematrix<DT> productXbySymM(mematrix <DT> &X, mematrix <DT> &M)
+{
+	if (M.ncol<1 || M.nrow<1 || X.ncol<1 || X.nrow < 1) {
+		fprintf(stderr,"productXbySymM: M.ncol<1 || M.nrow<1 || X.ncol<1 || X.nrow < 1\n");
+		exit(1);
+	}
+	if (M.ncol != M.nrow) {
+		fprintf(stderr,"productXbySymM: M.ncol != M.nrow\n");
+		exit(1);
+	}
+	if (M.ncol != X.ncol) {
+		fprintf(stderr,"productXbySymM: M.ncol != X.ncol\n");
+		exit(1);
+	}
+	if (M.ncol != X.ncol) {
+		fprintf(stderr,"productXbySymM: M.ncol != X.ncol\n");
+		exit(1);
+	}
+
+	mematrix<DT> out(X.nrow,X.ncol);
+	int i,j,k;
+
+	double temp1, temp2, value1, value2; // not good should be of <DT>!
+	for (k=0;k<X.nrow;k++) {
+		temp1 = 0.;
+		for (i=0;i<X.ncol;i++) {
+			temp1 = X.get(k,i);
+			temp2 = 0.;
+			for (j=(i+1);j<X.ncol;j++) {
+				value1 = out.get(k,j) + temp1*M.get(i,j);
+				out.put(value1,k,j);
+				temp2 += M.get(i,j)*X.get(k,j);
+			}
+			value2 = out.get(k,i) + temp2 + M.get(i,i)*X.get(k,i);
+			out.put(value2,k,i);
+		}
+	}
+
+	return out;
 }
 
 // written by Mike Dinolfo 12/98
 // modified Yurii Aulchenko 2008-04-22
 template <class DT> 
 mematrix<DT> invert(mematrix <DT> &M)
-  {
+{
 	if (M.ncol != M.nrow) 
 	{
 		fprintf(stderr,"invert: only square matrices possible\n");
@@ -388,194 +430,192 @@ mematrix<DT> invert(mematrix <DT> &M)
 			return temp;
 			//exit(1);
 		}
-		*/
+	 */
 	int actualsize = M.ncol;
 	int maxsize = M.ncol;
 	mematrix<DT> temp = M;
-    for (int i=1; i < actualsize; i++) temp.data[i] /= temp.data[0]; // normalize row 0
-    for (int i=1; i < actualsize; i++)  { 
-      for (int j=i; j < actualsize; j++)  { // do a column of L
-        DT sum = 0.0;
-        for (int k = 0; k < i; k++)  
-            sum += temp.data[j*maxsize+k] * temp.data[k*maxsize+i];
-        temp.data[j*maxsize+i] -= sum;
-        }
-      if (i == actualsize-1) continue;
-      for (int j=i+1; j < actualsize; j++)  {  // do a row of U
-        DT sum = 0.0;
-        for (int k = 0; k < i; k++)
-            sum += temp.data[i*maxsize+k]*temp.data[k*maxsize+j];
-        temp.data[i*maxsize+j] = 
-           (temp.data[i*maxsize+j]-sum) / temp.data[i*maxsize+i];
-        }
-      }
-    for ( int i = 0; i < actualsize; i++ )  // invert L
-      for ( int j = i; j < actualsize; j++ )  {
-        DT x = 1.0;
-        if ( i != j ) {
-          x = 0.0;
-          for ( int k = i; k < j; k++ ) 
-              x -= temp.data[j*maxsize+k]*temp.data[k*maxsize+i];
-          }
-        temp.data[j*maxsize+i] = x / temp.data[j*maxsize+j];
-        }
-    for ( int i = 0; i < actualsize; i++ )   // invert U
-      for ( int j = i; j < actualsize; j++ )  {
-        if ( i == j ) continue;
-        DT sum = 0.0;
-        for ( int k = i; k < j; k++ )
-            sum += temp.data[k*maxsize+j]*( (i==k) ? 1.0 : temp.data[i*maxsize+k] );
-        temp.data[i*maxsize+j] = -sum;
-        }
-    for ( int i = 0; i < actualsize; i++ )   // final inversion
-      for ( int j = 0; j < actualsize; j++ )  {
-        DT sum = 0.0;
-        for ( int k = ((i>j)?i:j); k < actualsize; k++ )  
-            sum += ((j==k)?1.0:temp.data[j*maxsize+k])*temp.data[k*maxsize+i];
-        temp.data[j*maxsize+i] = sum;
-        }
-    return temp;
-    }
+	for (int i=1; i < actualsize; i++) temp.data[i] /= temp.data[0]; // normalize row 0
+	for (int i=1; i < actualsize; i++)  {
+		for (int j=i; j < actualsize; j++)  { // do a column of L
+			DT sum = 0.0;
+			for (int k = 0; k < i; k++)
+				sum += temp.data[j*maxsize+k] * temp.data[k*maxsize+i];
+			temp.data[j*maxsize+i] -= sum;
+		}
+		if (i == actualsize-1) continue;
+		for (int j=i+1; j < actualsize; j++)  {  // do a row of U
+			DT sum = 0.0;
+			for (int k = 0; k < i; k++)
+				sum += temp.data[i*maxsize+k]*temp.data[k*maxsize+j];
+			temp.data[i*maxsize+j] =
+					(temp.data[i*maxsize+j]-sum) / temp.data[i*maxsize+i];
+		}
+	}
+	for ( int i = 0; i < actualsize; i++ )  // invert L
+		for ( int j = i; j < actualsize; j++ )  {
+			DT x = 1.0;
+			if ( i != j ) {
+				x = 0.0;
+				for ( int k = i; k < j; k++ )
+					x -= temp.data[j*maxsize+k]*temp.data[k*maxsize+i];
+			}
+			temp.data[j*maxsize+i] = x / temp.data[j*maxsize+j];
+		}
+	for ( int i = 0; i < actualsize; i++ )   // invert U
+		for ( int j = i; j < actualsize; j++ )  {
+			if ( i == j ) continue;
+			DT sum = 0.0;
+			for ( int k = i; k < j; k++ )
+				sum += temp.data[k*maxsize+j]*( (i==k) ? 1.0 : temp.data[i*maxsize+k] );
+			temp.data[i*maxsize+j] = -sum;
+		}
+	for ( int i = 0; i < actualsize; i++ )   // final inversion
+		for ( int j = 0; j < actualsize; j++ )  {
+			DT sum = 0.0;
+			for ( int k = ((i>j)?i:j); k < actualsize; k++ )
+				sum += ((j==k)?1.0:temp.data[j*maxsize+k])*temp.data[k*maxsize+i];
+			temp.data[j*maxsize+i] = sum;
+		}
+	return temp;
+}
 
 
 
 /*  SCCS @(#)cholesky2.c	5.2 10/27/98
-** subroutine to do Cholesky decompostion on a matrix: C = FDF'
-**   where F is lower triangular with 1's on the diagonal, and D is diagonal
-**
-** arguments are:
-**     n         the size of the matrix to be factored
-**     **matrix  a ragged array containing an n by n submatrix to be factored
-**     toler     the threshold value for detecting "singularity"
-**
-**  The factorization is returned in the lower triangle, D occupies the
-**    diagonal and the upper triangle is left undisturbed.
-**    The lower triangle need not be filled in at the start.
-**
-**  Return value:  the rank of the matrix (non-negative definite), or -rank
-**     it not SPD or NND
-**
-**  If a column is deemed to be redundant, then that diagonal is set to zero.
-**
-**   Terry Therneau
-*/
+ ** subroutine to do Cholesky decompostion on a matrix: C = FDF'
+ **   where F is lower triangular with 1's on the diagonal, and D is diagonal
+ **
+ ** arguments are:
+ **     n         the size of the matrix to be factored
+ **     **matrix  a ragged array containing an n by n submatrix to be factored
+ **     toler     the threshold value for detecting "singularity"
+ **
+ **  The factorization is returned in the lower triangle, D occupies the
+ **    diagonal and the upper triangle is left undisturbed.
+ **    The lower triangle need not be filled in at the start.
+ **
+ **  Return value:  the rank of the matrix (non-negative definite), or -rank
+ **     it not SPD or NND
+ **
+ **  If a column is deemed to be redundant, then that diagonal is set to zero.
+ **
+ **   Terry Therneau
+ */
 // modified Yurii Aulchenko 2008-05-20
 int cholesky2_mm(mematrix<double> &matrix, double toler)
 {
-    if (matrix.ncol != matrix.nrow) 
-    {
-	    fprintf(stderr,"cholesky2_mm: matrix should be square\n");
-	    exit(1);
-    }
-    int n = matrix.ncol;
-    double temp;
-    int  i,j,k;
-    double eps, pivot;
-    int rank;
-    int nonneg;
-
-    nonneg=1;
-    eps =0;
-    for (i=0; i<n; i++) {
-	if (matrix[i*n+i] > eps)  eps = matrix[i*n+i];
-	for (j=(i+1); j<n; j++)  matrix[j*n+i] = matrix[i*n+j];
+	if (matrix.ncol != matrix.nrow)
+	{
+		fprintf(stderr,"cholesky2_mm: matrix should be square\n");
+		exit(1);
 	}
-    eps *= toler;
+	int n = matrix.ncol;
+	double temp;
+	int  i,j,k;
+	double eps, pivot;
+	int rank;
+	int nonneg;
 
-    rank =0;
-    for (i=0; i<n; i++) {
-	pivot = matrix[i*n+i];
-	if (pivot < eps) {
-	    matrix[i*n+i] =0;
-	    if (pivot < -8*eps) nonneg= -1;
-	    }
-	else  {
-	    rank++;
-	    for (j=(i+1); j<n; j++) {
-		temp = matrix[j*n+i]/pivot;
-		matrix[j*n+i] = temp;
-		matrix[j*n+j] -= temp*temp*pivot;
-		for (k=(j+1); k<n; k++) matrix[k*n+j] -= temp*matrix[k*n+i];
+	nonneg=1;
+	eps =0;
+	for (i=0; i<n; i++) {
+		if (matrix[i*n+i] > eps)  eps = matrix[i*n+i];
+		for (j=(i+1); j<n; j++)  matrix[j*n+i] = matrix[i*n+j];
+	}
+	eps *= toler;
+
+	rank =0;
+	for (i=0; i<n; i++) {
+		pivot = matrix[i*n+i];
+		if (pivot < eps) {
+			matrix[i*n+i] =0;
+			if (pivot < -8*eps) nonneg= -1;
 		}
-	    }
+		else  {
+			rank++;
+			for (j=(i+1); j<n; j++) {
+				temp = matrix[j*n+i]/pivot;
+				matrix[j*n+i] = temp;
+				matrix[j*n+j] -= temp*temp*pivot;
+				for (k=(j+1); k<n; k++) matrix[k*n+j] -= temp*matrix[k*n+i];
+			}
+		}
 	}
-    return(rank * nonneg);
+	return(rank * nonneg);
 }
 
 void chinv2_mm(mematrix<double> &matrix)
 {
-    if (matrix.ncol != matrix.nrow) 
-    {
-	    fprintf(stderr,"cholesky2_mm: matrix should be square\n");
-	    exit(1);
-    }
+	if (matrix.ncol != matrix.nrow)
+	{
+		fprintf(stderr,"cholesky2_mm: matrix should be square\n");
+		exit(1);
+	}
 
-     int n = matrix.ncol;
-     register double temp;
-     register int i,j,k;
+	int n = matrix.ncol;
+	register double temp;
+	register int i,j,k;
 
-     /*
-     ** invert the cholesky in the lower triangle
-     **   take full advantage of the cholesky's diagonal of 1's
-     */
-     for (i=0; i<n; i++){
-	  if (matrix[i*n+i] >0) {
-	      matrix[i*n+i] = 1/matrix[i*n+i];   /*this line inverts D */
-	      for (j= (i+1); j<n; j++) {
-		   matrix[j*n+i] = -matrix[j*n+i];
-		   for (k=0; k<i; k++)     /*sweep operator */
-			matrix[j*n+k] += matrix[j*n+i]*matrix[i*n+k];
-		   }
-	      }
-	  }
-
-     /*
-     ** lower triangle now contains inverse of cholesky
-     ** calculate F'DF (inverse of cholesky decomp process) to get inverse
-     **   of original matrix
-     */
-     for (i=0; i<n; i++) {
-	  if (matrix[i*n+i]==0) {  /* singular row */
-		for (j=0; j<i; j++) matrix[j*n+i]=0;
-		for (j=i; j<n; j++) matrix[i*n+j]=0;
+	/*
+	 ** invert the cholesky in the lower triangle
+	 **   take full advantage of the cholesky's diagonal of 1's
+	 */
+	for (i=0; i<n; i++){
+		if (matrix[i*n+i] >0) {
+			matrix[i*n+i] = 1/matrix[i*n+i];   /*this line inverts D */
+			for (j= (i+1); j<n; j++) {
+				matrix[j*n+i] = -matrix[j*n+i];
+				for (k=0; k<i; k++)     /*sweep operator */
+					matrix[j*n+k] += matrix[j*n+i]*matrix[i*n+k];
+			}
 		}
-	  else {
-	      for (j=(i+1); j<n; j++) {
-		   temp = matrix[j*n+i]*matrix[j*n+j];
-		   if (j!=i) matrix[i*n+j] = temp;
-		   for (k=i; k<j; k++)
-			matrix[i*n+k] += temp*matrix[j*n+k];
-		   }
-	      }
-	  }
+	}
+
+	/*
+	 ** lower triangle now contains inverse of cholesky
+	 ** calculate F'DF (inverse of cholesky decomp process) to get inverse
+	 **   of original matrix
+	 */
+	for (i=0; i<n; i++) {
+		if (matrix[i*n+i]==0) {  /* singular row */
+			for (j=0; j<i; j++) matrix[j*n+i]=0;
+			for (j=i; j<n; j++) matrix[i*n+j]=0;
+		}
+		else {
+			for (j=(i+1); j<n; j++) {
+				temp = matrix[j*n+i]*matrix[j*n+j];
+				if (j!=i) matrix[i*n+j] = temp;
+				for (k=i; k<j; k++)
+					matrix[i*n+k] += temp*matrix[j*n+k];
+			}
+		}
+	}
 	// ugly fix to return only inverse
 	for (int col=1;col<n;col++)
-	for (int row=0;row<col;row++)
-		matrix[col*n+row] = matrix[row*n+col];
+		for (int row=0;row<col;row++)
+			matrix[col*n+row] = matrix[row*n+col];
 }
-
-
 
 //_________Maksim____________
 template <class DT>
 DT var(mematrix<DT> &M)
 {
-DT sum=0;
-for(int i=0;i<M.nelements;i++)
+	DT sum=0;
+	for(int i=0;i<M.nelements;i++)
 	{
-	sum+=M.data[i];
+		sum+=M.data[i];
 	}
-DT mean=sum/M.nelements;
+	DT mean=sum/M.nelements;
 
 
 
-DT sum2=0;
-for(int i=0;i<M.nelements;i++)
+	DT sum2=0;
+	for(int i=0;i<M.nelements;i++)
 	{
-	sum2 += pow(M.data[i]-mean,2);
+		sum2 += pow(M.data[i]-mean,2);
 	}
 
-return sum2/(M.nelements-1);
+	return sum2/(M.nelements-1);
 }
 //_________Maksim____________
 

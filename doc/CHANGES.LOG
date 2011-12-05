@@ -9,7 +9,7 @@ matrix (not the inverse of var-cov matrix, as is the case for
 'palinear' with --mmscore). This matrix can be obtained through
 (GenABEL notation):
 
-h2.object$InvSigma * h.object2$h2an$estimate[length(h2$h2an$estimate)]
+h2.object$InvSigma * h2.object$h2an$estimate[length(h2.object$h2an$estimate)]
 
 where h2.object is the object returned by 'polygenic()'. Documentation
 explains this procedure in more details; a wrapper function to prepare
