@@ -41,11 +41,13 @@ examplefiles = height_ngp2_robust_int1_over_domin.out.txt.save		\
  impute_with_missing_add.out.txt.save					\
  height_ngp2_robust_domin.out.txt.save height.txt
 
-exampledir = $(pkgdatadir)
+exampledir = $(pkgdatadir)/examples
 dist_example_DATA = $(examplefiles)
 
 TESTS_ENVIRONMENT = sh
 check_SCRIPTS = example_bt.sh example_qt.sh example_mms.sh
+# example_cox.sh: don't run this test. It takes several hours...
+
 TESTS = $(check_SCRIPTS)
 
 cleanfiles_bt = logist_add.out.txt logist_fv_add.out.txt
@@ -98,5 +100,6 @@ mmscore_prob_fv_recess.out.txt mmscore_prob_domin.out.txt		\
 mmscore_prob_recess.out.txt mmscore_prob_add.out.txt			\
 mmscore_prob_2df.out.txt mmscore_prob_fv_2df.out.txt
 
+cleanfiles_cox = coxph_add.out.txt coxph_fv_add.out.txt
 
-CLEANFILES = $(cleanfiles_bt) $(cleanfiles_qt) $(cleanfiles_mms)
+CLEANFILES = $(cleanfiles_bt) $(cleanfiles_qt) $(cleanfiles_mms) $(cleanfiles_cox)
