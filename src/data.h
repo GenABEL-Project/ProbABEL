@@ -14,6 +14,10 @@
 #include "fvlib/Logger.h"
 #include "fvlib/Transposer.h"
 
+/* Number of columns in info files */
+#define N_MACH_COLS 7
+#define N_MINIMAC_COLS 13
+
 extern bool is_interaction_excluded;
 
 void error(const char * format, ...)
@@ -813,17 +817,31 @@ public:
 		}
 		char tmp[100];
 		unsigned int nlin=0;
+		unsigned int ncols=0;
 		while (fscanf(infile,"%s", tmp)!=EOF) {
 			nlin++;
 		}
 		fclose(infile);
-		if (nlin % 7)
+		if (! (nlin % N_MACH_COLS))
 		{
-			fprintf(stderr,"mlinfo: number of columns != 7 in %s",filename);
+			/* The number of columns is as expected from MaCH output */
+			ncols = N_MACH_COLS;
+		} else if (! (nlin % N_MINIMAC_COLS))
+		{
+			/* The number of columns is as expected from Minimac output */
+			ncols = N_MINIMAC_COLS;
+		}
+		else
+		{
+			fprintf(stderr,
+				"info file: number of columns != %i or %i in %s\nIs this file really in MaCH or Minimac format?",
+				N_MACH_COLS,
+				N_MINIMAC_COLS,
+				filename);
 			exit(1);
 		}
-		nsnps = int(nlin/7) - 1;
-		printf("Number of SNPs = %d\n",nsnps);
+		nsnps = int(nlin/ncols) - 1;
+		printf("Number of SNPs = %d\n", nsnps);
 		name = new std::string [nsnps];
 		A1 = new std::string [nsnps];
 		A2 = new std::string [nsnps];
@@ -837,8 +855,8 @@ public:
 			fprintf(stderr,"mlinfo: cannot open file %s",filename);
 			exit(1);
 		}
-		for (int i =0;i<7;i++) fscanf(infile,"%s", tmp);
-		for (int i =0;i<nsnps;i++)
+		for (int i=0; i<ncols; i++) fscanf(infile,"%s", tmp);
+		for (int i=0; i<nsnps; i++)
 		{
 			fscanf(infile,"%s", tmp);
 			name[i] = tmp;
@@ -855,6 +873,16 @@ public:
 			fscanf(infile,"%s", tmp);
 			Rsq[i] = atof(tmp);
 			map[i] = "-999";
+			if (ncols > N_MACH_COLS)
+			{
+				/* More than N_MACH_COLS columns.
+				   Read the remaining columns and forget them
+				 */
+				for (int j=0; j++; j=ncols-N_MACH_COLS)
+				{
+				       fscanf(infile, "%s", tmp);
+				}
+			}
 		}
 		fclose(infile);
 		if (mapname!=NULL)

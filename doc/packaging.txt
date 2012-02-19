@@ -1,0 +1,45 @@
+This file explains how to generate packages (deb, rpm) for different Linux
+distributions.
+
+* Debian (and Ubuntu) packages
+** Install the necessary requirements
+   The following packages need to be installed (in addition to the
+   ones you need to compile the source anyway):
+   - dh-make
+   - fakeroot
+   - lintian
+** Building the package
+   First check to see if everything compiles and all files are included
+   in the automake files:
+    ./configure
+    make distcheck
+   If there are no errors, a tar.gz file of the source should be
+   created. Let's create the package.
+    cd dist-packages/deb
+   Debian packages must have lowercase letters, so we'll make a copy
+   of the tar.gz file
+    tar -xzf ../../ProbABEL-0.2-0-beta.tar.gz
+    mv ProbABEL-0.2-0-beta probabel-0.2-0-beta
+    cd probabel-0.2-0-beta
+    dh_make --single --email youremail@example.com \
+     --file ../probabel-0.2-0-beta.tar.gz --copyright gpl2 \
+     --packagename probabel
+
+   Hit the enter key to confirm the settings. Several files need to be
+   edited (or at least checked to see if they are still up to date).
+   - debian/control
+   - debian/changelog
+   - debian/copyright
+   - debian/README.Debian
+   dh_make also creates several example scripts in the debian/
+   directory. We don't need them, so they can be delete:
+    rm debian/*.ex
+   Now the package can be built:
+    dpkg-buildpackage -rfakeroot -us -uc
+   This creates a ~.deb~ file in the parent directory. As a
+   final touch you can check you package for errors with
+    lintian ../probabel_0.2-0-beta-1_amd64.deb
+   Several warnings will show up (e.g. binaries without man-pages),
+   but we ignore these for now. If you are interested in a more
+   detailed explanation of the warnings, add the -i option to the
+   lintian command.
