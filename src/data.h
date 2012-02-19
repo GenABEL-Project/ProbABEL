@@ -36,7 +36,7 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
 	FILE * infile;
 	// first pass -- find unmeasured people
 	if ((infile=fopen(fname,"r"))==NULL) {
-		fprintf(stderr,"Nmeasured: can not open file %s\n",fname);
+		fprintf(stderr,"Nmeasured: cannot open file %s\n",fname);
 	}
 	char tmp[100];
 
@@ -137,7 +137,7 @@ public:
 		FILE * infile;
 		// first pass -- find unmeasured people
 		if ((infile=fopen(fname,"r"))==NULL) {
-			fprintf(stderr,"phedata: can not open file %s\n",fname);
+			fprintf(stderr,"phedata: cannot open file %s\n",fname);
 		}
 
 
@@ -225,7 +225,7 @@ public:
 
 		// second pass -- read the data
 		if ((infile=fopen(fname,"r"))==NULL) {
-			fprintf(stderr,"phedata: can not open file %s\n",fname);
+			fprintf(stderr,"phedata: cannot open file %s\n",fname);
 			exit(1);
 		}
 
@@ -304,7 +304,7 @@ void gendata::get_var(int var, float * data)
 		for (unsigned int i=0;i<DAG->getNumObservations();i++) if (!DAGmask[i]) data[j++] = tmpdata[i];
 		//fprintf(stdout,"%i %i %i\n",j,DAG->get_nobservations(),nids);
 	}
-	else error("can not get gendata");
+	else error("cannot get gendata");
 }
 
 gendata::gendata()
@@ -361,7 +361,7 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
 	FILE * infile;
 
 	if ((infile=fopen(fname,"r"))==NULL) {
-		fprintf(stderr,"gendata: can not open file %s\n",fname);
+		fprintf(stderr,"gendata: cannot open file %s\n",fname);
 	}
 
 	char tmp[100],tmpn[100];
@@ -683,7 +683,7 @@ public:
 					}
 			if (passed != 1)
 			{
-				fprintf(stderr,"can not recover element %d\n",i);
+				fprintf(stderr,"cannot recover element %d\n",i);
 				exit(1);
 			}
 		}
@@ -808,7 +808,7 @@ public:
 		FILE * infile = fopen(filename,"r");
 		if (infile == NULL)
 		{
-			fprintf(stderr,"mlinfo: can not open file %s",filename);
+			fprintf(stderr,"mlinfo: cannot open file %s",filename);
 			exit(1);
 		}
 		char tmp[100];
@@ -834,7 +834,7 @@ public:
 		map = new std::string [nsnps];
 		if ((infile = fopen(filename,"r"))==NULL)
 		{
-			fprintf(stderr,"mlinfo: can not open file %s",filename);
+			fprintf(stderr,"mlinfo: cannot open file %s",filename);
 			exit(1);
 		}
 		for (int i =0;i<7;i++) fscanf(infile,"%s", tmp);
@@ -864,7 +864,7 @@ public:
 			char line [BFS], tmp[BFS];
 			if (!instr.is_open())
 			{
-				fprintf(stderr,"mlinfo: can not open file %s",mapname);
+				fprintf(stderr,"mlinfo: cannot open file %s",mapname);
 				exit(1);
 			}
 			instr.getline(line,BFS);
@@ -945,7 +945,7 @@ public:
 		}
 		else
 		{
-			fprintf(stderr,"error: inv file: can not open file '%s'\n",filename_);
+			fprintf(stderr,"error: inv file: cannot open file '%s'\n",filename_);
 		}
 
 
