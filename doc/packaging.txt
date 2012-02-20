@@ -15,14 +15,16 @@ distributions.
     make distcheck
    If there are no errors, a tar.gz file of the source should be
    created. Let's create the package.
-    cd dist-packages/deb
-   Debian packages must have lowercase letters, so we'll make a copy
-   of the tar.gz file
-    tar -xzf ../../ProbABEL-0.2-0-beta.tar.gz
-    mv ProbABEL-0.2-0-beta probabel-0.2-0-beta
-    cd probabel-0.2-0-beta
+    mkdir /tmp/PA-deb
+    cp ProbABEL-0.2.0-beta.tar.gz /tmp/PA-deb
+    cd /tmp/PA-deb
+   Debian packages must have lowercase letters, so we'll have to rename
+   the directory after untar-ing it.
+    tar -xzf ProbABEL-0.2.0-beta.tar.gz
+    mv ProbABEL-0.2.0-beta probabel-0.2-0-beta
+    cd probabel-0.2.0-beta
     dh_make --single --email youremail@example.com \
-     --file ../probabel-0.2-0-beta.tar.gz --copyright gpl2 \
+     --file ../ProbABEL-0.2.0-beta.tar.gz --copyright gpl2 \
      --packagename probabel
 
    Hit the enter key to confirm the settings. Several files need to be
@@ -38,8 +40,11 @@ distributions.
     dpkg-buildpackage -rfakeroot -us -uc
    This creates a ~.deb~ file in the parent directory. As a
    final touch you can check you package for errors with
-    lintian ../probabel_0.2-0-beta-1_amd64.deb
+    lintian ../probabel_0.2.0-beta-1_amd64.deb
    Several warnings will show up (e.g. binaries without man-pages),
    but we ignore these for now. If you are interested in a more
    detailed explanation of the warnings, add the -i option to the
    lintian command.
+   These last two commands can be run in one go using debuild (which
+   is part of the devscripts package):
+    debuild -i -us -uc -b
