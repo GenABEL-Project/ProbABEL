@@ -6,7 +6,7 @@ dist_doc_DATA = ProbABEL_manual.tex QuickStart.txt			\
  test.mlinfo test_regression.R COPYING LICENSE INSTALL CHANGES.LOG	\
  TODO
 
-man_MANS = palinear.1
+man_MANS = palinear.1 palogist.1 pacoxph.1
 EXTRA_DIST = $(man_MANS)
 
 if HAVE_PDFLATEX

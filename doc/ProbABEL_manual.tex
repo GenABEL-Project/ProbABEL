@@ -1,9 +1,9 @@
 \title{ProbABEL manual}
 \author{
-Maksim Struchalin$^{1}$, Lennart Karssen$^{1}$, Yurii Aulchenko$^{1,2}$ \\ 
+Maksim Struchalin$^{1}$, Lennart Karssen$^{1}$, Yurii Aulchenko$^{1,2}$ \\
 \\
-$^{1}$Erasmus MC Rotterdam \\ 
-$^{2}$Institute of Cytology and Genetics SD RAS 
+$^{1}$Erasmus MC Rotterdam \\
+$^{2}$Institute of Cytology and Genetics SD RAS
 }
 \date{\today}
 
@@ -179,7 +179,7 @@ The first column should contain personal study IDs. It is assumed
 that \textbf{both the total number and the order of these IDs are
 exactly the same as in the genomic predictor (MLDOSE) file described in
 previous section}. This is not difficult to arrange using e.g.~\texttt{R};
-an example is given in the \texttt{ProbABEL/examples} directory.
+an example is given in the \texttt{examples} directory.
 
 \textbf{Missing data should be coded with 'NA', 'N' or 'NaN' codes.} Any
 other coding will be converted to some number which will be used in
@@ -192,13 +192,16 @@ under analysis, while the third, fourth, etc.~provide information on
 covariates to be included into analysis.
 An example few lines of phenotypic information file designed for
 linear regression analysis follow here (also
-to be found in \texttt{ProbABEL/examples/height.txt})
+to be found in \texttt{examples/height.txt})
 
 \verbatiminput{short_height.txt}
 
 Note again that the order of IDs is the same between the MLDOSE file
 and the phenotypic data file. The model specified by this file is
-$height \sim \mu + \textrm{sex} + \textrm{age}$, where $\mu$ is the intercept.
+\begin{equation*}
+\textrm{height} \sim \mu + \textrm{sex} + \textrm{age},
+\end{equation*}
+where $\mu$ is the intercept.
 
 Clearly, you can for example include \texttt{sex $\times$ age} interaction terms by
 specifying another column having a product of sex and age here.
@@ -206,13 +209,17 @@ specifying another column having a product of sex and age here.
 For logistic regression, it is assumed that in the second column cases are
 coded as ``1'' and controls as ``0''. An couple of example lines of a phenotypic
 information file designed for logistic regression analysis follow here (also
-to be found in \texttt{ProbABEL/examples/logist\_data.txt})
+to be found in \texttt{examples/logist\_data.txt})
 
 \verbatiminput{short_logist_data.txt}
 
 You can see that in the first 10 people, there are three cases, as indicated
 by ''chd'' equal to one. The model specified by this file
-is $\textrm{chd} \sim \mu + \textrm{sex} + \textrm{age} + \textrm{othercov}$.
+is
+\begin{equation*}
+\textrm{chd} \sim \mu + \textrm{sex} + \textrm{age} +
+\textrm{other cov}.
+\end{equation*}
 
 In case of the Cox proportional hazards model, the composition of the
 phenotypic input file is a bit different. In the second column and
@@ -222,7 +229,7 @@ and zero if censored). Columns starting from four (inclusive) specify
 covariates to be included into the analysis. An example few lines of
 a phenotypic information file designed for the Cox proportional hazards model
 analysis follow here (also to be found in
-\texttt{ProbABEL/examples/coxph\_data.txt})
+\texttt{examples/coxph\_data.txt})
 
 \verbatiminput{short_coxph_data.txt}
 
@@ -231,15 +238,18 @@ them, while for the other seven there is no event during the follow-up
 time, as indicated by the ``chd'' column. Follow-up time is specified in the preceding
 column. The covariates included into the model are age (presumably
 at baseline), sex and ``othercov''; thus the model, in terms of
-\texttt{R/survival} is \\ $\textrm{Surv}(\textrm{fuptime\_chd},
-\textrm{chd}) \sim \textrm{sex} + \textrm{age} + \textrm{othercov}$.
+\texttt{R/survival} is
+\begin{equation*}
+\textrm{Surv}(\textrm{fuptime\_chd}, \textrm{chd})
+\sim \textrm{sex} + \textrm{age} + \textrm{other cov}.
+\end{equation*}
 
 \subsection{Optional map file}
 If you would like map information (e.g.~base pair position) to
 be included in your outputs, you can supply a map file. These follow
 HapMap "legend" file format. For example, for the five SNPs we considered
 the map-file may look like (example can be found in
-\texttt{ProbABEL/examples/test.map})
+\texttt{examples/test.map})
 
 \verbatiminput{test.map}
 
@@ -252,42 +262,41 @@ actually used to generate the output.
 To run linear regression, you should use the program called
 \texttt{palinear}; for logistic analysis use \texttt{palogist}, and
 for the Cox proportional hazards model use \texttt{pacoxph} (all are
-found in the \texttt{ProbABEL/bin/} directory after you have compiled
+found in the \texttt{bin/} directory after you have compiled
 the program).
 
 There are in total 11 command line options you can specify to the
-\PA{} analysis functions \texttt{palinear} or
-\texttt{palogist}. If you run either program without any argument, you
-will get a short explanation to command line options:
+\PA{} analysis functions \texttt{palinear} or \texttt{palogist}. If
+you run either program without any argument or with the
+\texttt{--help} option, you will get a short explanation to command
+line options:
 \begin{verbatim}
 user@server:~$ palogist
+ProbABEL v. 0.2.0-beta (C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EMCR
 
-Usage: ../bin/palogist options
-
+Usage: /tmp/PAInst/bin/palogist options
 Options:
-		--pheno       : phenotype file name
-		--info        : information (e.g. MLINFO) file name
-		--dose        : predictor (e.g. MLDOSE/MLPROB) file name
-		--map         : [optional] map file name
-		--nids        : [optional] number of people to analyse
-		--chrom       : [optional] chromosome (to be passed to output)
-		--out         : [optional] output file name (default is regression.out.txt)
-		--skipd       : [optional] how many columns to skip in predictor
-								    (dose/prob) file (default 2)
-		--ntraits     : [optional] how many traits are analysed (default 1)
-		--ngpreds     : [optional] how many predictor columns per marker
-								    (default 1 = MLDOSE; else use 2 for MLPROB)
-		--separat     : [optional] character to separate fields (default is space)
-		--score       : use score test
-		--no-head     : do not report header line
-		--allcov      : report estimates for all covariates (large outputs!)
-		--interaction : which covariate to use for interaction with SNP
-									  (default is no ineraction, 0)
-		--mmscore     : score test for association between a trait and genetic
-		    polymorphism, in samples of related individuals
-		--robust      : report robust (aka sandwich, aka Hubert-White) standard
-		    errors
-		--help        : print help
+	 --pheno   : phenotype file name
+	 --info    : information (e.g. MLINFO) file name
+	 --dose    : predictor (e.g. MLDOSE/MLPROB) file name
+	 --map     : [optional] map file name
+	 --nids    : [optional] number of people to analyse
+	 --chrom   : [optional] chromosome (to be passed to output)
+	 --out     : [optional] output file name (default is regression.out.txt)
+	 --skipd   : [optional] how many columns to skip in the predictor
+		      (dose/prob) file (default 2)
+	 --ntraits : [optional] how many traits are analysed (default 1)
+	 --ngpreds : [optional] how many predictor columns per marker
+		      (default 1 = MLDOSE; else use 2 for MLPROB)
+	 --separat : [optional] character to separate fields (default is space)
+	 --score   : use score test
+	 --no-head : do not report header line
+	 --allcov  : report estimates for all covariates (large outputs!)
+	 --interaction: Which covariate to use for interaction with SNP analysis (default is no interaction, 0)
+	 --interaction_only: like previous but without covariate acting in interaction with SNP (default is no interaction, 0)
+	 --mmscore : score test in samples of related individuals. File with inverse of variance-covariance matrix (for palinear) or inverse correlation (for palogist) as input parameter
+	 --robust  : report robust (aka sandwich, aka Hubert-White) standard errors
+	 --help    : print help
 \end{verbatim}
 %%		--interaction_only: like previos but without covariate acting in
 %%                    interaction with SNP
@@ -306,24 +315,24 @@ specifying the phenotypic data file described in sub-section \ref{ssec:phenoin};
 \texttt{--info} (or \texttt{-i}),
 specifying the SNP information file described in sub-section \ref{ssec:infoin}.
 
-If you change to the \texttt{ProbABEL/examples} directory you can run
+If you change to the \texttt{examples} directory you can run
 an analysis of height by running
 \begin{verbatim}
-user@server:~/ProbABEL/examples/$ ../bin/palinear -p height.txt
--d test.mldose -i test.mlinfo
+user@server:~/ProbABEL/examples/$ ../bin/palinear -p height.txt \
+				 -d test.mldose -i test.mlinfo
 \end{verbatim}
 Output from the analysis will be directed to the
 \texttt{regression.out.csv} file.
 
 The analysis of a binary trait (e.g.~chd) can be run with
 \begin{verbatim}
-user@server:~/ProbABEL/examples/$ ../bin/palogist -p logist_data.txt
+user@server:~/ProbABEL/examples/$ ../bin/palogist -p logist_data.txt \
 				 -d test.mldose -i test.mlinfo
 \end{verbatim}
 
 To run a Cox proportional hazards model, try
 \begin{verbatim}
-user@server:~/ProbABEL/examples/$ ../bin/pacoxph -p coxph_data.txt
+user@server:~/ProbABEL/examples/$ ../bin/pacoxph -p coxph_data.txt \
 				 -d test.mldose -i test.mlinfo
 \end{verbatim}
 
@@ -335,8 +344,8 @@ To run an analysis with MLPROB files, you need specify the MLPROB file
 with the \texttt{-d} option and also specify that there are two
 genetic predictors per SNP, e.g.~you can run linear model with
 \begin{verbatim}
-user@server:~/ProbABEL/examples/$ ../bin/palinear -p height.txt
-				 -d test.mlprob -i test.mlinfo
+user@server:~/ProbABEL/examples/$ ../bin/palinear -p height.txt \
+				 -d test.mlprob -i test.mlinfo \
 				 --ngpreds=2
 \end{verbatim}
 
@@ -368,7 +377,7 @@ first column contains id names, the second the trait. The others are
 covariates.
 
 An example of how a polygenic object estimated by \GA{} can be used
-with ProbABEL is provided in \texttt{ProbABEL/examples/mmscore.R}
+with ProbABEL is provided in \texttt{examples/mmscore.R}
 
 Though technically \texttt{--mmscore} allows for inclusion of multiple
 covariates, these should be kept to minimum as this is a score test. We
@@ -379,28 +388,30 @@ variance should be fit as part of \GA{}'s
 %Option \texttt{--interaction\_only} is like \texttt{--interaction} but does not
 %include in the model the main effect of the covariate, which is acting in
 %interaction with SNP. This option is useful when running \texttt{--mmscore},
-%in whch case the main effect should normally estimated in the polygenic
+%in which case the main effect should normally estimated in the polygenic
 %model and only the interaction term in the \PA{} analysis.
 
 \subsection{Running multiple analyses at once: \texttt{probabel.pl}}
 
-The Perl script \texttt{bin/probabel.pl\_example} represents a handy
-wraper for \PA{} functions.  To start using it the
-configuration file \texttt{bin/probabel\_config.cfg\_example} needs to
-be edited. The configuration file consists of five columns. Each
-column except the first is a pattern for files produced by
-\texttt{MACH} (imputation software). The column named ``cohort'' is an
-identifying name of a population (``ERGO'' in this example), the
-column ``mlinfo\_path'' is the full path to mlinfo files, including a
-pattern where the chromosome number has been replaced by
-\texttt{\_.\_chr\_.\_}. The columns ``mldose\_path'',
-``mlprobe\_path'' and ``legend\_path'' are paths and patterns for
-``mldose'', ``mlprob'' and ``legend'' files, respectively. These also
-need to include the pattern for the chromosome as used in the column
-for the ``mlinfo'' files. Probably you also have to change the variable
-\texttt{\$config} in the script to point to the full path of the
-configuration file and the variable \texttt{@anprog} to point full
-path to the \PA{} scripts.
+The Perl script \texttt{bin/probabel.pl} represents a handy wraper for
+\PA{} functions.  To start using it the configuration file
+\texttt{etc/probabel\_config.cfg.example} needs to be edited. The
+configuration file consists of five columns. Each column except the
+first is a pattern for files produced by \texttt{MACH} (imputation
+software). The column named ``cohort'' is an identifying name of a
+population (``ERGO'' in this example), the column ``mlinfo\_path'' is
+the full path to mlinfo files, including a pattern where the
+chromosome number has been replaced by \texttt{\_.\_chr\_.\_}. The
+columns ``mldose\_path'', ``mlprobe\_path'' and ``legend\_path'' are
+paths and patterns for ``mldose'', ``mlprob'' and ``legend'' files,
+respectively. These also need to include the pattern for the
+chromosome as used in the column for the ``mlinfo'' files. The
+\texttt{make install} installation procedure should have set all paths
+in the script correctly. If that is not the case you will have to
+change the variable \texttt{\$config} in the script to point to the
+full path of the configuration file and the variables
+\texttt{\$base\_path} and \texttt{@anprog} to point the full path to
+the \PA{} scripts.
 
 
 \section{Output file format}
@@ -444,7 +455,7 @@ errors, and Wald $\chi^2$ test value.
 
 
 \section{Preparing input files}
-In the \texttt{ProbABEL/bin} directory you can find the
+In the \texttt{bin} directory you can find the
 \texttt{prepare\_data.R} file -- an R script that arranges phenotypic
 data in right format. Please read this script for details.
 
@@ -455,7 +466,7 @@ genome-wide scan is completed in less that an hour for a linear model
 with 1-2 covariates and overnight for logistic regression or the Cox
 proportional hazards model (figures for a PC bought back in 2007).
 
-Memory may be an issue with \PA{} if you use 
+Memory may be an issue with \PA{} if you use
 MACH text dose/probability files, e.g. for large chromosomes,
 such as chromosome one consumed up to 5 GB of RAM with 6,000 people.
 
@@ -466,7 +477,8 @@ in low-RAM mode (approx.~128 MB). See the R libraries \GA{} and
 filevector format (functions: \texttt{mach2databel()} and
 \texttt{impute2databel()}, respectively).
 
-When '--mmscore' option is used, the analysis may take quite some time. 
+When the \texttt{--mmscore} option is used, the analysis may take
+quite some time.
 
 \section{Methodology}
 \label{sec:methodology}
@@ -769,10 +781,8 @@ which, when homozygous, corresponds to the genotype coded as ``1''.
 
 \section{How to cite}
 
-If you used \PA{} for
-your analysis please give a link to the \texttt{GenABEL project} home
-page
-
+If you used \PA{} for your analysis please give a link to the
+\texttt{GenABEL project} home page
 \begin{quote}
 \url{http://www.genabel.org/}
 \end{quote}
@@ -784,13 +794,13 @@ BMC Bioinformatics. 2010, 11:134.
 \end{quote}
 A proper reference may look like
 \begin{quote}
-For the analysis of imputed data, we used the \PA{} 
+For the analysis of imputed data, we used the \PA{}
 from the \texttt{GenABEL} suite of programs (Aulchenko \emph{et al.}, 2010).
 \end{quote}
 
 If you have used the Cox proportional hazard model, please mention the
 \texttt{R} package \texttt{survival} by Thomas Lumley. Additionally
-to the above citation, please tell that
+to the above citation, please include
 \begin{quote}
 The Cox proportional hazards model implemented in \PA{}
 makes use of the source code of the \texttt{R} package ''\texttt{survival}''
