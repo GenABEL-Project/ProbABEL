@@ -1,13 +1,16 @@
-***** v.0.2-0 (2011.08.23)
+***** v.0.2-0 (2012.03.04)
+
+* pacoxph will not be built by default, because it is quite buggy. See
+  ./configure notes below on how to enable building it anyway.
+
 
 * ProbABEL can now (experimentally!) analyze binary traits accounting
 for relationship structure (thanks to Yurii and Nicola Pirastu). This
-adds '--mmscore' option for logistic regression. Important: on the
-contrast to the 'palinear' the matrix which should be supplied to
-palogist with --mmscore should contain an inverse of the correlation
-matrix (not the inverse of var-cov matrix, as is the case for
-'palinear' with --mmscore). This matrix can be obtained through
-(GenABEL notation):
+adds '--mmscore' option for logistic regression. Important: compared
+to 'palinear' the matrix which should be supplied to palogist with
+--mmscore should contain an inverse of the correlation matrix (not the
+inverse of var-cov matrix, as is the case for 'palinear' with
+--mmscore). This matrix can be obtained through (GenABEL notation):
 
 h2.object$InvSigma * h2.object$h2an$estimate[length(h2.object$h2an$estimate)]
 
@@ -15,6 +18,7 @@ where h2.object is the object returned by 'polygenic()'. Documentation
 explains this procedure in more details; a wrapper function to prepare
 and export correct objects for ProbABEL is planned. (thanks to Yurii)
 
+* Small changes (thanks to Lennart).
 - in probabel.pl the location for the probabel config file is now set
   to /etc/, the default location it will end up. Before it still
   pointed to the location the probabel.pl file was in. However, a
@@ -60,6 +64,10 @@ make install
 ./configure --prefix=/some/subdirectory
   to install ProbABEL in that subdirectory. Instead of using
   /usr/local/ as install root, it installs in /some/subdirectory.
+
+  The second important option is
+./configure --enable-pacoxph
+  this enables the building of the pacoxph binary.
 
   To generate a .tar.gz package for distribution run:
 ./configure

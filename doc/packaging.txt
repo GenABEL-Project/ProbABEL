@@ -8,7 +8,7 @@ distributions.
    - dh-make
    - fakeroot
    - lintian
-** Building the package
+** Building the package for the first time
    First check to see if everything compiles and all files are included
    in the automake files:
     ./configure
@@ -28,7 +28,7 @@ distributions.
      --packagename probabel
 
    Hit the enter key to confirm the settings. Several files need to be
-   edited (or at least checked to see if they are still up to date).
+   edited.
    - debian/control
    - debian/changelog
    - debian/copyright
