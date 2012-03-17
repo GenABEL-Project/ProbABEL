@@ -1,5 +1,3 @@
-
-
 echo "extracting IDS..."
 perl ../bin/extIDS.pl < test.mldose > mldose.IDS
 
@@ -10,4 +8,3 @@ sh example_qt.sh
 sh example_bt.sh
 sh example_cox.sh
 sh example_mms.sh
-
