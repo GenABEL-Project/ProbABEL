@@ -646,24 +646,25 @@ Many thanks to Thomas for making his code available under GNU GPL!
 \subsection{Analysis of pedigree data}
 The framework for analysis of pedigree data follows the two-step logic
 developed in the works of Aulchenko \emph{et al}. (2007) and Chen and
-Abecasis (2007). General analysis model is a linear mixed model which
-defines the expectation of the trait as
+Abecasis (2007). The general analysis model is a linear mixed model
+where the expectation of the trait is defined as
 $$
 E[\mathbf{Y}] = \mathbf{X} \mathbf{\beta},
 $$
-identical to that defined for linear model (cf.~section~\ref{expectation}).
-To account for correlations between the phenotypes of
-relatives which may be induced by family relations the variance-covariance
-matrix is defined to be proportional to the linear combination of the
-identity matrix $\mathbf{I}$ and the relationship matrix $\mathbf{\Phi}$:
+identical to that defined for a linear model
+(cf.~section~\ref{expectation}). To account for correlations between
+the phenotypes of relatives which may be induced by family relations
+the variance-covariance matrix is defined to be proportional to the
+linear combination of the identity matrix $\mathbf{I}$ and the
+relationship matrix $\mathbf{\Phi}$:
 $$
 \mathbf{V}_{\sigma^2,h^2} = \sigma^2 \left( 2 h^2 \mathbf{\Phi} + (1-h^2)
 \mathbf{I} \right),
 $$
-where $h^2$ is the heritability of the trait.
-The relationship matrix $\mathbf{\Phi}$ is twice the matrix containing
-the coefficients of kinship between all pairs of individuals under consideration;
-its estimation is discussed in a separate section ''\titleref{kinship}'' (\ref{kinship}).
+where $h^2$ is the heritability of the trait. The relationship matrix
+$\mathbf{\Phi}$ is twice the matrix containing the coefficients of
+kinship between all pairs of individuals under consideration; its
+estimation is discussed separately in section \ref{kinship}.
 
 Estimation of a model defined in such a way is possible by numerical
 maximization of the likelihood function, however, the estimation of
@@ -685,14 +686,15 @@ $$
 Note that the latter design matrix may include not only the main SNP effect, but
 e.g.\ SNP by environment interaction terms.
 
-At the first step, a linear mixed model not including SNP effects
+In the first step, a linear mixed model not including SNP effects
 $$
 E[\mathbf{Y}] = \mathbf{X}_x \mathbf{\beta}_x
 $$
-is fitted. The maximum likelihood estimates (MLEs) of the model parameters (regression coefficients for
-the fixed effects $\hat{\mathbf{\beta}}_x$, the
-residual variance $\hat{\sigma}^2_x$ and the heritability $\hat{h}^2_x$) can
-be obtained by numerical maximization of the likelihood function
+is fitted. The maximum likelihood estimates (MLEs) of the model
+parameters (regression coefficients for the fixed effects
+$\hat{\mathbf{\beta}}_x$, the residual variance $\hat{\sigma}^2_x$ and
+the heritability $\hat{h}^2_x$) can be obtained by numerical
+maximization of the likelihood function
 $$
 \mathrm{logLik}(\beta_x,h^2,\sigma^2) = -\frac{1}{2} \left(
   \log_e|\mathbf{V}_{\sigma^2,h^2}| + (\mathbf{Y} - \beta_x
@@ -700,10 +702,11 @@ $$
   \beta_x \mathbf{X}_x) \right ),
 $$
 where $\mathbf{V}_{\sigma^2,h^2}^{-1}$ is the inverse and
-$|\mathbf{V}_{\sigma^2,h^2}|$ is the determinant of the variance-covariance matrix.
+$|\mathbf{V}_{\sigma^2,h^2}|$ is the determinant of the
+variance-covariance matrix.
 
-At the second step, the unbiased estimates of the fixed effects of the terms
-involving SNP are obtained with
+In the second step, the unbiased estimates of the fixed effects of the
+terms involving SNP are obtained with
 $$
 \hat{\beta}_g = (\mathbf{X}^T_g
 \mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}
@@ -711,33 +714,35 @@ $$
 \mathbf{X}^T_g \mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}
 \mathbf{R}_{\hat{\beta}_x},
 $$
-where $\mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}$ is the variance-covariance matrix at the point
-of the MLE estimates of $\hat{h}^2_x$ and $\hat{\sigma}^2_x$ and
-$\mathbf{R}_{\hat{\beta}_x} = \mathbf{Y} - \hat{\beta}_x \mathbf{X}_x$ is the
-vector of residuals obtained from the base regression model. Under the null
-model, the inverse variance-covariance matrix of the parameter's estimates is defined
-as
+where $\mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}$ is the inverse
+variance-covariance matrix at the point of the MLE estimates of
+$\hat{h}^2_x$ and $\hat{\sigma}^2_x$, and $\mathbf{R}_{\hat{\beta}_x}
+= \mathbf{Y} - \hat{\beta}_x \mathbf{X}_x$ is the vector of residuals
+obtained from the base regression model. Under the null model, the
+inverse variance-covariance matrix of the parameter's estimates is
+defined as
 $$
 \var_{\hat{\beta}_g} = \hat{\sigma}^2_x (\mathbf{X}^T_g \mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2} \mathbf{X}_g)^{-1}.
 $$
-Thus the score test for joint significance of the terms involving SNP can be obtained with
+Thus the score test for joint significance of the terms involving SNP
+can be obtained with
 $$
 T^2 = (\hat{\beta}_g - \beta_{g,0})^T \,
 \var_{\hat{\beta}_g}^{-1} (\hat{\beta}_g - \beta_{g,0}),
 $$
-where $\beta_{g,0}$ are the values of parameters fixed under the null model.
-This test statistics under the null hypothesis asymptotically follows the
-$\chi^2$ distribution with the number of degrees
-of freedom equal to the number of parameters tested.
-The significance of an individual $j$-the elements of the vector
-$\hat{\beta}_g$ can be tested with
+where $\beta_{g,0}$ are the values of parameters fixed under the null
+model.  Under the null hypothesis this test statistic asymptotically
+follows the $\chi^2$ distribution with the number of degrees of
+freedom equal to the number of parameters tested.  The significance of
+an individual $j$-th element of the vector $\hat{\beta}_g$ can be
+tested with
 $$
 T^2_j = \hat{\beta}_{g}^2(j) \var_{\hat{\beta}_g}^{-1}(jj),
 $$
 where $\hat{\beta}_{g}^2(j)$ is the square of the $j$-th element of
 the vector of estimates $\hat{\beta}_{g}$, and
 $\var_{\hat{\beta}_g}^{-1}(jj)$ corresponds to the $j$-th diagonal
-element of $\var_{\hat{\beta}_g}^{-1}$. The latter statistics
+element of $\var_{\hat{\beta}_g}^{-1}$. The latter statistic
 asymptotically follows $\chi^2_1$.
 
 \subsubsection{Estimation of the kinship matrix}
