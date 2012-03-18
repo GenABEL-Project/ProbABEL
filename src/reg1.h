@@ -341,7 +341,7 @@ public:
     //
     //	}
     void estimate(regdata &rdatain,int verbose, double tol_chol, int model, int interaction,
-		  int ngpreds, mematrix<double> & invvarmatrixin, int robust, int nullmodel=0)
+		  int ngpreds, mematrix<double> invvarmatrixin, int robust, int nullmodel=0)
     {
 	//suda ineraction parameter
 	// model should come here
@@ -550,7 +550,7 @@ public:
 	if (verbose) {printf("sebeta (%d):\n",sebeta.nrow);sebeta.print();}
     }
 
-    void score(mematrix<double> &resid,regdata &rdatain,int verbose, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> & invvarmatrix, int nullmodel=0)
+    void score(mematrix<double> &resid,regdata &rdatain,int verbose, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> invvarmatrix, int nullmodel=0)
     {
 	regdata rdata = rdatain.get_unmasked_data();
 
@@ -639,7 +639,7 @@ public:
     }
 
     void estimate(regdata &rdatain, int verbose, int maxiter, double eps, double tol_chol,
-		  int model, int interaction, int ngpreds, mematrix<double> & invvarmatrixin, int robust,
+		  int model, int interaction, int ngpreds, mematrix<double> invvarmatrixin, int robust,
 		  int nullmodel=0)
     {
 	// on the contrast to the 'linear' 'invvarmatrix' contains
@@ -831,7 +831,7 @@ public:
 	//exit(1);
     }
     // just a stupid copy from linear_reg
-    void score(mematrix<double> &resid,regdata &rdata,int verbose, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> & invvarmatrix, int nullmodel=0)
+    void score(mematrix<double> &resid,regdata &rdata,int verbose, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> invvarmatrix, int nullmodel=0)
     {
 	mematrix<double> oX = rdata.extract_genotypes();
 	mematrix<double> X = apply_model(oX,model, interaction, ngpreds, false, nullmodel);
