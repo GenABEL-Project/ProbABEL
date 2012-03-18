@@ -109,7 +109,9 @@ public:
 		    tmplins++;
 		if (tmplins != nphenocols)
 		{
-		    fprintf(stderr,"phenofile: number of variables different from %d in line %d\n",nphenocols,tmplins);
+		    std::cerr << "phenofile: number of variables different from "
+			      << nphenocols << " in line " << tmplins
+			      << endl;
 		    myfile.close();
 		    exit(1);
 		}
@@ -119,38 +121,38 @@ public:
 	}
 	else
 	{
-	    fprintf(stderr,"Unable to open file %s\n",fname);
+	    std::cerr << "Unable to open file " << fname <<endl;
 	    exit(1);
 	}
-	fprintf(stdout,"Actual number of people in phenofile = %d",npeople);
-	if (savenpeople>0)
+	std::cout << "Actual number of people in phenofile = " << npeople;
+	if (savenpeople > 0)
 	{
 	    npeople = savenpeople;
-	    fprintf(stdout,"; using only %d first\n",npeople);
+	    std::cout << "; using only " << npeople << " first\n";
 	}
 	else
 	{
-	    fprintf(stdout,"; using all of these\n");
+	    std::cout << "; using all of these\n";
 	}
 
 	ncov = nphenocols - 1 - noutcomes;
 	nids_all = npeople;
 	model_terms = new std::string [ncov+2];
 
-	FILE * infile;
 	// first pass -- find unmeasured people
-	if ((infile=fopen(fname,"r"))==NULL) {
-	    fprintf(stderr,"phedata: cannot open file %s\n",fname);
+	std::ifstream infile(fname);
+	if (!infile)
+	{
+	    std::cerr << "phedata: cannot open file " << fname << endl;
 	}
 
-
-	fscanf(infile,"%s", tmp);
+	infile >> tmp;
 	model = "( ";
-	fscanf(infile,"%s", tmp);
+	infile >> tmp;
 	model = model + tmp;
-	for (int i = 1;i < noutcomes;i++)
+	for (int i = 1; i < noutcomes; i++)
 	{
-	    fscanf(infile,"%s", tmp);
+	    infile >> tmp;
 	    model = model + " , ";
 	    model = model + tmp;
 	}
@@ -164,12 +166,12 @@ public:
 
 	if (nphenocols>noutcomes+1)
 	{
-	    fscanf(infile,"%s", tmp);
+	    infile >> tmp;
 	    model = model + tmp;
 	    model_terms[n_model_terms++] = tmp;
-	    for (int i=(2+noutcomes);i<nphenocols;i++)
+	    for (int i=(2+noutcomes); i<nphenocols; i++)
 	    {
-		fscanf(infile,"%s", tmp);
+		infile >> tmp;
 
 		//				if(iscox && ) {if(n_model_terms+1 == interaction-1) {continue;} }
 		//				else      {if(n_model_terms+1 == interaction) {continue;} }
@@ -181,15 +183,31 @@ public:
 	model = model + " + SNP_A1";
 	if(interaction!=0)
 	{
-	    if(iscox) {model = model + " + " +model_terms[interaction-1]+"*SNP_A1";}
-	    else      {model = model + " + " +model_terms[interaction]+"*SNP_A1";}
+	    if(iscox)
+	    {
+		model = model + " + " + model_terms[interaction-1]
+		    + "*SNP_A1";
+	    }
+	    else
+	    {
+		model = model + " + " + model_terms[interaction]
+		    + "*SNP_A1";
+	    }
 	}
 	model_terms[n_model_terms++] = "SNP_A1";
 
 	if(is_interaction_excluded) // exclude covariates from covariate names
 	{
-	    if(iscox) {std::cout<<"model is running without "<<model_terms[interaction-1]<<", term\n";}
-	    else      {std::cout<<"model is running without "<<model_terms[interaction]<<", term\n";}
+	    if(iscox)
+	    {
+		std::cout << "model is running without "
+			  << model_terms[interaction-1] << ", term\n";
+	    }
+	    else
+	    {
+		std::cout << "model is running without "
+			  << model_terms[interaction] << ", term\n";
+	    }
 	}
 
 
@@ -209,14 +227,14 @@ public:
 	for (int i = 0;i<npeople;i++)
 	{
 	    allmeasured[i] = 1;
-	    for (int j=0;j<nphenocols;j++)
+	    for (int j=0; j<nphenocols; j++)
 	    {
-		fscanf(infile,"%s", tmp);
+		infile >> tmp;
 		if (j>0 && (tmp[0]=='N' || tmp[0]=='n')) allmeasured[i]=0;
 	    }
 	    if (allmeasured[i]==1) nids++;
 	}
-	fclose(infile);
+	infile.close();
 	//		printf("npeople = %d, no. all measured = %d\n",nids_all,nids);
 
 	// allocate objects
@@ -227,38 +245,41 @@ public:
 	Y.reinit(nids,noutcomes);
 
 	// second pass -- read the data
-	if ((infile=fopen(fname,"r"))==NULL) {
-	    fprintf(stderr,"phedata: cannot open file %s\n",fname);
+	infile.open(fname);
+	if (!infile)
+	{
+	    std::cerr << "phedata: cannot open file " << fname << endl;
 	    exit(1);
 	}
 
-	for (int i=0;i<nphenocols;i++)
+	for (int i=0; i<nphenocols; i++)
 	{
-	    fscanf(infile,"%s", tmp);
+	    infile >> tmp;
 	}
 
 	int k =0;
 	int m =0;
-	for (int i = 0;i<npeople;i++)
+	for (int i = 0; i<npeople; i++)
 	    if (allmeasured[i]==1)
 	    {
-		fscanf(infile,"%s", tmp);
+		infile >> tmp;
 		idnames[m] = tmp;
-		for (int j=0;j<noutcomes;j++)
+		for (int j=0; j<noutcomes; j++)
 		{
-		    fscanf(infile,"%s", tmp);
+		    infile >> tmp;
 		    Y.put(atof(tmp),m,j);
 		}
-		for (int j=(1+noutcomes);j<nphenocols;j++)
+		for (int j=(1+noutcomes); j<nphenocols; j++)
 		{
-		    fscanf(infile,"%s", tmp);
+		    infile >> tmp;
 		    X.put(atof(tmp),m,(j-1-noutcomes));
 		}
 		m++;
 	    }
 	    else
-		for (int j=0;j<nphenocols;j++) fscanf(infile,"%s", tmp);
-	fclose(infile);
+		for (int j=0; j<nphenocols;j++)
+		    infile >> tmp;
+	infile.close();
     }
     ~phedata()
     {
@@ -839,7 +860,6 @@ public:
 	}
 	infile.close();
 
-	std::cout << "nr lines: " << nlin << endl;
 	if (nlin % 7)
 	{
 	    std::cerr << "mlinfo: number of columns != 7 in " << filename << endl;
