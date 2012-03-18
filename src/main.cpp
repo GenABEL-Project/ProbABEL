@@ -342,9 +342,11 @@ int main(int argc, char * argv [])
 
     gendata gtd;
     if (!isFVF)
-	gtd.re_gendata(genfilename,nsnps,ngpreds,phd.nids_all,phd.nids,phd.allmeasured,skipd,phd.idnames);
+	gtd.re_gendata(genfilename, nsnps, ngpreds, phd.nids_all, phd.nids,
+		       phd.allmeasured, skipd, phd.idnames);
     else
-	gtd.re_gendata(str_genfilename,nsnps,ngpreds,phd.nids_all,phd.nids,phd.allmeasured,phd.idnames);
+	gtd.re_gendata(str_genfilename, nsnps, ngpreds, phd.nids_all, phd.nids,
+		       phd.allmeasured, phd.idnames);
 
     std::cout << " loaded genotypic data ...";
 
