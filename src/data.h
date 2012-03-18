@@ -33,33 +33,34 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
     int ncov = nphenocols - 2;
     int nids_all = npeople;
 
-    FILE * infile;
     // first pass -- find unmeasured people
-    if ((infile=fopen(fname,"r"))==NULL) {
-	fprintf(stderr,"Nmeasured: cannot open file %s\n",fname);
+    std::ifstream infile(fname);
+    if (!infile)
+    {
+	std::cerr << "Nmeasured: cannot open file " << fname << endl;
     }
+
     char tmp[100];
 
-    for (int i=0;i<nphenocols;i++)
+    for (int i=0; i<nphenocols; i++)
     {
-	fscanf(infile,"%s", tmp);
-	//		printf("%s ",tmp);
-    } 	//printf("\n");
+	infile >> tmp;
+    }
 
     unsigned short int * allmeasured = new unsigned short int [npeople];
     int nids = 0;
     for (int i = 0;i<npeople;i++)
     {
 	allmeasured[i] = 1;
-	fscanf(infile,"%s", tmp);
-	for (int j=1;j<nphenocols;j++)
+	infile >> tmp;
+	for (int j=1; j<nphenocols; j++)
 	{
-	    fscanf(infile,"%s", tmp);
+	    infile >> tmp;
 	    if (tmp[0]=='N' || tmp[0]=='n') allmeasured[i]=0;
 	}
 	if (allmeasured[i]==1) nids++;
     }
-    fclose(infile);
+    infile.close();
 
     delete [] allmeasured;
 
