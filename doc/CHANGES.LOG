@@ -39,6 +39,7 @@ autoreconf -i
   To compile and install the package run
 ./configure
 make
+make check
 make install
 
   This will install the binaries (palinear etc.) in /usr/local/bin/,
