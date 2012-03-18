@@ -810,72 +810,85 @@ public:
 
     mlinfo(char * filename, char * mapname)
     {
-	FILE * infile = fopen(filename,"r");
-	if (infile == NULL)
+	char tmp[100];
+	unsigned int nlin = 0;
+
+	std::ifstream infile(filename);
+	if (infile.is_open())
 	{
-	    fprintf(stderr,"mlinfo: cannot open file %s",filename);
+	    while(infile.good())
+	    {
+		infile >> tmp;
+		nlin++;
+	    }
+	    nlin--; // Subtract one, the previous loop added 1 too much
+	}
+	else
+	{
+	    std::cerr << "mlinfo: cannot open file " << filename << endl;
 	    exit(1);
 	}
-	char tmp[100];
-	unsigned int nlin=0;
-	while (fscanf(infile,"%s", tmp)!=EOF) {
-	    nlin++;
-	}
-	fclose(infile);
+	infile.close();
+
+	std::cout << "nr lines: " << nlin << endl;
 	if (nlin % 7)
 	{
-	    fprintf(stderr,"mlinfo: number of columns != 7 in %s",filename);
+	    std::cerr << "mlinfo: number of columns != 7 in " << filename << endl;
 	    exit(1);
 	}
 	nsnps = int(nlin/7) - 1;
-	printf("Number of SNPs = %d\n",nsnps);
-	name = new std::string [nsnps];
-	A1 = new std::string [nsnps];
-	A2 = new std::string [nsnps];
-	Freq1 = new double [nsnps];
-	MAF = new double [nsnps];
+	std::cout << "Number of SNPs = " << nsnps << endl;
+	name    = new std::string [nsnps];
+	A1      = new std::string [nsnps];
+	A2      = new std::string [nsnps];
+	Freq1   = new double [nsnps];
+	MAF     = new double [nsnps];
 	Quality = new double [nsnps];
-	Rsq = new double [nsnps];
-	map = new std::string [nsnps];
-	if ((infile = fopen(filename,"r"))==NULL)
-	{
-	    fprintf(stderr,"mlinfo: cannot open file %s",filename);
+	Rsq     = new double [nsnps];
+	map     = new std::string [nsnps];
+
+	infile.open(filename);
+	if(!infile) { // file couldn't be opened
+	    std::cerr << "mlinfo: cannot open file " << filename << endl;
 	    exit(1);
 	}
-	for (int i =0;i<7;i++) fscanf(infile,"%s", tmp);
-	for (int i =0;i<nsnps;i++)
+	/* Read the header and discard it */
+	for (int i=0; i<7; i++) infile >> tmp;
+
+	for (int i=0; i<nsnps; i++)
 	{
-	    fscanf(infile,"%s", tmp);
+	    infile >> tmp;
 	    name[i] = tmp;
-	    fscanf(infile,"%s", tmp);
+	    infile >> tmp;
 	    A1[i] = tmp;
-	    fscanf(infile,"%s", tmp);
+	    infile >> tmp;
 	    A2[i] = tmp;
-	    fscanf(infile,"%s", tmp);
+	    infile >> tmp;
 	    Freq1[i] = atof(tmp);
-	    fscanf(infile,"%s", tmp);
+	    infile >> tmp;
 	    MAF[i] = atof(tmp);
-	    fscanf(infile,"%s", tmp);
+	    infile >> tmp;
 	    Quality[i] = atof(tmp);
-	    fscanf(infile,"%s", tmp);
+	    infile >> tmp;
 	    Rsq[i] = atof(tmp);
 	    map[i] = "-999";
 	}
-	fclose(infile);
-	if (mapname!=NULL)
+	infile.close();
+
+	if (mapname != NULL)
 	{
 	    std::ifstream instr(mapname);
 	    int BFS = 1000;
 	    char line [BFS], tmp[BFS];
 	    if (!instr.is_open())
 	    {
-		fprintf(stderr,"mlinfo: cannot open file %s",mapname);
+		std::cerr << "mlinfo: cannot open file " << mapname << endl;
 		exit(1);
 	    }
-	    instr.getline(line,BFS);
-	    for (int i=0;i<nsnps;i++)
+	    instr.getline(line, BFS);
+	    for (int i=0; i<nsnps; i++)
 	    {
-		instr.getline(line,BFS);
+		instr.getline(line, BFS);
 		std::stringstream line_stream(line);
 		line_stream >> tmp >> map[i];
 	    }
