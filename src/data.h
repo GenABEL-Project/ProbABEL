@@ -60,6 +60,9 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
 	if (allmeasured[i]==1) nids++;
     }
     fclose(infile);
+
+    delete [] allmeasured;
+
     return(nids);
 }
 
@@ -259,9 +262,11 @@ public:
     }
     ~phedata()
     {
-	//		delete X;
-	//		delete Y;
-	//		delete [] allmeasured;
+	delete [] model_terms;
+	delete [] idnames;
+	delete [] allmeasured;
+	// delete X;
+	// delete Y;
     }
 };
 
@@ -948,7 +953,7 @@ public:
 	    fprintf(stderr,"error: inv file: cannot open file '%s'\n",filename_);
 	}
 
-
+	delete [] line;
     };
 
 

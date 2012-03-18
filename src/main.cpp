@@ -1029,5 +1029,23 @@ int main(int argc, char * argv [])
 
     //delete gtd;
 
+    // Clean up a couple of vectors
+    std::vector<std::ostringstream *>::iterator it = beta_sebeta.begin();
+    while (it != beta_sebeta.end()) {
+    	delete *it;
+    	it++;
+    }
+    it = covvalue.begin();
+    while (it != covvalue.end()) {
+    	delete *it;
+    	it++;
+    }
+    it = chi2.begin();
+    while (it != chi2.end()) {
+    	delete *it;
+    	it++;
+    }
+
+
     return(0);
 }
