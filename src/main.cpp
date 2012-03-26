@@ -378,14 +378,10 @@ int main(int argc, char * argv [])
     logistic_reg nrd(nrgd);
     nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, interaction, ngpreds, invvarmatrix, robust, 1);
 #elif LINEAR
-    //fprintf(stdout,"HERE 0\n");
     linear_reg nrd(nrgd);
-    //fprintf(stdout,"HERE 0\n");
     nrd.estimate(nrgd,0,CHOLTOL,0, interaction, ngpreds, invvarmatrix, robust, 1);
-    //fprintf(stdout,"HERE 0\n");
 #elif COXPH
     coxph_reg nrd(nrgd);
-//	std::cout << " !!! AAA !!! ";
     nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, interaction, ngpreds, 1);
 #endif
     null_loglik = nrd.loglik;
@@ -403,11 +399,6 @@ int main(int argc, char * argv [])
 
     std::cout << " done\n";
     std::cout.flush();
-
-
-    //fprintf(stdout,"HERE 1\n");
-
-
 
 
 
