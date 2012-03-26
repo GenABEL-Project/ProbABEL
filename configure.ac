@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT(ProbABEL, 0.2.0-beta, genabel-devel@r-forge.wu-wien.ac.at)
-AM_INIT_AUTOMAKE(ProbABEL, 0.2.0-beta)
+AC_INIT(ProbABEL, 0.1.99, genabel-devel@r-forge.wu-wien.ac.at)
+AM_INIT_AUTOMAKE(ProbABEL, 0.1.99)
 AC_CONFIG_SRCDIR([src/data.h])
 AC_CONFIG_HEADERS([src/config.h])
 

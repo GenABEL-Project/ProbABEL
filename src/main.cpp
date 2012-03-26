@@ -196,7 +196,7 @@ int main(int argc, char * argv [])
     }
 
     if (score) {
-	cout << "option --score supressed from v 0.1-6\n";
+	cout << "option --score suppressed from v 0.1-6\n";
 	exit(1);
     }
 
@@ -311,14 +311,22 @@ int main(int argc, char * argv [])
 */
 
 #if COXPH
-    if(inverse_filename != NULL) {std::cerr<<"ERROR: mmscore is forbidden for cox regression\n";exit(1);}
-    if (robust) {std::cerr<<"ERROR: robust standard errors not implemented for Cox regression (drop us e-mail if you really need that)\n";exit(1);}
+    if(inverse_filename != NULL)
+    {
+	std::cerr<<"ERROR: mmscore is forbidden for cox regression\n";
+	exit(1);
+    }
+    if (robust)
+    {
+	std::cerr<<"ERROR: robust standard errors not implemented for Cox regression\n";
+	exit(1);
+    }
 #endif
 
 
     if(inverse_filename != NULL)
     {
-	std::cout<<"you are runing mmscore...\n";
+	std::cout<<"you are running mmscore...\n";
     }
 
     std::cout << "Reading data ...";
@@ -438,11 +446,30 @@ int main(int argc, char * argv [])
 
 
 
-	    if (!outfile[0]->is_open()) {std::cerr << "Can not open file for writing: " << outfilename_str+"_2df.out.txt" << "\n"; exit(1);}
-	    if (!outfile[1]->is_open()) {std::cerr << "Can not open file for writing: " << outfilename_str+"_add.out.txt" << "\n"; exit(1);}
-	    if (!outfile[2]->is_open()) {std::cerr << "Can not open file for writing: " << outfilename_str+"_domin.out.txt" << "\n"; exit(1);}
-	    if (!outfile[3]->is_open()) {std::cerr << "Can not open file for writing: " << outfilename_str+"_recess.out.txt" << "\n"; exit(1);}
-	    if (!outfile[4]->is_open()) {std::cerr << "Can not open file for writing: " << outfilename_str+"_over_domin.out.txt" << "\n"; exit(1);}
+	    if (!outfile[0]->is_open())
+	    {
+		std::cerr << "Cannot open file for writing: " << outfilename_str+"_2df.out.txt" << "\n";
+		exit(1);
+	    }
+	    if (!outfile[1]->is_open())
+	    {
+		std::cerr << "Cannot open file for writing: " << outfilename_str+"_add.out.txt" << "\n";
+		exit(1);}
+	    if (!outfile[2]->is_open())
+	    {
+		std::cerr << "Cannot open file for writing: " << outfilename_str+"_domin.out.txt" << "\n";
+		exit(1);
+	    }
+	    if (!outfile[3]->is_open())
+	    {
+		std::cerr << "Cannot open file for writing: " << outfilename_str+"_recess.out.txt" << "\n";
+		exit(1);
+	    }
+	    if (!outfile[4]->is_open())
+	    {
+		std::cerr << "Cannot open file for writing: " << outfilename_str+"_over_domin.out.txt" << "\n";
+		exit(1);
+	    }
 	    //_____________________
 
 
@@ -450,8 +477,9 @@ int main(int argc, char * argv [])
 	    //_____________________
 	    for(int i=0 ; i<outfile.size() ; i++)
 	    {
-		(*outfile[i]) << "name" << sep << "A1" << sep << "A2" << sep << "Freq1" << sep << "MAF" << sep << "Quality" << sep << "Rsq"
-			      << sep << "n" << sep << "Mean_predictor_allele";
+		(*outfile[i]) << "name" << sep << "A1" << sep << "A2" << sep << "Freq1" << sep << "MAF"
+			      << sep << "Quality" << sep << "Rsq" << sep << "n" << sep
+			      << "Mean_predictor_allele";
 		if (chrom != "-1") (*outfile[i]) << sep << "chrom";
 		if (mapfilename != NULL) (*outfile[i]) << sep << "position";
 	    }
@@ -461,9 +489,12 @@ int main(int argc, char * argv [])
 	    {
 		for (int file=0; file<outfile.size() ; file++)
 		    for (int i =0; i<phd.n_model_terms-1;i++)
-			*outfile[file] << sep << "beta_" << phd.model_terms[i] << sep << "sebeta_" << phd.model_terms[i];
+			*outfile[file] << sep << "beta_" << phd.model_terms[i] << sep
+				       << "sebeta_" << phd.model_terms[i];
 	    }
-	    *outfile[0] << sep << "beta_SNP_A1A2" << sep << "beta_SNP_A1A1" << sep << "sebeta_SNP_A1A2" << sep << "sebeta_SNP_A1A1";
+	    *outfile[0] << sep << "beta_SNP_A1A2" << sep << "beta_SNP_A1A1" << sep
+			<< "sebeta_SNP_A1A2" << sep << "sebeta_SNP_A1A1";
+
 	    *outfile[1] << sep << "beta_SNP_addA1" << sep << "sebeta_SNP_addA1";
 	    *outfile[2] << sep << "beta_SNP_domA1" << sep << "sebeta_SNP_domA1";
 	    *outfile[3] << sep << "beta_SNP_recA1" << sep << "sebeta_SNP_recA1";
@@ -472,19 +503,28 @@ int main(int argc, char * argv [])
 	    if(interaction != 0)
 	    {
 		//Han Chen
-		*outfile[0] << sep << "beta_SNP_A1A2_" << phd.model_terms[interaction_cox] << sep << "sebeta_SNP_A1A2_" << phd.model_terms[interaction_cox]
-			    << sep << "beta_SNP_A1A1_" << phd.model_terms[interaction_cox] << sep << "sebeta_SNP_A1A1_" << phd.model_terms[interaction_cox];
+		*outfile[0] << sep << "beta_SNP_A1A2_" << phd.model_terms[interaction_cox] << sep
+			    << "sebeta_SNP_A1A2_" << phd.model_terms[interaction_cox]
+			    << sep << "beta_SNP_A1A1_" << phd.model_terms[interaction_cox] << sep
+			    << "sebeta_SNP_A1A1_" << phd.model_terms[interaction_cox];
 #if !COXPH
-		if(inverse_filename == NULL && !allcov) *outfile[0] << sep << "cov_SNP_A1A2_int_SNP_" << phd.model_terms[interaction_cox]
-								    << sep << "cov_SNP_A1A1_int_SNP_" << phd.model_terms[interaction_cox];
+		if(inverse_filename == NULL && !allcov)
+		{
+		    *outfile[0] << sep << "cov_SNP_A1A2_int_SNP_" << phd.model_terms[interaction_cox]
+				<< sep << "cov_SNP_A1A1_int_SNP_" << phd.model_terms[interaction_cox];
+		}
 #endif
 		//Oct 26, 2009
 		for (int file=1; file<outfile.size() ; file++)
 		{
-		    *outfile[file] << sep << "beta_SNP_" << phd.model_terms[interaction_cox]  << sep << "sebeta_SNP_" << phd.model_terms[interaction_cox];
+		    *outfile[file] << sep << "beta_SNP_" << phd.model_terms[interaction_cox]  << sep
+				   << "sebeta_SNP_" << phd.model_terms[interaction_cox];
 		    //Han Chen
 #if !COXPH
-		    if(inverse_filename == NULL && !allcov) *outfile[file] << sep << "cov_SNP_int_SNP_" << phd.model_terms[interaction_cox];
+		    if(inverse_filename == NULL && !allcov)
+		    {
+			*outfile[file] << sep << "cov_SNP_int_SNP_" << phd.model_terms[interaction_cox];
+		    }
 #endif
 		    //Oct 26, 2009
 		}
@@ -520,8 +560,8 @@ int main(int argc, char * argv [])
 
 	    //Header
 	    //_____________________
-	    *outfile[0] << "name" << sep << "A1" << sep << "A2" << sep << "Freq1" << sep << "MAF" << sep << "Quality" << sep << "Rsq"
-			<< sep << "n" << sep << "Mean_predictor_allele";
+	    *outfile[0] << "name" << sep << "A1" << sep << "A2" << sep << "Freq1" << sep << "MAF" << sep
+			<< "Quality" << sep << "Rsq" << sep << "n" << sep << "Mean_predictor_allele";
 	    if (chrom != "-1") *outfile[0] << sep << "chrom";
 	    if (mapfilename != NULL) *outfile[0] << sep << "position";
 	    //_____________________
@@ -530,21 +570,30 @@ int main(int argc, char * argv [])
 	    if(allcov) //All covariates in output
 	    {
 		for (int i =0; i<phd.n_model_terms-1;i++)
-		    *outfile[0] << sep << "beta_" << phd.model_terms[i] << sep << "sebeta_" << phd.model_terms[i];
-
+		{
+		    *outfile[0] << sep << "beta_" << phd.model_terms[i] << sep << "sebeta_"
+				<< phd.model_terms[i];
+		}
 		*outfile[0] << sep << "beta_SNP_add" << sep << "sebeta_SNP_add";
 	    }
 	    else //Only beta, sebeta for additive model go to output file
 	    {
 		*outfile[0] << sep << "beta_SNP_add" << sep << "sebeta_SNP_add";
 	    }
-	    if(interaction != 0) *outfile[0] << sep << "beta_SNP_" << phd.model_terms[interaction_cox] << sep << "sebeta_SNP_" << phd.model_terms[interaction_cox];
+	    if(interaction != 0)
+	    {
+		*outfile[0] << sep << "beta_SNP_" << phd.model_terms[interaction_cox] << sep
+			    << "sebeta_SNP_" << phd.model_terms[interaction_cox];
+	    }
 
 	    if(inverse_filename == NULL)
 		//Han Chen
 	    {
 #if !COXPH
-		if(interaction != 0 && !allcov) *outfile[0] << sep << "cov_SNP_int_SNP_" << phd.model_terms[interaction_cox];
+		if(interaction != 0 && !allcov)
+		{
+		    *outfile[0] << sep << "cov_SNP_int_SNP_" << phd.model_terms[interaction_cox];
+		}
 #endif
 		*outfile[0] << sep << "loglik"; //"chi2_SNP";
 	    }
@@ -580,11 +629,30 @@ int main(int argc, char * argv [])
 
 
 
-	    if (!outfile[0]->is_open()) {std::cerr << "Can not open file for writing: " << outfilename_str+"_2df.out.txt" << "\n"; exit(1);}
-	    if (!outfile[1]->is_open()) {std::cerr << "Can not open file for writing: " << outfilename_str+"_add.out.txt" << "\n"; exit(1);}
-	    if (!outfile[2]->is_open()) {std::cerr << "Can not open file for writing: " << outfilename_str+"_domin.out.txt" << "\n"; exit(1);}
-	    if (!outfile[3]->is_open()) {std::cerr << "Can not open file for writing: " << outfilename_str+"_recess.out.txt" << "\n"; exit(1);}
-	    if (!outfile[4]->is_open()) {std::cerr << "Can not open file for writing: " << outfilename_str+"_over_domin.out.txt" << "\n"; exit(1);}
+	    if (!outfile[0]->is_open()) {
+		std::cerr << "Cannot open file for writing: " << outfilename_str+"_2df.out.txt" << "\n";
+		exit(1);
+	    }
+	    if (!outfile[1]->is_open())
+	    {
+		std::cerr << "Cannot open file for writing: " << outfilename_str+"_add.out.txt" << "\n";
+		exit(1);
+	    }
+	    if (!outfile[2]->is_open())
+	    {
+		std::cerr << "Cannot open file for writing: " << outfilename_str+"_domin.out.txt" << "\n";
+		exit(1);
+	    }
+	    if (!outfile[3]->is_open())
+	    {
+		std::cerr << "Cannot open file for writing: " << outfilename_str+"_recess.out.txt" << "\n";
+		exit(1);
+	    }
+	    if (!outfile[4]->is_open())
+	    {
+		std::cerr << "Cannot open file for writing: " << outfilename_str+"_over_domin.out.txt" << "\n";
+		exit(1);
+	    }
 	}
 	else
 	{
@@ -867,7 +935,8 @@ int main(int argc, char * argv [])
 	{
 	    //Write mlinfo to output:
 	    *outfile[0] << mli.name[csnp] << sep << mli.A1[csnp] << sep << mli.A2[csnp] << sep;
-	    *outfile[0] << mli.Freq1[csnp] << sep << mli.MAF[csnp] << sep << mli.Quality[csnp] << sep << mli.Rsq[csnp] << sep;
+	    *outfile[0] << mli.Freq1[csnp] << sep << mli.MAF[csnp] << sep << mli.Quality[csnp] << sep
+			<< mli.Rsq[csnp] << sep;
 	    *outfile[0] << gcount << sep << freq;
 	    if (chrom != "-1") *outfile[0] << sep << chrom;
 	    if (mapfilename != NULL) *outfile[0] << sep << mli.map[csnp];
