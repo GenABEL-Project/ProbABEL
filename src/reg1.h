@@ -1,4 +1,4 @@
-//=====================================================================================
+//==============================================================================
 //
 //           Filename:  src/reg1.h
 //
@@ -15,10 +15,13 @@
 // Modified by Han Chen (hanchen@bu.edu) on Nov 9, 2009
 // based on src/reg1.h version 0.2 as of Oct 19, 2009
 //
-//            Company:  ErasmusMC, Epidemiology & Biostatistics Department, The Netherlands.
+//            Company:  ErasmusMC,
+//                      Epidemiology & Biostatistics Department,
+//                      Rotterdam,
+//                      The Netherlands.
 //              Email:  i.aoultchenko@erasmusmc.nl, m.struchalin@erasmusmc.nl
 //
-//=====================================================================================
+//==============================================================================
 
 #include <cmath>
 
@@ -26,7 +29,8 @@ extern "C" {
 #include "survproto.h"
 }
 
-mematrix<double> apply_model(mematrix<double> &X, int model, int interaction, int ngpreds, bool iscox=false, int nullmodel = 0)
+mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
+			     int ngpreds, bool iscox=false, int nullmodel=0)
 // model 0 = 2 df
 // model 1 = additive 1 df
 // model 2 = dominant 1 df
@@ -45,20 +49,25 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction, in
 		int csnp_p2=nX.ncol-3;
 		int c1 = nX.ncol-2;
 		int c2 = nX.ncol-1;
-		for (int i=0;i<X.nrow;i++)
-		    for (int j=0;j<(X.ncol);j++)
+		for (int i=0; i<X.nrow; i++)
+		    for (int j=0; j<(X.ncol); j++)
 			nX[i*nX.ncol+j] = X[i*X.ncol+j];
-		for (int i=0;i<nX.nrow;i++)
+
+		for (int i=0; i<nX.nrow; i++)
 		{
 		    if (iscox)
 		    {
-			nX[i*nX.ncol+c1] = X[i*X.ncol+csnp_p1] * X[i*X.ncol + interaction-1];//Maksim: interaction with SNP;;
-			nX[i*nX.ncol+c2] = X[i*X.ncol+csnp_p2] * X[i*X.ncol + interaction-1];//Maksim: interaction with SNP;;
+			nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
+			    * X[i * X.ncol + interaction-1]; //Maksim: interaction with SNP;;
+			nX[i * nX.ncol + c2] = X[i * X.ncol + csnp_p2]
+			    * X[i * X.ncol + interaction-1]; //Maksim: interaction with SNP;;
 		    }
 		    else
 		    {
-			nX[i*nX.ncol+c1] = X[i*X.ncol+csnp_p1] * X[i*X.ncol + interaction];//Maksim: interaction with SNP;;
-			nX[i*nX.ncol+c2] = X[i*X.ncol+csnp_p2] * X[i*X.ncol + interaction];//Maksim: interaction with SNP;;
+			nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
+			    * X[i * X.ncol + interaction]; //Maksim: interaction with SNP;;
+			nX[i * nX.ncol + c2] = X[i * X.ncol + csnp_p2]
+			    * X[i * X.ncol + interaction]; //Maksim: interaction with SNP;;
 		    }
 		}
 		//________________________
@@ -66,22 +75,22 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction, in
 		if(is_interaction_excluded)
 		{
 		    mematrix<double> nX_without_interact_phe;
-		    nX_without_interact_phe.reinit(nX.nrow,nX.ncol-1);
-		    for(int row=0 ; row < nX.nrow ; row++)
+		    nX_without_interact_phe.reinit(nX.nrow, nX.ncol-1);
+		    for(int row=0; row < nX.nrow; row++)
 		    {
 			//Han Chen
 			col_new=-1;
-			for(int col=0 ; col<nX.ncol ; col++)
+			for(int col=0; col<nX.ncol; col++)
 			{
 			    if(col != interaction && !iscox)
 			    {
 				col_new++;
-				nX_without_interact_phe[row*nX_without_interact_phe.ncol+col_new] = nX[row*nX.ncol+col];
+				nX_without_interact_phe[row * nX_without_interact_phe.ncol + col_new] = nX[row * nX.ncol + col];
 			    }
 			    if(col != interaction-1 && iscox)
 			    {
 				col_new++;
-				nX_without_interact_phe[row*nX_without_interact_phe.ncol+col_new] = nX[row*nX.ncol+col];
+				nX_without_interact_phe[row * nX_without_interact_phe.ncol + col_new] = nX[row * nX.ncol + col];
 			    }
 			}//interaction_only, model==0, ngpreds==2
 			//Oct 26, 2009
@@ -90,52 +99,53 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction, in
 		}//end of is_interaction_excluded
 		//________________________
 
-
-
 		return(nX);
 	    }
 	    if(ngpreds == 1)
 	    {
 		mematrix<double> nX;
-		nX.reinit(X.nrow,X.ncol+1);
-		int csnp_p1=nX.ncol-2;
+		nX.reinit(X.nrow, X.ncol + 1);
+		int csnp_p1 = nX.ncol-2;
 		int c1 = nX.ncol-1;
-		for (int i=0;i<X.nrow;i++)
-		    for (int j=0;j<(X.ncol);j++)
-			nX[i*nX.ncol+j] = X[i*X.ncol+j];
-		for (int i=0;i<nX.nrow;i++)
+		for (int i=0; i<X.nrow; i++)
+		    for (int j=0; j<(X.ncol); j++)
+			nX[i * nX.ncol + j] = X[i * X.ncol + j];
+
+		for (int i=0; i<nX.nrow; i++)
 		{
 		    if (iscox)
 		    {
-			nX[i*nX.ncol+c1] = X[i*X.ncol+csnp_p1] * X[i*X.ncol + interaction-1];//Maksim: interaction with SNP;;
+			nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
+			    * X[i * X.ncol + interaction-1]; //Maksim: interaction with SNP;;
 		    }
 		    else
 		    {
-			nX[i*nX.ncol+c1] = X[i*X.ncol+csnp_p1] * X[i*X.ncol + interaction];//Maksim: interaction with SNP;;
+			nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
+			    * X[i * X.ncol + interaction]; //Maksim: interaction with SNP;;
 		    }
 		}
 
 
 		//________________________
-		int col_new=-1;
+		int col_new = -1;
 		if(is_interaction_excluded)
 		{
 		    mematrix<double> nX_without_interact_phe;
-		    nX_without_interact_phe.reinit(nX.nrow,nX.ncol-1);
-		    for(int row=0 ; row < nX.nrow ; row++)
+		    nX_without_interact_phe.reinit(nX.nrow, nX.ncol-1);
+		    for(int row=0; row < nX.nrow; row++)
 		    {
 			col_new=-1;
-			for(int col=0 ; col<nX.ncol ; col++)
+			for(int col=0; col<nX.ncol; col++)
 			{
 			    if(col != interaction && !iscox)
 			    {
 				col_new++;
-				nX_without_interact_phe[row*nX_without_interact_phe.ncol+col_new] = nX[row*nX.ncol+col];
+				nX_without_interact_phe[row * nX_without_interact_phe.ncol + col_new] = nX[row * nX.ncol + col];
 			    }
 			    if(col != interaction-1 && iscox)
 			    {
 				col_new++;
-				nX_without_interact_phe[row*nX_without_interact_phe.ncol+col_new] = nX[row*nX.ncol+col];
+				nX_without_interact_phe[row * nX_without_interact_phe.ncol + col_new] = nX[row * nX.ncol + col];
 			    }
 
 			}
@@ -165,10 +175,11 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction, in
     }
     int c1 = X.ncol-2;
     int c2 = X.ncol-1;
-    for (int i=0;i<X.nrow;i++)
-	for (int j=0;j<(X.ncol-2);j++)
-	    nX[i*nX.ncol+j] = X[i*X.ncol+j];
-    for (int i=0;i<nX.nrow;i++)
+    for (int i=0; i<X.nrow; i++)
+	for (int j=0; j<(X.ncol-2); j++)
+	    nX[i * nX.ncol + j] = X[i * X.ncol + j];
+
+    for (int i=0; i<nX.nrow; i++)
     {
 	if (model==1)
 	    nX[i*nX.ncol+c1] = X[i*X.ncol+c1] + 2.*X[i*X.ncol+c2];
@@ -179,7 +190,7 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction, in
 	else if (model==4)
 	    nX[i*nX.ncol+c1] = X[i*X.ncol+c1];
 	if(interaction != 0)
-	    nX[i*nX.ncol+c2] = X[i*nX.ncol+interaction] * nX[i*nX.ncol+c1];//Maksim: interaction with SNP
+	    nX[i*nX.ncol+c2] = X[i*nX.ncol+interaction] * nX[i*nX.ncol+c1]; //Maksim: interaction with SNP
     }
     //Han Chen
     int col_new=-1;
@@ -187,20 +198,20 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction, in
     {
 	mematrix<double> nX_without_interact_phe;
 	nX_without_interact_phe.reinit(nX.nrow,nX.ncol-1);
-	for(int row=0 ; row < nX.nrow ; row++)
+	for(int row=0; row < nX.nrow; row++)
 	{
 	    col_new=-1;
-	    for(int col=0 ; col<nX.ncol ; col++)
+	    for(int col=0; col<nX.ncol; col++)
 	    {
 		if(col != interaction && !iscox)
 		{
 		    col_new++;
-		    nX_without_interact_phe[row*nX_without_interact_phe.ncol+col_new] = nX[row*nX.ncol+col];
+		    nX_without_interact_phe[row * nX_without_interact_phe.ncol + col_new] = nX[row * nX.ncol + col];
 		}
 		if(col != interaction-1 && iscox)
 		{
 		    col_new++;
-		    nX_without_interact_phe[row*nX_without_interact_phe.ncol+col_new] = nX[row*nX.ncol+col];
+		    nX_without_interact_phe[row * nX_without_interact_phe.ncol + col_new] = nX[row * nX.ncol + col];
 		}
 
 	    }
@@ -211,7 +222,8 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction, in
     return nX;
 }
 
-mematrix<double> t_apply_model(mematrix<double> &X, int model, int interaction, int ngpreds, bool iscox, int nullmodel=0)
+mematrix<double> t_apply_model(mematrix<double> &X, int model, int interaction,
+			       int ngpreds, bool iscox, int nullmodel=0)
 {
     mematrix<double> tmpX = transpose(X);
     mematrix<double> nX = apply_model(tmpX, model, interaction, ngpreds, iscox, nullmodel);
@@ -340,8 +352,9 @@ public:
     //*/
     //
     //	}
-    void estimate(regdata &rdatain,int verbose, double tol_chol, int model, int interaction,
-		  int ngpreds, mematrix<double> invvarmatrixin, int robust, int nullmodel=0)
+    void estimate(regdata &rdatain,int verbose, double tol_chol, int model,
+		  int interaction, int ngpreds, mematrix<double> invvarmatrixin,
+		  int robust, int nullmodel=0)
     {
 	//suda ineraction parameter
 	// model should come here
@@ -550,7 +563,9 @@ public:
 	if (verbose) {printf("sebeta (%d):\n",sebeta.nrow);sebeta.print();}
     }
 
-    void score(mematrix<double> &resid,regdata &rdatain,int verbose, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> invvarmatrix, int nullmodel=0)
+    void score(mematrix<double> &resid, regdata &rdatain, int verbose,
+	       double tol_chol, int model, int interaction, int ngpreds,
+	       mematrix<double> invvarmatrix, int nullmodel=0)
     {
 	regdata rdata = rdatain.get_unmasked_data();
 
@@ -638,9 +653,9 @@ public:
 	//		delete sebeta;
     }
 
-    void estimate(regdata &rdatain, int verbose, int maxiter, double eps, double tol_chol,
-		  int model, int interaction, int ngpreds, mematrix<double> invvarmatrixin, int robust,
-		  int nullmodel=0)
+    void estimate(regdata &rdatain, int verbose, int maxiter, double eps,
+		  double tol_chol, int model, int interaction, int ngpreds,
+		  mematrix<double> invvarmatrixin, int robust, int nullmodel=0)
     {
 	// on the contrast to the 'linear' 'invvarmatrix' contains
 	// inverse of correlation matrix (not the inverse of var-cov matrix)
@@ -831,7 +846,9 @@ public:
 	//exit(1);
     }
     // just a stupid copy from linear_reg
-    void score(mematrix<double> &resid,regdata &rdata,int verbose, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> invvarmatrix, int nullmodel=0)
+    void score(mematrix<double> &resid, regdata &rdata, int verbose,
+	       double tol_chol, int model, int interaction, int ngpreds,
+	       mematrix<double> invvarmatrix, int nullmodel=0)
     {
 	mematrix<double> oX = rdata.extract_genotypes();
 	mematrix<double> X = apply_model(oX,model, interaction, ngpreds, false, nullmodel);
@@ -899,7 +916,9 @@ public:
 	//		delete beta;
 	//		delete sebeta;
     }
-    void estimate(coxph_data &cdatain, int verbose, int maxiter, double eps, double tol_chol, int model, int interaction, int ngpreds, bool iscox, int nullmodel=0)
+    void estimate(coxph_data &cdatain, int verbose, int maxiter, double eps,
+		  double tol_chol, int model, int interaction, int ngpreds,
+		  bool iscox, int nullmodel=0)
     {
 	//		cout << "model = " << model << "\n";
 	//		cdata.X.print();
