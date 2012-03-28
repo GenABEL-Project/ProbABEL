@@ -19,7 +19,7 @@ void print_dmatrix(double **matr, int nrow, int ncol)
 	for (int j=0;j<ncol;j++)
 	{
 		std::cout << "nc=" << j << ":";
-		for (int i=0;i<nrow;i++)
+        for (int i = 0; i < nrow;i++)
 			std::cout << "\t" << matr[j][i];
 		std::cout << "\n";
 	}
