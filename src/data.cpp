@@ -2,8 +2,6 @@
 #include <sstream>
 #include <fstream>
 
-
-
 #include "fvlib/AbstractMatrix.h"
 #include "fvlib/CastUtils.h"
 #include "fvlib/const.h"
@@ -24,37 +22,38 @@ using namespace std;
 
 extern bool is_interaction_excluded;
 
-
 unsigned int Nmeasured(char * fname, int nphenocols, int npeople) {
     int ncov = nphenocols - 2;
     int nids_all = npeople;
 
-    FILE * infile;
     // first pass -- find unmeasured people
-    if ((infile = fopen(fname, "r")) == NULL) {
-        fprintf(stderr, "Nmeasured: cannot open file %s\n", fname);
+    std::ifstream infile(fname);
+    if (!infile) {
+        std::cerr << "Nmeasured: cannot open file " << fname << endl;
     }
     char tmp[100];
 
     for (int i = 0; i < nphenocols; i++) {
-        fscanf(infile, "%s", tmp);
-        //		printf("%s ",tmp);
-    } //printf("\n");
+        infile >> tmp;
+    }
 
     unsigned short int * allmeasured = new unsigned short int[npeople];
     int nids = 0;
     for (int i = 0; i < npeople; i++) {
         allmeasured[i] = 1;
-        fscanf(infile, "%s", tmp);
+        infile >> tmp;
         for (int j = 1; j < nphenocols; j++) {
-            fscanf(infile, "%s", tmp);
+            infile >> tmp;
             if (tmp[0] == 'N' || tmp[0] == 'n')
                 allmeasured[i] = 0;
         }
         if (allmeasured[i] == 1)
             nids++;
     }
-    fclose(infile);
+    infile.close();
+
+    delete[] allmeasured;
+
     return (nids);
 }
 
@@ -171,14 +170,12 @@ mematrix<double> regdata::extract_genotypes(void) {
 int cmpfun(const void *a, const void *b) {
     double el1 = *(double*) a;
     double el2 = *(double*) b;
-    int returnvalue;
     if (el1 > el2)
-        returnvalue = 1;
+        return 1;
     if (el1 < el2)
-        returnvalue = -1;
+        return -1;
     if (el1 == el2)
-        returnvalue = 0;
-    return returnvalue;
+        return 0;
 }
 
 coxph_data::coxph_data(const coxph_data &obj) {
@@ -225,7 +222,9 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum) {
         stime[i] = (phed.Y).get(i, 0);
         sstat[i] = int((phed.Y).get(i, 1));
         if (sstat[i] != 1 & sstat[i] != 0) {
-            fprintf(stderr,"coxph_data: status not 0/1 (right order: id, fuptime, status ...)\n", phed.noutcomes);
+            fprintf(stderr,
+                    "coxph_data: status not 0/1 (right order: id, fuptime, status ...)\n",
+                    phed.noutcomes);
             exit(1);
         }
     }
@@ -369,23 +368,28 @@ coxph_data coxph_data::get_unmasked_data() {
 }
 
 mlinfo::mlinfo(char * filename, char * mapname) {
-    FILE * infile = fopen(filename, "r");
-    if (infile == NULL) {
-        fprintf(stderr, "mlinfo: cannot open file %s", filename);
-        exit(1);
-    }
+
     char tmp[100];
     unsigned int nlin = 0;
-    while (fscanf(infile, "%s", tmp) != EOF) {
-        nlin++;
+    std::ifstream infile(filename);
+    if (infile.is_open()) {
+        while (infile.good()) {
+            infile >> tmp;
+            nlin++;
+        }
+        nlin--; // Subtract one, the previous loop added 1 too much
+    } else {
+        std::cerr << "mlinfo: cannot open file " << filename << endl;
+        exit(1);
     }
-    fclose(infile);
+    infile.close();
+
     if (nlin % 7) {
-        fprintf(stderr, "mlinfo: number of columns != 7 in %s", filename);
+        std::cerr << "mlinfo: number of columns != 7 in " << filename << endl;
         exit(1);
     }
     nsnps = int(nlin / 7) - 1;
-    printf("Number of SNPs = %d\n", nsnps);
+    std::cout << "Number of SNPs = " << nsnps << endl;
     name = new std::string[nsnps];
     A1 = new std::string[nsnps];
     A2 = new std::string[nsnps];
@@ -394,36 +398,41 @@ mlinfo::mlinfo(char * filename, char * mapname) {
     Quality = new double[nsnps];
     Rsq = new double[nsnps];
     map = new std::string[nsnps];
-    if ((infile = fopen(filename, "r")) == NULL) {
-        fprintf(stderr, "mlinfo: cannot open file %s", filename);
+
+    infile.open(filename);
+    if (!infile) { // file couldn't be opened
+        std::cerr << "mlinfo: cannot open file " << filename << endl;
         exit(1);
     }
+    /* Read the header and discard it */
     for (int i = 0; i < 7; i++)
-        fscanf(infile, "%s", tmp);
+        infile >> tmp;
+
     for (int i = 0; i < nsnps; i++) {
-        fscanf(infile, "%s", tmp);
+        infile >> tmp;
         name[i] = tmp;
-        fscanf(infile, "%s", tmp);
+        infile >> tmp;
         A1[i] = tmp;
-        fscanf(infile, "%s", tmp);
+        infile >> tmp;
         A2[i] = tmp;
-        fscanf(infile, "%s", tmp);
+        infile >> tmp;
         Freq1[i] = atof(tmp);
-        fscanf(infile, "%s", tmp);
+        infile >> tmp;
         MAF[i] = atof(tmp);
-        fscanf(infile, "%s", tmp);
+        infile >> tmp;
         Quality[i] = atof(tmp);
-        fscanf(infile, "%s", tmp);
+        infile >> tmp;
         Rsq[i] = atof(tmp);
         map[i] = "-999";
     }
-    fclose(infile);
+    infile.close();
+
     if (mapname != NULL) {
         std::ifstream instr(mapname);
         int BFS = 1000;
         char line[BFS], tmp[BFS];
         if (!instr.is_open()) {
-            fprintf(stderr, "mlinfo: cannot open file %s", mapname);
+            std::cerr << "mlinfo: cannot open file " << mapname << endl;
             exit(1);
         }
         instr.getline(line, BFS);
@@ -445,65 +454,66 @@ mlinfo::~mlinfo() {
     delete[] mlinfo::Rsq;
     delete[] mlinfo::map;
 }
+};
 
 //_________________________________________Maksim_start
 
 InvSigma::InvSigma(const char * filename_, phedata * phe) {
-    filename = filename_;
-    npeople = phe->nids;
-    std::ifstream myfile(filename_);
-    char * line = new char[MAXIMUM_PEOPLE_AMOUNT];
-    double val;
-    std::string id;
-    unsigned row = 0, col = 0;
+filename = filename_;
+npeople = phe->nids;
+std::ifstream myfile(filename_);
+char * line = new char[MAXIMUM_PEOPLE_AMOUNT];
+double val;
+std::string id;
+unsigned row = 0, col = 0;
 
-    matrix.reinit(npeople, npeople);
+matrix.reinit(npeople, npeople);
 
-    //idnames[k], if (allmeasured[i]==1)
+//idnames[k], if (allmeasured[i]==1)
 
-    if (myfile.is_open()) {
-        while (myfile.getline(line, MAXIMUM_PEOPLE_AMOUNT)) {
+if (myfile.is_open()) {
+    while (myfile.getline(line, MAXIMUM_PEOPLE_AMOUNT)) {
 
-            std::stringstream line_stream(line);
-            line_stream >> id;
+        std::stringstream line_stream(line);
+        line_stream >> id;
 
-            if (phe->idnames[row] != id) {
-                std::cerr << "error:in row " << row << " id="
-                        << phe->idnames[row]
-                        << " in inverse variance matrix but id=" << id
-                        << " must be there. Wrong inverse variance matrix (only measured id must be there)\n";
-                exit(1);
-            }
-
-            while (line_stream >> val) {
-                matrix.put(val, row, col);
-                col++;
-            }
-
-            if (col != npeople) {
-                fprintf(stderr,
-                        "error: inv file: Number of columns in row %d equals to %d but people amount is %d\n",
-                        row, col, npeople);
-                myfile.close();
-                exit(1);
-            }
-            col = 0;
-            row++;
+        if (phe->idnames[row] != id) {
+            std::cerr << "error:in row " << row << " id=" << phe->idnames[row]
+                    << " in inverse variance matrix but id=" << id
+                    << " must be there. Wrong inverse variance matrix (only measured id must be there)\n";
+            exit(1);
         }
-        myfile.close();
-    } else {
-        fprintf(stderr, "error: inv file: cannot open file '%s'\n", filename_);
-    }
 
+        while (line_stream >> val) {
+            matrix.put(val, row, col);
+            col++;
+        }
+
+        if (col != npeople) {
+            fprintf(stderr,
+                    "error: inv file: Number of columns in row %d equals to %d but people amount is %d\n",
+                    row, col, npeople);
+            myfile.close();
+            exit(1);
+        }
+        col = 0;
+        row++;
+    }
+    myfile.close();
+} else {
+    fprintf(stderr, "error: inv file: cannot open file '%s'\n", filename_);
+}
+
+delete[] line;
 }
 ;
 
 InvSigma::~InvSigma() {
-    //af af
+//af af
 }
 
 mematrix<double> & InvSigma::get_matrix(void) {
-    return matrix;
+return matrix;
 }
 
 //________________________________________Maksim_end

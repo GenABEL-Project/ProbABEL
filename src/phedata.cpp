@@ -5,14 +5,13 @@
 #include <cstdlib>
 #include <phedata.h>
 
-
 phedata::phedata(char * fname, int noutc, int npeople, int interaction,
         bool iscox) {
     setphedata(fname, noutc, npeople, interaction, iscox);
 }
 
-void phedata::set_is_interaction_excluded(bool int_exl){
-    is_interaction_excluded=int_exl;
+void phedata::set_is_interaction_excluded(bool int_exl) {
+    is_interaction_excluded = int_exl;
 }
 void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
         bool iscox) {
@@ -40,9 +39,8 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
             while (line_stream >> tmp)
                 tmplins++;
             if (tmplins != nphenocols) {
-                fprintf(stderr,
-                        "phenofile: number of variables different from %d in line %d\n",
-                        nphenocols, tmplins);
+                std::cerr << "phenofile: number of variables different from "
+                        << nphenocols << " in line " << tmplins << endl;
                 myfile.close();
                 exit(1);
             }
@@ -50,33 +48,33 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
         };
         myfile.close();
     } else {
-        fprintf(stderr, "Unable to open file %s\n", fname);
+        std::cerr << "Unable to open file " << fname << endl;
         exit(1);
     }
-    fprintf(stdout, "Actual number of people in phenofile = %d", npeople);
+    std::cout << "Actual number of people in phenofile = " << npeople;
     if (savenpeople > 0) {
         npeople = savenpeople;
-        fprintf(stdout, "; using only %d first\n", npeople);
+        std::cout << "; using only " << npeople << " first\n";
     } else {
-        fprintf(stdout, "; using all of these\n");
+        std::cout << "; using all of these\n";
     }
 
     ncov = nphenocols - 1 - noutcomes;
     nids_all = npeople;
     model_terms = new std::string[ncov + 2];
 
-    FILE * infile;
     // first pass -- find unmeasured people
-    if ((infile = fopen(fname, "r")) == NULL) {
-        fprintf(stderr, "phedata: cannot open file %s\n", fname);
+    std::ifstream infile(fname);
+    if (!infile) {
+        std::cerr << "phedata: cannot open file " << fname << endl;
     }
 
-    fscanf(infile, "%s", tmp);
+    infile >> tmp;
     model = "( ";
-    fscanf(infile, "%s", tmp);
+    infile >> tmp;
     model = model + tmp;
     for (int i = 1; i < noutcomes; i++) {
-        fscanf(infile, "%s", tmp);
+        infile >> tmp;
         model = model + " , ";
         model = model + tmp;
     }
@@ -89,11 +87,11 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
 #endif
 
     if (nphenocols > noutcomes + 1) {
-        fscanf(infile, "%s", tmp);
+        infile >> tmp;
         model = model + tmp;
         model_terms[n_model_terms++] = tmp;
         for (int i = (2 + noutcomes); i < nphenocols; i++) {
-            fscanf(infile, "%s", tmp);
+            infile >> tmp;
 
             //				if(iscox && ) {if(n_model_terms+1 == interaction-1) {continue;} }
             //				else      {if(n_model_terms+1 == interaction) {continue;} }
@@ -139,14 +137,14 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     for (int i = 0; i < npeople; i++) {
         allmeasured[i] = 1;
         for (int j = 0; j < nphenocols; j++) {
-            fscanf(infile, "%s", tmp);
+            infile >> tmp;
             if (j > 0 && (tmp[0] == 'N' || tmp[0] == 'n'))
                 allmeasured[i] = 0;
         }
         if (allmeasured[i] == 1)
             nids++;
     }
-    fclose(infile);
+    infile.close();
     //		printf("npeople = %d, no. all measured = %d\n",nids_all,nids);
 
     // allocate objects
@@ -158,34 +156,35 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     Y.reinit(nids, noutcomes);
 
     // second pass -- read the data
-    if ((infile = fopen(fname, "r")) == NULL) {
-        fprintf(stderr, "phedata: cannot open file %s\n", fname);
+    infile.open(fname);
+    if (!infile) {
+        std::cerr << "phedata: cannot open file " << fname << endl;
         exit(1);
     }
 
     for (int i = 0; i < nphenocols; i++) {
-        fscanf(infile, "%s", tmp);
+        infile >> tmp;
     }
 
     int k = 0;
     int m = 0;
     for (int i = 0; i < npeople; i++)
         if (allmeasured[i] == 1) {
-            fscanf(infile, "%s", tmp);
+            infile >> tmp;
             idnames[m] = tmp;
             for (int j = 0; j < noutcomes; j++) {
-                fscanf(infile, "%s", tmp);
+                infile >> tmp;
                 Y.put(atof(tmp), m, j);
             }
             for (int j = (1 + noutcomes); j < nphenocols; j++) {
-                fscanf(infile, "%s", tmp);
+                infile >> tmp;
                 X.put(atof(tmp), m, (j - 1 - noutcomes));
             }
             m++;
         } else
             for (int j = 0; j < nphenocols; j++)
-                fscanf(infile, "%s", tmp);
-    fclose(infile);
+                infile >> tmp;
+    infile.close();
 }
 phedata::~phedata() {
     //		delete X;

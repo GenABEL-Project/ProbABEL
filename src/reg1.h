@@ -24,7 +24,7 @@
 //==============================================================================
 
 #include <cmath>
-
+#include "cholesky.h"
 extern "C" {
 #include "survproto.h"
 }

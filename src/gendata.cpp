@@ -11,8 +11,6 @@
 #include "mematri1.h"
 #include "utilities.h"
 
-
-
 void gendata::get_var(int var, float * data) {
     if (DAG == NULL)
         for (int i = 0; i < G.nrow; i++)
@@ -84,10 +82,11 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
 
     G.reinit(nids, (nsnps * ngpreds));
 
-    FILE * infile;
+    std::ifstream infile;
 
-    if ((infile = fopen(fname, "r")) == NULL) {
-        fprintf(stderr, "gendata: cannot open file %s\n", fname);
+    infile.open(fname);
+    if (!infile) {
+        std::cerr << "gendata: cannot open file " << fname << endl;
     }
 
     char tmp[100], tmpn[100];
@@ -99,7 +98,7 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
             if (skipd > 0) {
                 //				int ttt;
                 char ttt[100];
-                fscanf(infile, "%s", tmp);
+                infile >> tmp;
                 //				sscanf(tmp,"%d->%s",&ttt, tmpn);
                 //		these changes are thanks to BMM & BP :)
                 //				sscanf(tmp,"%s->%s",&ttt, tmpn);
@@ -117,19 +116,20 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
                             "phenofile and dosefile did not match at line %d ",
                             i + 2);
                     cerr << "(" << tmpid << " != " << idnames[k] << ")\n";
-                    fclose(infile);
+                    infile.close();
                     exit(1);
                 }
             }
             for (int j = 1; j < skipd; j++) {
-                fscanf(infile, "%s", tmp);
+                infile >> tmp;
             }
             for (int j = 0; j < (nsnps * ngpreds); j++) {
-                int a = fscanf(infile, "%s", tmp);
-                if (!a || a == EOF) {
-                    fprintf(stderr,
-                            "cannot read dose-file: check skipd and ngpreds parameters\n");
-                    fclose(infile);
+                if (infile.good()) {
+                    infile >> tmp;
+                } else {
+                    std::cerr
+                            << "cannot read dose-file: check skipd and ngpreds parameters\n";
+                    infile.close();
                     exit(1);
                 }
                 G.put(atof(tmp), k, j);
@@ -137,11 +137,11 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
             k++;
         } else {
             for (int j = 0; j < skipd; j++)
-                fscanf(infile, "%s", tmp);
+                infile >> tmp;
             for (int j = 0; j < (nsnps * ngpreds); j++)
-                fscanf(infile, "%s", tmp);
+                infile >> tmp;
         }
-    fclose(infile);
+    infile.close();
 }
 // HERE NEED A NEW CONSTRUCTOR BASED ON DATABELBASECPP OBJECT
 gendata::~gendata() {

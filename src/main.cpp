@@ -11,7 +11,7 @@
 //             Author:  Yurii S. Aulchenko (cox, log, lin regressions)
 //             Modified by: L.C. Karssen,
 //                          Maksim V. Struchalin
-//
+// 
 // modified 14-May-2009 by MVS: interaction with SNP, interaction with SNP with exclusion of interacted covariates,
 //                              mmscore implemented (poor me)
 // modified 20-Jul-2009 by YSA: small changes, bug fix in mmscore option
@@ -264,7 +264,9 @@ int main(int argc, char * argv[]) {
 
     mlinfo mli(mlinfofilename, mapfilename);
     int nsnps = mli.nsnps;
-    phedata phd(phefilename, noutcomes, npeople, interaction, iscox);
+    phedata phd;
+    phd.set_is_interaction_excluded(is_interaction_excluded);
+    phd.setphedata(phefilename, noutcomes, npeople, interaction, iscox);
 
     int interaction_cox = interaction;
 #if COXPH
@@ -349,21 +351,24 @@ int main(int argc, char * argv[]) {
     // estimate null model
     double null_loglik = 0.;
 #if COXPH
-    coxph_data nrgd(phd,gtd,-1);
-#else
-    regdata nrgd(phd, gtd, -1);
+    coxph_data nrgd=coxph_data(phd,gtd,-1);
+#else 
+    regdata nrgd = regdata(phd, gtd, -1);
 #endif
 
     std::cout << " loaded null data ...";
 
 #if LOGISTIC
-    logistic_reg nrd(nrgd);
+    logistic_reg nrd=logistic_reg(nrgd);
     nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, interaction, ngpreds, invvarmatrix, robust, 1);
 #elif LINEAR
-    linear_reg nrd(nrgd);
+
+    linear_reg nrd=linear_reg(nrgd);
+
     nrd.estimate(nrgd,0,CHOLTOL,0, interaction, ngpreds, invvarmatrix, robust, 1);
 #elif COXPH
     coxph_reg nrd(nrgd);
+
     nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, interaction, ngpreds, 1);
 #endif
     null_loglik = nrd.loglik;
@@ -672,10 +677,8 @@ int main(int argc, char * argv[]) {
      }
      */
     //	exit(1);
-
     //________________________________________________________________
     //Maksim, 9 Jan, 2009
-
     int maxmod = 5;
     int start_pos, end_pos;
 
