@@ -454,7 +454,7 @@ mlinfo::~mlinfo() {
     delete[] mlinfo::Rsq;
     delete[] mlinfo::map;
 }
-};
+
 
 //_________________________________________Maksim_start
 
