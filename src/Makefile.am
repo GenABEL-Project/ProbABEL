@@ -24,6 +24,8 @@ RHEADERS = include/R.h include/Rmath.h include/R_ext/Arith.h		\
  include/R_ext/Print.h include/R_ext/Random.h include/R_ext/Utils.h	\
  include/R_ext/RS.h
 
+AM_CXXFLAGS = -Wall
+
 bin_PROGRAMS = palinear palogist
 if BUILD_pacoxph
 ## Extra files for pacoxph
@@ -34,15 +36,15 @@ bin_PROGRAMS += pacoxph
 endif
 
 palinear_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
-palinear_CXXFLAGS = -DLINEAR
+palinear_CXXFLAGS = -DLINEAR $(AM_CXXFLAGS)
 
 palogist_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
-palogist_CXXFLAGS = -DLOGISTIC
+palogist_CXXFLAGS = -DLOGISTIC $(AM_CXXFLAGS)
 
 pacoxph_SOURCES = $(COXSRC) $(REGFILES) $(FVSRC) $(FVHEADERS)	\
  $(RHEADERS) survS.h survproto.h
-pacoxph_CXXFLAGS = -DCOXPH -I $(top_srcdir)/src/include
-pacoxph_CFLAGS = -DCOXPH -I $(top_srcdir)/src/include
+pacoxph_CXXFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CXXFLAGS)
+pacoxph_CFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CFLAGS)
 
 ## Install these scripts in the bin directory as well:
 dist_bin_SCRIPTS = probabel.pl extIDS.pl
