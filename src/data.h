@@ -656,7 +656,8 @@ public:
 	    ncov = phed.ncov;
 	if (phed.noutcomes != 2)
 	{
-	    fprintf(stderr,"coxph_data: number of outcomes should be 2 (now: %d)\n",phed.noutcomes);
+	    std::cerr << "coxph_data: number of outcomes should be 2 (now: "
+		      << phed.noutcomes << ")" << endl;
 	    exit(1);
 	}
 	//		X.reinit(nids,(ncov+1));
@@ -675,20 +676,21 @@ public:
 	    sstat[i] = int((phed.Y).get(i,1));
 	    if (sstat[i] != 1 & sstat[i]!=0)
 	    {
-		fprintf(stderr,"coxph_data: status not 0/1 (right order: id, fuptime, status ...)\n",phed.noutcomes);
+		std::cerr << "coxph_data: status not 0/1 (right order: id, fuptime, status ...)"
+			  << endl;
 		exit(1);
 	    }
 	}
 
 	for (int j=0; j<phed.ncov; j++)
 	    for (int i=0; i<nids; i++)
-		X.put((phed.X).get(i,j),i,j);
+		X.put((phed.X).get(i,j), i, j);
 
 	if (snpnum>0)
 	    for (int j=0; j<ngpreds; j++)
 	    {
 		float snpdata[nids];
-		gend.get_var(snpnum*ngpreds+j,snpdata);
+		gend.get_var(snpnum*ngpreds+j, snpdata);
 		for (int i=0; i<nids; i++)
 		    X.put(snpdata[i], i, (ncov-ngpreds+j));
 	    }
@@ -706,10 +708,10 @@ public:
 	// sort by time
 	double tmptime[nids];
 	int passed_sorted[nids];
-	for (int i=0;i<nids;i++)
+	for (int i=0; i<nids; i++)
 	{
 	    tmptime[i] = stime[i];
-	    passed_sorted[i]=0;
+	    passed_sorted[i] = 0;
 	}
 	qsort(tmptime, nids, sizeof(double), cmpfun);
 
@@ -727,7 +729,7 @@ public:
 		    }
 	    if (passed != 1)
 	    {
-		fprintf(stderr,"cannot recover element %d\n", i);
+	    std:cerr << "cannot recover element " << i << endl;
 		exit(1);
 	    }
 	}
@@ -755,7 +757,7 @@ public:
 	    for (int i=0; i<nids; i++)
 		masked_data[i]=0;
 
-	    gend.get_var(snpnum*ngpreds+j,snpdata);
+	    gend.get_var(snpnum*ngpreds+j, snpdata);
 
 	    for (int i=0; i<nids; i++) {
 		X.put(snpdata[i], (ncov-ngpreds+j), order[i]);
