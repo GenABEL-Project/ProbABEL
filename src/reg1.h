@@ -26,6 +26,7 @@
 #include <cmath>
 #include "cholesky.h"
 #include "regdata.h"
+#include "coxph_data.h"
 extern "C" {
 #include "survproto.h"
 }

@@ -14,29 +14,6 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople);
 #include "phedata.h"
 #include "gendata.h"
 
-class coxph_data {
-public:
-    int nids;
-    int ncov;
-    int ngpreds;
-    mematrix<double> weights;
-    mematrix<double> stime;
-    mematrix<int> sstat;
-    mematrix<double> offset;
-    mematrix<int> strata;
-    mematrix<double> X;
-    mematrix<int> order;
-    unsigned short int * masked_data;
-    coxph_data get_unmasked_data();
-    coxph_data() {
-    }
-    coxph_data(const coxph_data &obj);
-    coxph_data(phedata &phed, gendata &gend, int snpnum);
-    void update_snp(gendata &gend, int snpnum);
-    ~coxph_data();
-
-};
-
 class mlinfo {
 public:
     int nsnps;
