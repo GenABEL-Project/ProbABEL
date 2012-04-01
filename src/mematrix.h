@@ -3,20 +3,23 @@
 #include <iostream>
 using namespace std;
 
-template<class DT> class mematrix {
+template<class DT> class mematrix
+{
 public:
     int nrow;
     int ncol;
     int nelements;
     DT * data;
 
-    mematrix() {
+    mematrix()
+    {
         nrow = ncol = nelements = 0;
         data = NULL;
     }
     mematrix(int nr, int nc);
     mematrix(const mematrix &M);
-    ~mematrix() {
+    ~mematrix()
+    {
         if (nelements > 0)
             delete[] data;
     }
@@ -32,10 +35,12 @@ public:
 
     void reinit(int nr, int nc);
 
-    unsigned int getnrow(void) {
+    unsigned int getnrow(void)
+    {
         return nrow;
     }
-    unsigned int getncol(void) {
+    unsigned int getncol(void)
+    {
         return ncol;
     }
     DT get(int nr, int nc);

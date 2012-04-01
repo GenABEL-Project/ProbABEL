@@ -8,7 +8,8 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
-void report_error(const char * format, ...) {
+void report_error(const char * format, ...)
+{
     va_list args;
     char buffer[256];
     va_start(args, format);

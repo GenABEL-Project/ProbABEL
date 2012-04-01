@@ -8,8 +8,8 @@
 #ifndef COXPH_DATA_H_
 #define COXPH_DATA_H_
 
-
-class coxph_data {
+class coxph_data
+{
 public:
     int nids;
     int ncov;
@@ -23,7 +23,8 @@ public:
     mematrix<int> order;
     unsigned short int * masked_data;
     coxph_data get_unmasked_data();
-    coxph_data() {
+    coxph_data()
+    {
     }
     coxph_data(const coxph_data &obj);
     coxph_data(phedata &phed, gendata &gend, int snpnum);
@@ -31,7 +32,5 @@ public:
     ~coxph_data();
 
 };
-
-
 
 #endif /* COXPH_DATA_H_ */

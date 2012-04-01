@@ -1,4 +1,3 @@
-
 /*
  * cholesky.cpp
  *
@@ -11,7 +10,6 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
-
 
 /*  SCCS @(#)cholesky2.c    5.2 10/27/98
  ** subroutine to do Cholesky decompostion on a matrix: C = FDF'
@@ -34,10 +32,11 @@
  **   Terry Therneau
  */
 
-
 // modified Yurii Aulchenko 2008-05-20
-int cholesky2_mm(mematrix<double> &matrix, double toler) {
-    if (matrix.ncol != matrix.nrow) {
+int cholesky2_mm(mematrix<double> &matrix, double toler)
+{
+    if (matrix.ncol != matrix.nrow)
+    {
         fprintf(stderr, "cholesky2_mm: matrix should be square\n");
         exit(1);
     }
@@ -50,7 +49,8 @@ int cholesky2_mm(mematrix<double> &matrix, double toler) {
 
     nonneg = 1;
     eps = 0;
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n; i++)
+    {
         if (matrix[i * n + i] > eps)
             eps = matrix[i * n + i];
         for (j = (i + 1); j < n; j++)
@@ -59,15 +59,20 @@ int cholesky2_mm(mematrix<double> &matrix, double toler) {
     eps *= toler;
 
     rank = 0;
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n; i++)
+    {
         pivot = matrix[i * n + i];
-        if (pivot < eps) {
+        if (pivot < eps)
+        {
             matrix[i * n + i] = 0;
             if (pivot < -8 * eps)
                 nonneg = -1;
-        } else {
+        }
+        else
+        {
             rank++;
-            for (j = (i + 1); j < n; j++) {
+            for (j = (i + 1); j < n; j++)
+            {
                 temp = matrix[j * n + i] / pivot;
                 matrix[j * n + i] = temp;
                 matrix[j * n + j] -= temp * temp * pivot;
@@ -79,8 +84,10 @@ int cholesky2_mm(mematrix<double> &matrix, double toler) {
     return (rank * nonneg);
 }
 
-void chinv2_mm(mematrix<double> &matrix) {
-    if (matrix.ncol != matrix.nrow) {
+void chinv2_mm(mematrix<double> &matrix)
+{
+    if (matrix.ncol != matrix.nrow)
+    {
         fprintf(stderr, "cholesky2_mm: matrix should be square\n");
         exit(1);
     }
@@ -93,10 +100,13 @@ void chinv2_mm(mematrix<double> &matrix) {
      ** invert the cholesky in the lower triangle
      **   take full advantage of the cholesky's diagonal of 1's
      */
-    for (i = 0; i < n; i++) {
-        if (matrix[i * n + i] > 0) {
+    for (i = 0; i < n; i++)
+    {
+        if (matrix[i * n + i] > 0)
+        {
             matrix[i * n + i] = 1 / matrix[i * n + i]; /*this line inverts D */
-            for (j = (i + 1); j < n; j++) {
+            for (j = (i + 1); j < n; j++)
+            {
                 matrix[j * n + i] = -matrix[j * n + i];
                 for (k = 0; k < i; k++) /*sweep operator */
                     matrix[j * n + k] += matrix[j * n + i] * matrix[i * n + k];
@@ -109,14 +119,19 @@ void chinv2_mm(mematrix<double> &matrix) {
      ** calculate F'DF (inverse of cholesky decomp process) to get inverse
      **   of original matrix
      */
-    for (i = 0; i < n; i++) {
-        if (matrix[i * n + i] == 0) { /* singular row */
+    for (i = 0; i < n; i++)
+    {
+        if (matrix[i * n + i] == 0)
+        { /* singular row */
             for (j = 0; j < i; j++)
                 matrix[j * n + i] = 0;
             for (j = i; j < n; j++)
                 matrix[i * n + j] = 0;
-        } else {
-            for (j = (i + 1); j < n; j++) {
+        }
+        else
+        {
+            for (j = (i + 1); j < n; j++)
+            {
                 temp = matrix[j * n + i] * matrix[j * n + j];
                 if (j != i)
                     matrix[i * n + j] = temp;
@@ -130,5 +145,4 @@ void chinv2_mm(mematrix<double> &matrix) {
         for (int row = 0; row < col; row++)
             matrix[col * n + row] = matrix[row * n + col];
 }
-
 

@@ -6,15 +6,18 @@
 #include <phedata.h>
 
 phedata::phedata(char * fname, int noutc, int npeople, int interaction,
-        bool iscox) {
+        bool iscox)
+{
     setphedata(fname, noutc, npeople, interaction, iscox);
 }
 
-void phedata::set_is_interaction_excluded(bool int_exl) {
+void phedata::set_is_interaction_excluded(bool int_exl)
+{
     is_interaction_excluded = int_exl;
 }
 void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
-        bool iscox) {
+        bool iscox)
+{
     static const unsigned int BFS = 1000;
     std::ifstream myfile(fname);
     char line[BFS];
@@ -24,21 +27,25 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     int nphenocols = 0;
     int savenpeople = npeople;
     npeople = 0;
-    if (myfile.is_open()) {
+    if (myfile.is_open())
+    {
         myfile.getline(line, BFS);
         std::stringstream line_stream(line);
         //			std::cout << line << "\n ";
-        while (line_stream >> tmp) {
+        while (line_stream >> tmp)
+        {
 
             nphenocols++;
             //				std::cout << tmp << " " << nphenocols << " ";
         }
-        while (myfile.getline(line, BFS)) {
+        while (myfile.getline(line, BFS))
+        {
             int tmplins = 0;
             std::stringstream line_stream(line);
             while (line_stream >> tmp)
                 tmplins++;
-            if (tmplins != nphenocols) {
+            if (tmplins != nphenocols)
+            {
                 std::cerr << "phenofile: number of variables different from "
                         << nphenocols << " in line " << tmplins << endl;
                 myfile.close();
@@ -47,15 +54,20 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
             npeople++;
         };
         myfile.close();
-    } else {
+    }
+    else
+    {
         std::cerr << "Unable to open file " << fname << endl;
         exit(1);
     }
     std::cout << "Actual number of people in phenofile = " << npeople;
-    if (savenpeople > 0) {
+    if (savenpeople > 0)
+    {
         npeople = savenpeople;
         std::cout << "; using only " << npeople << " first\n";
-    } else {
+    }
+    else
+    {
         std::cout << "; using all of these\n";
     }
 
@@ -65,7 +77,8 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
 
     // first pass -- find unmeasured people
     std::ifstream infile(fname);
-    if (!infile) {
+    if (!infile)
+    {
         std::cerr << "phedata: cannot open file " << fname << endl;
     }
 
@@ -73,7 +86,8 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     model = "( ";
     infile >> tmp;
     model = model + tmp;
-    for (int i = 1; i < noutcomes; i++) {
+    for (int i = 1; i < noutcomes; i++)
+    {
         infile >> tmp;
         model = model + " , ";
         model = model + tmp;
@@ -86,11 +100,13 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     model_terms[n_model_terms++] = "mu";
 #endif
 
-    if (nphenocols > noutcomes + 1) {
+    if (nphenocols > noutcomes + 1)
+    {
         infile >> tmp;
         model = model + tmp;
         model_terms[n_model_terms++] = tmp;
-        for (int i = (2 + noutcomes); i < nphenocols; i++) {
+        for (int i = (2 + noutcomes); i < nphenocols; i++)
+        {
             infile >> tmp;
 
             //				if(iscox && ) {if(n_model_terms+1 == interaction-1) {continue;} }
@@ -101,10 +117,14 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
         }
     }
     model = model + " + SNP_A1";
-    if (interaction != 0) {
-        if (iscox) {
+    if (interaction != 0)
+    {
+        if (iscox)
+        {
             model = model + " + " + model_terms[interaction - 1] + "*SNP_A1";
-        } else {
+        }
+        else
+        {
             model = model + " + " + model_terms[interaction] + "*SNP_A1";
         }
     }
@@ -112,10 +132,13 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
 
     if (is_interaction_excluded) // exclude covariates from covariate names
     {
-        if (iscox) {
+        if (iscox)
+        {
             std::cout << "model is running without "
                     << model_terms[interaction - 1] << ", term\n";
-        } else {
+        }
+        else
+        {
             std::cout << "model is running without " << model_terms[interaction]
                     << ", term\n";
         }
@@ -134,9 +157,11 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
 
     allmeasured = new unsigned short int[npeople];
     nids = 0;
-    for (int i = 0; i < npeople; i++) {
+    for (int i = 0; i < npeople; i++)
+    {
         allmeasured[i] = 1;
-        for (int j = 0; j < nphenocols; j++) {
+        for (int j = 0; j < nphenocols; j++)
+        {
             infile >> tmp;
             if (j > 0 && (tmp[0] == 'N' || tmp[0] == 'n'))
                 allmeasured[i] = 0;
@@ -157,36 +182,43 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
 
     // second pass -- read the data
     infile.open(fname);
-    if (!infile) {
+    if (!infile)
+    {
         std::cerr << "phedata: cannot open file " << fname << endl;
         exit(1);
     }
 
-    for (int i = 0; i < nphenocols; i++) {
+    for (int i = 0; i < nphenocols; i++)
+    {
         infile >> tmp;
     }
 
     int k = 0;
     int m = 0;
     for (int i = 0; i < npeople; i++)
-        if (allmeasured[i] == 1) {
+        if (allmeasured[i] == 1)
+        {
             infile >> tmp;
             idnames[m] = tmp;
-            for (int j = 0; j < noutcomes; j++) {
+            for (int j = 0; j < noutcomes; j++)
+            {
                 infile >> tmp;
                 Y.put(atof(tmp), m, j);
             }
-            for (int j = (1 + noutcomes); j < nphenocols; j++) {
+            for (int j = (1 + noutcomes); j < nphenocols; j++)
+            {
                 infile >> tmp;
                 X.put(atof(tmp), m, (j - 1 - noutcomes));
             }
             m++;
-        } else
+        }
+        else
             for (int j = 0; j < nphenocols; j++)
                 infile >> tmp;
     infile.close();
 }
-phedata::~phedata() {
+phedata::~phedata()
+{
     //		delete X;
     //		delete Y;
     //		delete [] allmeasured;

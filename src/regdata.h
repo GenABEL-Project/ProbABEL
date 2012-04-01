@@ -24,16 +24,14 @@ public:
     mematrix<double> X;
     mematrix<double> Y;
     regdata();
-    regdata(const regdata &obj) ;
+    regdata(const regdata &obj);
     regdata(phedata &phed, gendata &gend, int snpnum);
-    mematrix<double>  extract_genotypes();
+    mematrix<double> extract_genotypes();
     void update_snp(gendata &gend, int snpnum);
     regdata get_unmasked_data();
     ~regdata();
 private:
 
 };
-
-
 
 #endif /* REGDATA_H_ */

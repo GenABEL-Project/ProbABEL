@@ -5,7 +5,6 @@
  *      Author: mkooyman
  */
 
-
 #include "fvlib/AbstractMatrix.h"
 #include "fvlib/CastUtils.h"
 #include "fvlib/const.h"
@@ -17,7 +16,8 @@
 #include "fvlib/Transposer.h"
 
 // compare for sort of times
-int cmpfun(const void *a, const void *b) {
+int cmpfun(const void *a, const void *b)
+{
     double el1 = *(double*) a;
     double el2 = *(double*) b;
     if (el1 > el2)
@@ -28,7 +28,8 @@ int cmpfun(const void *a, const void *b) {
         return 0;
 }
 
-coxph_data::coxph_data(const coxph_data &obj) {
+coxph_data::coxph_data(const coxph_data &obj)
+{
     nids = obj.nids;
     ncov = obj.ncov;
     ngpreds = obj.ngpreds;
@@ -43,7 +44,8 @@ coxph_data::coxph_data(const coxph_data &obj) {
     for (int i = 0; i < nids; i++)
         masked_data[i] = 0;
 }
-coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum) {
+coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
+{
     nids = gend.nids;
     masked_data = new unsigned short int[nids];
     for (int i = 0; i < nids; i++)
@@ -53,7 +55,8 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum) {
         ncov = phed.ncov + ngpreds;
     else
         ncov = phed.ncov;
-    if (phed.noutcomes != 2) {
+    if (phed.noutcomes != 2)
+    {
         fprintf(stderr,
                 "coxph_data: number of outcomes should be 2 (now: %d)\n",
                 phed.noutcomes);
@@ -67,11 +70,13 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum) {
     offset.reinit(nids, 1);
     strata.reinit(nids, 1);
     order.reinit(nids, 1);
-    for (int i = 0; i < nids; i++) {
+    for (int i = 0; i < nids; i++)
+    {
         //          X.put(1.,i,0);
         stime[i] = (phed.Y).get(i, 0);
         sstat[i] = int((phed.Y).get(i, 1));
-        if (sstat[i] != 1 & sstat[i] != 0) {
+        if (sstat[i] != 1 & sstat[i] != 0)
+        {
             fprintf(stderr,
                     "coxph_data: status not 0/1 (right order: id, fuptime, status ...)\n",
                     phed.noutcomes);
@@ -83,7 +88,8 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum) {
             X.put((phed.X).get(i, j), i, j);
 
     if (snpnum > 0)
-        for (int j = 0; j < ngpreds; j++) {
+        for (int j = 0; j < ngpreds; j++)
+        {
             float snpdata[nids];
             gend.get_var(snpnum * ngpreds + j, snpdata);
             for (int i = 0; i < nids; i++)
@@ -94,7 +100,8 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum) {
     //              for (int j=0;j<ngpreds;j++)
     //                  X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+j));
 
-    for (int i = 0; i < nids; i++) {
+    for (int i = 0; i < nids; i++)
+    {
         weights[i] = 1.0;
         offset[i] = 0.0;
         strata[i] = 0;
@@ -102,22 +109,26 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum) {
     // sort by time
     double tmptime[nids];
     int passed_sorted[nids];
-    for (int i = 0; i < nids; i++) {
+    for (int i = 0; i < nids; i++)
+    {
         tmptime[i] = stime[i];
         passed_sorted[i] = 0;
     }
     qsort(tmptime, nids, sizeof(double), cmpfun);
-    for (int i = 0; i < nids; i++) {
+    for (int i = 0; i < nids; i++)
+    {
         int passed = 0;
         for (int j = 0; j < nids; j++)
             if (tmptime[j] == stime[i])
-                if (!passed_sorted[j]) {
+                if (!passed_sorted[j])
+                {
                     order[i] = j;
                     passed_sorted[j] = 1;
                     passed = 1;
                     break;
                 }
-        if (passed != 1) {
+        if (passed != 1)
+        {
             fprintf(stderr, "cannot recover element %d\n", i);
             exit(1);
         }
@@ -135,15 +146,18 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum) {
     //      stime.print();
     //      sstat.print();
 }
-void coxph_data::update_snp(gendata &gend, int snpnum) {
+void coxph_data::update_snp(gendata &gend, int snpnum)
+{
     // note this sorts by "order"!!!
 
-    for (int j = 0; j < ngpreds; j++) {
+    for (int j = 0; j < ngpreds; j++)
+    {
         float snpdata[nids];
         for (int i = 0; i < nids; i++)
             masked_data[i] = 0;
         gend.get_var(snpnum * ngpreds + j, snpdata);
-        for (int i = 0; i < nids; i++) {
+        for (int i = 0; i < nids; i++)
+        {
             X.put(snpdata[i], (ncov - ngpreds + j), order[i]);
             if (isnan(snpdata[i]))
                 masked_data[order[i]] = 1;
@@ -153,7 +167,8 @@ void coxph_data::update_snp(gendata &gend, int snpnum) {
     //          for (int j=0;j<ngpreds;j++)
     //              X.put((gend.G).get(i,(snpnum*ngpreds+j)),(ncov-ngpreds+j),order[i]);
 }
-coxph_data::~coxph_data() {
+coxph_data::~coxph_data()
+{
     delete[] coxph_data::masked_data;
     //      delete X;
     //      delete sstat;
@@ -164,7 +179,8 @@ coxph_data::~coxph_data() {
     //      delete order;
 }
 
-coxph_data coxph_data::get_unmasked_data() {
+coxph_data coxph_data::get_unmasked_data()
+{
 //      std::cout << " !!! in get_unmasked_data !!! ";
     coxph_data to; // = coxph_data(*this);
     // filter missing data
@@ -193,9 +209,11 @@ coxph_data coxph_data::get_unmasked_data() {
 //      std::cout << "(to.X).nrow=" << (to.X).nrow << "\n";
 //      std::cout << " !!! just before cycle !!! ";
     int j = 0;
-    for (int i = 0; i < nids; i++) {
+    for (int i = 0; i < nids; i++)
+    {
 //          std::cout << nids << " " << i << " " << masked_data[i] << "\n";
-        if (masked_data[i] == 0) {
+        if (masked_data[i] == 0)
+        {
             (to.weights).put(weights.get(i, 1), j, 1);
             (to.stime).put(stime.get(i, 1), j, 1);
             (to.sstat).put(sstat.get(i, 1), j, 1);
@@ -216,6 +234,4 @@ coxph_data coxph_data::get_unmasked_data() {
     //fprintf(stdout,"get_unmasked: %i %i %i\n",to.nids,dim2X,dim2Y);
     return (to);
 }
-
-
 

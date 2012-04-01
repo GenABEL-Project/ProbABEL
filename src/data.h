@@ -14,7 +14,8 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople);
 #include "phedata.h"
 #include "gendata.h"
 
-class mlinfo {
+class mlinfo
+{
 public:
     int nsnps;
     std::string * name;
@@ -25,13 +26,15 @@ public:
     double * Quality;
     double * Rsq;
     std::string * map;
-    mlinfo() {
+    mlinfo()
+    {
     }
     mlinfo(char * filename, char * mapname);
     ~mlinfo();
 };
 
-class InvSigma {
+class InvSigma
+{
 
 private:
 

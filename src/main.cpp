@@ -50,22 +50,36 @@
 
 bool is_interaction_excluded = false; //Oh Holy Matrix, forgive me for this!
 
-int main(int argc, char * argv[]) {
+int main(int argc, char * argv[])
+{
 
     int next_option;
     const char * const short_options = "p:i:d:m:n:c:o:s:t:g:a:erlh:b:vu";
     //b - interaction parameter
     // ADD --fv FLAG (FILEVECTOR), IN WHICH CASE USE ALTERNATIVE
     // CONSTRUCTOR FOR GENDATA
-    const struct option long_options[] = { { "pheno", 1, NULL, 'p' }, { "info",
-            1, NULL, 'i' }, { "dose", 1, NULL, 'd' }, { "map", 1, NULL, 'm' }, {
-            "nids", 1, NULL, 'n' }, { "chrom", 1, NULL, 'c' }, { "out", 1, NULL,
-            'o' }, { "skipd", 1, NULL, 's' }, { "ntraits", 1, NULL, 't' }, {
-            "ngpreds", 1, NULL, 'g' }, { "separat", 1, NULL, 'a' }, { "score",
-            0, NULL, 'r' }, { "no-head", 0, NULL, 'e' }, { "allcov", 0, NULL,
-            'l' }, { "help", 0, NULL, 'h' }, { "interaction", 1, NULL, 'b' }, {
-            "interaction_only", 1, NULL, 'k' }, { "mmscore", 1, NULL, 'v' }, {
-            "robust", 0, NULL, 'u' }, { NULL, 0, NULL, 0 } };
+    const struct option long_options[] =
+    {
+    { "pheno", 1, NULL, 'p' },
+    { "info", 1, NULL, 'i' },
+    { "dose", 1, NULL, 'd' },
+    { "map", 1, NULL, 'm' },
+    { "nids", 1, NULL, 'n' },
+    { "chrom", 1, NULL, 'c' },
+    { "out", 1, NULL, 'o' },
+    { "skipd", 1, NULL, 's' },
+    { "ntraits", 1, NULL, 't' },
+    { "ngpreds", 1, NULL, 'g' },
+    { "separat", 1, NULL, 'a' },
+    { "score", 0, NULL, 'r' },
+    { "no-head", 0, NULL, 'e' },
+    { "allcov", 0, NULL, 'l' },
+    { "help", 0, NULL, 'h' },
+    { "interaction", 1, NULL, 'b' },
+    { "interaction_only", 1, NULL, 'k' },
+    { "mmscore", 1, NULL, 'v' },
+    { "robust", 0, NULL, 'u' },
+    { NULL, 0, NULL, 0 } };
     char * program_name = argv[0];
 
     char *phefilename = NULL;
@@ -83,7 +97,8 @@ int main(int argc, char * argv[]) {
     int interaction_excluded = 0;
     int robust = 0;
     string chrom = "-1";
-    int neco[] = { 0, 0, 0 };
+    int neco[] =
+    { 0, 0, 0 };
     bool iscox = false;
     int isFVF = 0;
 #if COXPH
@@ -94,10 +109,12 @@ int main(int argc, char * argv[]) {
 #endif
     int skipd = 2;
     int allcov = 0;
-    do {
+    do
+    {
         next_option = getopt_long(argc, argv, short_options, long_options,
                 NULL);
-        switch (next_option) {
+        switch (next_option)
+        {
         case 'h':
             print_help(program_name, 0);
         case 'p':
@@ -171,11 +188,13 @@ int main(int argc, char * argv[]) {
             "%s v. %s (C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EMCR\n\n",
             PACKAGE, PACKAGE_VERSION);
 
-    if (neco[0] != 1 || neco[1] != 1 || neco[2] != 1) {
+    if (neco[0] != 1 || neco[1] != 1 || neco[2] != 1)
+    {
         print_usage(program_name, 1);
     }
 
-    if (score) {
+    if (score)
+    {
         cout << "option --score suppressed from v 0.1-6\n";
         exit(1);
     }
@@ -238,13 +257,15 @@ int main(int argc, char * argv[]) {
     else
         fprintf(stdout, "\t --robust  = OFF\n");
 
-    if (ngpreds != 1 && ngpreds != 2) {
+    if (ngpreds != 1 && ngpreds != 2)
+    {
         fprintf(stderr,
                 "\n\n--ngpreds should be 1 for MLDOSE or 2 for MLPROB\n");
         exit(1);
     }
 
-    if (interaction_excluded != 0) {
+    if (interaction_excluded != 0)
+    {
         interaction = interaction_excluded; //ups
         is_interaction_excluded = true;
     }
@@ -272,8 +293,8 @@ int main(int argc, char * argv[]) {
 #if COXPH
     interaction_cox--;
 #endif
-    if (interaction < 0 || interaction > phd.ncov
-            || interaction_cox > phd.ncov) {
+    if (interaction < 0 || interaction > phd.ncov || interaction_cox > phd.ncov)
+    {
         std::cerr << "error: Interaction parameter is out of range (ineraction="
                 << interaction << ") \n";
         exit(1);
@@ -315,13 +336,15 @@ int main(int argc, char * argv[]) {
     }
 #endif
 
-    if (inverse_filename != NULL) {
+    if (inverse_filename != NULL)
+    {
         std::cout << "you are running mmscore...\n";
     }
 
     std::cout << "Reading data ...";
 
-    if (inverse_filename != NULL) {
+    if (inverse_filename != NULL)
+    {
         InvSigma inv(inverse_filename, &phd);
         invvarmatrix = inv.get_matrix();
         double par = 1.; //var(phd.Y)*phd.nids/(phd.nids-phd.ncov-1);
@@ -390,21 +413,24 @@ int main(int argc, char * argv[]) {
     //________________________________________________________________
     //Maksim, 9 Jan, 2009
 
-    if (outfilename == NULL) {
+    if (outfilename == NULL)
+    {
         outfilename = (char *) string("regression").c_str();
     }
 
     std::string outfilename_str(outfilename);
     std::vector<std::ofstream*> outfile;
 
-    if (nohead != 1) {
+    if (nohead != 1)
+    {
 
         if (ngpreds == 2) //All models output. One file per each model
-                {
+        {
             // open a file for output
             //_____________________
 
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 5; i++)
+            {
                 outfile.push_back(new std::ofstream());
             }
 
@@ -414,27 +440,32 @@ int main(int argc, char * argv[]) {
             outfile[3]->open((outfilename_str + "_recess.out.txt").c_str());
             outfile[4]->open((outfilename_str + "_over_domin.out.txt").c_str());
 
-            if (!outfile[0]->is_open()) {
+            if (!outfile[0]->is_open())
+            {
                 std::cerr << "Cannot open file for writing: "
                         << outfilename_str + "_2df.out.txt" << "\n";
                 exit(1);
             }
-            if (!outfile[1]->is_open()) {
+            if (!outfile[1]->is_open())
+            {
                 std::cerr << "Cannot open file for writing: "
                         << outfilename_str + "_add.out.txt" << "\n";
                 exit(1);
             }
-            if (!outfile[2]->is_open()) {
+            if (!outfile[2]->is_open())
+            {
                 std::cerr << "Cannot open file for writing: "
                         << outfilename_str + "_domin.out.txt" << "\n";
                 exit(1);
             }
-            if (!outfile[3]->is_open()) {
+            if (!outfile[3]->is_open())
+            {
                 std::cerr << "Cannot open file for writing: "
                         << outfilename_str + "_recess.out.txt" << "\n";
                 exit(1);
             }
-            if (!outfile[4]->is_open()) {
+            if (!outfile[4]->is_open())
+            {
                 std::cerr << "Cannot open file for writing: "
                         << outfilename_str + "_over_domin.out.txt" << "\n";
                 exit(1);
@@ -443,7 +474,8 @@ int main(int argc, char * argv[]) {
 
             //Header
             //_____________________
-            for (int i = 0; i < outfile.size(); i++) {
+            for (int i = 0; i < outfile.size(); i++)
+            {
                 (*outfile[i]) << "name" << sep << "A1" << sep << "A2" << sep
                         << "Freq1" << sep << "MAF" << sep << "Quality" << sep
                         << "Rsq" << sep << "n" << sep
@@ -470,7 +502,8 @@ int main(int argc, char * argv[]) {
             *outfile[3] << sep << "beta_SNP_recA1" << sep << "sebeta_SNP_recA1";
             *outfile[4] << sep << "beta_SNP_odom" << sep << "sebeta_SNP_odom";
 
-            if (interaction != 0) {
+            if (interaction != 0)
+            {
                 //Han Chen
                 *outfile[0] << sep << "beta_SNP_A1A2_"
                         << phd.model_terms[interaction_cox] << sep
@@ -480,7 +513,8 @@ int main(int argc, char * argv[]) {
                         << sep << "sebeta_SNP_A1A1_"
                         << phd.model_terms[interaction_cox];
 #if !COXPH
-                if (inverse_filename == NULL && !allcov) {
+                if (inverse_filename == NULL && !allcov)
+                {
                     *outfile[0] << sep << "cov_SNP_A1A2_int_SNP_"
                             << phd.model_terms[interaction_cox] << sep
                             << "cov_SNP_A1A1_int_SNP_"
@@ -488,14 +522,16 @@ int main(int argc, char * argv[]) {
                 }
 #endif
                 //Oct 26, 2009
-                for (int file = 1; file < outfile.size(); file++) {
+                for (int file = 1; file < outfile.size(); file++)
+                {
                     *outfile[file] << sep << "beta_SNP_"
                             << phd.model_terms[interaction_cox] << sep
                             << "sebeta_SNP_"
                             << phd.model_terms[interaction_cox];
                     //Han Chen
 #if !COXPH
-                    if (inverse_filename == NULL && !allcov) {
+                    if (inverse_filename == NULL && !allcov)
+                    {
                         *outfile[file] << sep << "cov_SNP_int_SNP_"
                                 << phd.model_terms[interaction_cox];
                     }
@@ -509,7 +545,8 @@ int main(int argc, char * argv[]) {
             *outfile[3] << sep << "loglik\n"; //"chi2_SNP_recA1\n";
             *outfile[4] << sep << "loglik\n"; //"chi2_SNP_odom\n";
 
-        } else //Only additive model. Only one output file
+        }
+        else //Only additive model. Only one output file
         {
 
             // open a file for output
@@ -525,7 +562,8 @@ int main(int argc, char * argv[]) {
             //			outfilename_str="regression_add.out.txt"; outfile.push_back(new std::ofstream((outfilename_str+"_add.out.txt").c_str()));
             //			}
 
-            if (!outfile[0]->is_open()) {
+            if (!outfile[0]->is_open())
+            {
                 std::cerr << "Can not open file for writing: "
                         << outfilename_str << "\n";
                 exit(1);
@@ -545,16 +583,19 @@ int main(int argc, char * argv[]) {
 
             if (allcov) //All covariates in output
             {
-                for (int i = 0; i < phd.n_model_terms - 1; i++) {
+                for (int i = 0; i < phd.n_model_terms - 1; i++)
+                {
                     *outfile[0] << sep << "beta_" << phd.model_terms[i] << sep
                             << "sebeta_" << phd.model_terms[i];
                 }
                 *outfile[0] << sep << "beta_SNP_add" << sep << "sebeta_SNP_add";
-            } else //Only beta, sebeta for additive model go to output file
+            }
+            else //Only beta, sebeta for additive model go to output file
             {
                 *outfile[0] << sep << "beta_SNP_add" << sep << "sebeta_SNP_add";
             }
-            if (interaction != 0) {
+            if (interaction != 0)
+            {
                 *outfile[0] << sep << "beta_SNP_"
                         << phd.model_terms[interaction_cox] << sep
                         << "sebeta_SNP_" << phd.model_terms[interaction_cox];
@@ -564,7 +605,8 @@ int main(int argc, char * argv[]) {
             //Han Chen
             {
 #if !COXPH
-                if (interaction != 0 && !allcov) {
+                if (interaction != 0 && !allcov)
+                {
                     *outfile[0] << sep << "cov_SNP_int_SNP_"
                             << phd.model_terms[interaction_cox];
                 }
@@ -575,9 +617,11 @@ int main(int argc, char * argv[]) {
             *outfile[0] << "\n";
 
         }
-    } else {
+    }
+    else
+    {
         if (ngpreds == 2) //All models output. One file per each model
-                {
+        {
             // open a file for output
             //_____________________
             //		if (outfilename==NULL)
@@ -585,7 +629,8 @@ int main(int argc, char * argv[]) {
             //			outfilename_str="regression";
             //			}
 
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 5; i++)
+            {
                 outfile.push_back(new std::ofstream());
             }
 
@@ -595,32 +640,39 @@ int main(int argc, char * argv[]) {
             outfile[3]->open((outfilename_str + "_recess.out.txt").c_str());
             outfile[4]->open((outfilename_str + "_over_domin.out.txt").c_str());
 
-            if (!outfile[0]->is_open()) {
+            if (!outfile[0]->is_open())
+            {
                 std::cerr << "Cannot open file for writing: "
                         << outfilename_str + "_2df.out.txt" << "\n";
                 exit(1);
             }
-            if (!outfile[1]->is_open()) {
+            if (!outfile[1]->is_open())
+            {
                 std::cerr << "Cannot open file for writing: "
                         << outfilename_str + "_add.out.txt" << "\n";
                 exit(1);
             }
-            if (!outfile[2]->is_open()) {
+            if (!outfile[2]->is_open())
+            {
                 std::cerr << "Cannot open file for writing: "
                         << outfilename_str + "_domin.out.txt" << "\n";
                 exit(1);
             }
-            if (!outfile[3]->is_open()) {
+            if (!outfile[3]->is_open())
+            {
                 std::cerr << "Cannot open file for writing: "
                         << outfilename_str + "_recess.out.txt" << "\n";
                 exit(1);
             }
-            if (!outfile[4]->is_open()) {
+            if (!outfile[4]->is_open())
+            {
                 std::cerr << "Cannot open file for writing: "
                         << outfilename_str + "_over_domin.out.txt" << "\n";
                 exit(1);
             }
-        } else {
+        }
+        else
+        {
             // open a file for output
             //_____________________
             //		if (outfilename != NULL)
@@ -634,7 +686,8 @@ int main(int argc, char * argv[]) {
             //			outfilename_str="regression_add.out.txt"; outfile.push_back(new std::ofstream((outfilename_str+"_add.out.txt").c_str()));
             //			}
 
-            if (!outfile[0]->is_open()) {
+            if (!outfile[0]->is_open())
+            {
                 std::cerr << "Can not open file for writing: "
                         << outfilename_str << "\n";
                 exit(1);
@@ -688,7 +741,8 @@ int main(int argc, char * argv[]) {
     //Oct 26, 2009
     std::vector<std::ostringstream *> chi2;
 
-    for (int i = 0; i < maxmod; i++) {
+    for (int i = 0; i < maxmod; i++)
+    {
         beta_sebeta.push_back(new std::ostringstream());
         //Han Chen
         covvalue.push_back(new std::ostringstream());
@@ -696,27 +750,33 @@ int main(int argc, char * argv[]) {
         chi2.push_back(new std::ostringstream());
     }
 
-    for (int csnp = 0; csnp < nsnps; csnp++) {
+    for (int csnp = 0; csnp < nsnps; csnp++)
+    {
 
         rgd.update_snp(gtd, csnp);
         double freq = 0.;
         int gcount = 0;
         float snpdata1[gtd.nids];
         float snpdata2[gtd.nids];
-        if (ngpreds == 2) {
+        if (ngpreds == 2)
+        {
             //		freq = ((gtd.G).column_mean(csnp*2)*2.+(gtd.G).column_mean(csnp*2+1))/2.;
             gtd.get_var(csnp * 2, snpdata1);
             gtd.get_var(csnp * 2 + 1, snpdata2);
             for (int ii = 0; ii < gtd.nids; ii++)
-                if (!isnan(snpdata1[ii]) && !isnan(snpdata2[ii])) {
+                if (!isnan(snpdata1[ii]) && !isnan(snpdata2[ii]))
+                {
                     gcount++;
                     freq += snpdata1[ii] + snpdata2[ii] * 0.5;
                 }
-        } else {
+        }
+        else
+        {
             //		freq = (gtd.G).column_mean(csnp)/2.;
             gtd.get_var(csnp, snpdata1);
             for (int ii = 0; ii < gtd.nids; ii++)
-                if (!isnan(snpdata1[ii])) {
+                if (!isnan(snpdata1[ii]))
+                {
                     gcount++;
                     freq += snpdata1[ii] * 0.5;
                 }
@@ -729,9 +789,10 @@ int main(int argc, char * argv[]) {
             poly = 0;
 
         if (ngpreds == 2) //All models output. One file per each model
-                {
+        {
             //Write mlinfo to output:
-            for (int file = 0; file < outfile.size(); file++) {
+            for (int file = 0; file < outfile.size(); file++)
+            {
                 *outfile[file] << mli.name[csnp] << sep << mli.A1[csnp] << sep
                         << mli.A2[csnp] << sep << mli.Freq1[csnp] << sep
                         << mli.MAF[csnp] << sep << mli.Quality[csnp] << sep
@@ -742,7 +803,8 @@ int main(int argc, char * argv[]) {
                     *outfile[file] << sep << mli.map[csnp];
             }
 
-            for (int model = 0; model < maxmod; model++) {
+            for (int model = 0; model < maxmod; model++)
+            {
                 if (poly) //allel freq is not to rare
                 {
 #if LOGISTIC
@@ -776,21 +838,28 @@ int main(int argc, char * argv[]) {
                     else
                         start_pos = 0;
 
-                    for (int pos = start_pos; pos < rd.beta.nrow; pos++) {
+                    for (int pos = start_pos; pos < rd.beta.nrow; pos++)
+                    {
                         *beta_sebeta[model] << sep << rd.beta[pos] << sep
                                 << rd.sebeta[pos];
                         //Han Chen
 #if !COXPH
                         if (inverse_filename == NULL && !allcov
-                                && interaction != 0) {
-                            if (pos > start_pos) {
-                                if (model == 0) {
-                                    if (pos > start_pos + 2) {
+                                && interaction != 0)
+                        {
+                            if (pos > start_pos)
+                            {
+                                if (model == 0)
+                                {
+                                    if (pos > start_pos + 2)
+                                    {
                                         *covvalue[model]
                                                 << rd.covariance[pos - 3] << sep
                                                 << rd.covariance[pos - 2];
                                     }
-                                } else {
+                                }
+                                else
+                                {
                                     *covvalue[model] << rd.covariance[pos - 1];
                                 }
                             }
@@ -801,16 +870,20 @@ int main(int argc, char * argv[]) {
 
                     //calculate chi2
                     //________________________________
-                    if (score == 0) {
+                    if (score == 0)
+                    {
                         //*chi2[model] << 2.*(rd.loglik-null_loglik);
                         *chi2[model] << rd.loglik;
-                    } else {
+                    }
+                    else
+                    {
                         //*chi2[model] << rd.chi2_score;
                         *chi2[model] << "nan";
                     }
                     //________________________________
 
-                } else //beta, sebeta = nan
+                }
+                else //beta, sebeta = nan
                 {
                     if (!allcov && model == 0 && interaction == 0)
                         start_pos = rgd.X.ncol - 2;
@@ -823,24 +896,32 @@ int main(int argc, char * argv[]) {
                     else
                         start_pos = 0;
 
-                    if (model == 0) {
+                    if (model == 0)
+                    {
                         end_pos = rgd.X.ncol;
-                    } else {
+                    }
+                    else
+                    {
                         end_pos = rgd.X.ncol - 1;
                     }
 
                     if (interaction != 0)
                         end_pos++;
 
-                    for (int pos = start_pos; pos < end_pos; pos++) {
+                    for (int pos = start_pos; pos < end_pos; pos++)
+                    {
                         *beta_sebeta[model] << sep << "nan" << sep << "nan";
                     }
                     //Han Chen
 #if !COXPH
-                    if (!allcov && interaction != 0) {
-                        if (model == 0) {
+                    if (!allcov && interaction != 0)
+                    {
+                        if (model == 0)
+                        {
                             *covvalue[model] << "nan" << sep << "nan";
-                        } else {
+                        }
+                        else
+                        {
                             *covvalue[model] << "nan";
                         }
                     }
@@ -853,42 +934,48 @@ int main(int argc, char * argv[]) {
             //Han Chen
             *outfile[0] << beta_sebeta[0]->str() << sep;
 #if !COXPH
-            if (!allcov && interaction != 0) {
+            if (!allcov && interaction != 0)
+            {
                 *outfile[0] << covvalue[0]->str() << sep;
             }
 #endif
             *outfile[0] << chi2[0]->str() << "\n";
             *outfile[1] << beta_sebeta[1]->str() << sep;
 #if !COXPH
-            if (!allcov && interaction != 0) {
+            if (!allcov && interaction != 0)
+            {
                 *outfile[1] << covvalue[1]->str() << sep;
             }
 #endif
             *outfile[1] << chi2[1]->str() << "\n";
             *outfile[2] << beta_sebeta[2]->str() << sep;
 #if !COXPH
-            if (!allcov && interaction != 0) {
+            if (!allcov && interaction != 0)
+            {
                 *outfile[2] << covvalue[2]->str() << sep;
             }
 #endif
             *outfile[2] << chi2[2]->str() << "\n";
             *outfile[3] << beta_sebeta[3]->str() << sep;
 #if !COXPH
-            if (!allcov && interaction != 0) {
+            if (!allcov && interaction != 0)
+            {
                 *outfile[3] << covvalue[3]->str() << sep;
             }
 #endif
             *outfile[3] << chi2[3]->str() << "\n";
             *outfile[4] << beta_sebeta[4]->str() << sep;
 #if !COXPH
-            if (!allcov && interaction != 0) {
+            if (!allcov && interaction != 0)
+            {
                 *outfile[4] << covvalue[4]->str() << sep;
             }
 #endif
             *outfile[4] << chi2[4]->str() << "\n";
             //Oct 26, 2009
 
-        } else //Only additive model. Only one output file
+        }
+        else //Only additive model. Only one output file
         {
             //Write mlinfo to output:
             *outfile[0] << mli.name[csnp] << sep << mli.A1[csnp] << sep
@@ -940,14 +1027,16 @@ int main(int argc, char * argv[]) {
                 else
                     start_pos = 0;
 
-                for (int pos = start_pos; pos < rd.beta.nrow; pos++) {
+                for (int pos = start_pos; pos < rd.beta.nrow; pos++)
+                {
                     *beta_sebeta[0] << sep << rd.beta[pos] << sep
                             << rd.sebeta[pos];
                     //Han Chen
 #if !COXPH
-                    if (inverse_filename == NULL && !allcov
-                            && interaction != 0) {
-                        if (pos > start_pos) {
+                    if (inverse_filename == NULL && !allcov && interaction != 0)
+                    {
+                        if (pos > start_pos)
+                        {
                             *covvalue[0] << rd.covariance[pos - 1];
                         }
                     }
@@ -957,15 +1046,20 @@ int main(int argc, char * argv[]) {
 
                 //calculate chi2
                 //________________________________
-                if (inverse_filename == NULL) {
-                    if (score == 0) {
+                if (inverse_filename == NULL)
+                {
+                    if (score == 0)
+                    {
                         *chi2[0] << rd.loglik; //2.*(rd.loglik-null_loglik);
-                    } else {
+                    }
+                    else
+                    {
                         *chi2[0] << "nan"; //rd.chi2_score;
                     }
                 }
                 //________________________________
-            } else //beta, sebeta = nan
+            }
+            else //beta, sebeta = nan
             {
                 if (!allcov && interaction == 0)
                     start_pos = rgd.X.ncol - 1;
@@ -975,20 +1069,25 @@ int main(int argc, char * argv[]) {
                     start_pos = 0;
 
                 end_pos = rgd.X.ncol;
-                if (interaction != 0) {
+                if (interaction != 0)
+                {
                     end_pos++;
                 }
-                if (interaction != 0 && !allcov) {
+                if (interaction != 0 && !allcov)
+                {
                     start_pos++;
                 }
 
-                for (int pos = start_pos; pos < end_pos; pos++) {
+                for (int pos = start_pos; pos < end_pos; pos++)
+                {
                     *beta_sebeta[0] << sep << "nan" << sep << "nan";
                 }
-                if (inverse_filename == NULL) {
+                if (inverse_filename == NULL)
+                {
                     //Han Chen
 #if !COXPH
-                    if (!allcov && interaction != 0) {
+                    if (!allcov && interaction != 0)
+                    {
                         *covvalue[0] << "nan";
                     }
 #endif
@@ -997,23 +1096,28 @@ int main(int argc, char * argv[]) {
                 }
             }
 
-            if (inverse_filename == NULL) {
+            if (inverse_filename == NULL)
+            {
                 //Han Chen
                 *outfile[0] << beta_sebeta[0]->str() << sep;
 #if !COXPH
-                if (!allcov && interaction != 0) {
+                if (!allcov && interaction != 0)
+                {
                     *outfile[0] << covvalue[0]->str() << sep;
                 }
 #endif
                 *outfile[0] << chi2[model]->str() << "\n";
                 //Oct 26, 2009
-            } else {
+            }
+            else
+            {
                 *outfile[0] << beta_sebeta[0]->str() << "\n";
             }
         }
 
         //clean chi2
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++)
+        {
             beta_sebeta[i]->str("");
             //Han Chen
             covvalue[i]->str("");
@@ -1021,11 +1125,15 @@ int main(int argc, char * argv[]) {
             chi2[i]->str("");
         }
 
-        if (csnp % 1000 == 0) {
-            if (csnp == 0) {
+        if (csnp % 1000 == 0)
+        {
+            if (csnp == 0)
+            {
                 fprintf(stdout, "Analysis: %6.2f ...",
                         100. * double(csnp) / double(nsnps));
-            } else {
+            }
+            else
+            {
                 fprintf(stdout, "\b\b\b\b\b\b\b\b\b\b%6.2f ...",
                         100. * double(csnp) / double(nsnps));
             }
@@ -1041,7 +1149,8 @@ int main(int argc, char * argv[]) {
     //________________________________________________________________
     //Maksim, 9 Jan, 2009
 
-    for (int i = 0; i < outfile.size(); i++) {
+    for (int i = 0; i < outfile.size(); i++)
+    {
         outfile[i]->close();
         delete outfile[i];
     }
@@ -1050,17 +1159,20 @@ int main(int argc, char * argv[]) {
 
     // Clean up a couple of vectors
     std::vector<std::ostringstream *>::iterator it = beta_sebeta.begin();
-    while (it != beta_sebeta.end()) {
+    while (it != beta_sebeta.end())
+    {
         delete *it;
         it++;
     }
     it = covvalue.begin();
-    while (it != covvalue.end()) {
+    while (it != covvalue.end())
+    {
         delete *it;
         it++;
     }
     it = chi2.begin();
-    while (it != chi2.end()) {
+    while (it != chi2.end())
+    {
         delete *it;
         it++;
     }

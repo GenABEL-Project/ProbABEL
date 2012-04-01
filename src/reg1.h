@@ -27,7 +27,8 @@
 #include "cholesky.h"
 #include "regdata.h"
 #include "coxph_data.h"
-extern "C" {
+extern "C"
+{
 #include "survproto.h"
 }
 
@@ -38,10 +39,13 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
 // model 2 = dominant 1 df
 // model 3 = recessive 1 df
 // model 4 = over-dominant 1 df
+{
+    if (model == 0)
+    {
+        if (interaction != 0 && !nullmodel)
         {
-    if (model == 0) {
-        if (interaction != 0 && !nullmodel) {
-            if (ngpreds == 2) {
+            if (ngpreds == 2)
+            {
                 mematrix<double> nX;
                 nX.reinit(X.nrow, X.ncol + 2);
                 int csnp_p1 = nX.ncol - 4;
@@ -52,13 +56,17 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
                     for (int j = 0; j < (X.ncol); j++)
                         nX[i * nX.ncol + j] = X[i * X.ncol + j];
 
-                for (int i = 0; i < nX.nrow; i++) {
-                    if (iscox) {
+                for (int i = 0; i < nX.nrow; i++)
+                {
+                    if (iscox)
+                    {
                         nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
                                 * X[i * X.ncol + interaction - 1]; //Maksim: interaction with SNP;;
                         nX[i * nX.ncol + c2] = X[i * X.ncol + csnp_p2]
                                 * X[i * X.ncol + interaction - 1]; //Maksim: interaction with SNP;;
-                    } else {
+                    }
+                    else
+                    {
                         nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
                                 * X[i * X.ncol + interaction]; //Maksim: interaction with SNP;;
                         nX[i * nX.ncol + c2] = X[i * X.ncol + csnp_p2]
@@ -67,20 +75,25 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
                 }
                 //________________________
                 int col_new;
-                if (is_interaction_excluded) {
+                if (is_interaction_excluded)
+                {
                     mematrix<double> nX_without_interact_phe;
                     nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
-                    for (int row = 0; row < nX.nrow; row++) {
+                    for (int row = 0; row < nX.nrow; row++)
+                    {
                         //Han Chen
                         col_new = -1;
-                        for (int col = 0; col < nX.ncol; col++) {
-                            if (col != interaction && !iscox) {
+                        for (int col = 0; col < nX.ncol; col++)
+                        {
+                            if (col != interaction && !iscox)
+                            {
                                 col_new++;
                                 nX_without_interact_phe[row
                                         * nX_without_interact_phe.ncol + col_new] =
                                         nX[row * nX.ncol + col];
                             }
-                            if (col != interaction - 1 && iscox) {
+                            if (col != interaction - 1 && iscox)
+                            {
                                 col_new++;
                                 nX_without_interact_phe[row
                                         * nX_without_interact_phe.ncol + col_new] =
@@ -95,7 +108,8 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
 
                 return (nX);
             }
-            if (ngpreds == 1) {
+            if (ngpreds == 1)
+            {
                 mematrix<double> nX;
                 nX.reinit(X.nrow, X.ncol + 1);
                 int csnp_p1 = nX.ncol - 2;
@@ -104,11 +118,15 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
                     for (int j = 0; j < (X.ncol); j++)
                         nX[i * nX.ncol + j] = X[i * X.ncol + j];
 
-                for (int i = 0; i < nX.nrow; i++) {
-                    if (iscox) {
+                for (int i = 0; i < nX.nrow; i++)
+                {
+                    if (iscox)
+                    {
                         nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
                                 * X[i * X.ncol + interaction - 1]; //Maksim: interaction with SNP;;
-                    } else {
+                    }
+                    else
+                    {
                         nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
                                 * X[i * X.ncol + interaction]; //Maksim: interaction with SNP;;
                     }
@@ -116,19 +134,24 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
 
                 //________________________
                 int col_new = -1;
-                if (is_interaction_excluded) {
+                if (is_interaction_excluded)
+                {
                     mematrix<double> nX_without_interact_phe;
                     nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
-                    for (int row = 0; row < nX.nrow; row++) {
+                    for (int row = 0; row < nX.nrow; row++)
+                    {
                         col_new = -1;
-                        for (int col = 0; col < nX.ncol; col++) {
-                            if (col != interaction && !iscox) {
+                        for (int col = 0; col < nX.ncol; col++)
+                        {
+                            if (col != interaction && !iscox)
+                            {
                                 col_new++;
                                 nX_without_interact_phe[row
                                         * nX_without_interact_phe.ncol + col_new] =
                                         nX[row * nX.ncol + col];
                             }
-                            if (col != interaction - 1 && iscox) {
+                            if (col != interaction - 1 && iscox)
+                            {
                                 col_new++;
                                 nX_without_interact_phe[row
                                         * nX_without_interact_phe.ncol + col_new] =
@@ -143,15 +166,20 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
 
                 return (nX);
             }
-        } else {
+        }
+        else
+        {
             return (X);
         }
 
     }
     mematrix<double> nX;
-    if (interaction != 0) {
+    if (interaction != 0)
+    {
         nX.reinit(X.nrow, (X.ncol));
-    } else {
+    }
+    else
+    {
         nX.reinit(X.nrow, (X.ncol - 1));
     }
     int c1 = X.ncol - 2;
@@ -160,7 +188,8 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
         for (int j = 0; j < (X.ncol - 2); j++)
             nX[i * nX.ncol + j] = X[i * X.ncol + j];
 
-    for (int i = 0; i < nX.nrow; i++) {
+    for (int i = 0; i < nX.nrow; i++)
+    {
         if (model == 1)
             nX[i * nX.ncol + c1] = X[i * X.ncol + c1] + 2. * X[i * X.ncol + c2];
         else if (model == 2)
@@ -175,18 +204,23 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
     }
     //Han Chen
     int col_new = -1;
-    if (is_interaction_excluded) {
+    if (is_interaction_excluded)
+    {
         mematrix<double> nX_without_interact_phe;
         nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
-        for (int row = 0; row < nX.nrow; row++) {
+        for (int row = 0; row < nX.nrow; row++)
+        {
             col_new = -1;
-            for (int col = 0; col < nX.ncol; col++) {
-                if (col != interaction && !iscox) {
+            for (int col = 0; col < nX.ncol; col++)
+            {
+                if (col != interaction && !iscox)
+                {
                     col_new++;
                     nX_without_interact_phe[row * nX_without_interact_phe.ncol
                             + col_new] = nX[row * nX.ncol + col];
                 }
-                if (col != interaction - 1 && iscox) {
+                if (col != interaction - 1 && iscox)
+                {
                     col_new++;
                     nX_without_interact_phe[row * nX_without_interact_phe.ncol
                             + col_new] = nX[row * nX.ncol + col];
@@ -201,7 +235,8 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
 }
 
 mematrix<double> t_apply_model(mematrix<double> &X, int model, int interaction,
-        int ngpreds, bool iscox, int nullmodel = 0) {
+        int ngpreds, bool iscox, int nullmodel = 0)
+{
     mematrix<double> tmpX = transpose(X);
     mematrix<double> nX = apply_model(tmpX, model, interaction, ngpreds, iscox,
             nullmodel);
@@ -209,7 +244,8 @@ mematrix<double> t_apply_model(mematrix<double> &X, int model, int interaction,
     return out;
 }
 
-class linear_reg {
+class linear_reg
+{
 public:
     mematrix<double> beta;
     mematrix<double> sebeta;
@@ -221,14 +257,16 @@ public:
     double loglik;
     double chi2_score;
 
-    linear_reg(regdata &rdatain) {
+    linear_reg(regdata &rdatain)
+    {
         regdata rdata = rdatain.get_unmasked_data();
         //fprintf(stdout,"linear_reg: %i %i %i\n",rdata.nids,(rdata.X).ncol,(rdata.Y).ncol);
         int length_beta = (rdata.X).ncol;
         beta.reinit(length_beta, 1);
         sebeta.reinit(length_beta, 1);
         //Han Chen
-        if (length_beta > 1) {
+        if (length_beta > 1)
+        {
             covariance.reinit(length_beta - 1, 1);
         }
         //Oct 26, 2009
@@ -237,7 +275,8 @@ public:
         loglik = -9.999e+32;
         chi2_score = -1.;
     }
-    ~linear_reg() {
+    ~linear_reg()
+    {
         //		delete beta;
         //		delete sebeta;
         //		delete residuals;
@@ -330,20 +369,24 @@ public:
     //	}
     void estimate(regdata &rdatain, int verbose, double tol_chol, int model,
             int interaction, int ngpreds, mematrix<double> invvarmatrixin,
-            int robust, int nullmodel = 0) {
+            int robust, int nullmodel = 0)
+    {
         //suda ineraction parameter
         // model should come here
         regdata rdata = rdatain.get_unmasked_data();
 
         mematrix<double> invvarmatrix;
-        if (invvarmatrixin.nrow != 0 && invvarmatrixin.ncol != 0) {
+        if (invvarmatrixin.nrow != 0 && invvarmatrixin.ncol != 0)
+        {
             invvarmatrix.reinit(rdata.nids, rdata.nids);
             int i1 = 0, j1 = 0;
             for (int i = 0; i < rdata.nids; i++)
-                if (rdatain.masked_data[i] == 0) {
+                if (rdatain.masked_data[i] == 0)
+                {
                     j1 = 0;
                     for (int j = 0; j < rdata.nids; j++)
-                        if (rdatain.masked_data[j] == 0) {
+                        if (rdatain.masked_data[j] == 0)
+                        {
                             invvarmatrix.put(invvarmatrixin.get(i, j), i1, j1);
                             j1++;
                         }
@@ -360,18 +403,23 @@ public:
         beta.reinit(length_beta, 1);
         sebeta.reinit(length_beta, 1);
         //Han Chen
-        if (length_beta > 1) {
+        if (length_beta > 1)
+        {
             if (model == 0 && interaction != 0 && ngpreds == 2
-                    && length_beta > 2) {
+                    && length_beta > 2)
+            {
                 covariance.reinit(length_beta - 2, 1);
-            } else {
+            }
+            else
+            {
                 covariance.reinit(length_beta - 1, 1);
             }
         }
         //Oct 26, 2009
         mematrix<double> tX = transpose(X);
 
-        if (invvarmatrix.nrow != 0 && invvarmatrix.ncol != 0) {
+        if (invvarmatrix.nrow != 0 && invvarmatrix.ncol != 0)
+        {
             tX = tX * invvarmatrix;
             //!check if quicker
             //tX = productXbySymM(tX,invvarmatrix);
@@ -382,7 +430,8 @@ public:
 
         //		double N = tXX.get(0,0);
         double N = X.nrow;
-        if (verbose) {
+        if (verbose)
+        {
             printf("tXX:\n");
             tXX.print();
         }
@@ -391,24 +440,28 @@ public:
         //
         mematrix<double> tXX_i = tXX;
         cholesky2_mm(tXX_i, tol_chol);
-        if (verbose) {
+        if (verbose)
+        {
             printf("chole tXX:\n");
             tXX_i.print();
         }
         chinv2_mm(tXX_i);
         // before was
         // mematrix<double> tXX_i = invert(tXX);
-        if (verbose) {
+        if (verbose)
+        {
             printf("tXX-1:\n");
             tXX_i.print();
         }
         mematrix<double> tXY = tX * (rdata.Y);
-        if (verbose) {
+        if (verbose)
+        {
             printf("tXY:\n");
             tXY.print();
         }
         beta = tXX_i * tXY;
-        if (verbose) {
+        if (verbose)
+        {
             printf("beta:\n");
             (beta).print();
         }
@@ -425,7 +478,8 @@ public:
 
         //	std::cout<<"sigma2_matrix.nrow="<<sigma2_matrix.nrow<<"sigma2_matrix.ncol"<<sigma2_matrix.ncol<<"\n";
 
-        for (int i = 0; i < sigma2_matrix.nrow; i++) {
+        for (int i = 0; i < sigma2_matrix.nrow; i++)
+        {
             val = sigma2_matrix.get(i, 0);
             sigma2 += val * val;
         }
@@ -451,7 +505,8 @@ public:
 
         //	std::cout<<"N="<<N<<", length_beta="<<length_beta<<"\n";
 
-        if (verbose) {
+        if (verbose)
+        {
             printf("sigma2 = %f\n", sigma2);
         }
 
@@ -473,7 +528,8 @@ public:
         //cout << endl;
         loglik = 0.;
         double halfrecsig2 = .5 / sigma2;
-        for (int i = 0; i < rdata.nids; i++) {
+        for (int i = 0; i < rdata.nids; i++)
+        {
             double resid = rdata.Y[i] - beta.get(0, 0); // intercept
             for (int j = 1; j < beta.nrow; j++)
                 resid -= beta.get(j, 0) * X.get(i, j);
@@ -493,10 +549,12 @@ public:
             sigma2_internal = 1.0;
 
         mematrix<double> robust_sigma2(X.ncol, X.ncol);
-        if (robust) {
+        if (robust)
+        {
             mematrix<double> XbyR = X;
             for (int i = 0; i < X.nrow; i++)
-                for (int j = 0; j < X.ncol; j++) {
+                for (int j = 0; j < X.ncol; j++)
+                {
                     double tmpval = XbyR.get(i, j) * residuals[i];
                     XbyR.put(tmpval, i, j);
                 }
@@ -507,37 +565,51 @@ public:
 
         //cout << "estimate 0\n";
 
-        for (int i = 0; i < (length_beta); i++) {
-            if (robust) {
+        for (int i = 0; i < (length_beta); i++)
+        {
+            if (robust)
+            {
                 double value = sqrt(robust_sigma2.get(i, i));
                 sebeta.put(value, i, 0);
                 //Han Chen
-                if (i > 0) {
+                if (i > 0)
+                {
                     if (model == 0 && interaction != 0 && ngpreds == 2
-                            && length_beta > 2) {
-                        if (i > 1) {
+                            && length_beta > 2)
+                    {
+                        if (i > 1)
+                        {
                             double covval = robust_sigma2.get(i, i - 2);
                             covariance.put(covval, i - 2, 0);
                         }
-                    } else {
+                    }
+                    else
+                    {
                         double covval = robust_sigma2.get(i, i - 1);
                         covariance.put(covval, i - 1, 0);
                     }
                 }
                 //Oct 26, 2009
-            } else {
+            }
+            else
+            {
                 double value = sqrt(sigma2_internal * tXX_i.get(i, i));
                 sebeta.put(value, i, 0);
                 //Han Chen
-                if (i > 0) {
+                if (i > 0)
+                {
                     if (model == 0 && interaction != 0 && ngpreds == 2
-                            && length_beta > 2) {
-                        if (i > 1) {
+                            && length_beta > 2)
+                    {
+                        if (i > 1)
+                        {
                             double covval = sigma2_internal
                                     * tXX_i.get(i, i - 2);
                             covariance.put(covval, i - 2, 0);
                         }
-                    } else {
+                    }
+                    else
+                    {
                         double covval = sigma2_internal * tXX_i.get(i, i - 1);
                         covariance.put(covval, i - 1, 0);
                     }
@@ -546,7 +618,8 @@ public:
             }
         }
         //cout << "estimate E\n";
-        if (verbose) {
+        if (verbose)
+        {
             printf("sebeta (%d):\n", sebeta.nrow);
             sebeta.print();
         }
@@ -554,7 +627,8 @@ public:
 
     void score(mematrix<double> &resid, regdata &rdatain, int verbose,
             double tol_chol, int model, int interaction, int ngpreds,
-            mematrix<double> invvarmatrix, int nullmodel = 0) {
+            mematrix<double> invvarmatrix, int nullmodel = 0)
+    {
         regdata rdata = rdatain.get_unmasked_data();
 
         //mematrix<double> resid(rdata.nids,1);
@@ -589,7 +663,8 @@ public:
         beta = v_i * u;
         double sr = 0.;
         double srr = 0.;
-        for (int i = 0; i < resid.nrow; i++) {
+        for (int i = 0; i < resid.nrow; i++)
+        {
             sr += resid[i];
             srr += resid[i] * resid[i];
         }
@@ -605,7 +680,8 @@ public:
 
 };
 
-class logistic_reg {
+class logistic_reg
+{
 public:
     mematrix<double> beta;
     mematrix<double> sebeta;
@@ -618,13 +694,15 @@ public:
     double chi2_score;
     int niter;
 
-    logistic_reg(regdata &rdatain) {
+    logistic_reg(regdata &rdatain)
+    {
         regdata rdata = rdatain.get_unmasked_data();
         int length_beta = (rdata.X).ncol;
         beta.reinit(length_beta, 1);
         sebeta.reinit(length_beta, 1);
         //Han Chen
-        if (length_beta > 1) {
+        if (length_beta > 1)
+        {
             covariance.reinit(length_beta - 1, 1);
         }
         //Oct 26, 2009
@@ -634,14 +712,16 @@ public:
         niter = -1;
         chi2_score = -1.;
     }
-    ~logistic_reg() {
+    ~logistic_reg()
+    {
         //		delete beta;
         //		delete sebeta;
     }
 
     void estimate(regdata &rdatain, int verbose, int maxiter, double eps,
             double tol_chol, int model, int interaction, int ngpreds,
-            mematrix<double> invvarmatrixin, int robust, int nullmodel = 0) {
+            mematrix<double> invvarmatrixin, int robust, int nullmodel = 0)
+    {
         // on the contrast to the 'linear' 'invvarmatrix' contains
         // inverse of correlation matrix (not the inverse of var-cov matrix)
         // h2.object$InvSigma * h.object2$h2an$estimate[length(h2$h2an$estimate)]
@@ -651,14 +731,17 @@ public:
         // a lot of code duplicated between linear and logistic...
         // e.g. a piece below...
         mematrix<double> invvarmatrix;
-        if (invvarmatrixin.nrow != 0 && invvarmatrixin.ncol != 0) {
+        if (invvarmatrixin.nrow != 0 && invvarmatrixin.ncol != 0)
+        {
             invvarmatrix.reinit(rdata.nids, rdata.nids);
             int i1 = 0, j1 = 0;
             for (int i = 0; i < rdata.nids; i++)
-                if (rdatain.masked_data[i] == 0) {
+                if (rdatain.masked_data[i] == 0)
+                {
                     j1 = 0;
                     for (int j = 0; j < rdata.nids; j++)
-                        if (rdatain.masked_data[j] == 0) {
+                        if (rdatain.masked_data[j] == 0)
+                        {
                             invvarmatrix.put(invvarmatrixin.get(i, j), i1, j1);
                             j1++;
                         }
@@ -673,11 +756,15 @@ public:
         beta.reinit(length_beta, 1);
         sebeta.reinit(length_beta, 1);
         //Han Chen
-        if (length_beta > 1) {
+        if (length_beta > 1)
+        {
             if (model == 0 && interaction != 0 && ngpreds == 2
-                    && length_beta > 2) {
+                    && length_beta > 2)
+            {
                 covariance.reinit(length_beta - 2, 1);
-            } else {
+            }
+            else
+            {
                 covariance.reinit(length_beta - 1, 1);
             }
         }
@@ -689,7 +776,8 @@ public:
         mematrix<double> tXWz(length_beta, 1);
 
         double prev = (rdata.Y).column_mean(0);
-        if (prev >= 1. || prev <= 0.) {
+        if (prev >= 1. || prev <= 0.)
+        {
             fprintf(stderr, "prevalence not within (0,1)\n");
             exit(1);
         }
@@ -699,7 +787,8 @@ public:
 
         mematrix<double> tX = transpose(X);
 
-        if (invvarmatrix.nrow != 0 && invvarmatrix.ncol != 0) {
+        if (invvarmatrix.nrow != 0 && invvarmatrix.ncol != 0)
+        {
             tX = tX * invvarmatrix;
         }
         /*
@@ -717,10 +806,12 @@ public:
         niter = 0;
         double delta = 1.;
         double prevlik = 0.;
-        while (niter < maxiter && delta > eps) {
+        while (niter < maxiter && delta > eps)
+        {
             mematrix<double> eMu = (X) * beta;
             mematrix<double> eMu_us = eMu;
-            for (int i = 0; i < eMu.nrow; i++) {
+            for (int i = 0; i < eMu.nrow; i++)
+            {
                 double emu = eMu.get(i, 0);
                 double value = emu;
                 double zval = 0.;
@@ -735,14 +826,16 @@ public:
             }
 
             mematrix<double> tmp = productMatrDiag(tX, W);
-            if (verbose) {
+            if (verbose)
+            {
                 printf("tXW:\n");
                 tmp.print();
             }
             mematrix<double> tXWX = tmp * (X);
             N = tXWX.get(0, 0);
 
-            if (verbose) {
+            if (verbose)
+            {
                 printf("tXWX:\n");
                 tXWX.print();
             }
@@ -757,14 +850,16 @@ public:
             //chinv2_mm(tXWX_i);
             // was before
             tXWX_i = invert(tXWX);
-            if (verbose) {
+            if (verbose)
+            {
                 printf("tXWX-1:\n");
                 tXWX_i.print();
             }
             //fprintf(stdout,"*** tXWX_i\n");tXWX_i.print();
             mematrix<double> tmp1 = productMatrDiag(tX, W);
             mematrix<double> tXWz = tmp1 * z;
-            if (verbose) {
+            if (verbose)
+            {
                 printf("tXWz:\n");
                 tXWz.print();
             }
@@ -773,7 +868,8 @@ public:
             //mematrix<double> txres = tx * residuals;
             //fprintf(stdout,"*** txres\n");txres.print();
             //beta = txwx_i* txres;
-            if (verbose) {
+            if (verbose)
+            {
                 printf("beta:\n");
                 beta.print();
             }
@@ -789,10 +885,12 @@ public:
         sigma2 = 0.;
 
         mematrix<double> robust_sigma2(X.ncol, X.ncol);
-        if (robust) {
+        if (robust)
+        {
             mematrix<double> XbyR = X;
             for (int i = 0; i < X.nrow; i++)
-                for (int j = 0; j < X.ncol; j++) {
+                for (int j = 0; j < X.ncol; j++)
+                {
                     double tmpval = XbyR.get(i, j) * residuals[i];
                     XbyR.put(tmpval, i, j);
                 }
@@ -801,36 +899,50 @@ public:
             robust_sigma2 = robust_sigma2 * tXWX_i;
         }
 
-        for (int i = 0; i < (length_beta); i++) {
-            if (robust) {
+        for (int i = 0; i < (length_beta); i++)
+        {
+            if (robust)
+            {
                 double value = sqrt(robust_sigma2.get(i, i));
                 sebeta.put(value, i, 0);
                 //Han Chen
-                if (i > 0) {
+                if (i > 0)
+                {
                     if (model == 0 && interaction != 0 && ngpreds == 2
-                            && length_beta > 2) {
-                        if (i > 1) {
+                            && length_beta > 2)
+                    {
+                        if (i > 1)
+                        {
                             double covval = robust_sigma2.get(i, i - 2);
                             covariance.put(covval, i - 2, 0);
                         }
-                    } else {
+                    }
+                    else
+                    {
                         double covval = robust_sigma2.get(i, i - 1);
                         covariance.put(covval, i - 1, 0);
                     }
                 }
                 //Oct 26, 2009
-            } else {
+            }
+            else
+            {
                 double value = sqrt(tXWX_i.get(i, i));
                 sebeta.put(value, i, 0);
                 //Han Chen
-                if (i > 0) {
+                if (i > 0)
+                {
                     if (model == 0 && interaction != 0 && ngpreds == 2
-                            && length_beta > 2) {
-                        if (i > 1) {
+                            && length_beta > 2)
+                    {
+                        if (i > 1)
+                        {
                             double covval = tXWX_i.get(i, i - 2);
                             covariance.put(covval, i - 2, 0);
                         }
-                    } else {
+                    }
+                    else
+                    {
                         double covval = tXWX_i.get(i, i - 1);
                         covariance.put(covval, i - 1, 0);
                     }
@@ -838,7 +950,8 @@ public:
                 //Oct 26, 2009
             }
         }
-        if (verbose) {
+        if (verbose)
+        {
             printf("sebeta (%d):\n", sebeta.nrow);
             sebeta.print();
         }
@@ -849,7 +962,8 @@ public:
     // just a stupid copy from linear_reg
     void score(mematrix<double> &resid, regdata &rdata, int verbose,
             double tol_chol, int model, int interaction, int ngpreds,
-            mematrix<double> invvarmatrix, int nullmodel = 0) {
+            mematrix<double> invvarmatrix, int nullmodel = 0)
+    {
         mematrix<double> oX = rdata.extract_genotypes();
         mematrix<double> X = apply_model(oX, model, interaction, ngpreds, false,
                 nullmodel);
@@ -876,7 +990,8 @@ public:
         beta = v_i * u;
         double sr = 0.;
         double srr = 0.;
-        for (int i = 0; i < resid.nrow; i++) {
+        for (int i = 0; i < resid.nrow; i++)
+        {
             sr += resid[i];
             srr += resid[i] * resid[i];
         }
@@ -890,7 +1005,8 @@ public:
     }
 };
 
-class coxph_reg {
+class coxph_reg
+{
 public:
     mematrix<double> beta;
     mematrix<double> sebeta;
@@ -900,7 +1016,8 @@ public:
     double chi2_score;
     int niter;
 
-    coxph_reg(coxph_data &cdatain) {
+    coxph_reg(coxph_data &cdatain)
+    {
         coxph_data cdata = cdatain.get_unmasked_data();
         beta.reinit(cdata.X.nrow, 1);
         sebeta.reinit(cdata.X.nrow, 1);
@@ -909,13 +1026,15 @@ public:
         chi2_score = -1.;
         niter = 0;
     }
-    ~coxph_reg() {
+    ~coxph_reg()
+    {
         //		delete beta;
         //		delete sebeta;
     }
     void estimate(coxph_data &cdatain, int verbose, int maxiter, double eps,
             double tol_chol, int model, int interaction, int ngpreds,
-            bool iscox, int nullmodel = 0) {
+            bool iscox, int nullmodel = 0)
+    {
         //		cout << "model = " << model << "\n";
         //		cdata.X.print();
         coxph_data cdata = cdatain.get_unmasked_data();

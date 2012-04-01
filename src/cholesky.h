@@ -9,9 +9,6 @@
 #define CHOLESKY_H_
 #include "mematrix.h"
 
-
-
-
 int cholesky2_mm(mematrix<double> &matrix, double toler);
 void chinv2_mm(mematrix<double> &matrix);
 

@@ -10,14 +10,16 @@
 
 #include "mematrix.h"
 
-class phedata {
+class phedata
+{
 private:
 
     bool is_interaction_excluded;
 public:
-  phedata() {
+    phedata()
+    {
 
-   }
+    }
     phedata(char * fname, int noutc, int npeople, int interaction, bool iscox);
 
     void setphedata(char * fname, int noutc, int npeople, int interaction,

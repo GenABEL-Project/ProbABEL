@@ -2,8 +2,8 @@
 #include <cstdlib>
 #include <cstdio>
 
-
-void print_usage(char * program_name, int exit_code) {
+void print_usage(char * program_name, int exit_code)
+{
     fprintf(stdout, "Usage: %s options\n", program_name);
     fprintf(stdout, "Options:\n");
     fprintf(stdout, "\t --pheno   : phenotype file name\n");
@@ -44,6 +44,7 @@ void print_usage(char * program_name, int exit_code) {
     exit(exit_code);
 }
 
-void print_help(char * program_name, int exit_code) {
+void print_help(char * program_name, int exit_code)
+{
     print_usage(program_name, exit_code);
 }

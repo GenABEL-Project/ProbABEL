@@ -11,11 +11,13 @@
 #include "mematri1.h"
 #include "utilities.h"
 
-void gendata::get_var(int var, float * data) {
+void gendata::get_var(int var, float * data)
+{
     if (DAG == NULL)
         for (int i = 0; i < G.nrow; i++)
             data[i] = G.get(i, var);
-    else if (DAG != NULL) {
+    else if (DAG != NULL)
+    {
         float tmpdata[DAG->getNumObservations()];
         DAG->readVariableAs((unsigned long int) var, tmpdata);
         unsigned int j = 0;
@@ -23,17 +25,19 @@ void gendata::get_var(int var, float * data) {
             if (!DAGmask[i])
                 data[j++] = tmpdata[i];
         //fprintf(stdout,"%i %i %i\n",j,DAG->get_nobservations(),nids);
-    } else
+    }
+    else
         report_error("cannot get gendata");
 }
 
-gendata::gendata() {
+gendata::gendata()
+{
     nsnps = nids = ngpreds = 0;
 }
 
 void gendata::re_gendata(string filename, int insnps, int ingpreds, int npeople,
-        int nmeasured, unsigned short int * allmeasured,
-        std::string * idnames) {
+        int nmeasured, unsigned short int * allmeasured, std::string * idnames)
+{
     nsnps = insnps;
     ngpreds = ingpreds;
     DAG = new FileVector(filename, 128, true);
@@ -43,10 +47,12 @@ void gendata::re_gendata(string filename, int insnps, int ingpreds, int npeople,
     if (DAG->getNumVariables() != insnps * ingpreds)
         report_error("dimension of fvf-data and mlinfo data do not match\n");
     long int j = -1;
-    for (unsigned int i = 0; i < npeople; i++) {
+    for (unsigned int i = 0; i < npeople; i++)
+    {
         if (allmeasured[i] == 0)
             DAGmask[i] = 1;
-        else {
+        else
+        {
             DAGmask[i] = 0;
             j++;
         }
@@ -73,7 +79,8 @@ void gendata::re_gendata(string filename, int insnps, int ingpreds, int npeople,
 }
 void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
         int nmeasured, unsigned short int * allmeasured, int skipd,
-        std::string * idnames) {
+        std::string * idnames)
+{
     nids = nmeasured;
     nsnps = insnps;
     ngpreds = ingpreds;
@@ -85,7 +92,8 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
     std::ifstream infile;
 
     infile.open(fname);
-    if (!infile) {
+    if (!infile)
+    {
         std::cerr << "gendata: cannot open file " << fname << endl;
     }
 
@@ -94,8 +102,10 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
 
     int k = 0;
     for (int i = 0; i < npeople; i++)
-        if (allmeasured[i] == 1) {
-            if (skipd > 0) {
+        if (allmeasured[i] == 1)
+        {
+            if (skipd > 0)
+            {
                 //				int ttt;
                 char ttt[100];
                 infile >> tmp;
@@ -104,14 +114,18 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
                 //				sscanf(tmp,"%s->%s",&ttt, tmpn);
                 //				sscanf(tmp,"%[^->]->%[^->]",&ttt, tmpn);
                 tmpstr = tmp;
-                if (tmpstr.find("->") != string::npos) {
+                if (tmpstr.find("->") != string::npos)
+                {
                     sscanf(tmp, "%[^->]->%s", ttt, tmpn);
                     tmpid = tmpn;
-                } else {
+                }
+                else
+                {
                     tmpid = tmpstr;
                     //fprintf(stdout,"%s;%s;%s;%s;%s\n",tmp,ttt,tmpn,tmpid.c_str(),idnames[k].c_str());
                 }
-                if (tmpid != idnames[k]) {
+                if (tmpid != idnames[k])
+                {
                     fprintf(stderr,
                             "phenofile and dosefile did not match at line %d ",
                             i + 2);
@@ -120,13 +134,18 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
                     exit(1);
                 }
             }
-            for (int j = 1; j < skipd; j++) {
+            for (int j = 1; j < skipd; j++)
+            {
                 infile >> tmp;
             }
-            for (int j = 0; j < (nsnps * ngpreds); j++) {
-                if (infile.good()) {
+            for (int j = 0; j < (nsnps * ngpreds); j++)
+            {
+                if (infile.good())
+                {
                     infile >> tmp;
-                } else {
+                }
+                else
+                {
                     std::cerr
                             << "cannot read dose-file: check skipd and ngpreds parameters\n";
                     infile.close();
@@ -135,7 +154,9 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
                 G.put(atof(tmp), k, j);
             }
             k++;
-        } else {
+        }
+        else
+        {
             for (int j = 0; j < skipd; j++)
                 infile >> tmp;
             for (int j = 0; j < (nsnps * ngpreds); j++)
@@ -144,9 +165,11 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds, int npeople,
     infile.close();
 }
 // HERE NEED A NEW CONSTRUCTOR BASED ON DATABELBASECPP OBJECT
-gendata::~gendata() {
+gendata::~gendata()
+{
 
-    if (DAG != NULL) {
+    if (DAG != NULL)
+    {
         delete DAG;
         delete[] DAGmask;
     }
