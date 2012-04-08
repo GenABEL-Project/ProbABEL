@@ -12,9 +12,7 @@
 
 class phedata
 {
-private:
 
-    bool is_interaction_excluded;
 public:
     phedata()
     {
@@ -24,6 +22,7 @@ public:
 
     void setphedata(char * fname, int noutc, int npeople, int interaction,
             bool iscox);
+    bool is_interaction_excluded;
 
     int nids_all;
     int nids;

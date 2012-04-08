@@ -33,7 +33,7 @@ extern "C"
 }
 
 mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
-        int ngpreds, bool iscox = false, int nullmodel = 0)
+        int ngpreds, bool is_interaction_excluded ,bool iscox = false, int nullmodel = 0)
 // model 0 = 2 df
 // model 1 = additive 1 df
 // model 2 = dominant 1 df
@@ -396,7 +396,7 @@ public:
         }
 
         //fprintf(stdout,"estimate: %i %i %i %i\n",rdata.nids,(rdata.X).nrow,(rdata.X).ncol,(rdata.Y).ncol);
-        mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,
+        mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,rdata.is_interaction_excluded,
                 false, nullmodel);
 
         int length_beta = X.ncol;
@@ -636,7 +636,7 @@ public:
         //for (int i=0;i<rdatain.nids;i++) if (rdata.masked_data[i]==0) resid[j++]=residin[i];
 
         mematrix<double> oX = rdata.extract_genotypes();
-        mematrix<double> X = apply_model(oX, model, interaction, ngpreds, false,
+        mematrix<double> X = apply_model(oX, model, interaction, ngpreds,rdata.is_interaction_excluded, false,
                 nullmodel);
         beta.reinit(X.ncol, 1);
         sebeta.reinit(X.ncol, 1);
@@ -750,7 +750,7 @@ public:
 
         }
 
-        mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,
+        mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,rdata.is_interaction_excluded,
                 false, nullmodel);
         int length_beta = X.ncol;
         beta.reinit(length_beta, 1);
@@ -965,7 +965,7 @@ public:
             mematrix<double> invvarmatrix, int nullmodel = 0)
     {
         mematrix<double> oX = rdata.extract_genotypes();
-        mematrix<double> X = apply_model(oX, model, interaction, ngpreds, false,
+        mematrix<double> X = apply_model(oX, model, interaction, ngpreds,rdata.is_interaction_excluded, false,
                 nullmodel);
         beta.reinit(X.ncol, 1);
         sebeta.reinit(X.ncol, 1);

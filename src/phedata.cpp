@@ -23,6 +23,7 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     char line[BFS];
     char tmp[100];
     noutcomes = noutc;
+    is_interaction_excluded=false;
 
     int nphenocols = 0;
     int savenpeople = npeople;
