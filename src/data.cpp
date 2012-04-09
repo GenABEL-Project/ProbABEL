@@ -20,14 +20,13 @@
 #include "utilities.h"
 using namespace std;
 
-extern bool is_interaction_excluded;
-
 unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
 {
-    int ncov = nphenocols - 2;
-    int nids_all = npeople;
+//TODO: unused variables remove them for good if there is no reason to keep them
+//int ncov = nphenocols - 2;
+//int nids_all = npeople;
 
-    // first pass -- find unmeasured people
+// first pass -- find unmeasured people
     std::ifstream infile(fname);
     if (!infile)
     {
@@ -170,9 +169,7 @@ InvSigma::InvSigma(const char * filename_, phedata * phe)
     npeople = phe->nids;
     std::ifstream myfile(filename_);
     char * line = new char[MAXIMUM_PEOPLE_AMOUNT];
-    double val;
     std::string id;
-    unsigned row = 0, col = 0;
 
     matrix.reinit(npeople, npeople);
 
@@ -180,6 +177,8 @@ InvSigma::InvSigma(const char * filename_, phedata * phe)
 
     if (myfile.is_open())
     {
+        double val;
+        unsigned row = 0;
         while (myfile.getline(line, MAXIMUM_PEOPLE_AMOUNT))
         {
 
@@ -194,7 +193,7 @@ InvSigma::InvSigma(const char * filename_, phedata * phe)
                         << " must be there. Wrong inverse variance matrix (only measured id must be there)\n";
                 exit(1);
             }
-
+            unsigned col = 0;
             while (line_stream >> val)
             {
                 matrix.put(val, row, col);

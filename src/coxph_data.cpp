@@ -21,11 +21,17 @@ int cmpfun(const void *a, const void *b)
     double el1 = *(double*) a;
     double el2 = *(double*) b;
     if (el1 > el2)
+    {
         return 1;
+    }
     if (el1 < el2)
+    {
         return -1;
+    }
     if (el1 == el2)
+    {
         return 0;
+    }
 }
 
 coxph_data::coxph_data(const coxph_data &obj)

@@ -46,6 +46,70 @@
 #define EPS 1.e-8
 #define CHOLTOL 1.5e-12
 
+void update_progress_to_cmd_line(int csnp, int nsnps)
+{
+    if (csnp % 1000 == 0)
+    {
+        if (csnp == 0)
+        {
+            fprintf(stdout, "Analysis: %6.2f ...",
+                    100. * double(csnp) / double(nsnps));
+        }
+        else
+        {
+            fprintf(stdout, "\b\b\b\b\b\b\b\b\b\b%6.2f ...",
+                    100. * double(csnp) / double(nsnps));
+        }
+        std::cout.flush();
+    }
+}
+
+void open_files_for_output(std::vector<std::ofstream*>& outfile,
+        std::string& outfilename_str)
+{
+    // open a file for output
+    //_____________________
+    for (int i = 0; i < 5; i++)
+    {
+        outfile.push_back(new std::ofstream());
+    }
+    outfile[0]->open((outfilename_str + "_2df.out.txt").c_str());
+    outfile[1]->open((outfilename_str + "_add.out.txt").c_str());
+    outfile[2]->open((outfilename_str + "_domin.out.txt").c_str());
+    outfile[3]->open((outfilename_str + "_recess.out.txt").c_str());
+    outfile[4]->open((outfilename_str + "_over_domin.out.txt").c_str());
+    if (!outfile[0]->is_open())
+    {
+        std::cerr << "Cannot open file for writing: "
+                << outfilename_str + "_2df.out.txt" << "\n";
+        exit(1);
+    }
+    if (!outfile[1]->is_open())
+    {
+        std::cerr << "Cannot open file for writing: "
+                << outfilename_str + "_add.out.txt" << "\n";
+        exit(1);
+    }
+    if (!outfile[2]->is_open())
+    {
+        std::cerr << "Cannot open file for writing: "
+                << outfilename_str + "_domin.out.txt" << "\n";
+        exit(1);
+    }
+    if (!outfile[3]->is_open())
+    {
+        std::cerr << "Cannot open file for writing: "
+                << outfilename_str + "_recess.out.txt" << "\n";
+        exit(1);
+    }
+    if (!outfile[4]->is_open())
+    {
+        std::cerr << "Cannot open file for writing: "
+                << outfilename_str + "_over_domin.out.txt" << "\n";
+        exit(1);
+    }
+}
+
 int main(int argc, char * argv[])
 {
 
@@ -160,11 +224,12 @@ int main(int argc, char * argv[])
      gendata gtd (input_var.getGenfilename(),nsnps,input_var.getNgpreds(),phd.nids_all,phd.nids,phd.allmeasured,skipd,phd.idnames);
      **/
     // estimate null model
-    double null_loglik = 0.;
+    //TODO: remove this unused variable if there is not a reason to keep it
+    //double null_loglik = 0.;
 #if COXPH
     coxph_data nrgd=coxph_data(phd,gtd,-1,input_var.isIsInteractionExcluded());
 #else
-    regdata nrgd = regdata(phd, gtd, -1,input_var.isIsInteractionExcluded());
+    regdata nrgd = regdata(phd, gtd, -1, input_var.isIsInteractionExcluded());
 #endif
 
     std::cout << " loaded null data ...";
@@ -183,7 +248,7 @@ int main(int argc, char * argv[])
 
     nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, input_var.getInteraction(), input_var.getNgpreds(), 1);
 #endif
-    null_loglik = nrd.loglik;
+    //null_loglik = nrd.loglik;
 
     std::cout << " estimated null model ...";
 
@@ -191,7 +256,7 @@ int main(int argc, char * argv[])
 #if COXPH
     coxph_data rgd(phd,gtd,0,input_var.isIsInteractionExcluded());
 #else
-    regdata rgd(phd, gtd, 0,input_var.isIsInteractionExcluded());
+    regdata rgd(phd, gtd, 0, input_var.isIsInteractionExcluded());
 #endif
 
     std::cout << " formed regression object ...";
@@ -212,48 +277,7 @@ int main(int argc, char * argv[])
         {
             // open a file for output
             //_____________________
-
-            for (int i = 0; i < 5; i++)
-            {
-                outfile.push_back(new std::ofstream());
-            }
-
-            outfile[0]->open((outfilename_str + "_2df.out.txt").c_str());
-            outfile[1]->open((outfilename_str + "_add.out.txt").c_str());
-            outfile[2]->open((outfilename_str + "_domin.out.txt").c_str());
-            outfile[3]->open((outfilename_str + "_recess.out.txt").c_str());
-            outfile[4]->open((outfilename_str + "_over_domin.out.txt").c_str());
-
-            if (!outfile[0]->is_open())
-            {
-                std::cerr << "Cannot open file for writing: "
-                        << outfilename_str + "_2df.out.txt" << "\n";
-                exit(1);
-            }
-            if (!outfile[1]->is_open())
-            {
-                std::cerr << "Cannot open file for writing: "
-                        << outfilename_str + "_add.out.txt" << "\n";
-                exit(1);
-            }
-            if (!outfile[2]->is_open())
-            {
-                std::cerr << "Cannot open file for writing: "
-                        << outfilename_str + "_domin.out.txt" << "\n";
-                exit(1);
-            }
-            if (!outfile[3]->is_open())
-            {
-                std::cerr << "Cannot open file for writing: "
-                        << outfilename_str + "_recess.out.txt" << "\n";
-                exit(1);
-            }
-            if (!outfile[4]->is_open())
-            {
-                std::cerr << "Cannot open file for writing: "
-                        << outfilename_str + "_over_domin.out.txt" << "\n";
-                exit(1);
-            }
+            open_files_for_output(outfile, outfilename_str);
             //_____________________
 
             //Header
@@ -434,47 +458,7 @@ int main(int argc, char * argv[])
             //			outfilename_str="regression";
             //			}
 
-            for (int i = 0; i < 5; i++)
-            {
-                outfile.push_back(new std::ofstream());
-            }
-
-            outfile[0]->open((outfilename_str + "_2df.out.txt").c_str());
-            outfile[1]->open((outfilename_str + "_add.out.txt").c_str());
-            outfile[2]->open((outfilename_str + "_domin.out.txt").c_str());
-            outfile[3]->open((outfilename_str + "_recess.out.txt").c_str());
-            outfile[4]->open((outfilename_str + "_over_domin.out.txt").c_str());
-
-            if (!outfile[0]->is_open())
-            {
-                std::cerr << "Cannot open file for writing: "
-                        << outfilename_str + "_2df.out.txt" << "\n";
-                exit(1);
-            }
-            if (!outfile[1]->is_open())
-            {
-                std::cerr << "Cannot open file for writing: "
-                        << outfilename_str + "_add.out.txt" << "\n";
-                exit(1);
-            }
-            if (!outfile[2]->is_open())
-            {
-                std::cerr << "Cannot open file for writing: "
-                        << outfilename_str + "_domin.out.txt" << "\n";
-                exit(1);
-            }
-            if (!outfile[3]->is_open())
-            {
-                std::cerr << "Cannot open file for writing: "
-                        << outfilename_str + "_recess.out.txt" << "\n";
-                exit(1);
-            }
-            if (!outfile[4]->is_open())
-            {
-                std::cerr << "Cannot open file for writing: "
-                        << outfilename_str + "_over_domin.out.txt" << "\n";
-                exit(1);
-            }
+            open_files_for_output(outfile, outfilename_str);
         }
         else
         {
@@ -586,10 +570,11 @@ int main(int argc, char * argv[])
                     freq += snpdata1[ii] * 0.5;
                 }
         }
-        freq /= (double) gcount;
+        freq /= (double) (gcount);
         int poly = 1;
         if (fabs(freq) < 1.e-16 || fabs(1. - freq) < 1.e-16)
             poly = 0;
+
         if (fabs(mli.Rsq[csnp]) < 1.e-16)
             poly = 0;
 
@@ -758,7 +743,7 @@ int main(int argc, char * argv[])
                     //Oct 26, 2009
                     *chi2[model] << "nan";
                 }
-            } //end of moel cycle
+            } //end of model cycle
 
             //Han Chen
             *outfile[0] << beta_sebeta[0]->str() << input_var.getSep();
@@ -955,7 +940,6 @@ int main(int argc, char * argv[])
                 *outfile[0] << beta_sebeta[0]->str() << "\n";
             }
         }
-
         //clean chi2
         for (int i = 0; i < 5; i++)
         {
@@ -965,21 +949,7 @@ int main(int argc, char * argv[])
             //Oct 26, 2009
             chi2[i]->str("");
         }
-
-        if (csnp % 1000 == 0)
-        {
-            if (csnp == 0)
-            {
-                fprintf(stdout, "Analysis: %6.2f ...",
-                        100. * double(csnp) / double(nsnps));
-            }
-            else
-            {
-                fprintf(stdout, "\b\b\b\b\b\b\b\b\b\b%6.2f ...",
-                        100. * double(csnp) / double(nsnps));
-            }
-            std::cout.flush();
-        }
+        update_progress_to_cmd_line(csnp, nsnps);
 
     }
 
