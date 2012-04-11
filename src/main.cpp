@@ -67,72 +67,31 @@ void update_progress_to_cmd_line(int csnp, int nsnps)
 void open_files_for_output(std::vector<std::ofstream*>& outfile,
         std::string& outfilename_str)
 {
-    // open a file for output
-    //_____________________
-    for (int i = 0; i < 5; i++)
+    //create a list of filenames
+    const int amount_of_files = 5;
+    std::string filenames[amount_of_files] =
+            { outfilename_str + "_2df.out.txt", outfilename_str
+                    + "_add.out.txt", outfilename_str + "_domin.out.txt",
+                    outfilename_str + "_recess.out.txt", outfilename_str
+                            + "_over_domin.out.txt" };
+
+    for (int i = 0; i < amount_of_files; i++)
     {
         outfile.push_back(new std::ofstream());
+        outfile[i]->open((filenames[i]).c_str());
+        if (!outfile[i]->is_open())
+        {
+            std::cerr << "Can not open file for writing: " << filenames[i]
+                    << "\n";
+            exit(1);
+        }
     }
-    outfile[0]->open((outfilename_str + "_2df.out.txt").c_str());
-    outfile[1]->open((outfilename_str + "_add.out.txt").c_str());
-    outfile[2]->open((outfilename_str + "_domin.out.txt").c_str());
-    outfile[3]->open((outfilename_str + "_recess.out.txt").c_str());
-    outfile[4]->open((outfilename_str + "_over_domin.out.txt").c_str());
-    if (!outfile[0]->is_open())
-    {
-        std::cerr << "Cannot open file for writing: "
-                << outfilename_str + "_2df.out.txt" << "\n";
-        exit(1);
-    }
-    if (!outfile[1]->is_open())
-    {
-        std::cerr << "Cannot open file for writing: "
-                << outfilename_str + "_add.out.txt" << "\n";
-        exit(1);
-    }
-    if (!outfile[2]->is_open())
-    {
-        std::cerr << "Cannot open file for writing: "
-                << outfilename_str + "_domin.out.txt" << "\n";
-        exit(1);
-    }
-    if (!outfile[3]->is_open())
-    {
-        std::cerr << "Cannot open file for writing: "
-                << outfilename_str + "_recess.out.txt" << "\n";
-        exit(1);
-    }
-    if (!outfile[4]->is_open())
-    {
-        std::cerr << "Cannot open file for writing: "
-                << outfilename_str + "_over_domin.out.txt" << "\n";
-        exit(1);
-    }
+
 }
 
-int main(int argc, char * argv[])
+int create_phenoytype(phedata& phd, cmdvars& input_var)
 {
 
-    cmdvars input_var;
-    input_var.set_variables(argc, argv);
-    input_var.printinfo();
-
-#if COXPH
-    if (input_var.getScore())
-    {
-        fprintf(stderr,"\n\nOption --score is implemented for linear and logistic models only\n");
-        exit(1);
-    }
-#endif
-    //	if (allcov && ngpreds>1)
-    //	{
-    //		fprintf(stdout,"\n\nWARNING: --allcov allowed only for 1 predictor (MLDOSE)\n");
-    //		allcov = 0;
-    //	}
-
-    mlinfo mli(input_var.getMlinfofilename(), input_var.getMapfilename());
-    int nsnps = mli.nsnps;
-    phedata phd;
     phd.set_is_interaction_excluded(input_var.isIsInteractionExcluded());
     phd.setphedata(input_var.getPhefilename(), input_var.getNoutcomes(),
             input_var.getNpeople(), input_var.getInteraction(),
@@ -149,23 +108,170 @@ int main(int argc, char * argv[])
                 << input_var.getInteraction() << ") \n";
         exit(1);
     }
+    return interaction_cox;
+}
 
+void loadInvSigma(cmdvars& input_var, phedata& phd,
+        mematrix<double>& invvarmatrix)
+{
+    std::cout << "you are running mmscore...\n";
+    InvSigma inv(input_var.getInverseFilename(), &phd);
+    invvarmatrix = inv.get_matrix();
+    double par = 1.; //var(phd.Y)*phd.nids/(phd.nids-phd.ncov-1);
+    invvarmatrix = invvarmatrix * par;
+    std::cout << " loaded InvSigma ...";
+}
+
+void create_start_of_header(std::vector<std::ofstream*>& outfile,
+        cmdvars& input_var, phedata& phd)
+{
+    for (int i = 0; i < outfile.size(); i++)
+    {
+        (*outfile[i]) << "name" << input_var.getSep() << "A1"
+                << input_var.getSep() << "A2" << input_var.getSep() << "Freq1"
+                << input_var.getSep() << "MAF" << input_var.getSep()
+                << "Quality" << input_var.getSep() << "Rsq"
+                << input_var.getSep() << "n" << input_var.getSep()
+                << "Mean_predictor_allele";
+        if (input_var.getChrom() != "-1")
+            (*outfile[i]) << input_var.getSep() << "input_var.getChrom()";
+        if (input_var.getMapfilename() != NULL)
+            (*outfile[i]) << input_var.getSep() << "position";
+    }
+
+    if (input_var.getAllcov()) //All covariates in output
+    {
+        for (int file = 0; file < outfile.size(); file++)
+            for (int i = 0; i < phd.n_model_terms - 1; i++)
+                *outfile[file] << input_var.getSep() << "beta_"
+                        << phd.model_terms[i] << input_var.getSep() << "sebeta_"
+                        << phd.model_terms[i];
+    }
+}
+
+void create_header_1(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
+        phedata& phd, int& interaction_cox)
+{
+    create_start_of_header(outfile, input_var, phd);
+
+    *outfile[0] << input_var.getSep() << "beta_SNP_A1A2" << input_var.getSep()
+            << "beta_SNP_A1A1" << input_var.getSep() << "sebeta_SNP_A1A2"
+            << input_var.getSep() << "sebeta_SNP_A1A1";
+
+    *outfile[1] << input_var.getSep() << "beta_SNP_addA1" << input_var.getSep()
+            << "sebeta_SNP_addA1";
+    *outfile[2] << input_var.getSep() << "beta_SNP_domA1" << input_var.getSep()
+            << "sebeta_SNP_domA1";
+    *outfile[3] << input_var.getSep() << "beta_SNP_recA1" << input_var.getSep()
+            << "sebeta_SNP_recA1";
+    *outfile[4] << input_var.getSep() << "beta_SNP_odom" << input_var.getSep()
+            << "sebeta_SNP_odom";
+//TODO(unknown): compare in create_header_1 and  create_header_2 the next lines.
+    if (input_var.getInteraction() != 0)
+    {
+
+        //Han Chen
+        *outfile[0] << input_var.getSep() << "beta_SNP_A1A2_"
+                << phd.model_terms[interaction_cox] << input_var.getSep()
+                << "sebeta_SNP_A1A2_" << phd.model_terms[interaction_cox]
+                << input_var.getSep() << "beta_SNP_A1A1_"
+                << phd.model_terms[interaction_cox] << input_var.getSep()
+                << "sebeta_SNP_A1A1_" << phd.model_terms[interaction_cox];
+#if !COXPH
+        if (input_var.getInverseFilename() == NULL && !input_var.getAllcov())
+        {
+            *outfile[0] << input_var.getSep() << "cov_SNP_A1A2_int_SNP_"
+                    << phd.model_terms[interaction_cox] << input_var.getSep()
+                    << "cov_SNP_A1A1_int_SNP_"
+                    << phd.model_terms[interaction_cox];
+        }
+#endif
+        //Oct 26, 2009
+        for (int file = 1; file < outfile.size(); file++)
+        {
+            *outfile[file] << input_var.getSep() << "beta_SNP_"
+                    << phd.model_terms[interaction_cox] << input_var.getSep()
+                    << "sebeta_SNP_" << phd.model_terms[interaction_cox];
+            //Han Chen
+#if !COXPH
+            if (input_var.getInverseFilename() == NULL
+                    && !input_var.getAllcov())
+            {
+                *outfile[file] << input_var.getSep() << "cov_SNP_int_SNP_"
+                        << phd.model_terms[interaction_cox];
+            }
+#endif
+            //Oct 26, 2009
+        }
+    }
+    *outfile[0] << input_var.getSep() << "loglik\n"; //"chi2_SNP_2df\n";
+    *outfile[1] << input_var.getSep() << "loglik\n"; //"chi2_SNP_A1\n";
+    *outfile[2] << input_var.getSep() << "loglik\n"; //"chi2_SNP_domA1\n";
+    *outfile[3] << input_var.getSep() << "loglik\n"; //"chi2_SNP_recA1\n";
+    *outfile[4] << input_var.getSep() << "loglik\n"; //"chi2_SNP_odom\n";
+
+}
+
+void create_header2(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
+        phedata phd, int interaction_cox)
+{
+
+    create_start_of_header(outfile, input_var, phd);
+    *outfile[0] << input_var.getSep() << "beta_SNP_add" << input_var.getSep()
+            << "sebeta_SNP_add";
+
+    //TODO(unknown): compare in create_header_1 and  create_header_2 the next lines.
+
+    if (input_var.getInteraction() != 0)
+    {
+        *outfile[0] << input_var.getSep() << "beta_SNP_"
+                << phd.model_terms[interaction_cox] << input_var.getSep()
+                << "sebeta_SNP_" << phd.model_terms[interaction_cox];
+    }
+
+    if (input_var.getInverseFilename() == NULL)
+    //Han Chen
+    {
+#if !COXPH
+        if (input_var.getInteraction() != 0 && !input_var.getAllcov())
+        {
+            *outfile[0] << input_var.getSep() << "cov_SNP_int_SNP_"
+                    << phd.model_terms[interaction_cox];
+        }
+#endif
+        *outfile[0] << input_var.getSep() << "loglik"; //"chi2_SNP";
+    }
+    //Oct 26, 2009
+    *outfile[0] << "\n";
+}
+
+int main(int argc, char * argv[])
+{
+
+    cmdvars input_var;
+    input_var.set_variables(argc, argv);
+    input_var.printinfo();
+    //	if (allcov && ngpreds>1)
+    //	{
+    //		fprintf(stdout,"\n\nWARNING: --allcov allowed only for 1 predictor (MLDOSE)\n");
+    //		allcov = 0;
+    //	}
+    mlinfo mli(input_var.getMlinfofilename(), input_var.getMapfilename());
+    int nsnps = mli.nsnps;
+    phedata phd;
+    int interaction_cox = create_phenoytype(phd, input_var);
     //interaction--;
-
     //	if(input_var.getInverseFilename()!= NULL && phd.ncov > 1)
     //		{
     //		std::cerr<<"Error: In mmscore you can not use any covariates. You phenotype file must conatin id column and trait (residuals) only\n";
     //		exit(1);
     //		}
-
     //	if(input_var.getInverseFilename()!= NULL && (allcov == 1 || score == 1 || input_var.getInteraction()!= 0 || ngpreds==2))
     //		{
     //		std::cerr<<"Error: In mmscore you can use additive model without any inetractions only\n";
     //		exit(1);
     //		}
-
     mematrix<double> invvarmatrix;
-
     /*
      * now should be possible... delete this part later when everything works
      #if LOGISTIC
@@ -173,50 +279,26 @@ int main(int argc, char * argv[])
      #endif
      */
 
-#if COXPH
-    if(input_var.getInverseFilename()!= NULL)
-    {
-        std::cerr<<"ERROR: mmscore is forbidden for cox regression\n";
-        exit(1);
-    }
-    if (input_var.getRobust())
-    {
-        std::cerr<<"ERROR: robust standard errors not implemented for Cox regression\n";
-        exit(1);
-    }
-#endif
-
-    if (input_var.getInverseFilename() != NULL)
-    {
-        std::cout << "you are running mmscore...\n";
-    }
-
     std::cout << "Reading data ...";
-
     if (input_var.getInverseFilename() != NULL)
     {
-        InvSigma inv(input_var.getInverseFilename(), &phd);
-        invvarmatrix = inv.get_matrix();
-        double par = 1.; //var(phd.Y)*phd.nids/(phd.nids-phd.ncov-1);
-        invvarmatrix = invvarmatrix * par;
-        std::cout << " loaded InvSigma ...";
+        loadInvSigma(input_var, phd, invvarmatrix);
         //	matrix.print();
     }
-
     std::cout.flush();
-
     gendata gtd;
     if (!input_var.getIsFvf())
+        //use the non non filevector input format
         gtd.re_gendata(input_var.getGenfilename(), nsnps,
                 input_var.getNgpreds(), phd.nids_all, phd.nids, phd.allmeasured,
                 input_var.getSkipd(), phd.idnames);
     else
+        //use the filevector input format (missing second last skipd parameter)
         gtd.re_gendata(input_var.getStrGenfilename(), nsnps,
                 input_var.getNgpreds(), phd.nids_all, phd.nids, phd.allmeasured,
                 phd.idnames);
 
     std::cout << " loaded genotypic data ...";
-
     /**
      if (input_var.getIsFvf())
      gendata gtd (str_genfilename,nsnps,input_var.getNgpreds(),phd.nids_all,phd.allmeasured,phd.idnames);
@@ -226,38 +308,15 @@ int main(int argc, char * argv[])
     // estimate null model
     //TODO: remove this unused variable if there is not a reason to keep it
     //double null_loglik = 0.;
-#if COXPH
-    coxph_data nrgd=coxph_data(phd,gtd,-1,input_var.isIsInteractionExcluded());
-#else
     regdata nrgd = regdata(phd, gtd, -1, input_var.isIsInteractionExcluded());
-#endif
-
     std::cout << " loaded null data ...";
-
-#if LOGISTIC
-    logistic_reg nrd=logistic_reg(nrgd);
-    nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0,input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
-#elif LINEAR
-
     linear_reg nrd = linear_reg(nrgd);
-
     nrd.estimate(nrgd, 0, CHOLTOL, 0, input_var.getInteraction(),
             input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
-#elif COXPH
-    coxph_reg nrd(nrgd);
-
-    nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, input_var.getInteraction(), input_var.getNgpreds(), 1);
-#endif
     //null_loglik = nrd.loglik;
-
     std::cout << " estimated null model ...";
-
     // end null
-#if COXPH
-    coxph_data rgd(phd,gtd,0,input_var.isIsInteractionExcluded());
-#else
     regdata rgd(phd, gtd, 0, input_var.isIsInteractionExcluded());
-#endif
 
     std::cout << " formed regression object ...";
 
@@ -270,220 +329,30 @@ int main(int argc, char * argv[])
     std::string outfilename_str(input_var.getOutfilename());
     std::vector<std::ofstream*> outfile;
 
-    if (input_var.getNohead() != 1)
+    if (input_var.getNgpreds() == 2) //All models output. One file per each model
     {
-
-        if (input_var.getNgpreds() == 2) //All models output. One file per each model
+        open_files_for_output(outfile, outfilename_str);
+        if (input_var.getNohead() != 1)
         {
-            // open a file for output
-            //_____________________
-            open_files_for_output(outfile, outfilename_str);
-            //_____________________
-
-            //Header
-            //_____________________
-            for (int i = 0; i < outfile.size(); i++)
-            {
-                (*outfile[i]) << "name" << input_var.getSep() << "A1"
-                        << input_var.getSep() << "A2" << input_var.getSep()
-                        << "Freq1" << input_var.getSep() << "MAF"
-                        << input_var.getSep() << "Quality" << input_var.getSep()
-                        << "Rsq" << input_var.getSep() << "n"
-                        << input_var.getSep() << "Mean_predictor_allele";
-                if (input_var.getChrom() != "-1")
-                    (*outfile[i]) << input_var.getSep()
-                            << "input_var.getChrom()";
-                if (input_var.getMapfilename() != NULL)
-                    (*outfile[i]) << input_var.getSep() << "position";
-            }
-            //_____________________
-
-            if (input_var.getAllcov()) //All covariates in output
-            {
-                for (int file = 0; file < outfile.size(); file++)
-                    for (int i = 0; i < phd.n_model_terms - 1; i++)
-                        *outfile[file] << input_var.getSep() << "beta_"
-                                << phd.model_terms[i] << input_var.getSep()
-                                << "sebeta_" << phd.model_terms[i];
-            }
-            *outfile[0] << input_var.getSep() << "beta_SNP_A1A2"
-                    << input_var.getSep() << "beta_SNP_A1A1"
-                    << input_var.getSep() << "sebeta_SNP_A1A2"
-                    << input_var.getSep() << "sebeta_SNP_A1A1";
-
-            *outfile[1] << input_var.getSep() << "beta_SNP_addA1"
-                    << input_var.getSep() << "sebeta_SNP_addA1";
-            *outfile[2] << input_var.getSep() << "beta_SNP_domA1"
-                    << input_var.getSep() << "sebeta_SNP_domA1";
-            *outfile[3] << input_var.getSep() << "beta_SNP_recA1"
-                    << input_var.getSep() << "sebeta_SNP_recA1";
-            *outfile[4] << input_var.getSep() << "beta_SNP_odom"
-                    << input_var.getSep() << "sebeta_SNP_odom";
-
-            if (input_var.getInteraction() != 0)
-            {
-                //Han Chen
-                *outfile[0] << input_var.getSep() << "beta_SNP_A1A2_"
-                        << phd.model_terms[interaction_cox]
-                        << input_var.getSep() << "sebeta_SNP_A1A2_"
-                        << phd.model_terms[interaction_cox]
-                        << input_var.getSep() << "beta_SNP_A1A1_"
-                        << phd.model_terms[interaction_cox]
-                        << input_var.getSep() << "sebeta_SNP_A1A1_"
-                        << phd.model_terms[interaction_cox];
-#if !COXPH
-                if (input_var.getInverseFilename() == NULL
-                        && !input_var.getAllcov())
-                {
-                    *outfile[0] << input_var.getSep() << "cov_SNP_A1A2_int_SNP_"
-                            << phd.model_terms[interaction_cox]
-                            << input_var.getSep() << "cov_SNP_A1A1_int_SNP_"
-                            << phd.model_terms[interaction_cox];
-                }
-#endif
-                //Oct 26, 2009
-                for (int file = 1; file < outfile.size(); file++)
-                {
-                    *outfile[file] << input_var.getSep() << "beta_SNP_"
-                            << phd.model_terms[interaction_cox]
-                            << input_var.getSep() << "sebeta_SNP_"
-                            << phd.model_terms[interaction_cox];
-                    //Han Chen
-#if !COXPH
-                    if (input_var.getInverseFilename() == NULL
-                            && !input_var.getAllcov())
-                    {
-                        *outfile[file] << input_var.getSep()
-                                << "cov_SNP_int_SNP_"
-                                << phd.model_terms[interaction_cox];
-                    }
-#endif
-                    //Oct 26, 2009
-                }
-            }
-            *outfile[0] << input_var.getSep() << "loglik\n"; //"chi2_SNP_2df\n";
-            *outfile[1] << input_var.getSep() << "loglik\n"; //"chi2_SNP_A1\n";
-            *outfile[2] << input_var.getSep() << "loglik\n"; //"chi2_SNP_domA1\n";
-            *outfile[3] << input_var.getSep() << "loglik\n"; //"chi2_SNP_recA1\n";
-            *outfile[4] << input_var.getSep() << "loglik\n"; //"chi2_SNP_odom\n";
-
-        }
-        else //Only additive model. Only one output file
-        {
-
-            // open a file for output
-            //_____________________
-            //		if (outfilename != NULL)
-            //	 		{
-            outfile.push_back(
-                    new std::ofstream(
-                            (outfilename_str + "_add.out.txt").c_str()));
-            //			}
-            //		else
-            //	 		{
-            //			outfilename_str="regression_add.out.txt"; outfile.push_back(new std::ofstream((outfilename_str+"_add.out.txt").c_str()));
-            //			}
-
-            if (!outfile[0]->is_open())
-            {
-                std::cerr << "Can not open file for writing: "
-                        << outfilename_str << "\n";
-                exit(1);
-            }
-            //_____________________
-
-            //Header
-            //_____________________
-            *outfile[0] << "name" << input_var.getSep() << "A1"
-                    << input_var.getSep() << "A2" << input_var.getSep()
-                    << "Freq1" << input_var.getSep() << "MAF"
-                    << input_var.getSep() << "Quality" << input_var.getSep()
-                    << "Rsq" << input_var.getSep() << "n" << input_var.getSep()
-                    << "Mean_predictor_allele";
-            if (input_var.getChrom() != "-1")
-                *outfile[0] << input_var.getSep() << "input_var.getChrom()";
-            if (input_var.getMapfilename() != NULL)
-                *outfile[0] << input_var.getSep() << "position";
-            //_____________________
-
-            if (input_var.getAllcov()) //All covariates in output
-            {
-                for (int i = 0; i < phd.n_model_terms - 1; i++)
-                {
-                    *outfile[0] << input_var.getSep() << "beta_"
-                            << phd.model_terms[i] << input_var.getSep()
-                            << "sebeta_" << phd.model_terms[i];
-                }
-                *outfile[0] << input_var.getSep() << "beta_SNP_add"
-                        << input_var.getSep() << "sebeta_SNP_add";
-            }
-            else //Only beta, sebeta for additive model go to output file
-            {
-                *outfile[0] << input_var.getSep() << "beta_SNP_add"
-                        << input_var.getSep() << "sebeta_SNP_add";
-            }
-            if (input_var.getInteraction() != 0)
-            {
-                *outfile[0] << input_var.getSep() << "beta_SNP_"
-                        << phd.model_terms[interaction_cox]
-                        << input_var.getSep() << "sebeta_SNP_"
-                        << phd.model_terms[interaction_cox];
-            }
-
-            if (input_var.getInverseFilename() == NULL)
-            //Han Chen
-            {
-#if !COXPH
-                if (input_var.getInteraction() != 0 && !input_var.getAllcov())
-                {
-                    *outfile[0] << input_var.getSep() << "cov_SNP_int_SNP_"
-                            << phd.model_terms[interaction_cox];
-                }
-#endif
-                *outfile[0] << input_var.getSep() << "loglik"; //"chi2_SNP";
-            }
-            //Oct 26, 2009
-            *outfile[0] << "\n";
-
+            create_header_1(outfile, input_var, phd, interaction_cox);
         }
     }
-    else
+    else //Only additive model. Only one output file
     {
-        if (input_var.getNgpreds() == 2) //All models output. One file per each model
+
+        outfile.push_back(
+                new std::ofstream((outfilename_str + "_add.out.txt").c_str()));
+
+        if (!outfile[0]->is_open())
         {
-            // open a file for output
-            //_____________________
-            //		if (outfilename==NULL)
-            //			{
-            //			outfilename_str="regression";
-            //			}
-
-            open_files_for_output(outfile, outfilename_str);
+            std::cerr << "Can not open file for writing: " << outfilename_str
+                    << "\n";
+            exit(1);
         }
-        else
+        if (input_var.getNohead() != 1)
         {
-            // open a file for output
-            //_____________________
-            //		if (outfilename != NULL)
-            //	 		{
-            outfile.push_back(
-                    new std::ofstream(
-                            (outfilename_str + "_add.out.txt").c_str()));
-            //			}
-            //		else
-            //	 		{
-            //			outfilename_str="regression_add.out.txt"; outfile.push_back(new std::ofstream((outfilename_str+"_add.out.txt").c_str()));
-            //			}
-
-            if (!outfile[0]->is_open())
-            {
-                std::cerr << "Can not open file for writing: "
-                        << outfilename_str << "\n";
-                exit(1);
-            }
-
+            create_header2(outfile, input_var, phd, interaction_cox);
         }
-
     }
 
     //________________________________________________________________
