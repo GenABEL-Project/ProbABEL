@@ -193,8 +193,8 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     {
         infile >> tmp;
     }
-
-    int k = 0;
+    //TODO: remove this unused variable if there is not a reason to keep it
+    //int k = 0;
     int m = 0;
     for (int i = 0; i < npeople; i++)
         if (allmeasured[i] == 1)

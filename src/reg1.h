@@ -33,7 +33,8 @@ extern "C"
 }
 
 mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
-        int ngpreds, bool is_interaction_excluded ,bool iscox = false, int nullmodel = 0)
+        int ngpreds, bool is_interaction_excluded, bool iscox = false,
+        int nullmodel = 0)
 // model 0 = 2 df
 // model 1 = additive 1 df
 // model 2 = dominant 1 df
@@ -74,11 +75,12 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
                     }
                 }
                 //________________________
-                int col_new;
+
                 if (is_interaction_excluded)
                 {
                     mematrix<double> nX_without_interact_phe;
                     nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
+                    int col_new;
                     for (int row = 0; row < nX.nrow; row++)
                     {
                         //Han Chen
@@ -133,9 +135,10 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
                 }
 
                 //________________________
-                int col_new = -1;
+
                 if (is_interaction_excluded)
                 {
+                    int col_new;
                     mematrix<double> nX_without_interact_phe;
                     nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
                     for (int row = 0; row < nX.nrow; row++)
@@ -203,11 +206,12 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
                     * nX[i * nX.ncol + c1]; //Maksim: interaction with SNP
     }
     //Han Chen
-    int col_new = -1;
+
     if (is_interaction_excluded)
     {
         mematrix<double> nX_without_interact_phe;
         nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
+        int col_new;
         for (int row = 0; row < nX.nrow; row++)
         {
             col_new = -1;
@@ -396,8 +400,8 @@ public:
         }
 
         //fprintf(stdout,"estimate: %i %i %i %i\n",rdata.nids,(rdata.X).nrow,(rdata.X).ncol,(rdata.Y).ncol);
-        mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,rdata.is_interaction_excluded,
-                false, nullmodel);
+        mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,
+                rdata.is_interaction_excluded, false, nullmodel);
 
         int length_beta = X.ncol;
         beta.reinit(length_beta, 1);
@@ -636,8 +640,8 @@ public:
         //for (int i=0;i<rdatain.nids;i++) if (rdata.masked_data[i]==0) resid[j++]=residin[i];
 
         mematrix<double> oX = rdata.extract_genotypes();
-        mematrix<double> X = apply_model(oX, model, interaction, ngpreds,rdata.is_interaction_excluded, false,
-                nullmodel);
+        mematrix<double> X = apply_model(oX, model, interaction, ngpreds,
+                rdata.is_interaction_excluded, false, nullmodel);
         beta.reinit(X.ncol, 1);
         sebeta.reinit(X.ncol, 1);
         double N = double(resid.nrow);
@@ -750,8 +754,8 @@ public:
 
         }
 
-        mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,rdata.is_interaction_excluded,
-                false, nullmodel);
+        mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,
+                rdata.is_interaction_excluded, false, nullmodel);
         int length_beta = X.ncol;
         beta.reinit(length_beta, 1);
         sebeta.reinit(length_beta, 1);
@@ -800,9 +804,8 @@ public:
          fprintf(stdout,"tXInv %f %f %f\n",tX.get(0,0),tX.get(1,0),tX.get(2,0));
          if (X.ncol==4) fprintf(stdout,"X[4] %f\n",tX.get(3,0));
          */
-
-        double N;
-
+        //TODO: remove this unused variable if there is not a reason to keep it
+        //double N;
         niter = 0;
         double delta = 1.;
         double prevlik = 0.;
@@ -832,7 +835,7 @@ public:
                 tmp.print();
             }
             mematrix<double> tXWX = tmp * (X);
-            N = tXWX.get(0, 0);
+            //N = tXWX.get(0, 0);
 
             if (verbose)
             {
@@ -965,8 +968,8 @@ public:
             mematrix<double> invvarmatrix, int nullmodel = 0)
     {
         mematrix<double> oX = rdata.extract_genotypes();
-        mematrix<double> X = apply_model(oX, model, interaction, ngpreds,rdata.is_interaction_excluded, false,
-                nullmodel);
+        mematrix<double> X = apply_model(oX, model, interaction, ngpreds,
+                rdata.is_interaction_excluded, false, nullmodel);
         beta.reinit(X.ncol, 1);
         sebeta.reinit(X.ncol, 1);
         double N = double(resid.nrow);
