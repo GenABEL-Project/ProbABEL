@@ -5,6 +5,9 @@
  *      Author: mkooyman
  */
 #include <string>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
 void report_error(const char * format, ...)
 {
     va_list args;
