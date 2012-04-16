@@ -69,9 +69,15 @@ public:
 
         iscox = false;
         isFVF = 0;
-        noutcomes = 1;
+
         skipd = 2;
         allcov = 0;
+#if COXPH
+    int noutcomes = 2;
+    iscox=true;
+#else
+    int noutcomes = 1;
+#endif
     }
     void set_variables(int, char *[]);
     char* getPhefilename() const;
@@ -84,7 +90,7 @@ public:
     int getIsFvf() const;
     char* getMapfilename() const;
     char* getMlinfofilename() const;
-    const int* getNeco() const;
+
     int getNgpreds() const;
     int getNohead() const;
     int getNoutcomes() const;

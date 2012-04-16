@@ -19,4 +19,3 @@ void report_error(const char * format, ...)
     printf("ERROR: %s\n", buffer);
     exit(EXIT_FAILURE);
 }
-

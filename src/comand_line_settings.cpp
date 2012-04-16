@@ -68,10 +68,6 @@ char* cmdvars::getMlinfofilename() const
     return mlinfofilename;
 }
 
-const int* cmdvars::getNeco() const
-{
-    return neco;
-}
 
 int cmdvars::getNgpreds() const
 {
@@ -334,4 +330,11 @@ void cmdvars::printinfo()
     {
         outfilename = (char *) string("regression").c_str();
     }
+#if COXPH
+    if (score)
+    {
+        fprintf(stderr,"\n\nOption --score is implemented for linear and logistic models only\n");
+        exit(1);
+    }
+#endif
 }

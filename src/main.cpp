@@ -278,6 +278,18 @@ int main(int argc, char * argv[])
      if(input_var.getInverseFilename()!= NULL) {std::cerr<<"ERROR: mmscore is forbidden for logistic regression\n";exit(1);}
      #endif
      */
+#if COXPH
+    if(inverse_filename != NULL)
+    {
+        std::cerr<<"ERROR: mmscore is forbidden for cox regression\n";
+        exit(1);
+    }
+    if (robust)
+    {
+        std::cerr<<"ERROR: robust standard errors not implemented for Cox regression\n";
+        exit(1);
+    }
+#endif
 
     std::cout << "Reading data ...";
     if (input_var.getInverseFilename() != NULL)
@@ -308,15 +320,36 @@ int main(int argc, char * argv[])
     // estimate null model
     //TODO: remove this unused variable if there is not a reason to keep it
     //double null_loglik = 0.;
+#if COXPH
+    coxph_data nrgd=coxph_data(phd,gtd,-1);
+#else
+    regdata nrgd = regdata(phd, gtd, -1);
+#endif
+
+
     regdata nrgd = regdata(phd, gtd, -1, input_var.isIsInteractionExcluded());
     std::cout << " loaded null data ...";
-    linear_reg nrd = linear_reg(nrgd);
-    nrd.estimate(nrgd, 0, CHOLTOL, 0, input_var.getInteraction(),
-            input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
-    //null_loglik = nrd.loglik;
+#if LOGISTIC
+    logistic_reg nrd=logistic_reg(nrgd);
+    nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
+#elif LINEAR
+
+    linear_reg nrd=linear_reg(nrgd);
+
+    nrd.estimate(nrgd,0,CHOLTOL,0, input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
+#elif COXPH
+    coxph_reg nrd(nrgd);
+
+    nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, input_var.getInteraction(), input_var.getNgpreds(), 1);
+#endif
+
     std::cout << " estimated null model ...";
     // end null
-    regdata rgd(phd, gtd, 0, input_var.isIsInteractionExcluded());
+#if COXPH
+    coxph_data rgd(phd,gtd,0);
+#else
+    regdata rgd(phd, gtd, 0,input_var.isIsInteractionExcluded());
+#endif
 
     std::cout << " formed regression object ...";
 
