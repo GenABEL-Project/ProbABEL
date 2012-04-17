@@ -23,7 +23,7 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     char line[BFS];
     char tmp[100];
     noutcomes = noutc;
-    is_interaction_excluded=false;
+    is_interaction_excluded = false;
 
     int nphenocols = 0;
     int savenpeople = npeople;
@@ -172,15 +172,14 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     }
     infile.close();
     //		printf("npeople = %d, no. all measured = %d\n",nids_all,nids);
-
     // allocate objects
     int ntmpcov = 1;
     if (ncov > 0)
         ntmpcov = ncov;
     idnames = new std::string[nids];
+
     X.reinit(nids, ntmpcov);
     Y.reinit(nids, noutcomes);
-
     // second pass -- read the data
     infile.open(fname);
     if (!infile)

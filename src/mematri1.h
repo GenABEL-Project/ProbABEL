@@ -179,12 +179,12 @@ void mematrix<DT>::reinit(int nr, int nc)
         delete[] data;
     if (nr <= 0)
     {
-        fprintf(stderr, "mematrix(): nr <= 0\n");
+        fprintf(stderr, "mematrix(): number of rows smaller then 1\n");
         exit(1);
     }
     if (nc <= 0)
     {
-        fprintf(stderr, "mematrix(): nc <= 0\n");
+        fprintf(stderr, "mematrix(): number of columns smaller then 1\n");
         exit(1);
     }
     nrow = nr;

@@ -35,7 +35,6 @@
 #include <stdio.h>
 #include <vector>
 
-
 #include "mematrix.h"
 #include "mematri1.h"
 #include "data.h"
@@ -96,7 +95,6 @@ int create_phenoytype(phedata& phd, cmdvars& input_var)
     phd.setphedata(input_var.getPhefilename(), input_var.getNoutcomes(),
             input_var.getNpeople(), input_var.getInteraction(),
             input_var.isIscox());
-
     int interaction_cox = input_var.getInteraction();
 #if COXPH
     interaction_cox--;
@@ -108,6 +106,7 @@ int create_phenoytype(phedata& phd, cmdvars& input_var)
                 << input_var.getInteraction() << ") \n";
         exit(1);
     }
+
     return interaction_cox;
 }
 
@@ -247,9 +246,9 @@ void create_header2(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
 
 int main(int argc, char * argv[])
 {
-
     cmdvars input_var;
     input_var.set_variables(argc, argv);
+
     input_var.printinfo();
     //	if (allcov && ngpreds>1)
     //	{
@@ -260,6 +259,7 @@ int main(int argc, char * argv[])
     int nsnps = mli.nsnps;
     phedata phd;
     int interaction_cox = create_phenoytype(phd, input_var);
+
     //interaction--;
     //	if(input_var.getInverseFilename()!= NULL && phd.ncov > 1)
     //		{
@@ -278,18 +278,6 @@ int main(int argc, char * argv[])
      if(input_var.getInverseFilename()!= NULL) {std::cerr<<"ERROR: mmscore is forbidden for logistic regression\n";exit(1);}
      #endif
      */
-#if COXPH
-    if(inverse_filename != NULL)
-    {
-        std::cerr<<"ERROR: mmscore is forbidden for cox regression\n";
-        exit(1);
-    }
-    if (robust)
-    {
-        std::cerr<<"ERROR: robust standard errors not implemented for Cox regression\n";
-        exit(1);
-    }
-#endif
 
     std::cout << "Reading data ...";
     if (input_var.getInverseFilename() != NULL)
@@ -323,20 +311,19 @@ int main(int argc, char * argv[])
 #if COXPH
     coxph_data nrgd=coxph_data(phd,gtd,-1);
 #else
-    regdata nrgd = regdata(phd, gtd, -1);
+    regdata nrgd = regdata(phd, gtd, -1, input_var.isIsInteractionExcluded());
 #endif
 
-
-    regdata nrgd = regdata(phd, gtd, -1, input_var.isIsInteractionExcluded());
     std::cout << " loaded null data ...";
 #if LOGISTIC
     logistic_reg nrd=logistic_reg(nrgd);
     nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
 #elif LINEAR
 
-    linear_reg nrd=linear_reg(nrgd);
+    linear_reg nrd = linear_reg(nrgd);
 
-    nrd.estimate(nrgd,0,CHOLTOL,0, input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
+    nrd.estimate(nrgd, 0, CHOLTOL, 0, input_var.getInteraction(),
+            input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
 #elif COXPH
     coxph_reg nrd(nrgd);
 
@@ -348,7 +335,7 @@ int main(int argc, char * argv[])
 #if COXPH
     coxph_data rgd(phd,gtd,0);
 #else
-    regdata rgd(phd, gtd, 0,input_var.isIsInteractionExcluded());
+    regdata rgd(phd, gtd, 0, input_var.isIsInteractionExcluded());
 #endif
 
     std::cout << " formed regression object ...";
@@ -656,6 +643,7 @@ int main(int argc, char * argv[])
             }
 #endif
             *outfile[0] << chi2[0]->str() << "\n";
+
             *outfile[1] << beta_sebeta[1]->str() << input_var.getSep();
 #if !COXPH
             if (!input_var.getAllcov() && input_var.getInteraction() != 0)
@@ -664,6 +652,7 @@ int main(int argc, char * argv[])
             }
 #endif
             *outfile[1] << chi2[1]->str() << "\n";
+
             *outfile[2] << beta_sebeta[2]->str() << input_var.getSep();
 #if !COXPH
             if (!input_var.getAllcov() && input_var.getInteraction() != 0)
@@ -672,6 +661,7 @@ int main(int argc, char * argv[])
             }
 #endif
             *outfile[2] << chi2[2]->str() << "\n";
+
             *outfile[3] << beta_sebeta[3]->str() << input_var.getSep();
 #if !COXPH
             if (!input_var.getAllcov() && input_var.getInteraction() != 0)
@@ -680,6 +670,7 @@ int main(int argc, char * argv[])
             }
 #endif
             *outfile[3] << chi2[3]->str() << "\n";
+
             *outfile[4] << beta_sebeta[4]->str() << input_var.getSep();
 #if !COXPH
             if (!input_var.getAllcov() && input_var.getInteraction() != 0)

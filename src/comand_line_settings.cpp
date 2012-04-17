@@ -336,5 +336,17 @@ void cmdvars::printinfo()
         fprintf(stderr,"\n\nOption --score is implemented for linear and logistic models only\n");
         exit(1);
     }
+
+    if(inverse_filename != NULL)
+    {
+        std::cerr<<"ERROR: mmscore is forbidden for cox regression\n";
+        exit(1);
+    }
+    if (robust)
+    {
+        std::cerr<<"ERROR: robust standard errors not implemented for Cox regression\n";
+        exit(1);
+    }
 #endif
+
 }

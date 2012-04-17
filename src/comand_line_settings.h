@@ -73,11 +73,12 @@ public:
         skipd = 2;
         allcov = 0;
 #if COXPH
-    int noutcomes = 2;
-    iscox=true;
+        noutcomes = 2;
+        iscox=true;
 #else
-    int noutcomes = 1;
+        noutcomes = 1;
 #endif
+
     }
     void set_variables(int, char *[]);
     char* getPhefilename() const;

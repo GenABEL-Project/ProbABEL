@@ -36,7 +36,8 @@ regdata::regdata(const regdata &obj)
         masked_data[i] = 0;
     }
 }
-regdata::regdata(phedata &phed, gendata &gend, int snpnum,bool ext_is_interaction_excluded)
+regdata::regdata(phedata &phed, gendata &gend, int snpnum,
+        bool ext_is_interaction_excluded)
 {
     nids = gend.nids;
     masked_data = new unsigned short int[nids];
@@ -76,7 +77,7 @@ regdata::regdata(phedata &phed, gendata &gend, int snpnum,bool ext_is_interactio
     //          for (int i=0;i<nids;i++)
     //              for (int j=0;j<ngpreds;j++)
     //                  X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+j));
-    is_interaction_excluded=ext_is_interaction_excluded;
+    is_interaction_excluded = ext_is_interaction_excluded;
 
 }
 void regdata::update_snp(gendata &gend, int snpnum)
