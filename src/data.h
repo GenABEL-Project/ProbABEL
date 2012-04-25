@@ -30,9 +30,6 @@ void error(const char * format, ...)
 
 unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
 {
-    int ncov = nphenocols - 2;
-    int nids_all = npeople;
-
     // first pass -- find unmeasured people
     std::ifstream infile(fname);
     if (!infile)
@@ -258,7 +255,6 @@ public:
 	    infile >> tmp;
 	}
 
-	int k =0;
 	int m =0;
 	for (int i = 0; i<npeople; i++)
 	    if (allmeasured[i]==1)
@@ -674,7 +670,7 @@ public:
 	    //			X.put(1.,i,0);
 	    stime[i] = (phed.Y).get(i,0);
 	    sstat[i] = int((phed.Y).get(i,1));
-	    if (sstat[i] != 1 & sstat[i]!=0)
+	    if (sstat[i] != 1 && sstat[i]!=0)
 	    {
 		std::cerr << "coxph_data: status not 0/1 (right order: id, fuptime, status ...)"
 			  << endl;
@@ -729,7 +725,7 @@ public:
 		    }
 	    if (passed != 1)
 	    {
-	    std:cerr << "cannot recover element " << i << endl;
+		std::cerr << "cannot recover element " << i << endl;
 		exit(1);
 	    }
 	}
