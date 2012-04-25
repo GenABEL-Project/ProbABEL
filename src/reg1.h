@@ -934,20 +934,23 @@ public:
 	for (int i=0;i<X.nrow;i++) beta[i]=0.;
 	mematrix<double> u(X.nrow,1);
 	mematrix<double> imat(X.nrow,X.nrow);
-	double work[X.ncol*2+2*(X.nrow)*(X.nrow)+3*(X.nrow)];
+	double work[X.ncol*2 + 2*(X.nrow)*(X.nrow) + 3*(X.nrow)];
 	double loglik_int[2];
 	int flag;
 	double sctest=1.0;
 
-	coxfit2(&maxiter,&cdata.nids,&X.nrow,
-		cdata.stime.data,cdata.sstat.data,X.data,
-		newoffset.data,cdata.weights.data,cdata.strata.data,
-		means.data,beta.data,u.data,
-		imat.data,loglik_int,&flag,
-		work,&eps,&tol_chol,
+	coxfit2(&maxiter, &cdata.nids, &X.nrow,
+		cdata.stime.data, cdata.sstat.data, X.data,
+		newoffset.data, cdata.weights.data, cdata.strata.data,
+		means.data, beta.data, u.data,
+		imat.data, loglik_int, &flag,
+		work, &eps, &tol_chol,
 		&sctest);
-	for (int i=0;i<X.nrow;i++) sebeta[i]=sqrt(imat.get(i,i));
+	for (int i=0; i<X.nrow; i++)
+	{
+	    sebeta[i] = sqrt(imat.get(i,i));
+	}
 	loglik = loglik_int[1];
-	niter = maxiter;
+	niter  = maxiter;
     }
 };
