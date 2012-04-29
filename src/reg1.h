@@ -22,7 +22,8 @@
 
 #include <cmath>
 
-mematrix<double> apply_model(mematrix<double> &X, int model, int interaction, int ngpreds, bool iscox=false, int nullmodel = 0)
+mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
+		int ngpreds, bool iscox=false, int nullmodel = 0)
 // model 0 = 2 df
 // model 1 = additive 1 df
 // model 2 = dominant 1 df
@@ -159,20 +160,20 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction, in
 		{
 		nX.reinit(X.nrow,(X.ncol-1));
 		}
-	int c1 = X.ncol-2;
-	int c2 = X.ncol-1;
+	int c1 = X.ncol-2; // column with Prob(A1A2)
+	int c2 = X.ncol-1; // column with Prob(A1A1). Note the order is swapped cf the file!
 	for (int i=0;i<X.nrow;i++)
 	for (int j=0;j<(X.ncol-2);j++)
 		nX[i*nX.ncol+j] = X[i*X.ncol+j];
 	for (int i=0;i<nX.nrow;i++)
 		{
-		if (model==1)
+		if (model==1) // additive
 			nX[i*nX.ncol+c1] = X[i*X.ncol+c1] + 2.*X[i*X.ncol+c2];
-		else if (model==2)
+		else if (model==2) // dominant
 			nX[i*nX.ncol+c1] = X[i*X.ncol+c1] + X[i*X.ncol+c2];
-		else if (model==3)
+		else if (model==3) // recessive
 			nX[i*nX.ncol+c1] = X[i*X.ncol+c2];
-		else if (model==4)
+		else if (model==4) // over-dominant
 			nX[i*nX.ncol+c1] = X[i*X.ncol+c1];
 		if(interaction != 0)	
 		nX[i*nX.ncol+c2] = X[i*nX.ncol+interaction] * nX[i*nX.ncol+c1];//Maksim: interaction with SNP

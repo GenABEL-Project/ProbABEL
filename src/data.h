@@ -362,7 +362,7 @@ public:
 	{
 		for (int i=0;i<nids;i++) 
 		for (int j=0;j<ngpreds;j++) 
-			X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov+1-j-1));
+			X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-j));
 //			X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+(ngpreds-j+1)));
 //			X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+j));
 	}
@@ -491,10 +491,17 @@ public:
 	}
 	void update_snp(gendata &gend, int snpnum)
 	{
-		// note this sorts by "order"!!!
-		for (int i=0;i<nids;i++) 
-		for (int j=0;j<ngpreds;j++) 
-			X.put((gend.G).get(i,(snpnum*ngpreds+j)),(ncov-ngpreds+j),order[i]);
+		/** note this sorts by "order"!!!
+		 * Here we deal with transposed X, hence last two arguments are swapped
+		 * compared to the other 'update_snp'
+		 * Also, the starting column-1 is not necessary for cox X therefore
+		 * 'ncov-j' changes to 'ncov-j-1'
+		**/
+			for (int i=0;i<nids;i++)
+				for (int j=0;j<ngpreds;j++)
+					X.put((gend.G).get(i,(snpnum*ngpreds+j)),(ncov-j-1),order[i]);
+			// OLD VARIANT
+			//			X.put((gend.G).get(i,(snpnum*ngpreds+j)),(ncov-ngpreds+j),order[i]);
 	}
 	~coxph_data()
 	{
