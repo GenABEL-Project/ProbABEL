@@ -36,7 +36,7 @@ clean:
 	rm -f $(BINDIR)/* $(SRCDIR)/*~ $(SRCDIR)/*.o $(DOCDIR)/*~ *.zip *.tar.gz
 
 linux_distrib: clean
-	cd .. ; tar -czvf ProbABEL_$(VERSION).tar.gz ProbABEL
+	cd .. ; tar --exclude-vcs -czvf ProbABEL_$(VERSION).tar.gz ProbABEL
 
 win_distrib: all
 	cd .. ; zip -r9 ProbABEL_$(VERSION)_win.zip ProbABEL
