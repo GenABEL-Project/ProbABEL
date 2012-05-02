@@ -1,12 +1,13 @@
 
-VERSION = 0.1-0
+VERSION = 0.1-3-fixcox
 SRCDIR = src
 BINDIR = bin
 DOCDIR = doc
 LINREG = $(BINDIR)/palinear
 LOGREG = $(BINDIR)/palogist
 COXREG = $(BINDIR)/pacoxph
-EXECUTABLES = $(LOGREG) $(LINREG) $(COXREG)
+EXECUTABLES = $(COXREG)
+## in this tree only build pacoxph. Leave these out:  $(LOGREG) $(LINREG)
 
 REGFILES =  $(SRCDIR)/data.h $(SRCDIR)/mematrix.h $(SRCDIR)/reg1.h $(SRCDIR)/usage.h $(SRCDIR)/main.cpp
 COXBASE = $(SRCDIR)/chinv2 $(SRCDIR)/cholesky2 $(SRCDIR)/chsolve2 $(SRCDIR)/dmatrix $(SRCDIR)/coxfit2
@@ -22,13 +23,13 @@ all: $(EXECUTABLES)
 	cp $(SRCDIR)/probabel.pl $(BINDIR)/probabel.pl_example
 	cp $(SRCDIR)/probabel_config.cfg $(BINDIR)/probabel_config.cfg_example
 
-$(LINREG): $(REGFILES) 
+$(LINREG): $(REGFILES)
 	$(CPP) $(CFLAGS) -DLINEAR $(SRCDIR)/main.cpp -o $(LINREG)
 
-$(LOGREG): $(REGFILES) 
+$(LOGREG): $(REGFILES)
 	$(CPP) $(CFLAGS) -DLOGISTIC $(SRCDIR)/main.cpp -o $(LOGREG)
 
-$(COXREG): $(COXSRC) $(REGFILES) 
+$(COXREG): $(COXSRC) $(REGFILES)
 	$(CPP) $(CFLAGS) -DCOXPH $(COXSRC) $(SRCDIR)/main.cpp -o $(COXREG)
 
 clean:
@@ -41,4 +42,3 @@ win_distrib: all
 	cd .. ; zip -r9 ProbABEL_$(VERSION)_win.zip ProbABEL
 
 distrib: linux_distrib clean win_distrib clean
-
