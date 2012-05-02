@@ -16,7 +16,7 @@ table(dose[,1] == pheno[,1])
 
 # load genetic PROB data
 prob <- read.table("../test.mlprob",head=FALSE,string=FALSE)
-# remove "1->" from the names of dose-IDs
+# remove "1->" from the names of prob-IDs
 idNames <- prob[,1]
 idNames <- sub("[0-9]+->","",idNames)
 prob[,1] <- idNames
@@ -24,7 +24,7 @@ prob[,1] <- idNames
 table(prob[,1] == pheno[,1])
 
 # check consistency DOSE <-> PROB
-doseFromProb <- matrix(NA,ncol=dim(dose)[2],nrow=dim(dose)[1])
+doseFromProb <- matrix(NA, ncol=dim(dose)[2], nrow=dim(dose)[1])
 for (i in 3:dim(dose)[2]) {
 	indexHom <- 3 + ( i - 3 ) * 2
 	indexHet <- indexHom + 1
