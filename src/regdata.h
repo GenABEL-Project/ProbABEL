@@ -8,8 +8,13 @@
 #ifndef REGDATA_H_
 #define REGDATA_H_
 
+#if EIGEN
+#include "eigen_mematrix.h"
+#include "eigen_mematri1.h"
+#else
 #include "mematrix.h"
 #include "mematri1.h"
+#endif
 #include "gendata.h"
 #include "phedata.h"
 

@@ -385,6 +385,7 @@ mematrix<DT> reorder(mematrix<DT> &M, mematrix<int> order)
 template<class DT>
 mematrix<DT> productMatrDiag(mematrix<DT> &M, mematrix<DT> &D)
 {
+    //multiply all rows of M by value of first row of D
     if (M.ncol != D.nrow)
     {
         fprintf(stderr, "productMatrDiag: wrong dimenstions");

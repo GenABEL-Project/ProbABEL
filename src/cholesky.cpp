@@ -4,8 +4,14 @@
  *  Created on: Mar 15, 2012
  *      Author: mkooyman
  */
+#if EIGEN
+#include "eigen_mematrix.h"
+#include "eigen_mematri1.h"
+#else
 #include "mematrix.h"
 #include "mematri1.h"
+#endif
+
 #include <string>
 #include <cstdarg>
 #include <cstdio>

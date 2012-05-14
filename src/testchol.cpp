@@ -5,8 +5,13 @@
 #include <iomanip>
 #include <stdio.h>
 #include <getopt.h>
+#if EIGEN
 #include "mematrix.h"
 #include "mematri1.h"
+#else
+#include "eigen_mematrix.h"
+#include "eigen_mematri1.h"
+#endif
 #include "data.h"
 #include "reg1.h"
 #include "usage.h"

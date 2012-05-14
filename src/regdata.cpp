@@ -28,6 +28,7 @@ regdata::regdata(const regdata &obj)
     ncov = obj.ncov;
     ngpreds = obj.ngpreds;
     noutcomes = obj.noutcomes;
+    is_interaction_excluded=obj.is_interaction_excluded;
     X = obj.X;
     Y = obj.Y;
     masked_data = new unsigned short int[nids];
@@ -115,6 +116,7 @@ regdata regdata::get_unmasked_data()
     to.ncov = ncov;
     to.ngpreds = ngpreds;
     to.noutcomes = noutcomes;
+    to.is_interaction_excluded=is_interaction_excluded;
     int dim2Y = Y.ncol;
     int dim2X = X.ncol;
     (to.X).reinit(to.nids, dim2X);

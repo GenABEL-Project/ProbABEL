@@ -9,7 +9,12 @@
 #define GENDATA_H_
 #include <string>
 #include "fvlib/FileVector.h"
+
+#if EIGEN
+#include "eigen_mematrix.h"
+#else
 #include "mematrix.h"
+#endif
 
 class gendata
 {

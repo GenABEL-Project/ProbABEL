@@ -35,8 +35,13 @@
 #include <stdio.h>
 #include <vector>
 
+#if EIGEN
+#include "eigen_mematrix.h"
+#include "eigen_mematri1.h"
+#else
 #include "mematrix.h"
 #include "mematri1.h"
+#endif
 #include "data.h"
 #include "reg1.h"
 #include "comand_line_settings.h"
@@ -133,7 +138,7 @@ void create_start_of_header(std::vector<std::ofstream*>& outfile,
                 << input_var.getSep() << "n" << input_var.getSep()
                 << "Mean_predictor_allele";
         if (input_var.getChrom() != "-1")
-            (*outfile[i]) << input_var.getSep() << "input_var.getChrom()";
+            (*outfile[i]) << input_var.getSep() << "chrom";
         if (input_var.getMapfilename() != NULL)
             (*outfile[i]) << input_var.getSep() << "position";
     }
@@ -321,7 +326,9 @@ int main(int argc, char * argv[])
 #elif LINEAR
 
     linear_reg nrd = linear_reg(nrgd);
-
+#if DEBUG
+    std::cout << "[DEBUG] linear_reg nrd = linear_reg(nrgd); DONE.";
+#endif
     nrd.estimate(nrgd, 0, CHOLTOL, 0, input_var.getInteraction(),
             input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
 #elif COXPH
@@ -707,20 +714,80 @@ int main(int argc, char * argv[])
                 rd.estimate(rgd,0,MAXITER,EPS,CHOLTOL,model, input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix, input_var.getRobust());
 #elif LINEAR
                 //cout << (rgd.get_unmasked_data()).nids << " 1\n";
+#if DEBUG
+                rgd.X.print();
+                rgd.Y.print();
+#endif
                 linear_reg rd(rgd);
+#if DEBUG
+                rgd.X.print();
+                rgd.Y.print();
+#endif
                 //cout << (rgd.get_unmasked_data()).nids << " 2\n";
                 if (input_var.getScore())
+                {
+#if DEBUG
+                    cout << "input_var.getScore/n";
+                    nrd.residuals.print();
+                    cout << CHOLTOL << " <-CHOLTOL\n";
+                    cout << model << " <-model\n";
+                    cout << input_var.getInteraction()
+                            << " <-input_var.getInteraction()\n";
+                    cout << input_var.getNgpreds()
+                            << " <-input_var.getNgpreds()\n";
+                    invvarmatrix.print();
+#endif
                     rd.score(nrd.residuals, rgd, 0, CHOLTOL, model,
                             input_var.getInteraction(), input_var.getNgpreds(),
                             invvarmatrix);
+#if DEBUG
+                    rd.beta.print();
+                    cout << rd.chi2_score << " <-chi2_scoren\n";
+                    rd.covariance.print();
+                    rd.residuals.print();
+                    rd.sebeta.print();
+                    cout << rd.loglik << " <-logliken\n";
+                    cout << rd.sigma2 << " <-sigma2\n";
+#endif
+                }
                 else
                 {
                     //					if(input_var.getInverseFilename()== NULL)
                     //						{
                     //cout << (rgd.get_unmasked_data()).nids << " 3\n";
+#if DEBUG
+                    cout << "rd.estimate\n";
+                    cout << CHOLTOL << " <-CHOLTOL\n";
+                    cout << model << " <-model\n";
+                    cout << input_var.getInteraction()
+                            << " <-input_var.getInteraction()\n";
+                    cout << input_var.getNgpreds()
+                            << " <-input_var.getNgpreds()\n";
+                    cout << input_var.getRobust()
+                            << " <-input_var.getRobust()\n";
+                    cout << "start invarmatrix\n";
+                    invvarmatrix.print();
+                    cout << "end invarmatrix\n";
+                    cout << rgd.is_interaction_excluded
+                            << " <-rgd.is_interaction_excluded\n";
+#endif
                     rd.estimate(rgd, 0, CHOLTOL, model,
                             input_var.getInteraction(), input_var.getNgpreds(),
                             invvarmatrix, input_var.getRobust());
+
+#if DEBUG
+                    cout << "rd.beta\n";
+                    rd.beta.print();
+                    cout << rd.chi2_score << " <-chi2_scoren\n";
+                    cout << "rd.covariance\n";
+                    rd.covariance.print();
+                    cout << "rd.residuals\n";
+                    rd.residuals.print();
+                    cout << "rd.sebeta\n";
+                    rd.sebeta.print();
+                    cout << rd.loglik << " <-logliken\n";
+                    cout << rd.sigma2 << " <-sigma2\n";
+#endif
                     //cout << (rgd.get_unmasked_data()).nids << " 4\n";
                     //						}
                     //					else
@@ -734,13 +801,22 @@ int main(int argc, char * argv[])
 #endif
 
                 if (!input_var.getAllcov() && input_var.getInteraction() == 0)
+                {
                     start_pos = rd.beta.nrow - 1;
+                }
                 else if (!input_var.getAllcov()
                         && input_var.getInteraction() != 0)
+                {
                     start_pos = rd.beta.nrow - 2;
+                }
                 else
+                {
                     start_pos = 0;
 
+                }
+#if DEBUG
+                cout << " start_pos;" << start_pos << "\n";
+#endif
                 for (int pos = start_pos; pos < rd.beta.nrow; pos++)
                 {
                     *beta_sebeta[0] << input_var.getSep() << rd.beta[pos]
@@ -764,6 +840,9 @@ int main(int argc, char * argv[])
                 //________________________________
                 if (input_var.getInverseFilename() == NULL)
                 {
+#if DEBUG
+                    cout << " inverse_filename == NULL" << "\n";
+#endif
                     if (input_var.getScore() == 0)
                     {
                         *chi2[0] << rd.loglik; //2.*(rd.loglik-null_loglik);
@@ -831,6 +910,9 @@ int main(int argc, char * argv[])
             else
             {
                 *outfile[0] << beta_sebeta[0]->str() << "\n";
+#if DEBUG
+                cout << "Se beta" << beta_sebeta[0] << "\n";
+#endif                
             }
         }
         //clean chi2

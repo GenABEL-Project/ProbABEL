@@ -8,7 +8,11 @@
 #ifndef PHEDATA_H_
 #define PHEDATA_H_
 
+#if EIGEN
+#include "eigen_mematrix.h"
+#else
 #include "mematrix.h"
+#endif
 
 class phedata
 {

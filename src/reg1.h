@@ -40,7 +40,20 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
 // model 2 = dominant 1 df
 // model 3 = recessive 1 df
 // model 4 = over-dominant 1 df
+
 {
+#if DEBUG
+
+    X.print();
+
+    std::cout << "apply_model():model" << model << std::endl;
+    std::cout << "apply_model():interaction" << interaction << std::endl;
+    std::cout << "apply_model():ngpreds" << ngpreds << std::endl;
+    std::cout << "apply_model():is_interaction_excluded"
+            << is_interaction_excluded << std::endl;
+    std::cout << "apply_model():iscox" << iscox << std::endl;
+    std::cout << "apply_model():nullmodel" << nullmodel << std::endl;
+#endif
     if (model == 0)
     {
         if (interaction != 0 && !nullmodel)
@@ -235,6 +248,9 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
         return nX_without_interact_phe;
     } //interaction_only, model!=0, ngpreds==2
       //Oct 26, 2009
+#if DEBUG
+    nX.print();
+#endif
     return nX;
 }
 
@@ -378,7 +394,12 @@ public:
         //suda ineraction parameter
         // model should come here
         regdata rdata = rdatain.get_unmasked_data();
+        if (verbose)
+        {
+            cout << rdata.is_interaction_excluded
+                    << " <-irdata.is_interaction_excluded\n";
 
+        }
         mematrix<double> invvarmatrix;
         if (invvarmatrixin.nrow != 0 && invvarmatrixin.ncol != 0)
         {
@@ -398,11 +419,26 @@ public:
                 }
 
         }
+        if (verbose)
+        {
+            printf("invvarmatrix:\n");
+            invvarmatrix.print();
+        }
+        if (verbose)
+        {
+            printf("rdata.X:\n");
+            rdata.X.print();
+        }
 
         //fprintf(stdout,"estimate: %i %i %i %i\n",rdata.nids,(rdata.X).nrow,(rdata.X).ncol,(rdata.Y).ncol);
         mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,
                 rdata.is_interaction_excluded, false, nullmodel);
 
+        if (verbose)
+        {
+            printf("X:\n");
+            X.print();
+        }
         int length_beta = X.ncol;
         beta.reinit(length_beta, 1);
         sebeta.reinit(length_beta, 1);
@@ -421,13 +457,18 @@ public:
         }
         //Oct 26, 2009
         mematrix<double> tX = transpose(X);
-
+        
         if (invvarmatrix.nrow != 0 && invvarmatrix.ncol != 0)
         {
             tX = tX * invvarmatrix;
             //!check if quicker
             //tX = productXbySymM(tX,invvarmatrix);
             //			X = invvarmatrix*X; std::cout<<"new tX.nrow="<<X.nrow<<" tX.ncol="<<X.ncol<<"\n";
+        }
+        if (verbose)
+        {
+            printf("tX:\n");
+            tX.print();
         }
 
         mematrix<double> tXX = tX * X;
@@ -476,8 +517,15 @@ public:
         mematrix<double> ttX = transpose(tX);
         mematrix<double> sigma2_matrix = rdata.Y;
         mematrix<double> sigma2_matrix1 = ttX * beta;
-        sigma2_matrix = sigma2_matrix - sigma2_matrix1;
+//        printf("sigma2_matrix");
+//        sigma2_matrix.print();
+//
+//        printf("sigma2_matrix1");
+//        sigma2_matrix1.print();
 
+        sigma2_matrix = sigma2_matrix - sigma2_matrix1;
+//        printf("sigma2_matrix");
+//        sigma2_matrix.print();
         static double val;
 
         //	std::cout<<"sigma2_matrix.nrow="<<sigma2_matrix.nrow<<"sigma2_matrix.ncol"<<sigma2_matrix.ncol<<"\n";
@@ -485,7 +533,9 @@ public:
         for (int i = 0; i < sigma2_matrix.nrow; i++)
         {
             val = sigma2_matrix.get(i, 0);
+//            printf("val = %f\n", val);
             sigma2 += val * val;
+//            printf("sigma2+= = %f\n", sigma2);
         }
 
         double sigma2_internal = sigma2 / (N - double(length_beta));
@@ -505,6 +555,7 @@ public:
 
         //		replaced for ML
         //		sigma2_internal	= sigma2/(N - double(length_beta) - 1);
+//        printf("sigma2/=N = %f\n", sigma2);
         sigma2 /= N;
 
         //	std::cout<<"N="<<N<<", length_beta="<<length_beta<<"\n";
@@ -573,6 +624,7 @@ public:
         {
             if (robust)
             {
+//                cout << "estimate :robust\n";
                 double value = sqrt(robust_sigma2.get(i, i));
                 sebeta.put(value, i, 0);
                 //Han Chen
@@ -597,6 +649,7 @@ public:
             }
             else
             {
+//                cout << "estimate :non-robust\n";
                 double value = sqrt(sigma2_internal * tXX_i.get(i, i));
                 sebeta.put(value, i, 0);
                 //Han Chen
@@ -1058,11 +1111,11 @@ public:
         double loglik_int[2];
         int flag;
         double sctest = 1.0;
-
-        coxfit2(&maxiter, &cdata.nids, &X.nrow, cdata.stime.data,
-                cdata.sstat.data, X.data, newoffset.data, cdata.weights.data,
-                cdata.strata.data, means.data, beta.data, u.data, imat.data,
-                loglik_int, &flag, work, &eps, &tol_chol, &sctest);
+//TODO(maarten): remove the following comment signs. This is done for testing purpose only EVIL!
+//        coxfit2(&maxiter, &cdata.nids, &X.nrow, cdata.stime.data,
+//                cdata.sstat.data, X.data, newoffset.data, cdata.weights.data,
+//                cdata.strata.data, means.data, beta.data, u.data, imat.data,
+//                loglik_int, &flag, work, &eps, &tol_chol, &sctest);
         for (int i = 0; i < X.nrow; i++)
             sebeta[i] = sqrt(imat.get(i, i));
         loglik = loglik_int[1];

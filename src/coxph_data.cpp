@@ -81,10 +81,10 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
         //          X.put(1.,i,0);
         stime[i] = (phed.Y).get(i, 0);
         sstat[i] = int((phed.Y).get(i, 1));
-        if (sstat[i] != 1 & sstat[i] != 0)
+        if (sstat[i] != 1 && sstat[i] != 0)
         {
             fprintf(stderr,
-                    "coxph_data: status not 0/1 (right order: id, fuptime, status ...)\n",
+                    "coxph_data: status not 0/1 (right order: id, fuptime, status ...) %d \n",
                     phed.noutcomes);
             exit(1);
         }

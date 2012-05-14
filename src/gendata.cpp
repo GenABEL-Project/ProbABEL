@@ -7,8 +7,13 @@
 #include <string>
 #include "gendata.h"
 #include "fvlib/FileVector.h"
+#if EIGEN
+#include "eigen_mematrix.h"
+#include "eigen_mematri1.h"
+#else
 #include "mematrix.h"
 #include "mematri1.h"
+#endif
 #include "utilities.h"
 
 void gendata::get_var(int var, float * data)
