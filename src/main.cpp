@@ -1,4 +1,4 @@
-//=====================================================================================
+//=============================================================================
 //
 //           Filename:  src/main.cpp
 //
@@ -11,28 +11,28 @@
 //             Author:  Yurii S. Aulchenko (cox, log, lin regressions)
 //             Modified by: L.C. Karssen,
 //                          Maksim V. Struchalin
-// 
-// modified 14-May-2009 by MVS:  interaction with SNP, interaction with SNP with exclusion of interacted covariates,
-//                              mmscore implemented (poor me)
+//
+// modified 14-May-2009 by MVS:  interaction with SNP, interaction with SNP
+//                               with exclusion of interacted covariates,
+//                               mmscore implemented (poor me)
 // modified 20-Jul-2009 by YSA: small changes, bug fix in mmscore option
 // modified 22-Sep-2009 by YSA: "robust" option added
 //
 // Modified by Han Chen (hanchen@bu.edu) on Nov 9, 2009
-// to extract the covariance between the estimate of beta(SNP) and the estimate of beta(interaction)
-// based on src/main.cpp version 0.1-0 as of Oct 19, 2009
+// to extract the covariance between the estimate of beta(SNP) and the estimate
+// of beta(interaction) based on src/main.cpp version 0.1-0 as of Oct 19, 2009
 //
-//            Company:  Department of Epidemiology, ErasmusMC Rotterdam, The Netherlands.
-//              Email:  i.aoultchenko@erasmusmc.nl, m.struchalin@erasmusmc.nl
+//  Company:  Department of Epidemiology, ErasmusMC Rotterdam, The Netherlands.
+//    Email:  i.aoultchenko@erasmusmc.nl, m.struchalin@erasmusmc.nl
 //
-//=====================================================================================
-
+//=============================================================================
+#include <stdio.h>
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <iomanip>
-#include <stdio.h>
 #include <vector>
 
 #if EIGEN
@@ -57,12 +57,12 @@ void update_progress_to_cmd_line(int csnp, int nsnps)
         if (csnp == 0)
         {
             fprintf(stdout, "Analysis: %6.2f ...",
-                    100. * double(csnp) / double(nsnps));
+                    100. * static_cast<double>(csnp) / static_cast<double>(nsnps));
         }
         else
         {
             fprintf(stdout, "\b\b\b\b\b\b\b\b\b\b%6.2f ...",
-                    100. * double(csnp) / double(nsnps));
+                    100. * static_cast<double>(csnp) / static_cast<double>(nsnps));
         }
         std::cout.flush();
     }
@@ -90,12 +90,10 @@ void open_files_for_output(std::vector<std::ofstream*>& outfile,
             exit(1);
         }
     }
-
 }
 
 int create_phenoytype(phedata& phd, cmdvars& input_var)
 {
-
     phd.set_is_interaction_excluded(input_var.isIsInteractionExcluded());
     phd.setphedata(input_var.getPhefilename(), input_var.getNoutcomes(),
             input_var.getNpeople(), input_var.getInteraction(),
@@ -173,7 +171,6 @@ void create_header_1(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
 //TODO(unknown): compare in create_header_1 and  create_header_2 the next lines.
     if (input_var.getInteraction() != 0)
     {
-
         //Han Chen
         *outfile[0] << input_var.getSep() << "beta_SNP_A1A2_"
                 << phd.model_terms[interaction_cox] << input_var.getSep()
@@ -213,18 +210,16 @@ void create_header_1(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
     *outfile[2] << input_var.getSep() << "loglik\n"; //"chi2_SNP_domA1\n";
     *outfile[3] << input_var.getSep() << "loglik\n"; //"chi2_SNP_recA1\n";
     *outfile[4] << input_var.getSep() << "loglik\n"; //"chi2_SNP_odom\n";
-
 }
 
 void create_header2(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
         phedata phd, int interaction_cox)
 {
-
     create_start_of_header(outfile, input_var, phd);
     *outfile[0] << input_var.getSep() << "beta_SNP_add" << input_var.getSep()
             << "sebeta_SNP_add";
 
-    //TODO(unknown): compare in create_header_1 and  create_header_2 the next lines.
+//TODO(unknown): compare in create_header_1 and create_header_2 the next lines.
 
     if (input_var.getInteraction() != 0)
     {
@@ -311,18 +306,18 @@ int main(int argc, char * argv[])
      gendata gtd (input_var.getGenfilename(),nsnps,input_var.getNgpreds(),phd.nids_all,phd.nids,phd.allmeasured,skipd,phd.idnames);
      **/
     // estimate null model
-    //TODO: remove this unused variable if there is not a reason to keep it
+    //TODO(maarten): remove this unused variable if there is not a reason to keep it
     //double null_loglik = 0.;
 #if COXPH
-    coxph_data nrgd=coxph_data(phd,gtd,-1);
+    coxph_data nrgd = coxph_data(phd, gtd, -1);
 #else
     regdata nrgd = regdata(phd, gtd, -1, input_var.isIsInteractionExcluded());
 #endif
 
     std::cout << " loaded null data ...";
 #if LOGISTIC
-    logistic_reg nrd=logistic_reg(nrgd);
-    nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
+    logistic_reg nrd = logistic_reg(nrgd);
+    nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0, input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
 #elif LINEAR
 
     linear_reg nrd = linear_reg(nrgd);
@@ -334,13 +329,13 @@ int main(int argc, char * argv[])
 #elif COXPH
     coxph_reg nrd(nrgd);
 
-    nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, input_var.getInteraction(), input_var.getNgpreds(), 1);
+    nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0, input_var.getInteraction(), input_var.getNgpreds(), 1);
 #endif
 
     std::cout << " estimated null model ...";
     // end null
 #if COXPH
-    coxph_data rgd(phd,gtd,0);
+    coxph_data rgd(phd, gtd, 0);
 #else
     regdata rgd(phd, gtd, 0, input_var.isIsInteractionExcluded());
 #endif
@@ -355,8 +350,8 @@ int main(int argc, char * argv[])
 
     std::string outfilename_str(input_var.getOutfilename());
     std::vector<std::ofstream*> outfile;
-
-    if (input_var.getNgpreds() == 2) //All models output. One file per each model
+    //All models output.One file per each model
+    if (input_var.getNgpreds() == 2)
     {
         open_files_for_output(outfile, outfilename_str);
         if (input_var.getNohead() != 1)
@@ -366,7 +361,6 @@ int main(int argc, char * argv[])
     }
     else //Only additive model. Only one output file
     {
-
         outfile.push_back(
                 new std::ofstream((outfilename_str + "_add.out.txt").c_str()));
 
@@ -437,7 +431,6 @@ int main(int argc, char * argv[])
 
     for (int csnp = 0; csnp < nsnps; csnp++)
     {
-
         rgd.update_snp(gtd, csnp);
         double freq = 0.;
         int gcount = 0;
@@ -445,7 +438,7 @@ int main(int argc, char * argv[])
         float snpdata2[gtd.nids];
         if (input_var.getNgpreds() == 2)
         {
-            //		freq = ((gtd.G).column_mean(csnp*2)*2.+(gtd.G).column_mean(csnp*2+1))/2.;
+         //freq = ((gtd.G).column_mean(csnp*2)*2.+(gtd.G).column_mean(csnp*2+1))/2.;
             gtd.get_var(csnp * 2, snpdata1);
             gtd.get_var(csnp * 2 + 1, snpdata2);
             for (int ii = 0; ii < gtd.nids; ii++)
@@ -466,15 +459,15 @@ int main(int argc, char * argv[])
                     freq += snpdata1[ii] * 0.5;
                 }
         }
-        freq /= (double) (gcount);
+        freq /= static_cast<double> (gcount);
         int poly = 1;
         if (fabs(freq) < 1.e-16 || fabs(1. - freq) < 1.e-16)
             poly = 0;
 
         if (fabs(mli.Rsq[csnp]) < 1.e-16)
             poly = 0;
-
-        if (input_var.getNgpreds() == 2) //All models output. One file per each model
+        //All models output. One file per each model
+        if (input_var.getNgpreds() == 2)
         {
             //Write mlinfo to output:
             for (int file = 0; file < outfile.size(); file++)
@@ -501,9 +494,9 @@ int main(int argc, char * argv[])
 #if LOGISTIC
                     logistic_reg rd(rgd);
                     if (input_var.getScore())
-                    rd.score(nrd.residuals,rgd,0,CHOLTOL,model,input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix);
+                    rd.score(nrd.residuals, rgd, 0, CHOLTOL, model, input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix);
                     else
-                    rd.estimate(rgd,0,MAXITER,EPS,CHOLTOL,model,input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix, input_var.getRobust());
+                    rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix, input_var.getRobust());
 #elif LINEAR
                     linear_reg rd(rgd);
                     if (input_var.getScore())
@@ -520,7 +513,7 @@ int main(int argc, char * argv[])
                     }
 #elif COXPH
                     coxph_reg rd(rgd);
-                    rd.estimate(rgd,0,MAXITER,EPS,CHOLTOL,model,input_var.getInteraction(), true, input_var.getNgpreds());
+                    rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model, input_var.getInteraction(), true, input_var.getNgpreds());
 #endif
 
                     if (!input_var.getAllcov() && model == 0
@@ -584,7 +577,6 @@ int main(int argc, char * argv[])
                         *chi2[model] << "nan";
                     }
                     //________________________________
-
                 }
                 else //beta, sebeta = nan
                 {
@@ -687,7 +679,6 @@ int main(int argc, char * argv[])
 #endif
             *outfile[4] << chi2[4]->str() << "\n";
             //Oct 26, 2009
-
         }
         else //Only additive model. Only one output file
         {
@@ -709,9 +700,9 @@ int main(int argc, char * argv[])
 #if LOGISTIC
                 logistic_reg rd(rgd);
                 if (input_var.getScore())
-                rd.score(nrd.residuals,rgd,0,CHOLTOL,model, input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix);
+                rd.score(nrd.residuals, rgd, 0, CHOLTOL, model, input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix);
                 else
-                rd.estimate(rgd,0,MAXITER,EPS,CHOLTOL,model, input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix, input_var.getRobust());
+                rd.estimate( rgd, 0, MAXITER, EPS, CHOLTOL, model, input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix, input_var.getRobust());
 #elif LINEAR
                 //cout << (rgd.get_unmasked_data()).nids << " 1\n";
 #if DEBUG
@@ -797,7 +788,7 @@ int main(int argc, char * argv[])
                 }
 #elif COXPH
                 coxph_reg rd(rgd);
-                rd.estimate(rgd,0,MAXITER,EPS,CHOLTOL,model, input_var.getInteraction(), true, input_var.getNgpreds());
+                rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model, input_var.getInteraction(), true, input_var.getNgpreds());
 #endif
 
                 if (!input_var.getAllcov() && input_var.getInteraction() == 0)
@@ -812,7 +803,6 @@ int main(int argc, char * argv[])
                 else
                 {
                     start_pos = 0;
-
                 }
 #if DEBUG
                 cout << " start_pos;" << start_pos << "\n";
@@ -912,8 +902,8 @@ int main(int argc, char * argv[])
                 *outfile[0] << beta_sebeta[0]->str() << "\n";
 #if DEBUG
                 cout << "Se beta" << beta_sebeta[0] << "\n";
-#endif                
-            }
+#endif
+              }
         }
         //clean chi2
         for (int i = 0; i < 5; i++)
@@ -925,7 +915,6 @@ int main(int argc, char * argv[])
             chi2[i]->str("");
         }
         update_progress_to_cmd_line(csnp, nsnps);
-
     }
 
     fprintf(stdout, "\b\b\b\b\b\b\b\b\b\b%6.2f", 100.);

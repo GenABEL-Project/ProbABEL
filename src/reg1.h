@@ -50,7 +50,7 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
     std::cout << "apply_model():interaction" << interaction << std::endl;
     std::cout << "apply_model():ngpreds" << ngpreds << std::endl;
     std::cout << "apply_model():is_interaction_excluded"
-            << is_interaction_excluded << std::endl;
+    << is_interaction_excluded << std::endl;
     std::cout << "apply_model():iscox" << iscox << std::endl;
     std::cout << "apply_model():nullmodel" << nullmodel << std::endl;
 #endif
@@ -74,17 +74,19 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
                 {
                     if (iscox)
                     {
+                        //Maksim: interaction with SNP;;
                         nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
-                                * X[i * X.ncol + interaction - 1]; //Maksim: interaction with SNP;;
+                                * X[i * X.ncol + interaction - 1];
                         nX[i * nX.ncol + c2] = X[i * X.ncol + csnp_p2]
-                                * X[i * X.ncol + interaction - 1]; //Maksim: interaction with SNP;;
+                                * X[i * X.ncol + interaction - 1];
                     }
                     else
                     {
+                        //Maksim: interaction with SNP;;
                         nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
-                                * X[i * X.ncol + interaction]; //Maksim: interaction with SNP;;
+                                * X[i * X.ncol + interaction];
                         nX[i * nX.ncol + c2] = X[i * X.ncol + csnp_p2]
-                                * X[i * X.ncol + interaction]; //Maksim: interaction with SNP;;
+                                * X[i * X.ncol + interaction];
                     }
                 }
                 //________________________
@@ -187,7 +189,6 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
         {
             return (X);
         }
-
     }
     mematrix<double> nX;
     if (interaction != 0)
@@ -242,7 +243,6 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
                     nX_without_interact_phe[row * nX_without_interact_phe.ncol
                             + col_new] = nX[row * nX.ncol + col];
                 }
-
             }
         }
         return nX_without_interact_phe;
@@ -301,92 +301,7 @@ public:
         //		delete sebeta;
         //		delete residuals;
     }
-    //	void mmscore(regdata &rdata,int verbose, double tol_chol, int model, int interaction, int ngpreds, mematrix<double> & invvarmatrix, int nullmodel=0)
-    //	{
-    //			int length_beta = (rdata.X).ncol;
-    //			beta.reinit(length_beta,1);
-    //			sebeta.reinit(length_beta,1);
-    //			mematrix<double> G;
-    //		  mematrix<double> Y = rdata.Y;
-    //
-    //			G.reinit((rdata.X).nrow,1);
-    //			for (int i=0;i<(rdata.X).nrow;i++) G[i] = (rdata.X).get(i,1);
-    ////			double sumgt = column_sum(G).get(0,0);
-    //			double meangt = G.column_mean(0);
-    //			double meany = Y.column_mean(0);
-    //
-    //			G = G - meangt;
-    //			Y = Y - meany;
-    //			double U, V;
-    //			mematrix<double> U_mema, V_mema;
-    //
-    //
-    //			U_mema = transpose(G)*invvarmatrix;
-    //			U = (U_mema * Y).get(0, 0);
-    //
-    //			V_mema = transpose(G)*invvarmatrix;
-    //			V = (V_mema*G).get(0, 0);
-    //
-    //
-    //			chi2_score = U*U/V;
-    //
-    //			beta.put(-100, 0,0);
-    //			double bb = U/V;
-    //			beta.put(bb,1,0);
-    //			sebeta.put(-100.,0,0);
-    //			double sebe=sqrt(1./V);
-    //			sebeta.put(sebe,1,0);
-    //
-    //
-    //
-    //
-    //			/*
-    //			for(snp in snps)
-    //					{
-    //					print(snp)
-    //							ns <- which(mm$snpnames==snp)
-    //							X <- gt[,snp]
-    //							V <- h2ht$InvSigma #*var(h2ht$residualY,na.rm=T)
-    //							UU <- ((X-mean(X))%*%V%*%(Y-mean(Y)))
-    //							VV <- ((X-mean(X))%*%V%*%(X-mean(X)))
-    //							beta <- UU/VV
-    //							se <- sqrt(1./VV)
-    //							chi2 <- UU*UU/VV
-    //							print(c(re$chi2.1df[ns],qt$chi2.1df[ns],gr$chi2.1df[ns],mm$chi2.1df[ns],(beta/se)^2))
-    //							print(c(re$effB[ns],qt$effB[ns],gr$effB[ns],mm$effB[ns],beta))
-    //					}
-    //
-    //			*/
-    //
-    //
-    //
-    ///*
-    //		  int length_beta = (rdata.X).ncol;
-    //		  beta.reinit(length_beta,1);
-    //		  sebeta.reinit(length_beta,1);
-    //
-    //			mematrix<double> G;
-    //			G.reinit((rdata.X).nrow,1);
-    //			for (int i=0;i<(rdata.X).nrow;i++) G[i] = (rdata.X).get(i,1);
-    //			double sumgt = column_sum(G).get(0,0);
-    //			double meangt = G.column_mean(0);
-    //			G = G - meangt;
-    //			mematrix<double> YY = rdata.Y;
-    //			YY = YY - YY.column_mean(0);
-    //			mematrix<double> tG = transpose(G);
-    //			tG = tG*invvarmatrix;
-    //			double U = (tG*YY).get(0,0);
-    //			double V = (tG*G).get(0,0);
-    //
-    //			beta.put(-100, 0,0);
-    //			double bb = (U/V)*var(YY);
-    //			beta.put(bb,1,0);
-    //			sebeta.put(-100.,0,0);
-    //			sebeta.put(abs(bb)/sqrt(U*U/V),1,0);
-    //
-    //*/
-    //
-    //	}
+
     void estimate(regdata &rdatain, int verbose, double tol_chol, int model,
             int interaction, int ngpreds, mematrix<double> invvarmatrixin,
             int robust, int nullmodel = 0)
@@ -398,7 +313,6 @@ public:
         {
             cout << rdata.is_interaction_excluded
                     << " <-irdata.is_interaction_excluded\n";
-
         }
         mematrix<double> invvarmatrix;
         if (invvarmatrixin.nrow != 0 && invvarmatrixin.ncol != 0)
@@ -417,7 +331,6 @@ public:
                         }
                     i1++;
                 }
-
         }
         if (verbose)
         {
@@ -457,13 +370,12 @@ public:
         }
         //Oct 26, 2009
         mematrix<double> tX = transpose(X);
-        
         if (invvarmatrix.nrow != 0 && invvarmatrix.ncol != 0)
         {
             tX = tX * invvarmatrix;
             //!check if quicker
             //tX = productXbySymM(tX,invvarmatrix);
-            //			X = invvarmatrix*X; std::cout<<"new tX.nrow="<<X.nrow<<" tX.ncol="<<X.ncol<<"\n";
+            // = invvarmatrix*X; std::cout<<"new tX.nrow="<<X.nrow<<" tX.ncol="<<X.ncol<<"\n";
         }
         if (verbose)
         {
@@ -538,7 +450,7 @@ public:
 //            printf("sigma2+= = %f\n", sigma2);
         }
 
-        double sigma2_internal = sigma2 / (N - double(length_beta));
+        double sigma2_internal = sigma2 / (N - static_cast<double>(length_beta));
 
         // now compute residual variance
         //		sigma2 = 0.;
@@ -591,7 +503,7 @@ public:
             residuals[i] = resid;
             loglik -= halfrecsig2 * resid * resid;
         }
-        loglik -= double(rdata.nids) * log(sqrt(sigma2));
+        loglik -= static_cast<double>(rdata.nids) * log(sqrt(sigma2));
 
         //cout << "estimate " << rdata.nids << "\n";
         //
@@ -697,7 +609,7 @@ public:
                 rdata.is_interaction_excluded, false, nullmodel);
         beta.reinit(X.ncol, 1);
         sebeta.reinit(X.ncol, 1);
-        double N = double(resid.nrow);
+        double N = static_cast<double>(resid.nrow);
 
         mematrix<double> tX = transpose(X);
 
@@ -734,7 +646,6 @@ public:
         chi2 = chi2 * (1. / sigma2_internal);
         chi2_score = chi2[0];
     }
-
 };
 
 class logistic_reg
@@ -804,7 +715,6 @@ public:
                         }
                     i1++;
                 }
-
         }
 
         mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,
@@ -857,7 +767,7 @@ public:
          fprintf(stdout,"tXInv %f %f %f\n",tX.get(0,0),tX.get(1,0),tX.get(2,0));
          if (X.ncol==4) fprintf(stdout,"X[4] %f\n",tX.get(3,0));
          */
-        //TODO: remove this unused variable if there is not a reason to keep it
+        //TODO(maarten): remove this unused variable if there is not a reason to keep it
         //double N;
         niter = 0;
         double delta = 1.;
@@ -1025,7 +935,7 @@ public:
                 rdata.is_interaction_excluded, false, nullmodel);
         beta.reinit(X.ncol, 1);
         sebeta.reinit(X.ncol, 1);
-        double N = double(resid.nrow);
+        double N = static_cast<double>(resid.nrow);
 
         mematrix<double> tX = transpose(X);
         if (invvarmatrix.nrow != 0 && invvarmatrix.ncol != 0)
