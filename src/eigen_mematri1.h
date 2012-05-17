@@ -263,11 +263,10 @@ mematrix<DT> transpose(mematrix<DT> &M)
 {
 //    cout << "[DEBUG TRANSPOSE PRE]nrow=" << M.nrow << "; ncol=" << M.ncol << "; nelements=" << M.nelements;
 
-    mematrix<DT> temp = M;
-    temp.data.transposeInPlace();
-    int swap=temp.ncol;
-    temp.ncol=temp.nrow;
-    temp.nrow=swap;
+    mematrix<DT> temp;
+    temp.data=M.data.transpose();
+    temp.ncol=M.nrow;
+    temp.nrow=M.ncol;
 //    cout << "[DEBUG TRANSPOSE post]nrow=" << temp.nrow << "; ncol=" << temp.ncol << "; nelements=" << temp.nelements;
 
     return temp;
