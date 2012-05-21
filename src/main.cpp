@@ -329,9 +329,7 @@ int main(int argc, char * argv [])
 	std::cout<<"you are running mmscore...\n";
     }
 
-    std::cout << "Reading data ...";
-
-
+    std::cout << "Reading data ..." << flush;
 
     if(inverse_filename != NULL)
     {
@@ -339,14 +337,11 @@ int main(int argc, char * argv [])
 	invvarmatrix = inv.get_matrix();
 	double par=1.; //var(phd.Y)*phd.nids/(phd.nids-phd.ncov-1);
 	invvarmatrix = invvarmatrix*par;
-	std::cout << " loaded InvSigma ...";
+	std::cout << " loaded InvSigma ..." << flush;
 	//	matrix.print();
     }
 
 
-
-
-    std::cout.flush();
 
     gendata gtd;
     if (!isFVF)
@@ -356,7 +351,7 @@ int main(int argc, char * argv [])
 	gtd.re_gendata(str_genfilename, nsnps, ngpreds, phd.nids_all, phd.nids,
 		       phd.allmeasured, phd.idnames);
 
-    std::cout << " loaded genotypic data ...";
+    std::cout << " loaded genotypic data ..." << flush;
 
     /**
        if (isFVF)
@@ -372,7 +367,7 @@ int main(int argc, char * argv [])
     regdata nrgd(phd,gtd,-1);
 #endif
 
-    std::cout << " loaded null data ...";
+    std::cout << " loaded null data ..." << flush;
 
 #if LOGISTIC
     logistic_reg nrd(nrgd);
@@ -386,7 +381,7 @@ int main(int argc, char * argv [])
 #endif
     null_loglik = nrd.loglik;
 
-    std::cout << " estimated null model ...";
+    std::cout << " estimated null model ..." << flush;
 
     // end null
 #if COXPH
@@ -397,9 +392,7 @@ int main(int argc, char * argv [])
 
     std::cout << " formed regression object ...";
 
-    std::cout << " done\n";
-    std::cout.flush();
-
+    std::cout << " done\n" << flush;
 
 
     //________________________________________________________________
