@@ -173,21 +173,21 @@ mematrix<double> apply_model(mematrix<double> &X, int model, int interaction,
     {
 	nX.reinit(X.nrow,(X.ncol-1));
     }
-    int c1 = X.ncol-2;
-    int c2 = X.ncol-1;
+    int c1 = X.ncol-2; 		/* column with Prob(A1A2) */
+    int c2 = X.ncol-1;		/* column with Prob(A1A1). Note the order is swapped cf the file! */
     for (int i=0; i<X.nrow; i++)
 	for (int j=0; j<(X.ncol-2); j++)
 	    nX[i * nX.ncol + j] = X[i * X.ncol + j];
 
     for (int i=0; i<nX.nrow; i++)
     {
-	if (model==1)
+	if (model==1)		/* Additive */
 	    nX[i*nX.ncol+c1] = X[i*X.ncol+c1] + 2.*X[i*X.ncol+c2];
-	else if (model==2)
+	else if (model==2)	/* Dominant */
 	    nX[i*nX.ncol+c1] = X[i*X.ncol+c1] + X[i*X.ncol+c2];
-	else if (model==3)
+	else if (model==3)	/* Recessive */
 	    nX[i*nX.ncol+c1] = X[i*X.ncol+c2];
-	else if (model==4)
+	else if (model==4)	/* over-dominant */
 	    nX[i*nX.ncol+c1] = X[i*X.ncol+c1];
 	if(interaction != 0)
 	    nX[i*nX.ncol+c2] = X[i*nX.ncol+interaction] * nX[i*nX.ncol+c1]; //Maksim: interaction with SNP
@@ -920,10 +920,9 @@ public:
 		  double tol_chol, int model, int interaction, int ngpreds,
 		  bool iscox, int nullmodel=0)
     {
-	//		cout << "model = " << model << "\n";
-	//		cdata.X.print();
 	coxph_data cdata = cdatain.get_unmasked_data();
-	mematrix<double> X = t_apply_model(cdata.X,model, interaction, ngpreds, iscox, nullmodel);
+	mematrix<double> X = t_apply_model(cdata.X, model, interaction,
+					   ngpreds, iscox, nullmodel);
 	//		X.print();
 	int length_beta = X.nrow;
 	beta.reinit(length_beta,1);

@@ -72,8 +72,8 @@ public:
     int noutcomes;
     int ncov;
     unsigned short int * allmeasured;
-    mematrix<double> X;
-    mematrix<double> Y;
+    mematrix<double> X;		/* Will contain the values of the covariate(s) */
+    mematrix<double> Y;		/* Will contain the values of the outcome(s) */
     std::string * idnames;
     std::string model;
     std::string * model_terms;
@@ -98,7 +98,7 @@ public:
 	    {
 
 		nphenocols++;
-		//				std::cout << tmp << " " << nphenocols << " ";
+		//   std::cout << tmp << " " << nphenocols << " ";
 	    }
 	    while (myfile.getline(line,BFS)) {
 		int tmplins = 0;
@@ -531,11 +531,14 @@ public:
 	for (int j=0;j<ngpreds;j++)
 	{
 	    float snpdata[nids];
-	    for (int i=0;i<nids;i++) masked_data[i]=0;
-	    gend.get_var(snpnum*ngpreds+j,snpdata);
-	    for (int i=0;i<nids;i++) {
-		X.put(snpdata[i],i,(ncov+1-j-1));
-		if (isnan(snpdata[i])) masked_data[i]=1;
+	    for (int i=0; i<nids; i++) masked_data[i]=0;
+
+	    gend.get_var(snpnum*ngpreds+j, snpdata);
+
+	    for (int i=0; i<nids; i++)
+	    {
+		X.put(snpdata[i], i, (ncov-j));
+		if (isnan(snpdata[i])) masked_data[i] = 1;
 	    }
 	}
     }
@@ -672,7 +675,7 @@ public:
 	    sstat[i] = int((phed.Y).get(i,1));
 	    if (sstat[i] != 1 && sstat[i]!=0)
 	    {
-		std::cerr << "coxph_data: status not 0/1 (right order: id, fuptime, status ...)"
+		std::cerr << "coxph_data: status not 0/1 (correct order: id, fuptime, status ...)"
 			  << endl;
 		exit(1);
 	    }
@@ -745,7 +748,12 @@ public:
 
     void update_snp(gendata &gend, int snpnum)
     {
-	// note this sorts by "order"!!!
+	/** note this sorts by "order"!!!
+	 * Here we deal with transposed X, hence last two arguments are swapped
+	 * compared to the other 'update_snp'
+	 * Also, the starting column-1 is not necessary for cox X therefore
+	 * 'ncov-j' changes to 'ncov-j-1'
+	 **/
 
 	for (int j=0; j<ngpreds; j++)
 	{
@@ -756,14 +764,11 @@ public:
 	    gend.get_var(snpnum*ngpreds+j, snpdata);
 
 	    for (int i=0; i<nids; i++) {
-		X.put(snpdata[i], (ncov-ngpreds+j), order[i]);
+		X.put(snpdata[i], (ncov-j-1), order[i]);
 		if ( isnan(snpdata[i]) )
 		    masked_data[order[i]] = 1;
 	    }
 	}
-	//		for (int i=0;i<nids;i++)
-	//			for (int j=0;j<ngpreds;j++)
-	//				X.put((gend.G).get(i,(snpnum*ngpreds+j)),(ncov-ngpreds+j),order[i]);
     }
 
     ~coxph_data()
