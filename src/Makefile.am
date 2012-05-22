@@ -3,7 +3,11 @@
 ## Using wildcards in these lists doesn't work. Also GNU make's ($wildcard,) doesn't
 ## work. It gives warning message about portability, but in the end doesn't work,
 ## I tried :-).
-REGFILES = data.h data.cpp gendata.h gendata.cpp mematrix.h mematri1.h comand_line_settings.h comand_line_settings.cpp reg1.h usage.h usage.cpp main.cpp utilities.h utilities.cpp phedata.h phedata.cpp cholesky.h cholesky.cpp regdata.h regdata.cpp coxph_data.h coxph_data.h
+REGFILES = data.h data.cpp gendata.h gendata.cpp mematrix.h mematri1.h	\
+ comand_line_settings.h comand_line_settings.cpp reg1.h usage.h		\
+ usage.cpp main.cpp utilities.h utilities.cpp phedata.h phedata.cpp	\
+ cholesky.h cholesky.cpp regdata.h regdata.cpp coxph_data.h		\
+ coxph_data.cpp
 
 ## Filevector files:
 FVSRC = fvlib/AbstractMatrix.cpp fvlib/CastUtils.cpp			\
