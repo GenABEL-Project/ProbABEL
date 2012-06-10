@@ -24,8 +24,6 @@ RHEADERS = include/R.h include/Rmath.h include/R_ext/Arith.h		\
  include/R_ext/Print.h include/R_ext/Random.h include/R_ext/Utils.h	\
  include/R_ext/RS.h
 
-AM_CXXFLAGS = -Wall -O3
-
 bin_PROGRAMS = palinear palogist
 if BUILD_pacoxph
 ## Extra files for pacoxph
@@ -37,13 +35,16 @@ endif
 
 palinear_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
 palinear_CXXFLAGS = -DLINEAR $(AM_CXXFLAGS)
+palinear_CPPFLAGS = $(AM_CPPFLAGS)
 
 palogist_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
 palogist_CXXFLAGS = -DLOGISTIC $(AM_CXXFLAGS)
+palogist_CPPFLAGS = $(AM_CPPFLAGS)
 
 pacoxph_SOURCES = $(COXSRC) $(REGFILES) $(FVSRC) $(FVHEADERS)	\
  $(RHEADERS) survS.h survproto.h
 pacoxph_CXXFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CXXFLAGS)
+pacoxph_CPPFLAGS = $(AM_CPPFLAGS)
 pacoxph_CFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CFLAGS)
 
 ## Install these scripts in the bin directory as well:

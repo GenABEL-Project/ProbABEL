@@ -1,4 +1,4 @@
-\title{ProbABEL manual}
+\title{Manual for ProbABEL v0.2.0}
 \author{
 Maksim Struchalin$^{1}$, Lennart Karssen$^{1}$, Yurii Aulchenko$^{1,2}$ \\
 \\
@@ -31,9 +31,9 @@ $^{2}$Institute of Cytology and Genetics SD RAS
 
 \makeindex
 
-\newcommand{\PA}{\texttt{ProbABEL-package}}
-\newcommand{\GA}{\texttt{GenABEL-package}}
-\newcommand{\DA}{\texttt{DatABEL-package}}
+\newcommand{\PA}{\texttt{ProbABEL}}
+\newcommand{\GA}{\texttt{GenABEL}}
+\newcommand{\DA}{\texttt{DatABEL}}
 
 \begin{document}
 \maketitle
@@ -88,7 +88,11 @@ in a fast, memory-efficient and consequently genome-wide feasible manner.
 Currently, \PA{} implements linear, logistic regression,
 and Cox proportional hazards models. The corresponding analysis
 programs are called \texttt{palinear},  \texttt{palogist},
-and \texttt{pacoxph}.
+and \texttt{pacoxph}\footnote{Please note that in ProbABEL v.0.2.0 the
+  \texttt{pacoxph} program is not built by default because it is still
+too buggy for production use. Instructions on how to compile the
+\texttt{pacoxph} module can be found in the \texttt{CHANGES.LOG} file
+in the \texttt{doc/} directory of the installation package.}.
 
 
 \section{Input files}
@@ -261,8 +265,13 @@ actually used to generate the output.
 \label{sec:runanalysis}
 To run linear regression, you should use the program called
 \texttt{palinear}; for logistic analysis use \texttt{palogist}, and
-for the Cox proportional hazards model use \texttt{pacoxph} (all are
-found in the \texttt{bin/} directory after you have compiled
+for the Cox proportional hazards model use
+\texttt{pacoxph}\footnote{Please note that in ProbABEL v.0.2.0 the
+  \texttt{pacoxph} program is not built by default because it is still
+  too buggy for production use. Instructions on how to compile the
+  \texttt{pacoxph} module can be found in the \texttt{CHANGES.LOG}
+  file in the \texttt{doc/} directory of the installation package.}
+(all are found in the \texttt{bin/} directory after you have compiled
 the program).
 
 There are in total 11 command line options you can specify to the
@@ -272,7 +281,7 @@ you run either program without any argument or with the
 line options:
 \begin{verbatim}
 user@server:~$ palogist
-ProbABEL v. 0.2.0-beta (C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EMCR
+ProbABEL v. 0.2.0 (C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EMCR
 
 Usage: /tmp/PAInst/bin/palogist options
 Options:
@@ -330,7 +339,12 @@ user@server:~/ProbABEL/examples/$ ../bin/palogist -p logist_data.txt \
 				 -d test.mldose -i test.mlinfo
 \end{verbatim}
 
-To run a Cox proportional hazards model, try
+To run a Cox proportional hazards model\footnote{Please note that in
+  ProbABEL v.0.2.0 the \texttt{pacoxph} program is not built by
+  default because it is still too buggy for production
+  use. Instructions on how to compile the \texttt{pacoxph} module can
+  be found in the \texttt{CHANGES.LOG} file in the \texttt{doc/}
+  directory of the installation package.}, try
 \begin{verbatim}
 user@server:~/ProbABEL/examples/$ ../bin/pacoxph -p coxph_data.txt \
 				 -d test.mldose -i test.mlinfo
@@ -366,15 +380,26 @@ The option \texttt{--robust} allows you to compute so-called
 
 With the option \texttt{--mmscore} a score test for association
 between a trait and genetic polymorphisms in samples of related
-individuals is performed. A file with the inverse of the
-variance-covarince matrix goes as input parameter with that option,
-e.g.~\texttt{--mmscore <filename>}. The file has to contain the first
-column with id names exactly like in phenotype file, BUT OMITTING
-people with no measured phenotype. The rest is a matrix. The phenotype
-file in case of using the \texttt{--mmscore} argument may contain any
-amount of covariates (this is different from previous versions). The
-first column contains id names, the second the trait. The others are
-covariates.
+individuals is performed. For quantitative traits (\texttt{palinear})
+a file with the inverse of the variance-covarince matrix goes as input
+parameter with that option, e.g.~\texttt{--mmscore <filename>}. The
+file has to contain the first column with id names exactly like in
+phenotype file, BUT OMITTING people with no measured phenotype. The
+rest is a matrix. The phenotype file in case of using the
+\texttt{--mmscore} argument may contain any amount of covariates (this
+is different from previous versions). The first column contains id
+names, the second the trait. The others are covariates.
+
+For binary traits (\texttt{palogist}) the file should contain the
+inverse of the correlation matrix. \textbf{Note: this is an
+  experimental feature!} This matrix can be obtained through (in
+GenABEL notation):
+\begin{verbatim}
+  h2.obj$InvSigma * h2.obj$h2an$estimate[length(h2.obj$h2an$estimate)]
+\end{verbatim}
+where \texttt{h2.obj} is the object returned by GenABEL's
+\texttt{polygenic()}. The GenABEL documentation explains this
+procedure in more detail.
 
 An example of how a polygenic object estimated by \GA{} can be used
 with ProbABEL is provided in \texttt{examples/mmscore.R}
