@@ -50,7 +50,12 @@ check_SCRIPTS = example_bt.sh example_qt.sh example_mms.sh
 
 TESTS = $(check_SCRIPTS)
 
-cleanfiles_bt = logist_add.out.txt logist_fv_add.out.txt
+cleanfiles_bt = logist_add.out.txt logist_fv_add.out.txt	\
+logist_prob_2df.out.txt logist_prob_fv_2df.out.txt		\
+logist_prob_fv_domin.out.txt logist_prob_add.out.txt		\
+logist_prob_fv_add.out.txt logist_prob_over_domin.out.txt	\
+logist_prob_domin.out.txt logist_prob_fv_recess.out.txt		\
+logist_prob_fv_over_domin.out.txt logist_prob_recess.out.txt
 
 cleanfiles_qt = height_base_add.out.txt height_base_fv_add.out.txt	\
 height_allcov_add.out.txt height_allcov_fv_add.out.txt			\

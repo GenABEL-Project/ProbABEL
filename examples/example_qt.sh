@@ -20,6 +20,7 @@ echo "base analysis"
     -c 19 \
     -o height_base_fv
 
+echo "QT check: dose vs. dose_fv"
 diff height_base_add.out.txt height_base_fv_add.out.txt
 
 
@@ -38,6 +39,7 @@ echo "Option --allcov"
     -c 19 --allcov \
     -o height_allcov_fv
 
+echo "QT check: allcov: dose vs. dose_fv"
 diff height_allcov_add.out.txt height_allcov_fv_add.out.txt
 
 
@@ -57,6 +59,7 @@ echo "Option --interaction=1"
     -c 19 --interaction=1 \
     -o height_int1_fv
 
+echo "QT check: interactions: dose vs. dose_fv"
 diff height_int1_add.out.txt height_int1_fv_add.out.txt
 
 
@@ -76,6 +79,7 @@ echo "Option --robust"
     -c 19 --robust \
     -o height_robust_fv
 
+echo "QT check: robust: dose vs. dose_fv"
 diff height_robust_add.out.txt height_robust_fv_add.out.txt
 
 
@@ -95,6 +99,7 @@ echo "Option --robust --interaction=1"
     -c 19 --robust --interaction=1 \
     -o height_robust_int1_fv
 
+echo "QT check: robust & interaction: dose vs. dose_fv"
 diff height_robust_int1_add.out.txt height_robust_int1_fv_add.out.txt
 
 
@@ -114,6 +119,7 @@ echo "Option --ngp=2, mlprob file"
     -c 19 --ngp=2 \
     -o height_ngp2_fv
 
+echo "QT check: prob vs. prob_fv"
 diff height_ngp2_add.out.txt height_ngp2_fv_add.out.txt
 diff height_ngp2_domin.out.txt height_ngp2_fv_domin.out.txt
 diff height_ngp2_over_domin.out.txt height_ngp2_fv_over_domin.out.txt
