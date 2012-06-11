@@ -12,6 +12,7 @@ autoreconf -i
   following commands:
 ./configure
 make
+make check
 make install
 
   This will install the binaries (palinear etc.) in /usr/local/bin/,
@@ -22,12 +23,9 @@ make install
   PDF version of the documentation will not be built.
 
   NOTE: make install will OVERWRITE any file with the same name if it
-  already exists. Also the probabel_config.cfg file in
-  /usr/local/etc, even if the user modified it with his/her own
-  settings. This is one reason why using the package manager for your
-  distribution (apt for Debian, yum for RHEL, CentOS, etc., pkgtools
-  for Slackware) is recommended. Package managers do note that a file
-  has user-made changes and ask what to do (or make a backup).
+  already exists. By default the name of the probabel.pl config file is
+  probabel_config.cfg.example. For probabel.pl to work please rename
+  this file to probabel_config.cfg.
 
   To see options, run
 
@@ -38,6 +36,11 @@ make install
 
   to install ProbABEL in that subdirectory. Instead of using
   /usr/local/ as install root directory, it installs in /some/subdirectory.
+
+  The pacoxph binary will not be built by default because it is too
+  buggy at present. If you want to build and install it anyway use the
+  --enable function of ./configure:
+./configure --enable-pacoxph
 
   To generate a .tar.gz package for distribution run:
 ./configure
@@ -56,6 +59,9 @@ make uninstall
 
   will uninstall the files previously installed by 'make install'.
 
+* Making packages for Linux distributions
+  Instructions for creating a package for your favourite Linux
+  distribution can be found in doc/packaging.txt
 
 * Cross-compiling for Windows on Linux
 
