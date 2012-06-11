@@ -13,7 +13,7 @@ distributions.
    in the automake files:
     ./configure
     make distcheck
-   If there are no errors, a tar.gz file of the source should be
+   If there are no errors, a tar.gz file of the source should have been
    created. Let's create the package.
     mkdir /tmp/PA-deb
     cp ProbABEL-0.2.0.tar.gz /tmp/PA-deb
@@ -36,7 +36,8 @@ distributions.
    dh_make also creates several example scripts in the debian/
    directory. We don't need them, so they can be delete:
     rm debian/*.ex debian/*.EX
-   Now the package can be built (NOTE that dpkg-buildpackage replaces our default CXXFLAGS with "-g -O2"):
+   Now the package can be built (NOTE that dpkg-buildpackage replaces
+   our default CXXFLAGS with "-g -O2"):
     dpkg-buildpackage -rfakeroot -us -uc
    This creates an unsigned ~.deb~ file in the parent directory. As a
    final touch you can check you package for errors with

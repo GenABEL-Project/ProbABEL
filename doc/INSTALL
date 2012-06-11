@@ -70,11 +70,15 @@ make uninstall
   First, install the necessary MINGW32 packages. On Debian/Ubuntu this
   can be done in the following way:
 apt-get install mingw32{-binutils,-runtime} gcc-mingw32
+  For 64 bit windows install these packages:
+apt-get install binutils-mingw-w64-i686 gcc-mingw-w64-base gcc-mingw-w64-i686 \
+  mingw-w64-dev g++-mingw-w64 binutils-mingw-w64-x86-64 g++-mingw-w64-i686 \
+  g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64
 
   Now the binaries can be compiled (I've added a prefix so that when
   running 'make install' the whole directory structure can be zipped
   easily):
-./configure --host=i586-mingw32msvc --build=i686-linux-gnu \
+./configure --host=i686-w64-mingw32 --build=i686-linux-gnu \
 	    --prefix=/tmp/PA --sysconfdir=/tmp/PA/ \
 	    --datarootdir=/tmp/PA --docdir=/tmp/PA/doc
 
@@ -85,8 +89,9 @@ apt-get install mingw32{-binutils,-runtime} gcc-mingw32
   this example I was using a 32bit Ubuntu install. For a 64 bit linux
   system this will be x86_64-linux-gnu. Note that the values for both
   these options can be derived from the names of the compiler
-  executables, e.g. the gcc-mingw32 Debian package installs the
-  folowing C++ compiler: /usr/bin/i586-mingw32msvc-c++.
+  executables, e.g. the gcc-mingw-w64 Debian package installs the
+  folowing C++ compilers: /usr/bin/i686-w64-mingw32-c++ and
+  /usr/bin/x86_64-w64-mingw32-c++.
   The --[somedir] options are used to make the directory structure as
   flat as possible so that we don't bother Windows users with
   subdirectories like 'share/' and 'etc/'.
