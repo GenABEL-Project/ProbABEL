@@ -97,7 +97,7 @@ apt-get install binutils-mingw-w64-i686 gcc-mingw-w64-base gcc-mingw-w64-i686 \
   subdirectories like 'share/' and 'etc/'.
 
   Now you can run
-make
+make CFLAGS+="-O3 -static-libgcc -static-libstdc++" CXXFLAGS+="-O3 -static-libgcc -static-libstdc++"
 make install
 
   This creates the binaries pacoxph.exe, palinear.exe and
