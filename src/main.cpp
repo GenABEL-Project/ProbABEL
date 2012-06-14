@@ -537,7 +537,7 @@ int main(int argc, char * argv [])
 
 	    if (!outfile[0]->is_open())
 	    {
-		std::cerr << "Can not open file for writing: " << outfilename_str << "\n";
+		std::cerr << "Cannot open file for writing: " << outfilename_str << "\n";
 		exit(1);
 	    }
 	    //_____________________
@@ -653,7 +653,7 @@ int main(int argc, char * argv [])
 
 	    if (!outfile[0]->is_open())
 	    {
-		std::cerr << "Can not open file for writing: " << outfilename_str << "\n";
+		std::cerr << "Cannot open file for writing: " << outfilename_str << "\n";
 		exit(1);
 	    }
 
