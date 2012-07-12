@@ -24,7 +24,7 @@ RHEADERS = include/R.h include/Rmath.h include/R_ext/Arith.h		\
  include/R_ext/Print.h include/R_ext/Random.h include/R_ext/Utils.h	\
  include/R_ext/RS.h
 
-bin_PROGRAMS = palinear palogist
+bin_PROGRAMS = palinear palogist extract-snp
 if BUILD_pacoxph
 ## Extra files for pacoxph
 COXBASE = coxfit2 chinv2 cholesky2 chsolve2 dmatrix
@@ -46,6 +46,8 @@ pacoxph_SOURCES = $(COXSRC) $(REGFILES) $(FVSRC) $(FVHEADERS)	\
 pacoxph_CXXFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CXXFLAGS)
 pacoxph_CPPFLAGS = $(AM_CPPFLAGS)
 pacoxph_CFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CFLAGS)
+
+extract_snp_SOURCES = extract-snp.cpp $(FVSRC) $(FVHEADERS)
 
 ## Install these scripts in the bin directory as well:
 dist_bin_SCRIPTS = probabel.pl extIDS.pl
