@@ -17,60 +17,60 @@ Read phenotype data from
 .BI "\-i, \-\^\-info" " FILE"
 Read SNP information from
 .I FILE
-(e.g. MLINFO file)
+(e.g. MLINFO file).
 .TP
 .BI "\-d, \-\^\-dose" " FILE"
-SNP predictor (e.g. MLDOSE/MLPROB) file name
+SNP predictor (e.g. MLDOSE/MLPROB) file name.
 .SS Optional command line options
 .TP
 .BI "\-\^\-map" " FILE"
 Map file name, containing base pair positions for each SNP.
 .TP
 .BI "\-\^\-nids" " NUMBER"
-Number of people to analyse
+Number of people to analyse.
 .TP
 .BI "\-\^\-chrom"  " FILE"
-Chromosome (to be passed to output)
+Chromosome (to be passed to output).
 .TP
 .BI "\-\^\-out" " FILE"
 Output file name (default is
 .B regression.out.txt
-)
+).
 .TP
 .BI "\-\^\-skipd" " NUMBER"
-How many columns to skip in predictor (dose/prob) file (default is 2)
+How many columns to skip in predictor (dose/prob) file (default is 2).
 .TP
 .BI "\-\^\-ntraits" " NUMBER"
-How many traits are analysed (default is 1)
+How many traits are analysed (default is 1).
 .TP
 .BI "\-\^\-ngpreds"  " NUMBER"
-How many predictor columns per marker (default 1 = MLDOSE; else use 2 for MLPROB)
+How many predictor columns per marker (default 1 = MLDOSE; else use 2 for MLPROB).
 .TP
 .B "\-\^\-separat" " FILE"
-Character to separate fields (default is space)
+Character to separate fields (default is space).
 .TP
 .B \-\^\-score
-Use the score test
+Use the score test.
 .TP
 .B \-\^\-no-head
-Do not report header line in the output
+Do not report header line in the output.
 .TP
 .B \-\^\-allcov
-Report estimates for all covariates (large outputs!)
+Report estimates for all covariates (large outputs!).
 .TP
 .B \-\^\-interaction
-Which covariate to use for interaction with SNP analysis (default is no interaction, 0)
+Which covariate to use for interaction with SNP analysis (default is no interaction, 0).
 .TP
 .B \-\^\-interaction_only
 Like
 .B \-\^\-interaction
-but without covariate acting in interaction with SNP (default is no interaction, 0)
+but without covariate acting in interaction with SNP (default is no interaction, 0).
 .TP
 .BI "\-\^\-mmscore" " FILE"
-Score test in samples of related individuals. File with inverse of variance-covariance matrix (for palinear) or inverse correlation (for palogist) as input parameter
+Score test in samples of related individuals. The FILE argument is the name of a file with the inverse of the variance-covariance matrix.
 .TP
 .B \-\^\-robust
-Report robust (a.k.a. sandwich, a.k.a. Hubert-White) standard errors
+Report robust (a.k.a. sandwich, a.k.a. Hubert-White) standard errors.
 .TP
 .B \-\^\-help
 Print help
