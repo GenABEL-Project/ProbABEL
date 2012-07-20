@@ -491,7 +491,14 @@ public:
 	}
 	void update_snp(gendata &gend, int snpnum)
 	{
-		/** note this sorts by "order"!!!
+		/**
+		 * This is the main part of the fix of bug #1846
+		 * (C) of the fix:
+		 *   UMC St Radboud Nijmegen,
+		 *   Dept of Epidemiology & Biostatistics,
+		 *   led by Prof. B. Kiemeney
+		 *   
+		 * note this sorts by "order"!!!
 		 * Here we deal with transposed X, hence last two arguments are swapped
 		 * compared to the other 'update_snp'
 		 * Also, the starting column-1 is not necessary for cox X therefore
