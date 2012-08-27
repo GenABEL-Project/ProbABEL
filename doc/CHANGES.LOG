@@ -1,3 +1,16 @@
+***** v.0.1-3-pacoxph-fix (2012-08-27)
+
+This release fixes bug #1846 in the Cox Proportional Hazards
+module. Now using genotype dosages or probabilities give the same
+results (as they should).
+Thanks to Dr. Kiemeney from the Radboud University Medical Centre in
+Nijmegen for sponsoring this fix. The copyright of this fix is theirs
+(see SVN r902). 
+
+Note that building the binaries for palinear and palogist is disabled
+in the Makefile as (much) newer versions of these can be found in
+ProbABEL v.0.2 (and later). 
+
 ***** v.0.1-3 (2009.11.25)
 
 This version is courtesy of Han Chen (Nov 9, 2009). The modifications allow

@@ -1,5 +1,6 @@
 
-VERSION = 0.1-3-fixcox
+VERSION = 0.1-3-pacoxph-fix-1
+BUILDDIRLNK = ProbABEL-$(VERSION)
 SRCDIR = src
 BINDIR = bin
 DOCDIR = doc
@@ -34,9 +35,12 @@ $(COXREG): $(COXSRC) $(REGFILES)
 
 clean:
 	rm -f $(BINDIR)/* $(SRCDIR)/*~ $(SRCDIR)/*.o $(DOCDIR)/*~ *.zip *.tar.gz
+	rm -f ../$(BUILDDIRLNK)
 
 linux_distrib: clean
-	cd .. ; tar --exclude-vcs -czvf ProbABEL_$(VERSION).tar.gz ProbABEL
+	ln -s $(PWD) ../$(BUILDDIRLNK)
+	cd .. ; tar --exclude-vcs -czhvf ProbABEL_$(VERSION).tar.gz $(BUILDDIRLNK)
+	rm ../$(BUILDDIRLNK)
 
 win_distrib: all
 	cd .. ; zip -r9 ProbABEL_$(VERSION)_win.zip ProbABEL

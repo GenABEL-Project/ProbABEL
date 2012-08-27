@@ -182,7 +182,9 @@ int main(int argc, char * argv [])
 	while (next_option != -1);
 
 
-	fprintf(stdout,"ProbABEL v. %s (%s) (C) Yurii Aulchenko, Maksim Struchalin, EMCR\n\n",VERSION,DATE);
+	fprintf(stdout, 
+		"ProbABEL v. %s (%s) (C) Yurii Aulchenko, Maksim Struchalin, EMCR, and others\n\n", 
+		VERSION, DATE);
 	if (neco[0]!=1 || neco[1]!=1 || neco[2]!=1)
 	{
 		print_usage(program_name,1);
