@@ -35,14 +35,16 @@ $(COXREG): $(COXSRC) $(REGFILES)
 
 clean:
 	rm -f $(BINDIR)/* $(SRCDIR)/*~ $(SRCDIR)/*.o $(DOCDIR)/*~ *.zip *.tar.gz
-	rm -f ../$(BUILDDIRLNK)
+	if [ -h ../$(BUILDDIRLNK) ]; then rm ../$(BUILDDIRLNK); fi
 
 linux_distrib: clean
-	ln -s $(PWD) ../$(BUILDDIRLNK)
+	if [ ! -d ../$(BUILDDIRLNK) ]; then ln -s $(PWD) ../$(BUILDDIRLNK); fi
 	cd .. ; tar --exclude-vcs -czhvf ProbABEL_$(VERSION).tar.gz $(BUILDDIRLNK)
-	rm ../$(BUILDDIRLNK)
+	if [ -h ../$(BUILDDIRLNK) ]; then rm ../$(BUILDDIRLNK); fi
 
 win_distrib: all
-	cd .. ; zip -r9 ProbABEL_$(VERSION)_win.zip ProbABEL
+	if [ ! -d ../$(BUILDDIRLNK) ]; then ln -s $(PWD) ../$(BUILDDIRLNK); fi
+	cd .. ; zip -r9 ProbABEL_$(VERSION)_win.zip $(BUILDDIRLNK)
+	if [ -h ../$(BUILDDIRLNK) ]; then rm ../$(BUILDDIRLNK); fi
 
 distrib: linux_distrib clean win_distrib clean
