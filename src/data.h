@@ -405,6 +405,7 @@ public:
 	mematrix<int>    strata;
 	mematrix<double> X;
 	mematrix<int>    order;
+	mematrix<double> Y; //AKM - call to coxscore function requires response to be stored in a Nx2 matrix
 
 	coxph_data(phedata &phed, gendata &gend, int snpnum) 
 	{
@@ -427,6 +428,7 @@ public:
 		offset.reinit(nids,1);
 		strata.reinit(nids,1);
 		order.reinit(nids,1);
+		Y.reinit(nids,2); // AKM
 		for (int i=0;i<nids;i++) 
 		{
 //			X.put(1.,i,0);
@@ -437,6 +439,8 @@ public:
 				fprintf(stderr,"coxph_data: status not 0/1 (right order: id, fuptime, status ...)\n",phed.noutcomes);
 				exit(1);
 			}
+			Y.put((phed.Y).get(i,0),i,0); // event time
+			Y.put((phed.Y).get(i,1),i,1); // event 1=yes 0=no
 		}
 		for (int j=0;j<phed.ncov;j++) 
 		for (int i=0;i<nids;i++) 
@@ -483,6 +487,7 @@ public:
 		offset = reorder(offset,order);
 		X = reorder(X,order);
 		X = transpose(X);
+		Y = reorder(Y,order); // AKM
 //		X.print();
 //		offset.print();
 //		weights.print();

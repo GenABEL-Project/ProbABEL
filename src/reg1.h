@@ -785,6 +785,12 @@ void coxfit2(int   *maxiter,   int   *nusedx,    int   *nvarx,
 	     double *work,	double *eps,       double *tol_chol,
 	     double *sctest);
 
+void coxscore(int   *nx,      int   *nvarx,    double *y, 
+              double *covar2,  int   *strata,   double *score, 
+              double *weights, int   *method,   double *resid2,
+              double *scratch);
+
+
 class coxph_reg
 {
 public:
@@ -795,6 +801,9 @@ public:
 	double loglik;
 	double chi2_score;
 	int niter;
+	
+        mematrix<double> covariance; // AKM
+
 
 	coxph_reg(coxph_data &cdata)
 	{
@@ -804,13 +813,22 @@ public:
 		sigma2=-1.;
 		chi2_score=-1.;
 		niter=0;
+		
+		// AKM: This array stores the covariance between the last term in the 
+		// regression model and all previous terms. Used for interaction analysis to
+		// store the covariance(s) between SNPxE and SNP OR ((SNPAAxE and SNPAA) and (SNPABxE and SNPAB)) 
+                covariance.reinit(cdata.X.nrow-1,1);
+
+		residuals.reinit(cdata.X.ncol,1); // AKM - residuals 
+
+
 	}
 	~coxph_reg()
 	{
 //		delete beta;
 //		delete sebeta;
 	}
-	void estimate(coxph_data &cdata, int verbose, int maxiter, double eps, double tol_chol, int model, int interaction, int ngpreds, bool iscox, int nullmodel=0)
+	void estimate(coxph_data &cdata, int verbose, int maxiter, double eps, double tol_chol, int model, int interaction, int ngpreds, bool iscox, int nullmodel=0,int robust=0)
 	{
 //		cout << "model = " << model << "\n";
 //		cdata.X.print();
@@ -819,6 +837,15 @@ public:
 		int length_beta = X.nrow;
 		beta.reinit(length_beta,1);
 		sebeta.reinit(length_beta,1);
+		// AKM
+		if (length_beta>1) {
+		  if (model==0 && interaction!=0 && ngpreds==2 && length_beta>2) {
+		    covariance.reinit(length_beta-2,1);
+		  } else {
+		    covariance.reinit(length_beta-1,1);
+		  }
+		}
+
 		mematrix<double> newoffset = cdata.offset;
 		newoffset = cdata.offset - (cdata.offset).column_mean(0);
 		mematrix<double> means(X.nrow,1);
@@ -837,7 +864,94 @@ public:
 			imat.data,loglik_int,&flag,
 			work,&eps,&tol_chol,
 			&sctest);
-		for (int i=0;i<X.nrow;i++) sebeta[i]=sqrt(imat.get(i,i));
+
+		// AKM - robust variance calculation
+                if(robust == 1) {
+		  
+		  mematrix<double> Xorig = t_apply_model(cdata.X,model, interaction, ngpreds, iscox, nullmodel);
+		  mematrix<double> score(X.ncol,1);
+                  
+		  mematrix<double> tX =  transpose(X);
+
+		  double zbeta, risk;
+
+		  for (int person=0; person<cdata.nids; person++) {
+		    // means.data is the offset of the linear predictor
+		    zbeta = 0;    /* form the term beta*z   (vector mult) */
+		    
+		    for (int i=0; i<tX.ncol; i++) {
+		      zbeta += beta[i]*tX.get(person,i); 
+		      
+		    }
+		    double temp = exp(zbeta);
+		    
+		    score[person] = temp;
+		  }  
+		  
+                        
+		  // call coxscore function (some of the same inputs as coxfit2 above
+		  // Returned is a matrix the same dimension as X (need temp matrix!)
+		  //mematrix<double> tempresiduals(X.nrow,X.ncol);
+		  //mematrix<double> tempa(2,tX.ncol);
+		  int method = 1;
+		  
+		  mematrix<double> tempweights(1,cdata.nids);
+		  tempweights.reinit(cdata.nids,1);
+		  //tempresiduals.reinit(X.nrow,X.ncol);
+		  double tempresiduals[X.nrow*X.ncol];
+		  double tempa[2*tX.ncol];
+
+		  for(int i=0;i<cdata.nids;i++){
+		    tempweights[i] = 1;
+		  }
+		  		  
+		  coxscore(&cdata.nids,&X.nrow,cdata.Y.data,Xorig.data,
+			   cdata.strata.data,score.data,tempweights.data,&method,
+			   tempresiduals, // data is returned here.
+			   tempa);          // a is a matrix two rows and nvar columns
+		 cout << "PRINTING RESULT\n";
+		 for(int k=0;k<X.nrow*X.ncol;k++) {
+			cout << "\t" << tempresiduals[k];
+		 }
+		cout << "\nDONE PRINTING RESULT\n";
+
+// need to put values of tempresiduals into a mematrix -- TO DO
+//		  residuals = transpose(tempresiduals)*imat;
+		  
+		  // must multiply by weight?? weight is a matrix of all 1's so unnecessary
+		  
+		  if(1) { 
+		    cout << "RESIDUALS\n";
+//		    residuals.print();
+		  }
+		  
+//		  imat = transpose(residuals)*residuals;
+		  //cdata.residuals.print();
+		  
+		  cout << "END ROBUST\n\n";
+                }
+		
+	            
+                imat.print();
+                
+                for (int i=0;i<X.nrow;i++) {
+		  sebeta[i]=sqrt(imat.get(i,i));
+		  if (i>0) { // not first variable
+                    if (model==0 && interaction!=0 && ngpreds==2 && length_beta>2) {
+		      // SNPAA and SNPAB in model
+		      if (i>1) {
+			double covval=imat.get(i,i-2);  // grab cov BETWEEN SNPAA*E and SNPAA, for example 
+			covariance.put(covval,i-2,0);
+		      }
+		    } else { // one term in model for SNP
+		      
+		      double covval=imat.get(i,i-1);
+		      covariance.put(covval,i-1,0);
+                    }             
+		  }
+                }
+	       
+//		for (int i=0;i<X.nrow;i++) sebeta[i]=sqrt(imat.get(i,i));
 		loglik = loglik_int[1];
 		niter = maxiter;
 	}

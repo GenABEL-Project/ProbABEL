@@ -11,7 +11,7 @@ EXECUTABLES = $(COXREG)
 ## in this tree only build pacoxph. Leave these out:  $(LOGREG) $(LINREG)
 
 REGFILES =  $(SRCDIR)/data.h $(SRCDIR)/mematrix.h $(SRCDIR)/reg1.h $(SRCDIR)/usage.h $(SRCDIR)/main.cpp
-COXBASE = $(SRCDIR)/chinv2 $(SRCDIR)/cholesky2 $(SRCDIR)/chsolve2 $(SRCDIR)/dmatrix $(SRCDIR)/coxfit2
+COXBASE = $(SRCDIR)/chinv2 $(SRCDIR)/cholesky2 $(SRCDIR)/chsolve2 $(SRCDIR)/dmatrix $(SRCDIR)/coxfit2 $(SRCDIR)/coxscore
 COXSRC = $(COXBASE:=.c)
 COXOBJ = $(COXBASE:=.o)
 

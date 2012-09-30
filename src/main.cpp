@@ -294,7 +294,10 @@ int main(int argc, char * argv [])
 
 #if COXPH
 	if(inverse_filename != NULL) {std::cerr<<"ERROR: mmscore is forbidden for cox regression\n";exit(1);}
-	if (robust) {std::cerr<<"ERROR: robust standard errors not implemented for Cox regression (drop us e-mail if you really need that)\n";exit(1);}
+	if (robust) {
+	  //std::cerr<<"ERROR: robust standard errors not implemented for Cox regression (drop us e-mail if you really need that)\n";exit(1);
+	  cout << "Robust standard errors implemented for Cox regression\n";
+	}
 #endif
 
 
@@ -337,7 +340,7 @@ int main(int argc, char * argv [])
 	nrd.estimate(nrgd,0,CHOLTOL,0, interaction, ngpreds, invvarmatrix, robust, 1);
 #elif COXPH
 	coxph_reg nrd(nrgd);
-	nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, interaction, ngpreds, 1);
+	nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, interaction, ngpreds, 1, robust);
 #endif
 	null_loglik = nrd.loglik;
 
@@ -427,10 +430,10 @@ if (nohead!=1)
 //Han Chen
 			*outfile[0] << sep << "beta_SNP_A1A2_" << phd.model_terms[interaction_cox] << sep << "sebeta_SNP_A1A2_" << phd.model_terms[interaction_cox]
 								 << sep << "beta_SNP_A1A1_" << phd.model_terms[interaction_cox] << sep << "sebeta_SNP_A1A1_" << phd.model_terms[interaction_cox];
-   #if !COXPH
+			//   #if !COXPH
 	    	if(inverse_filename == NULL && !allcov) *outfile[0] << sep << "cov_SNP_A1A2_int_SNP_" << phd.model_terms[interaction_cox]
             << sep << "cov_SNP_A1A1_int_SNP_" << phd.model_terms[interaction_cox];
- 	  #endif
+		// #endif
 //Oct 26, 2009
 			for (int file=1; file<outfile.size() ; file++)
 				{		
@@ -496,9 +499,9 @@ if (nohead!=1)
 		if(inverse_filename == NULL)
 //Han Chen
             {
-            #if !COXPH
+	      //            #if !COXPH
 	    	if(interaction != 0 && !allcov) *outfile[0] << sep << "cov_SNP_int_SNP_" << phd.model_terms[interaction_cox];
- 	        #endif
+		// 	        #endif
 			*outfile[0] << sep << "chi2_SNP";
             }
 //Oct 26, 2009
@@ -672,7 +675,7 @@ for (int csnp=0;csnp<nsnps;csnp++)
 				}
 				#elif COXPH
 				coxph_reg rd(rgd);
-				rd.estimate(rgd,0,MAXITER,EPS,CHOLTOL,model, interaction, true, ngpreds);
+				rd.estimate(rgd,0,MAXITER,EPS,CHOLTOL,model, interaction, true, ngpreds,0,robust);
 				#endif
 
 				if(!allcov && model==0 && interaction==0) start_pos=rd.beta.nrow-2;
@@ -686,7 +689,7 @@ for (int csnp=0;csnp<nsnps;csnp++)
 					{
 					*beta_sebeta[model] << sep << rd.beta[pos] << sep << rd.sebeta[pos];
 //Han Chen
-				#if !COXPH
+//				#if !COXPH
 				if (inverse_filename == NULL && !allcov && interaction != 0)
 				   {
 				   if (pos>start_pos)
@@ -698,7 +701,7 @@ for (int csnp=0;csnp<nsnps;csnp++)
                	          {*covvalue[model] << rd.covariance[pos-1];}
                       }
                    }
-                #endif	
+//                #endif	
 //Oct 26, 2009
 					}
 
@@ -734,14 +737,14 @@ for (int csnp=0;csnp<nsnps;csnp++)
 					*beta_sebeta[model] << sep << "nan" << sep << "nan";
 					}
 //Han Chen
-                #if !COXPH
+//                #if !COXPH
                 if (!allcov && interaction !=0)
                    {if (model==0)
                        {*covvalue[model] << "nan" << sep << "nan";}
                    else
                        {*covvalue[model] << "nan";}
                    }
-                #endif
+//                #endif
 //Oct 26, 2009
 				*chi2[model] << "nan";
 				}
@@ -752,44 +755,44 @@ for (int csnp=0;csnp<nsnps;csnp++)
 
 //Han Chen
 			*outfile[0] << beta_sebeta[0]->str() << sep;
-				#if !COXPH
+//				#if !COXPH
 				if (!allcov && interaction !=0)
                 {
                 *outfile[0] << covvalue[0]->str() << sep;
                 }
-                #endif
+//                #endif
             *outfile[0] << chi2[0]->str() << "\n";
 			*outfile[1] << beta_sebeta[1]->str() << sep;
-				#if !COXPH
+//				#if !COXPH
 				if (!allcov && interaction !=0)
                 {
                 *outfile[1] << covvalue[1]->str() << sep;
                 }
-                #endif
+//                #endif
             *outfile[1] << chi2[1]->str() << "\n";
 			*outfile[2] << beta_sebeta[2]->str() << sep;
-				#if !COXPH
+//				#if !COXPH
 				if (!allcov && interaction !=0)
                 {
                 *outfile[2] << covvalue[2]->str() << sep;
                 }
-                #endif
+//                #endif
             *outfile[2] << chi2[2]->str() << "\n";
 			*outfile[3] << beta_sebeta[3]->str() << sep;
-				#if !COXPH
+//				#if !COXPH
 				if (!allcov && interaction !=0)
                 {
                 *outfile[3] << covvalue[3]->str() << sep;
                 }
-                #endif
+//                #endif
             *outfile[3] << chi2[3]->str() << "\n";
 			*outfile[4] << beta_sebeta[4]->str() << sep;
-				#if !COXPH
+//				#if !COXPH
 				if (!allcov && interaction !=0)
                 {
                 *outfile[4] << covvalue[4]->str() << sep;
                 }
-                #endif
+//                #endif
             *outfile[4] << chi2[4]->str() << "\n";		
 //Oct 26, 2009
 
@@ -832,7 +835,7 @@ for (int csnp=0;csnp<nsnps;csnp++)
 				}
 			#elif COXPH
 			coxph_reg rd(rgd);
-			rd.estimate(rgd,0,MAXITER,EPS,CHOLTOL,model, interaction, true, ngpreds);
+			rd.estimate(rgd,0,MAXITER,EPS,CHOLTOL,model, interaction, true, ngpreds,0,robust);
 			#endif
 
 			if(!allcov && interaction==0) start_pos=rd.beta.nrow-1;
@@ -845,12 +848,12 @@ for (int csnp=0;csnp<nsnps;csnp++)
 				{
 				*beta_sebeta[0] << sep << rd.beta[pos] << sep << rd.sebeta[pos];
 //Han Chen
-				#if !COXPH
+//				#if !COXPH
 				if (inverse_filename == NULL && !allcov && interaction != 0)
 				   {if (pos>start_pos)
                	       {*covvalue[0] << rd.covariance[pos-1];}
                    }
-                #endif	
+//                #endif	
 //Oct 26, 2009
 				}
 
@@ -893,10 +896,10 @@ for (int csnp=0;csnp<nsnps;csnp++)
 			if(inverse_filename == NULL)
 				{
 //Han Chen
-                #if !COXPH
+//                #if !COXPH
                 if (!allcov && interaction !=0)
                    {*covvalue[0] << "nan";}
-                #endif
+//                #endif
 //Oct 26, 2009
 				*chi2[0] << "nan";
 				}
@@ -906,10 +909,10 @@ for (int csnp=0;csnp<nsnps;csnp++)
 				{
 //Han Chen
 				*outfile[0] << beta_sebeta[0]->str() << sep;
-				#if !COXPH
+//				#if !COXPH
 				if (!allcov && interaction !=0)
                    {*outfile[0] << covvalue[0]->str() << sep;}
-                #endif
+//                #endif
                 *outfile[0] << chi2[model]->str() << "\n";
 //Oct 26, 2009
 				}
