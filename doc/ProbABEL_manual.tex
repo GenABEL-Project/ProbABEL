@@ -120,12 +120,13 @@ frequency of allele 1, minor allele frequency and two quality
 metrics (``Quality'', the average maximum posterior probability and
 ``Rsq'', the proportion of variance decrease after imputations).
 
-Actually,
-for \PA{}, it does not matter what is written in this file --
-this information is just brought forward to the output. However,
-\textbf{it is critical} that the number of columns is seven and the number
-of lines in the file is equal to the number of SNPs in the
-corresponding DOSE file (plus one for the header line).
+Actually, for \PA{}, it (almost) does not matter what is written in
+this file -- this information is simply copied to the output. However,
+\textbf{it is critical} that the number of columns is seven and the
+number of lines in the file is equal to the number of SNPs in the
+corresponding DOSE file (plus one for the header line). Also make sure
+that the ``Rsq'' column contains values $>0$, otherwise you will end
+up with $\beta$'s set to \texttt{nan}.
 
 The example of SNP information file content follows here (also
 to be found in \texttt{ProbABEL/examples/test.mlinfo})
