@@ -360,21 +360,25 @@ public:
 	// model should come here
 	regdata rdata = rdatain.get_unmasked_data();
 
+	// Create a new invvarmatrix that only contains the values for
+	// individuals that are not masked.
 	mematrix<double> invvarmatrix;
 	if(invvarmatrixin.nrow!=0 && invvarmatrixin.ncol!=0)
 	{
 	    invvarmatrix.reinit(rdata.nids,rdata.nids);
 	    int i1=0, j1=0;
-	    for (int i=0;i<rdata.nids;i++)
+	    for (int i=0; i<rdatain.nids; i++) {
 		if (rdatain.masked_data[i]==0) {
 		    j1 = 0;
-		    for (int j=0;j<rdata.nids;j++) if (rdatain.masked_data[j]==0) {
+		    for (int j=0; j<rdatain.nids; j++) {
+			if (rdatain.masked_data[j]==0) {
 			    invvarmatrix.put(invvarmatrixin.get(i,j),i1,j1);
 			    j1++;
 			}
+		    }
 		    i1++;
 		}
-
+	    }
 	}
 
 	//fprintf(stdout,"estimate: %i %i %i %i\n",rdata.nids,(rdata.X).nrow,(rdata.X).ncol,(rdata.Y).ncol);
