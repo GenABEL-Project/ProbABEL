@@ -360,7 +360,7 @@ int main(int argc, char * argv [])
        gendata gtd (genfilename,nsnps,ngpreds,phd.nids_all,phd.nids,phd.allmeasured,skipd,phd.idnames);
     **/
     // estimate null model
-    double null_loglik=0.;
+    // double null_loglik=0.; // I noticed this is no longer used, LCK 20121004
 #if COXPH
     coxph_data nrgd(phd,gtd,-1);
 #else
@@ -379,7 +379,7 @@ int main(int argc, char * argv [])
     coxph_reg nrd(nrgd);
     nrd.estimate(nrgd,0,MAXITER,EPS,CHOLTOL,0, interaction, ngpreds, 1);
 #endif
-    null_loglik = nrd.loglik;
+    //null_loglik = nrd.loglik; // I noticed this is no longer used, LCK 20121004
 
     std::cout << " estimated null model ..." << flush;
 

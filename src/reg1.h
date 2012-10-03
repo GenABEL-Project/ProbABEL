@@ -729,7 +729,8 @@ public:
 	  if (X.ncol==4) fprintf(stdout,"X[4] %f\n",tX.get(3,0));
 	*/
 
-	double N;
+	// We don't seem to use this N in this function 20121004 - LCK
+	//double N;
 
 	niter=0;
 	double delta=1.;
@@ -754,7 +755,8 @@ public:
 	    mematrix<double> tmp = productMatrDiag(tX,W);
 	    if (verbose) {printf("tXW:\n");tmp.print();}
 	    mematrix<double> tXWX = tmp*(X);
-	    N = tXWX.get(0,0);
+	    // We don't seem to use this N in this function 20121004 - LCK
+	    // N = tXWX.get(0,0);
 
 	    if (verbose) {printf("tXWX:\n");tXWX.print();}
 	    //printf("tXWX:\n");tXWX.print();
