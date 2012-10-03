@@ -1,9 +1,20 @@
 *****
+* Fix bug #1186: When .map file is missing (but --map option was
+  given), the wrong error message was displayed. Thanks to Nicola
+  Pirastu for reporting this bug.
+
+* Fix bug #2295: the inverse variance-covariance matrix (used with the
+  --mmscore option) was incorrectly subsetted when NAs are present for
+  one or more SNP dosages. As a result the invvarmatrix that was
+  actually used in the regression contained rows and columns of
+  zeroes. Thanks to Maarten Kooyman for reporting this bug.
+
 * Update of the probabel.pl script and probabel_config.cfg.
   The .cfg file now accepts the chr separator in multiple locations in the path
   (thanks to Marijn Verkerk).
   probabel.pl can now also run Y chromosome analysis and the help
   message has been updated.
+
 
 ***** v.0.2.0 (2012.06.10)
 * The v.0.1-9e fix for working with prob files in pacoxph has been

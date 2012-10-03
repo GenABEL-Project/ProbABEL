@@ -882,7 +882,7 @@ public:
 	}
 	else
 	{
-	    std::cerr << "mlinfo: cannot open file " << filename << endl;
+	    std::cerr << "mlinfo: cannot open info file " << filename << endl;
 	    exit(1);
 	}
 	infile.close();
@@ -905,7 +905,7 @@ public:
 
 	infile.open(filename);
 	if(!infile) { // file couldn't be opened
-	    std::cerr << "mlinfo: cannot open file " << filename << endl;
+	    std::cerr << "mlinfo: cannot open info file " << filename << endl;
 	    exit(1);
 	}
 	/* Read the header and discard it */
@@ -938,7 +938,7 @@ public:
 	    char line [BFS], tmp[BFS];
 	    if (!instr.is_open())
 	    {
-		std::cerr << "mlinfo: cannot open file " << mapname << endl;
+		std::cerr << "mlinfo: cannot open map file " << mapname << endl;
 		exit(1);
 	    }
 	    instr.getline(line, BFS);
