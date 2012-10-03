@@ -33,6 +33,9 @@ int cmpfun(const void *a, const void *b)
     {
 	return 0;
     }
+
+    // You should never come here...
+    return -9;
 }
 
 coxph_data::coxph_data(const coxph_data &obj)
