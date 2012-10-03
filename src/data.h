@@ -291,17 +291,17 @@ public:
 class gendata
 {
 public:
-    int nsnps;
-    int nids;
-    int ngpreds;
+    unsigned int nsnps;
+    unsigned int nids;
+    unsigned int ngpreds;
     gendata();
-    void re_gendata(char * fname, int insnps, int ingpreds,
-		    int npeople, int nmeasured,
+    void re_gendata(char * fname, unsigned int insnps, unsigned int ingpreds,
+		    unsigned int npeople, unsigned int nmeasured,
 		    unsigned short int * allmeasured,
 		    int skipd,
 		    std::string * idnames);
-    void re_gendata(string filename, int insnps, int ingpreds,
-		    int npeople, int nmeasured,
+    void re_gendata(string filename, unsigned int insnps, unsigned int ingpreds,
+		    unsigned int npeople, unsigned int nmeasured,
 		    unsigned short int * allmeasured,
 		    std::string * idnames);
     ~gendata();
@@ -335,8 +335,10 @@ gendata::gendata()
     nsnps=nids=ngpreds=0;
 }
 
-void gendata::re_gendata(string filename, int insnps, int ingpreds, int npeople,
-			 int nmeasured, unsigned short int * allmeasured,
+void gendata::re_gendata(string filename, unsigned int insnps,
+			 unsigned int ingpreds, unsigned int npeople,
+			 unsigned int nmeasured,
+			 unsigned short int * allmeasured,
 			 std::string * idnames)
 {
     nsnps = insnps;
@@ -370,9 +372,11 @@ void gendata::re_gendata(string filename, int insnps, int ingpreds, int npeople,
 
 }
 
-void gendata::re_gendata(char * fname, int insnps, int ingpreds,
-			 int npeople, int nmeasured,
-			 unsigned short int * allmeasured, int skipd,
+void gendata::re_gendata(char * fname, unsigned int insnps,
+			 unsigned int ingpreds, unsigned int npeople,
+			 unsigned int nmeasured,
+			 unsigned short int * allmeasured,
+			 int skipd,
 			 std::string * idnames)
 {
     nids = nmeasured;
@@ -394,7 +398,7 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds,
     std::string tmpid,tmpstr;
 
     int k = 0;
-    for (int i = 0; i<npeople; i++)
+    for (unsigned int i = 0; i<npeople; i++)
 	if (allmeasured[i]==1)
 	{
 	    if (skipd>0)
@@ -425,7 +429,7 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds,
 	    for (int j=1;j<skipd;j++) {
 		infile >> tmp;
 	    }
-	    for (int j=0; j<(nsnps*ngpreds); j++)
+	    for (unsigned int j=0; j<(nsnps*ngpreds); j++)
 	    {
 		if (infile.good())
 		{
@@ -445,7 +449,7 @@ void gendata::re_gendata(char * fname, int insnps, int ingpreds,
 	{
 	    for (int j=0; j<skipd; j++)
 		infile >> tmp;
-	    for (int j=0; j<(nsnps*ngpreds); j++)
+	    for (unsigned int j=0; j<(nsnps*ngpreds); j++)
 		infile >> tmp;
 	}
     infile.close();
@@ -600,9 +604,21 @@ int cmpfun(const void *a, const void *b)
 {
     double el1 = *(double*)a;
     double el2 = *(double*)b;
-    if (el1>el2) return 1;
-    if (el1<el2) return -1;
-    if (el1==el2) return 0;
+    if (el1 > el2)
+    {
+	return 1;
+    }
+    if (el1 < el2)
+    {
+	return -1;
+    }
+    if (el1 == el2)
+    {
+	return 0;
+    }
+
+    // You should never come here...
+    return -9;
 }
 
 

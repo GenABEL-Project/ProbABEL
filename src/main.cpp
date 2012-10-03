@@ -459,7 +459,7 @@ int main(int argc, char * argv [])
 
 	    //Header
 	    //_____________________
-	    for(int i=0 ; i<outfile.size() ; i++)
+	    for(unsigned int i=0 ; i<outfile.size() ; i++)
 	    {
 		(*outfile[i]) << "name" << sep << "A1" << sep << "A2" << sep << "Freq1" << sep << "MAF"
 			      << sep << "Quality" << sep << "Rsq" << sep << "n" << sep
@@ -471,7 +471,7 @@ int main(int argc, char * argv [])
 
 	    if(allcov) //All covariates in output
 	    {
-		for (int file=0; file<outfile.size() ; file++)
+		for (unsigned int file=0; file<outfile.size() ; file++)
 		    for (int i =0; i<phd.n_model_terms-1;i++)
 			*outfile[file] << sep << "beta_" << phd.model_terms[i] << sep
 				       << "sebeta_" << phd.model_terms[i];
@@ -499,7 +499,7 @@ int main(int argc, char * argv [])
 		}
 #endif
 		//Oct 26, 2009
-		for (int file=1; file<outfile.size() ; file++)
+		for (unsigned int file=1; file<outfile.size() ; file++)
 		{
 		    *outfile[file] << sep << "beta_SNP_" << phd.model_terms[interaction_cox]  << sep
 				   << "sebeta_SNP_" << phd.model_terms[interaction_cox];
@@ -735,13 +735,13 @@ int main(int argc, char * argv [])
 	    //		freq = ((gtd.G).column_mean(csnp*2)*2.+(gtd.G).column_mean(csnp*2+1))/2.;
 	    gtd.get_var(csnp*2,snpdata1);
 	    gtd.get_var(csnp*2+1,snpdata2);
-	    for (int ii=0;ii<gtd.nids;ii++)
+	    for (unsigned int ii=0;ii<gtd.nids;ii++)
 		if (!isnan(snpdata1[ii]) && !isnan(snpdata2[ii]))
 		{gcount++;freq+=snpdata1[ii]+snpdata2[ii]*0.5;}
 	} else {
 	    //		freq = (gtd.G).column_mean(csnp)/2.;
 	    gtd.get_var(csnp,snpdata1);
-	    for (int ii=0;ii<gtd.nids;ii++)
+	    for (unsigned int ii=0;ii<gtd.nids;ii++)
 		if (!isnan(snpdata1[ii]))
 		{gcount++;freq+=snpdata1[ii]*0.5;}
 	}
@@ -755,7 +755,7 @@ int main(int argc, char * argv [])
 	if(ngpreds==2) //All models output. One file per each model
 	{
 	    //Write mlinfo to output:
-	    for(int file=0 ; file<outfile.size() ; file++)
+	    for(unsigned int file=0 ; file<outfile.size() ; file++)
 	    {
 		*outfile[file] << mli.name[csnp] << sep << mli.A1[csnp] << sep << mli.A2[csnp] << sep
 			       << mli.Freq1[csnp] << sep << mli.MAF[csnp] << sep << mli.Quality[csnp] << sep
@@ -1076,7 +1076,7 @@ int main(int argc, char * argv [])
 
 
 
-    for(int i=0 ; i<outfile.size() ; i++)
+    for(unsigned int i=0 ; i<outfile.size() ; i++)
     {
 	outfile[i]->close();
 	delete outfile[i];
