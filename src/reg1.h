@@ -302,46 +302,53 @@ public:
         //		delete residuals;
     }
 
-    void estimate(regdata &rdatain, int verbose, double tol_chol, int model,
-            int interaction, int ngpreds, mematrix<double> invvarmatrixin,
+//    mematrix<double> fill_invvar_matrix(mematrix<double>& invvarmatrix,
+//            regdata& rdata, regdata& rdatain, mematrix<double> invvarmatrixin)
+//    {
+//        std::cout<<"invvarmatrixin"<<invvarmatrixin.ncol<<" "<<invvarmatrixin.ncol<<"\n";
+//        std::cout<<"rdata.nids"<<rdata.nids<<"\n";
+//
+//        invvarmatrix.reinit(rdata.nids, rdata.nids);
+//        int i1 = 0, j1 = 0;
+//        for (int i = 0; i < rdata.nids; i++)
+//            if (rdatain.masked_data[i] == 0)
+//            {
+//                j1 = 0;
+//                for (int j = 0; j < rdata.nids; j++)
+//                    if (rdatain.masked_data[j] == 0)
+//                    {
+//                        invvarmatrix.put(invvarmatrixin.get(i, j), i1, j1);
+//                        j1++;
+//                    }
+//                i1++;
+//            }
+//
+//        return invvarmatrix;
+//    }
+
+    void estimate(regdata& rdatain, int verbose, double tol_chol, int model,
+            int interaction, int ngpreds, masked_matrix invvarmatrixin,
             int robust, int nullmodel = 0)
     {
         //suda ineraction parameter
         // model should come here
         regdata rdata = rdatain.get_unmasked_data();
+
+        if (invvarmatrixin.length_of_mask!=0)
+        {
+            invvarmatrixin.update_mask(rdatain.masked_data);
+            //  invvarmatrixin.masked_data->print();
+        }
         if (verbose)
         {
             cout << rdata.is_interaction_excluded
                     << " <-irdata.is_interaction_excluded\n";
-        }
-        mematrix<double> invvarmatrix;
-        if (invvarmatrixin.nrow != 0 && invvarmatrixin.ncol != 0)
-        {
-            invvarmatrix.reinit(rdata.nids, rdata.nids);
-            int i1 = 0, j1 = 0;
-            for (int i = 0; i < rdata.nids; i++)
-                if (rdatain.masked_data[i] == 0)
-                {
-                    j1 = 0;
-                    for (int j = 0; j < rdata.nids; j++)
-                        if (rdatain.masked_data[j] == 0)
-                        {
-                            invvarmatrix.put(invvarmatrixin.get(i, j), i1, j1);
-                            j1++;
-                        }
-                    i1++;
-                }
-        }
-        if (verbose)
-        {
             printf("invvarmatrix:\n");
-            invvarmatrix.print();
-        }
-        if (verbose)
-        {
+            invvarmatrixin.masked_data->print();
             printf("rdata.X:\n");
             rdata.X.print();
         }
+
 
         //fprintf(stdout,"estimate: %i %i %i %i\n",rdata.nids,(rdata.X).nrow,(rdata.X).ncol,(rdata.Y).ncol);
         mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,
@@ -370,55 +377,42 @@ public:
         }
         //Oct 26, 2009
         mematrix<double> tX = transpose(X);
-        if (invvarmatrix.nrow != 0 && invvarmatrix.ncol != 0)
+        if (invvarmatrixin.length_of_mask!=0)
         {
-            tX = tX * invvarmatrix;
+
+            tX = tX * invvarmatrixin.masked_data;
             //!check if quicker
             //tX = productXbySymM(tX,invvarmatrix);
             // = invvarmatrix*X; std::cout<<"new tX.nrow="<<X.nrow<<" tX.ncol="<<X.ncol<<"\n";
-        }
-        if (verbose)
-        {
-            printf("tX:\n");
-            tX.print();
         }
 
         mematrix<double> tXX = tX * X;
 
         //		double N = tXX.get(0,0);
         double N = X.nrow;
-        if (verbose)
-        {
-            printf("tXX:\n");
-            tXX.print();
-        }
+
         //
         // use cholesky to invert
         //
         mematrix<double> tXX_i = tXX;
         cholesky2_mm(tXX_i, tol_chol);
-        if (verbose)
-        {
-            printf("chole tXX:\n");
-            tXX_i.print();
-        }
         chinv2_mm(tXX_i);
         // before was
         // mematrix<double> tXX_i = invert(tXX);
-        if (verbose)
-        {
-            printf("tXX-1:\n");
-            tXX_i.print();
-        }
         mematrix<double> tXY = tX * (rdata.Y);
-        if (verbose)
-        {
-            printf("tXY:\n");
-            tXY.print();
-        }
+
         beta = tXX_i * tXY;
         if (verbose)
-        {
+        {   printf("tX:\n");
+            tX.print();
+            printf("tXX:\n");
+            tXX.print();
+            printf("chole tXX:\n");
+            tXX_i.print();
+            printf("tXX-1:\n");
+            tXX_i.print();
+            printf("tXY:\n");
+            tXY.print();
             printf("beta:\n");
             (beta).print();
         }
@@ -512,7 +506,7 @@ public:
         //
         //cout << "estimate 0\n";
 
-        if (invvarmatrix.nrow != 0 && invvarmatrix.ncol != 0)
+        if (invvarmatrixin.length_of_mask!=0)
             sigma2_internal = 1.0;
 
         mematrix<double> robust_sigma2(X.ncol, X.ncol);
@@ -596,7 +590,7 @@ public:
 
     void score(mematrix<double> &resid, regdata &rdatain, int verbose,
             double tol_chol, int model, int interaction, int ngpreds,
-            mematrix<double> invvarmatrix, int nullmodel = 0)
+            masked_matrix invvarmatrix, int nullmodel = 0)
     {
         regdata rdata = rdatain.get_unmasked_data();
 
@@ -613,8 +607,8 @@ public:
 
         mematrix<double> tX = transpose(X);
 
-        if (invvarmatrix.nrow != 0 && invvarmatrix.ncol != 0)
-            tX = tX * invvarmatrix;
+        if (invvarmatrix.length_of_mask!=0)
+            tX = tX * invvarmatrix.masked_data;
         //if(invvarmatrix.nrow!=0 && invvarmatrix.ncol!=0) X = invvarmatrix*X;
 
         mematrix<double> u = tX * resid;
@@ -688,7 +682,7 @@ public:
 
     void estimate(regdata &rdatain, int verbose, int maxiter, double eps,
             double tol_chol, int model, int interaction, int ngpreds,
-            mematrix<double> invvarmatrixin, int robust, int nullmodel = 0)
+           masked_matrix invvarmatrixin, int robust, int nullmodel = 0)
     {
         // on the contrast to the 'linear' 'invvarmatrix' contains
         // inverse of correlation matrix (not the inverse of var-cov matrix)
@@ -699,23 +693,11 @@ public:
         // a lot of code duplicated between linear and logistic...
         // e.g. a piece below...
         mematrix<double> invvarmatrix;
-        if (invvarmatrixin.nrow != 0 && invvarmatrixin.ncol != 0)
-        {
-            invvarmatrix.reinit(rdata.nids, rdata.nids);
-            int i1 = 0, j1 = 0;
-            for (int i = 0; i < rdata.nids; i++)
-                if (rdatain.masked_data[i] == 0)
-                {
-                    j1 = 0;
-                    for (int j = 0; j < rdata.nids; j++)
-                        if (rdatain.masked_data[j] == 0)
-                        {
-                            invvarmatrix.put(invvarmatrixin.get(i, j), i1, j1);
-                            j1++;
-                        }
-                    i1++;
-                }
-        }
+        if (invvarmatrixin.length_of_mask!=0)
+             {
+                 invvarmatrixin.update_mask(rdatain.masked_data);
+
+             }
 
         mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,
                 rdata.is_interaction_excluded, false, nullmodel);
@@ -928,7 +910,7 @@ public:
     // just a stupid copy from linear_reg
     void score(mematrix<double> &resid, regdata &rdata, int verbose,
             double tol_chol, int model, int interaction, int ngpreds,
-            mematrix<double> invvarmatrix, int nullmodel = 0)
+            masked_matrix invvarmatrix, int nullmodel = 0)
     {
         mematrix<double> oX = rdata.extract_genotypes();
         mematrix<double> X = apply_model(oX, model, interaction, ngpreds,
@@ -938,8 +920,8 @@ public:
         double N = static_cast<double>(resid.nrow);
 
         mematrix<double> tX = transpose(X);
-        if (invvarmatrix.nrow != 0 && invvarmatrix.ncol != 0)
-            tX = tX * invvarmatrix;
+        if (invvarmatrix.length_of_mask != 0)
+            tX = tX * invvarmatrix.masked_data;
 
         mematrix<double> u = tX * resid;
         mematrix<double> v = tX * X;
@@ -1022,10 +1004,9 @@ public:
         int flag;
         double sctest = 1.0;
 //TODO(maarten): remove the following comment signs. This is done for testing purpose only EVIL!
-//        coxfit2(&maxiter, &cdata.nids, &X.nrow, cdata.stime.data,
-//                cdata.sstat.data, X.data, newoffset.data, cdata.weights.data,
-//                cdata.strata.data, means.data, beta.data, u.data, imat.data,
-//                loglik_int, &flag, work, &eps, &tol_chol, &sctest);
+        coxfit2(&maxiter, &cdata.nids, &X.nrow, cdata.stime.data,
+                cdata.sstat.data, X.data, newoffset.data, cdata.weights.data,
+                cdata.strata.data, means.data, beta.data, u.data, imat.data,loglik_int, &flag, work, &eps, &tol_chol, &sctest);
         for (int i = 0; i < X.nrow; i++)
             sebeta[i] = sqrt(imat.get(i, i));
         loglik = loglik_int[1];

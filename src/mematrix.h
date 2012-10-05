@@ -32,6 +32,7 @@ public:
     mematrix operator-(mematrix &M);
     mematrix operator*(DT toadd);
     mematrix operator*(mematrix &M);
+    mematrix operator*(mematrix *M);
 
     void reinit(int nr, int nc);
 

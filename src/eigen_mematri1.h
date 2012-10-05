@@ -86,7 +86,7 @@ DT & mematrix<DT>::operator[](const int i)
 //    return temp;
 //}
 template<class DT>
-mematrix<DT> mematrix<DT>::operator+(mematrix<DT> &M)
+mematrix<DT> mematrix<DT>::operator+(const mematrix<DT> &M)
 {
     if (ncol != M.ncol || nrow != M.nrow)
     {
@@ -102,14 +102,14 @@ mematrix<DT> mematrix<DT>::operator+(mematrix<DT> &M)
 }
 
 template<class DT>
-mematrix<DT> mematrix<DT>::operator-(DT toadd)
+mematrix<DT> mematrix<DT>::operator-(const DT toadd)
 {
     mematrix<DT> temp(nrow, ncol);
     temp.data = data.array() - toadd;
     return temp;
 }
 template<class DT>
-mematrix<DT> mematrix<DT>::operator-(mematrix<DT> &M)
+mematrix<DT> mematrix<DT>::operator-(const mematrix<DT> &M)
 {
     if (ncol != M.ncol || nrow != M.nrow)
     {
@@ -127,7 +127,7 @@ mematrix<DT> mematrix<DT>::operator-(mematrix<DT> &M)
 }
 
 template<class DT>
-mematrix<DT> mematrix<DT>::operator*(DT multiplyer)
+mematrix<DT> mematrix<DT>::operator*( DT multiplyer)
 {
 //    MatrixXd add = MatrixXd::Constant(nrow, ncol, toadd);
     mematrix<DT> temp(nrow, ncol);
@@ -136,7 +136,7 @@ mematrix<DT> mematrix<DT>::operator*(DT multiplyer)
 }
 
 template<class DT>
-mematrix<DT> mematrix<DT>::operator*(mematrix<DT> &M)
+mematrix<DT> mematrix<DT>::operator*(const mematrix<DT> &M)
 {
     if (ncol != M.nrow)
     {
@@ -152,6 +152,27 @@ mematrix<DT> mematrix<DT>::operator*(mematrix<DT> &M)
 
     return temp;
 }
+
+
+template<class DT>
+mematrix<DT> mematrix<DT>::operator*(const mematrix<DT> *M)
+{
+    if (ncol != M->nrow)
+    {
+        fprintf(stderr, "mematrix*: ncol != nrow (%d,%d) and (%d,%d)", nrow,
+                ncol, M->nrow, M->ncol);
+
+    }
+    mematrix<DT> temp;
+    temp.data = data * M->data;
+    temp.ncol=temp.data.cols();
+    temp.nrow=temp.data.rows();
+    temp.nelements=temp.nrow* temp.ncol;
+
+    return temp;
+}
+
+
 
 // 
 // operations
@@ -272,20 +293,21 @@ mematrix<DT> transpose(mematrix<DT> &M)
     return temp;
 }
 
-//template<class DT>
-//mematrix<DT> reorder(mematrix<DT> &M, mematrix<int> order)
-//{
-//    if (M.nrow != order.nrow)
-//    {
-//        fprintf(stderr, "reorder: M & order have differet # of rows\n");
-//        exit(1);
-//    }
-//    mematrix<DT> temp(M.nrow, M.ncol);
+template<class DT>
+mematrix<DT> reorder(mematrix<DT> &M, mematrix<int> order)
+{
+    if (M.nrow != order.nrow)
+    {
+        fprintf(stderr, "reorder: M & order have differet # of rows\n");
+        exit(1);
+    }
+    mematrix<DT> temp(M.nrow, M.ncol);
+//FIXME: commented out to get compilation running
 //    for (int i = 0; i < temp.nrow; i++)
 //        for (int j = 0; j < temp.ncol; j++)
 //            temp.data[order[i] * temp.ncol + j] = M.data[i * M.ncol + j];
-//    return temp;
-//}
+    return temp;
+}
 //
 //
 //template<class DT>

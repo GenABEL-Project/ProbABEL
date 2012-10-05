@@ -33,11 +33,13 @@ public:
     mematrix & operator=(const mematrix &M);
      DT &  operator[]( int i);
 //    mematrix operator+(DT toadd);
-    mematrix operator+(mematrix &M);
+    mematrix operator+(const mematrix &M);
     mematrix operator-(DT toadd);
-    mematrix operator-(mematrix &M);
+    mematrix operator-(const mematrix &M);
     mematrix operator*(DT toadd);
-    mematrix operator*(mematrix &M);
+    mematrix operator*(const mematrix &M);
+    mematrix operator*(const mematrix *M);
+
 
     void reinit(int nr, int nc);
 

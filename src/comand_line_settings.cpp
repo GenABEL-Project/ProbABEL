@@ -244,6 +244,9 @@ void cmdvars::printinfo()
     fprintf(stdout,
             "%s v. %s (C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EMCR\n\n",
             PACKAGE, PACKAGE_VERSION);
+#if EIGEN
+    fprintf(stdout, "using EIGEN for matrix operations\n");
+#endif
 
     if (neco[0] != 1 || neco[1] != 1 || neco[2] != 1)
     {

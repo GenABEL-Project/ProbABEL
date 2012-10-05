@@ -169,6 +169,29 @@ mematrix<DT> mematrix<DT>::operator*(mematrix<DT> &M)
     return temp;
 }
 
+template<class DT>
+mematrix<DT> mematrix<DT>::operator*(mematrix<DT> *M)
+{
+    if (ncol != M->nrow)
+    {
+        fprintf(stderr, "mematrix*: ncol != nrow (%d,%d) and (%d,%d)", nrow,
+                ncol, M->nrow, M->ncol);
+        exit(1);
+    }
+    mematrix<DT> temp(nrow, M->ncol);
+    for (int j = 0; j < temp.nrow; j++)
+    {
+        for (int i = 0; i < temp.ncol; i++)
+        {
+            DT sum = 0;
+            for (int j1 = 0; j1 < ncol; j1++)
+                sum += data[j * ncol + j1] * M->data[j1 * M->ncol + i];
+            temp[j * temp.ncol + i] = sum;
+        }
+    }
+    return temp;
+}
+
 // 
 // operations
 //
