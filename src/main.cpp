@@ -925,7 +925,7 @@ int main(int argc, char * argv[])
     //________________________________________________________________
     //Maksim, 9 Jan, 2009
 
-    for (int i = 0; i < outfile.size(); i++)
+    for (unsigned int i = 0; i < outfile.size(); i++)
     {
         outfile[i]->close();
         delete outfile[i];
