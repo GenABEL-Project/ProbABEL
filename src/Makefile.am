@@ -7,7 +7,7 @@ REGFILES = data.h data.cpp gendata.h gendata.cpp mematrix.h mematri1.h	\
  comand_line_settings.h comand_line_settings.cpp reg1.h usage.h		\
  usage.cpp main.cpp utilities.h utilities.cpp phedata.h phedata.cpp	\
  cholesky.h cholesky.cpp regdata.h regdata.cpp coxph_data.h		\
- coxph_data.cpp
+ coxph_data.cpp maskedmatrix.cpp maskedmatrix.h
 
 ## Filevector files:
 FVSRC = fvlib/AbstractMatrix.cpp fvlib/CastUtils.cpp			\
