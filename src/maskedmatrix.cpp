@@ -51,7 +51,8 @@ void masked_matrix::set_matrix(const mematrix<double> M) {
 masked_matrix::~masked_matrix() {
 	// TODO Auto-generated destructor stub
 }
-void masked_matrix::update_mask( short unsigned int *newmask) {
+void masked_matrix::update_mask(short unsigned int *newmask) {
+
 //find length of masked matrix
 	int nmeasured = 0;
 	for (int i = 0; i < length_of_mask; i++) {
@@ -70,7 +71,11 @@ void masked_matrix::update_mask( short unsigned int *newmask) {
 			masked_data = &matrix_masked_data;
 		} else {
 			//new mask differs from old matrix and create new.
-			mask_of_old = newmask;
+//			//mask_of_old = newmask;
+			//TODO(maarten): there must be a smarter way to copy these values
+			for (int i = 0; i < length_of_mask; i++) {
+				mask_of_old[i] = newmask[i];
+			}
 			mask_symmetric(nmeasured);
 			masked_data = &matrix_masked_data;
 		}
@@ -93,8 +98,6 @@ void masked_matrix::mask_symmetric(int nmeasured) {
 				}
 			i1++;
 		}
-
-
 }
 //mematrix<double>* masked_matrix::get_matrix()
 //{
