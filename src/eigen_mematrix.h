@@ -1,10 +1,9 @@
 #ifndef __EIGEN_MEMATRIX_H__
 #define __EIGEN_MEMATRIX_H__
-#include <iostream>
 #include <Eigen/Dense>
+#include <iostream>
 
 using namespace Eigen;
-
 using namespace std;
 
 template<class DT> class mematrix
@@ -13,7 +12,7 @@ public:
     int nrow;
     int ncol;
     int nelements;
-    Matrix<DT, Dynamic, Dynamic,RowMajor> data;
+    Matrix<DT, Dynamic, Dynamic, RowMajor> data;
 
     mematrix()
     {
@@ -31,7 +30,7 @@ public:
     }
 
     mematrix & operator=(const mematrix &M);
-     DT &  operator[]( int i);
+    DT & operator[](int i);
 //    mematrix operator+(DT toadd);
     mematrix operator+(const mematrix &M);
     mematrix operator-(DT toadd);
@@ -39,7 +38,6 @@ public:
     mematrix operator*(DT toadd);
     mematrix operator*(const mematrix &M);
     mematrix operator*(const mematrix *M);
-
 
     void reinit(int nr, int nc);
 
@@ -55,9 +53,7 @@ public:
     void put(DT value, int nr, int nc);
     DT column_mean(int nc);
     DT column_sum(int nc);
-   void print(void);
-
-
+    void print(void);
 };
 
 //mematrix transpose(mematrix M);

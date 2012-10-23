@@ -1,16 +1,16 @@
 #ifndef EIGEN_MEMATRI1_H
 #define EIGEN_MEMATRI1_H
 #include "eigen_mematrix.h"
-#include <cstdlib>
+#include <Eigen/Dense>
+#include <Eigen/LU>
 #include <string>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
-#include <Eigen/Dense>
-#include <Eigen/LU>
+
 
 using namespace Eigen;
-// 
+//
 // constructors
 //
 
@@ -27,12 +27,10 @@ mematrix<DT>::mematrix(int nr, int nc)
         fprintf(stderr, "mematrix(): nc <= 0\n");
         exit(1);
     }
-    nrow = nr;
-    ncol = nc;
-    nelements = nr * nc;
-    Matrix<DT, Dynamic, Dynamic,RowMajor> data;
-
-
+    this->nrow = nr;
+    this->ncol = nc;
+    this->nelements = nr * nc;
+    this->data.resize(nr,nc);
 }
 template<class DT>
 mematrix<DT>::mematrix(const mematrix<DT> & M)
@@ -41,9 +39,8 @@ mematrix<DT>::mematrix(const mematrix<DT> & M)
     nrow = M.nrow;
     nelements = M.nelements;
     data = M.data;
-
 }
-// 
+//
 // operators
 //
 template<class DT>
@@ -51,13 +48,10 @@ mematrix<DT> &mematrix<DT>::operator=(const mematrix<DT> &M)
 {
     if (this != &M)
     {
-
         ncol = M.ncol;
         nrow = M.nrow;
         nelements = M.nelements;
-
         data = M.data;
-        //		fprintf(stderr,"mematrix=: can allocate memory (%d,%d)\n",M.nrow,M.ncol);
     }
     return *this;
 }
@@ -97,6 +91,9 @@ mematrix<DT> mematrix<DT>::operator+(const mematrix<DT> &M)
     }
     mematrix<DT> temp;
     temp.data = data + M.data;
+    temp.ncol = data.cols();
+    temp.nrow = data.rows();
+    temp.nelements = temp.nrow * temp.ncol;
 
     return temp;
 }
@@ -120,14 +117,14 @@ mematrix<DT> mematrix<DT>::operator-(const mematrix<DT> &M)
     }
     mematrix<DT> temp;
     temp.data = data - M.data;
-    temp.ncol=temp.data.cols();
-    temp.nrow=temp.data.rows();
-    temp.nelements=temp.nrow* temp.ncol;
+    temp.ncol = temp.data.cols();
+    temp.nrow = temp.data.rows();
+    temp.nelements = temp.nrow * temp.ncol;
     return temp;
 }
 
 template<class DT>
-mematrix<DT> mematrix<DT>::operator*( DT multiplyer)
+mematrix<DT> mematrix<DT>::operator*(DT multiplyer)
 {
 //    MatrixXd add = MatrixXd::Constant(nrow, ncol, toadd);
     mematrix<DT> temp(nrow, ncol);
@@ -142,17 +139,15 @@ mematrix<DT> mematrix<DT>::operator*(const mematrix<DT> &M)
     {
         fprintf(stderr, "mematrix*: ncol != nrow (%d,%d) and (%d,%d)", nrow,
                 ncol, M.nrow, M.ncol);
-
     }
     mematrix<DT> temp;
     temp.data = data * M.data;
-    temp.ncol=temp.data.cols();
-    temp.nrow=temp.data.rows();
-    temp.nelements=temp.nrow* temp.ncol;
+    temp.ncol = temp.data.cols();
+    temp.nrow = temp.data.rows();
+    temp.nelements = temp.nrow * temp.ncol;
 
     return temp;
 }
-
 
 template<class DT>
 mematrix<DT> mematrix<DT>::operator*(const mematrix<DT> *M)
@@ -161,20 +156,17 @@ mematrix<DT> mematrix<DT>::operator*(const mematrix<DT> *M)
     {
         fprintf(stderr, "mematrix*: ncol != nrow (%d,%d) and (%d,%d)", nrow,
                 ncol, M->nrow, M->ncol);
-
     }
     mematrix<DT> temp;
     temp.data = data * M->data;
-    temp.ncol=temp.data.cols();
-    temp.nrow=temp.data.rows();
-    temp.nelements=temp.nrow* temp.ncol;
+    temp.ncol = temp.data.cols();
+    temp.nrow = temp.data.rows();
+    temp.nelements = temp.nrow * temp.ncol;
 
     return temp;
 }
 
-
-
-// 
+//
 // operations
 //
 template<class DT>
@@ -199,7 +191,6 @@ void mematrix<DT>::reinit(int nr, int nc)
 
     data.resize(nr, nc);
     data.setZero();
-
 }
 template<class DT>
 DT mematrix<DT>::get(int nr, int nc)
@@ -222,6 +213,9 @@ DT mematrix<DT>::get(int nr, int nc)
 template<class DT>
 void mematrix<DT>::put(DT value, int nr, int nc)
 {
+//    printf("put val:%f  nr=%i nc=%i \n", value, nr, nc);
+//     printf("mat  nr=%i nc=%i \n", data.rows(),data.cols());
+//     printf("mat  nr=%i nc=%i \n", nrow,ncol);
     if (nc < 0 || nc > ncol)
     {
         fprintf(stderr,
@@ -250,7 +244,7 @@ DT mematrix<DT>::column_mean(int nc)
 }
 
 template<class DT>
-mematrix<DT> column_sum(mematrix<DT> &M)
+mematrix<DT> column_sum(const mematrix<DT> &M)
 {
     mematrix<DT> out;
     out.reinit(1, M.ncol);
@@ -269,32 +263,27 @@ void mematrix<DT>::print(void)
             cout << data.data()[i * ncol + j] << "\t";
         cout << "\n";
     }
-
-
-
-
 }
-
-// 
 // other functions
 //
 
 template<class DT>
-mematrix<DT> transpose(mematrix<DT> &M)
+mematrix<DT> transpose(const mematrix<DT> &M)
 {
-//    cout << "[DEBUG TRANSPOSE PRE]nrow=" << M.nrow << "; ncol=" << M.ncol << "; nelements=" << M.nelements;
+//cout << "[DEBUG TRANSPOSE PRE]nrow=" << M.nrow << "; ncol=" << M.ncol << "; nelements=" << M.nelements;
 
     mematrix<DT> temp;
-    temp.data=M.data.transpose();
-    temp.ncol=M.nrow;
-    temp.nrow=M.ncol;
-//    cout << "[DEBUG TRANSPOSE post]nrow=" << temp.nrow << "; ncol=" << temp.ncol << "; nelements=" << temp.nelements;
+    temp.data = M.data.transpose();
+    temp.ncol = M.nrow;
+    temp.nrow = M.ncol;
+    temp.nelements = M.nelements;
+//cout << "[DEBUG TRANSPOSE post]nrow=" << temp.nrow << "; ncol=" << temp.ncol << "; nelements=" << temp.nelements;
 
     return temp;
 }
 
 template<class DT>
-mematrix<DT> reorder(mematrix<DT> &M, mematrix<int> order)
+mematrix<DT> reorder(const mematrix<DT> &M, const mematrix<int> order)
 {
     if (M.nrow != order.nrow)
     {
@@ -302,7 +291,7 @@ mematrix<DT> reorder(mematrix<DT> &M, mematrix<int> order)
         exit(1);
     }
     mematrix<DT> temp(M.nrow, M.ncol);
-//FIXME: commented out to get compilation running
+//FIXME(maarten): commented out to get compilation running
 //    for (int i = 0; i < temp.nrow; i++)
 //        for (int j = 0; j < temp.ncol; j++)
 //            temp.data[order[i] * temp.ncol + j] = M.data[i * M.ncol + j];
@@ -323,7 +312,7 @@ mematrix<DT> reorder(mematrix<DT> &M, mematrix<int> order)
 //
 
 template<class DT>
-mematrix<DT> invert(mematrix<DT> &M)
+mematrix<DT> invert(const mematrix<DT> &M)
 {
     if (M.ncol != M.nrow)
     {
@@ -338,7 +327,7 @@ mematrix<DT> invert(mematrix<DT> &M)
 }
 
 template<class DT>
-mematrix<DT> productMatrDiag(mematrix<DT> &M, mematrix<DT> &D)
+mematrix<DT> productMatrDiag( const mematrix<DT> &M,  const mematrix<DT> &D)
 {
     //multiply all rows of M by value of first row of D
     if (M.ncol != D.nrow)
@@ -347,11 +336,12 @@ mematrix<DT> productMatrDiag(mematrix<DT> &M, mematrix<DT> &D)
         exit(1);
     }
     mematrix<DT> temp = M;
-//    mematrix<DT> temp(M.nrow, M.ncol);
+    //make a array of the first row of D in the same way orientation as M.data.row(i).array()
+    Array<DT,Dynamic,Dynamic> row=D.data.block(0,0,M.ncol,1).transpose();
 
     for (int i = 0; i < temp.nrow; i++)
     {
-        temp.data.row(i) = M.data.row(i).array() * D.data.row(0).array();
+       temp.data.row(i) = M.data.row(i).array() * row;
     }
     return temp;
 }
