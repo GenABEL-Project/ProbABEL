@@ -56,6 +56,7 @@ void masked_matrix::set_matrix(const mematrix<double> M)
 masked_matrix::~masked_matrix()
 {
     // TODO Auto-generated destructor stub
+    delete[]  mask_of_old;
 }
 void masked_matrix::update_mask(short unsigned int *newmask)
 {
