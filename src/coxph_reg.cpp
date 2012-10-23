@@ -6,7 +6,7 @@ extern "C"
 #include "survproto.h"
 }
 
-coxph_reg::coxph_reg(coxph_data &cdatain) {
+coxph_reg::coxph_reg(const coxph_data &cdatain) {
 	coxph_data cdata = cdatain.get_unmasked_data();
 	beta.reinit(cdata.X.nrow, 1);
 	sebeta.reinit(cdata.X.nrow, 1);
@@ -19,7 +19,7 @@ coxph_reg::~coxph_reg() {
 	//		delete beta;
 	//		delete sebeta;
 }
-void coxph_reg::estimate(coxph_data &cdatain, int verbose, int maxiter,
+void coxph_reg::estimate( coxph_data &cdatain, int verbose, int maxiter,
 		double eps, double tol_chol, int model, int interaction, int ngpreds,
 		bool iscox, int nullmodel = 0) {
 	//		cout << "model = " << model << "\n";

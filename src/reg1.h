@@ -651,6 +651,7 @@ public:
 		mematrix<double> tX = transpose(X);
 
 		if (invvarmatrix.nrow != 0 && invvarmatrix.ncol != 0) {
+			//TODO(maarten):invvarmatix is symmetric:is there an more effective way?
 			tX = tX * invvarmatrix;
 		}
 		/*

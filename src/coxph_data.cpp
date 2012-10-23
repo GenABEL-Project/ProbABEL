@@ -38,7 +38,7 @@ int cmpfun(const void *a, const void *b)
     return -9;
 }
 
-coxph_data::coxph_data(const coxph_data &obj)
+coxph_data::coxph_data( coxph_data &obj)
 {
     nids = obj.nids;
     ncov = obj.ncov;
@@ -54,7 +54,7 @@ coxph_data::coxph_data(const coxph_data &obj)
     for (int i = 0; i < nids; i++)
 	masked_data[i] = 0;
 }
-coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
+coxph_data::coxph_data( phedata &phed,  gendata &gend, int snpnum)
 {
     nids = gend.nids;
     masked_data = new unsigned short int[nids];
@@ -156,7 +156,7 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
     //      stime.print();
     //      sstat.print();
 }
-void coxph_data::update_snp(gendata &gend, int snpnum)
+void coxph_data::update_snp( gendata &gend, int snpnum)
 {
     // note this sorts by "order"!!!
 

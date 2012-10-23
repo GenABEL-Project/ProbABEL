@@ -16,25 +16,24 @@
 #include "mematri1.h"
 #endif
 
-class masked_matrix {
+class masked_matrix
+{
 public:
-	masked_matrix();
-	masked_matrix( mematrix<double> M);
-	void set_matrix(const mematrix<double> M);
-	virtual ~masked_matrix();
-	void update_mask( short unsigned int *newmask);
+    masked_matrix();
+    masked_matrix(mematrix<double> M);
+    void set_matrix(const mematrix<double> M);
+    virtual ~masked_matrix();
+    void update_mask(short unsigned int *newmask);
 //    mematrix<double>* get_matrix();
-	mematrix<double> matrix_original;
-	mematrix<double> *masked_data;
-	int length_of_mask;
+    mematrix<double> matrix_original;
+    mematrix<double> *masked_data;
+    int length_of_mask;
 private:
-	//char type;
-	mematrix<double> matrix_masked_data;
-	unsigned short int *mask_of_old;
-	void mask_symmetric(int nmeasured);
-	bool is_equal_array(unsigned short int *a, unsigned short int *b,
-			int size);
-
+    //char type;
+    mematrix<double> matrix_masked_data;
+    unsigned short int *mask_of_old;
+    void mask_symmetric(int nmeasured);
+    bool is_equal_array(unsigned short int *a, unsigned short int *b, int size);
 };
 
 #endif /* MASKEDMATRIX_H_ */

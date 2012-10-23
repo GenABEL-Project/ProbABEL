@@ -25,9 +25,9 @@ public:
 	double chi2_score;
 	int niter;
 
-	coxph_reg(coxph_data &cdatain);
+	coxph_reg(const coxph_data &cdatain);
 	virtual ~coxph_reg();
-	void coxph_reg::estimate(coxph_data &cdatain, int verbose, int maxiter,
+	void coxph_reg::estimate( coxph_data &cdatain, int verbose, int maxiter,
 			double eps, double tol_chol, int model, int interaction, int ngpreds,
 			bool iscox, int nullmodel = 0);
 };

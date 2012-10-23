@@ -415,10 +415,12 @@ mematrix<DT> productMatrDiag(mematrix<DT> &M, mematrix<DT> &D)
         exit(1);
     }
     mematrix<DT> temp(M.nrow, M.ncol);
-    for (int i = 0; i < temp.nrow; i++)
-        for (int j = 0; j < temp.ncol; j++)
+    for (int i = 0; i < temp.nrow; i++){
+        for (int j = 0; j < temp.ncol; j++){
             temp.data[i * temp.ncol + j] = M.data[i * M.ncol + j] * D.data[j];
     //			temp.put(M.get(i,j)*D.get(j,0),i,j);
+        }
+    }
     return temp;
 }
 
