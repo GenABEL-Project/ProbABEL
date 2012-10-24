@@ -90,7 +90,7 @@ apt-get install binutils-mingw-w64-i686 gcc-mingw-w64-base gcc-mingw-w64-i686 \
   system this will be x86_64-linux-gnu. Note that the values for both
   these options can be derived from the names of the compiler
   executables, e.g. the gcc-mingw-w64 Debian package installs the
-  folowing C++ compilers: /usr/bin/i686-w64-mingw32-c++ and
+  following C++ compilers: /usr/bin/i686-w64-mingw32-c++ and
   /usr/bin/x86_64-w64-mingw32-c++.
   The --[somedir] options are used to make the directory structure as
   flat as possible so that we don't bother Windows users with
