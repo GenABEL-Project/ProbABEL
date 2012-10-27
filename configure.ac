@@ -2,17 +2,27 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT(ProbABEL, 0.1.99, genabel-devel@r-forge.wu-wien.ac.at)
-AM_INIT_AUTOMAKE(ProbABEL, 0.1.99)
+AC_INIT(ProbABEL, 0.2.0, genabel-devel@r-forge.wu-wien.ac.at)
+AM_INIT_AUTOMAKE(ProbABEL, 0.2.0)
 AC_CONFIG_SRCDIR([src/data.h])
 AC_CONFIG_HEADERS([src/config.h])
 
 # Checks for programs.
-AC_PROG_CXX
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_INSTALL
 AC_PROG_LN_S
+if test -z "$CXXFLAGS"; then
+   # User did not set CXXFLAGS, so we can put in our own defaults
+    CXXFLAGS="-g -O3"
+fi
+if test -z "$CPPFLAGS"; then
+   # User did not set CXXFLAGS, so we can put in our own defaults
+    CPPFLAGS="-Wall"
+fi
+# If CXXFLAGS/CPPFLAGS are already set AC_PROG_CXX will not overwrite them
+# with its own defaults
+AC_PROG_CXX
 
 # Checks for libraries.
 
