@@ -61,9 +61,9 @@ AM_CONDITIONAL([HAVE_PDFLATEX], test -n "$PDFLATEX")
 
 # Since pacoxph is buggy it needs to be enabled explixitly
 AC_ARG_ENABLE([pacoxph],
- [  --enable-pacoxph    build the pacoxph binary (still contains lots of bugs)],
- [pacoxph=${enableval}],
- [pacoxph=no])
+    [AS_HELP_STRING([--enable-pacoxph], [build the pacoxph binary (still contains lots of bugs)])],
+    [pacoxph=${enableval}],
+    [pacoxph=no])
 
 if test "x$pacoxph" = "xyes"; then
    AC_MSG_NOTICE([building of pacoxph is enabled])
