@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT(ProbABEL, 0.2.0, genabel-devel@r-forge.wu-wien.ac.at)
-AM_INIT_AUTOMAKE(ProbABEL, 0.2.0)
+AC_INIT(ProbABEL, 0.2.1-beta, genabel-devel@r-forge.wu-wien.ac.at)
+AM_INIT_AUTOMAKE(ProbABEL, 0.2.1-beta)
 AC_CONFIG_SRCDIR([src/data.h])
 AC_CONFIG_HEADERS([src/config.h])
 
@@ -28,7 +28,8 @@ AC_PROG_CXX
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([float.h inttypes.h libintl.h limits.h stddef.h stdint.h stdlib.h string.h sys/param.h wchar.h wctype.h])
+AC_CHECK_HEADERS([float.h inttypes.h libintl.h limits.h stddef.h stdint.h \
+	 		  stdlib.h string.h sys/param.h wchar.h wctype.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -52,6 +53,12 @@ AC_FUNC_FSEEKO
 AC_PROG_SED
 
 # Check for presence of pdfLaTeX
+AC_CHECK_PROG(CUT, cut, cut)
+if test -z "$CUT"; then
+  AC_MSG_WARN([Can't find the 'cut' binary. Some tests won't run correctly])
+fi
+
+# Check for presence of pdfLaTeX
 AC_CHECK_PROG(PDFLATEX, pdflatex, pdflatex)
 if test -z "$PDFLATEX"; then
   AC_MSG_WARN([Unable to create PDF version of the user manual])
@@ -61,7 +68,8 @@ AM_CONDITIONAL([HAVE_PDFLATEX], test -n "$PDFLATEX")
 
 # Since pacoxph is buggy it needs to be enabled explixitly
 AC_ARG_ENABLE([pacoxph],
-    [AS_HELP_STRING([--enable-pacoxph], [build the pacoxph binary (still contains lots of bugs)])],
+    [AS_HELP_STRING([--enable-pacoxph], [build the pacoxph binary (still \
+contains lots of bugs)])],
     [pacoxph=${enableval}],
     [pacoxph=no])
 
@@ -77,6 +85,7 @@ AC_CONFIG_FILES([
 	src/Makefile
 	doc/Makefile
 	examples/Makefile
+	tests/Makefile
 ])
 # Create output files
 AC_OUTPUT

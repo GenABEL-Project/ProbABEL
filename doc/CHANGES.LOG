@@ -1,9 +1,10 @@
-*****
-* Fixed bug #2295: the inverse variance-covariance matrix (used with the
-  --mmscore option) was incorrectly subsetted when NAs are present for
-  one or more SNP dosages. As a result the invvarmatrix that was
-  actually used in the regression contained rows and columns of
-  zeroes. Thanks to Maarten Kooyman for reporting this bug.
+***** v.0.2.1 (2012)
+* Fixed bug #2295: the inverse variance-covariance matrix (used with
+  the --mmscore option) was incorrectly subsetted when NAs are present
+  for one or more SNP dosages (so this is not an issue for people using
+  imputed data). As a result the invvarmatrix that was actually used in
+  the regression contained rows and columns of zeroes. Thanks to Maarten
+  Kooyman for reporting this bug.
 
 * Fixed bug #1186: When .map file is missing (but --map option was
   given), the wrong error message was displayed. Thanks to Nicola
@@ -17,6 +18,15 @@
   (thanks to Marijn Verkerk).
   probabel.pl can now also run Y chromosome analysis and the help
   message has been updated.
+
+* probabel.pl and probabel_config.cfg now also accept chunks, where
+  dose, prob, info and map files are split into multiple chunks. This
+  is now the default for people following the 1000 genomes imputation
+  cookbook for MaCH/minimac (the recipe uses the chunkchromosome tool
+  to split the data into smaller pieces, speeding up imputation on
+  computer clusters). See probabel_config.cfg.example for an
+  example. (Lennart)
+
 
 
 ***** v.0.2.0 (2012.06.10)

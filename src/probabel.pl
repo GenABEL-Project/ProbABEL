@@ -23,6 +23,7 @@ my $_over_domin_file_postfix = "_over_domin.out.txt";
 # Separators in the config file
 my $separator_cfg = ",";
 my $chr_replacement = "_._chr_._";
+my $chunk_replacement = "_._chunk_._";
 
 # Set file locations
 my $base_path = "./";
@@ -43,7 +44,7 @@ my @legends;
 
 #==========================================================================
 # Read config file
-open(CFG, "$config") or die "Reading configuration file failed: $!" .
+open(CFG, "$config") or die "Reading configuration file $config failed: $!" .
     "\nDid you forget to edit and rename the probabel_config.cfg.example file?\n";
 
 <CFG>; #skip the first line (header)
@@ -214,23 +215,61 @@ if ($chr eq "X" || $chr eq "Y") {
 
 # Commands for the autosomes
 for($chr=$startchr; $chr<=$endchr; $chr++) {
-    $mlinfo_arg = $mlinfo;
-    $mlinfo_arg =~ s/$chr_replacement/$chr/g;
 
-    $mldose_arg = $mldose;
-    $mldose_arg =~ s/$chr_replacement/$chr/g;
+    my $nrchunks = 0;
+    # Find out the number of chunks for the current chromosome
+    my $infofiles = $mlinfo;
+    $infofiles =~ s/$chr_replacement/$chr/g;
+    $infofiles =~ s/$chunk_replacement/*/g;
+    $nrchunks = `ls $infofiles | wc -l`;
+    print "Nr. of chunks: $nrchunks";
 
-    $legend_arg = $legend;
-    $legend_arg =~ s/$chr_replacement/$chr/g;
+    # Loop over all chunks
+    for (my $chunk=1; $chunk <= $nrchunks; $chunk++)
+    {
+	if($hadhead==0) {
+	    $head="";
+	    $hadhead=1;
+	} else {
+	    $head="--no-head";
+	}
+	$mlinfo_arg = $mlinfo;
+	$mlinfo_arg =~ s/$chr_replacement/$chr/g;
+	$mlinfo_arg =~ s/$chunk_replacement/$chunk/g;
 
-    if($hadhead==0) {
-	$head="";
-	$hadhead=1;
-    } else {
-	$head="--no-head";
+	$mldose_arg = $mldose;
+	$mldose_arg =~ s/$chr_replacement/$chr/g;
+	$mldose_arg =~ s/$chunk_replacement/$chunk/g;
+
+	$legend_arg = $legend;
+	$legend_arg =~ s/$chr_replacement/$chr/g;
+	$legend_arg =~ s/$chunk_replacement/$chunk/g;
+
+	system "$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_arg -d $mldose_arg -m $legend_arg --chrom $chr -o $phename.chunk$chunk.chr$chr $head $keys";
+
+	if($model_option_num==2)
+	{
+	    `cat $phename.chunk${chunk}.chr${chr}$_2df_file_postfix >> ${phename}.${chr}${_2df_file_postfix}`;
+	    `rm $phename.chunk${chunk}.chr${chr}$_2df_file_postfix`;
+
+	    `cat $phename.chunk${chunk}.chr${chr}$_add_file_postfix >> ${phename}.${chr}${_add_file_postfix}`;
+	    `rm $phename.chunk${chunk}.chr${chr}$_add_file_postfix`;
+
+	    `cat $phename.chunk${chunk}.chr${chr}$_domin_file_postfix >> ${phename}.${chr}${_domin_file_postfix}`;
+	    `rm $phename.chunk${chunk}.chr${chr}$_domin_file_postfix`;
+
+	    `cat $phename.chunk${chunk}.chr${chr}$_recess_file_postfix >> ${phename}.${chr}${_recess_file_postfix}`;
+	    `rm $phename.chunk${chunk}.chr${chr}$_recess_file_postfix`;
+
+	    `cat $phename.chunk${chunk}.chr${chr}$_over_domin_file_postfix >> ${phename}.${chr}${_over_domin_file_postfix}`;
+	    `rm $phename.chunk${chunk}.chr${chr}$_over_domin_file_postfix`;
+	} else {
+	    `cat $phename.chunk${chunk}.chr${chr}$_add_file_postfix >> $phename.${chr}${_add_file_postfix}`;
+	    print "cat $phename.chunk${chunk}.chr${chr}$_add_file_postfix >> $phename.chr${chr}${_add_file_postfix}\n";
+	    `rm $phename.chunk${chunk}.chr${chr}$_add_file_postfix`;
+	    print "rm $phename.chunk${chunk}.chr${chr}$_add_file_postfix\n";
+	}
     }
-
-    print `$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_arg -d $mldose_arg -m $legend_arg --chrom $chr -o $phename.$chr $head $keys`;
 
     if($model_option_num==2)
     {

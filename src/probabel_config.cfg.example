@@ -17,9 +17,10 @@ cohort,mlinfo_path,mldose_path,mlprob_path,legend_path
 #
 # mldose_path: /data/Cohort1/MachFiles/_._chr_._/mach_._chr_._-out.mldose
 #
-# For chromosome 1 this will be replaced with: /data/Cohort1/MachFiles/1/1-out.mldose
+# For chromosome 1 this will be replaced with:
+#             /data/Cohort1/MachFiles/1/mach1-out.mldose
 #
 #
 
-ERGO,script_test/merlin._._chr_._.collected.ped.out.mlinfo,script_test/merlin._._chr_._.collected.ped.out.mldose,script_test/merlin._._chr_._.collected.ped.out.mlprob,script_test/genotypes_chr_._chr_.__CEU_r22_nr.b36_fwd_legend.txt
-ERGOPLUS,/mnt/space/ergoplus/ergoplus.chr_._chr_._.mach.mlinfo,/mnt/space/ergoplus/ergoplus.chr_._chr_._.mach.mldose,/mnt/space/ergoplus/ergoplus.chr_._chr_._.mach.mlprob,/mnt/impute/impute_b36/collected/genotypes_chr_._chr_.__CEU_r22_nr.b36_fwd_legend.txt
+STUDY_1,script_test/merlin._._chr_._.collected.ped.out.mlinfo,script_test/merlin._._chr_._.collected.ped.out.mldose,script_test/merlin._._chr_._.collected.ped.out.mlprob,script_test/genotypes_chr_._chr_.__CEU_r22_nr.b36_fwd_legend.txt
+STUDY_2,/tmp/PAtest/chunk_._chunk_._-chr_._chr_._.mlinfo,/tmp/PAtest/chunk_._chunk_._-chr_._chr_._.mldose,/tmp/PAtest/chunk_._chunk_._-chr_._chr_._.mlprob,/tmp/PAtest/genotypes_chr_._chr_.__CEU_r22_nr.b36_fwd_legend.txt
