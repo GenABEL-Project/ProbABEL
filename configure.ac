@@ -28,7 +28,46 @@ AC_PROG_CXX
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([float.h inttypes.h libintl.h limits.h stddef.h stdint.h stdlib.h string.h sys/param.h wchar.h wctype.h])
+AC_CHECK_HEADERS([float.h inttypes.h libintl.h limits.h stddef.h \
+			  stdint.h stdlib.h string.h sys/param.h wchar.h wctype.h])
+
+
+# See if we want use of the Eigen library enabled (yes by default) and if so,
+# whether we can find the library files.
+AC_ARG_ENABLE([eigen],
+ [AS_HELP_STRING([--enable-eigen], [Use the Eigen template library for fast \
+				    linear algebra (Eigen can be downloaded \
+				    from eigen.tuxfamily.org). This is enabled \
+				    by default])],
+ [eigen=${enableval}],
+ [eigen=yes])
+
+if test "x$eigen" = "xyes"; then
+    AC_MSG_NOTICE([building using the Eigen headers enabled])
+
+    AC_ARG_WITH([eigen-include-path],
+	[AS_HELP_STRING([--with-eigen-include-path],
+	  [location of the Eigen headers, defaults to /usr/include/eigen3])],
+	[CXXFLAGS+=" -I${withval} -DEIGEN"],
+	[CXXFLAGS+=' -I/usr/include/eigen3 -DEIGEN'
+	CPPFLAGS+=' -I/usr/include/eigen3'])
+    dnl AC_SUBST([EIGEN_CFLAGS])
+
+    # Check for the EIGEN header files
+    AC_LANG_PUSH([C++])
+    AC_CHECK_HEADERS([Eigen/Dense Eigen/LU])
+    AC_LANG_POP([C++])
+
+    if test x$ac_cv_header_Eigen_Dense = xno; then
+      AC_MSG_ERROR([Could not find the Eigen header files. Did you specify \
+--with-eigen-include-path correctly? Or use --disable-eigen \
+to disable use of fast linear algebra.])
+    fi
+else
+   AC_MSG_NOTICE([not using Eigen for linear algebra])
+fi
+AM_CONDITIONAL([WITH_EIGEN], test "x$eigen" = "xyes")
+
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -44,7 +83,7 @@ AC_CHECK_FUNCS([pow putenv sqrt strdup strncasecmp])
 # Check if we can use large (>2GB) files on 32 bit platforms
 AC_SYS_LARGEFILE
 if test $ac_cv_sys_file_offset_bits != 'no'; then
-  CPPFLAGS="$CPPFLAGS -D_FILE_OFFSET_BITS=$ac_cv_sys_file_offset_bits"
+    CPPFLAGS="$CPPFLAGS -D_FILE_OFFSET_BITS=$ac_cv_sys_file_offset_bits"
 fi
 AC_FUNC_FSEEKO
 
@@ -61,9 +100,9 @@ AM_CONDITIONAL([HAVE_PDFLATEX], test -n "$PDFLATEX")
 
 # Since pacoxph is buggy it needs to be enabled explixitly
 AC_ARG_ENABLE([pacoxph],
- [  --enable-pacoxph    build the pacoxph binary (still contains lots of bugs)],
- [pacoxph=${enableval}],
- [pacoxph=no])
+    [AS_HELP_STRING([--enable-pacoxph], [build the pacoxph binary (still contains lots of bugs)])],
+    [pacoxph=${enableval}],
+    [pacoxph=no])
 
 if test "x$pacoxph" = "xyes"; then
    AC_MSG_NOTICE([building of pacoxph is enabled])
