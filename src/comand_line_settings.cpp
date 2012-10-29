@@ -12,7 +12,9 @@
 #include "comand_line_settings.h"
 
 // config.h and fvlib/FileVector.h are included for the upper case variables
+#if HAVE_CONFIG_H
 #include "config.h"
+#endif
 #include "fvlib/FileVector.h"
 
 using namespace std;
@@ -244,7 +246,7 @@ void cmdvars::printinfo()
             "%s v. %s (C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EMCR\n\n",
             PACKAGE, PACKAGE_VERSION);
 #if EIGEN
-    fprintf(stdout, "using EIGEN for matrix operations\n");
+    fprintf(stdout, "Using EIGEN for matrix operations\n");
 #endif
 
     if (neco[0] != 1 || neco[1] != 1 || neco[2] != 1)
