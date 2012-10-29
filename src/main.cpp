@@ -45,7 +45,7 @@
 #include "maskedmatrix.h"
 #include "data.h"
 #include "reg1.h"
-#include "comand_line_settings.h"
+#include "command_line_settings.h"
 
 #define MAXITER 10
 #define EPS 1.e-8

@@ -1,12 +1,12 @@
 /*
- * comand_line_settings.h
+ * command_line_settings.h
  *
  *  Created on: Apr 2; int 2012
  *      Author: mkooyman
  */
 
-#ifndef COMAND_LINE_SETTINGS_H_
-#define COMAND_LINE_SETTINGS_H_
+#ifndef COMMAND_LINE_SETTINGS_H_
+#define COMMAND_LINE_SETTINGS_H_
 
 using namespace std;
 
@@ -45,38 +45,38 @@ private:
 public:
     cmdvars()
     {
-        program_name = NULL;
+	program_name = NULL;
 
-        std::fill_n(neco, 3, 0);
-        phefilename = NULL;
-        mlinfofilename = NULL;
-        genfilename = NULL;
-        mapfilename = NULL;
-        outfilename = NULL;
-        inverse_filename = NULL;
+	std::fill_n(neco, 3, 0);
+	phefilename = NULL;
+	mlinfofilename = NULL;
+	genfilename = NULL;
+	mapfilename = NULL;
+	outfilename = NULL;
+	inverse_filename = NULL;
 
-        sep = " ";
-        nohead = 0;
-        score = 0;
-        npeople = -1;
-        ngpreds = 1;
-        interaction = 0;
-        interaction_excluded = 0;
-        is_interaction_excluded = false; //Oh Holy Matrix, forgive me for this!
-        robust = 0;
-        chrom = "-1";
-        str_genfilename = "";
+	sep = " ";
+	nohead = 0;
+	score = 0;
+	npeople = -1;
+	ngpreds = 1;
+	interaction = 0;
+	interaction_excluded = 0;
+	is_interaction_excluded = false; //Oh Holy Matrix, forgive me for this!
+	robust = 0;
+	chrom = "-1";
+	str_genfilename = "";
 
-        iscox = false;
-        isFVF = 0;
+	iscox = false;
+	isFVF = 0;
 
-        skipd = 2;
-        allcov = 0;
+	skipd = 2;
+	allcov = 0;
 #if COXPH
-        noutcomes = 2;
-        iscox=true;
+	noutcomes = 2;
+	iscox=true;
 #else
-        noutcomes = 1;
+	noutcomes = 1;
 #endif
 
     }
@@ -108,4 +108,4 @@ public:
     bool isIsInteractionExcluded() const;
 };
 
-#endif /* COMAND_LINE_SETTINGS_H_ */
+#endif /* COMMAND_LINE_SETTINGS_H_ */

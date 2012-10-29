@@ -4,7 +4,7 @@
 ## work. It gives warning message about portability, but in the end doesn't work,
 ## I tried :-).
 REGFILES = data.h data.cpp gendata.h gendata.cpp mematrix.h mematri1.h	\
- comand_line_settings.h comand_line_settings.cpp reg1.h usage.h		\
+ command_line_settings.h command_line_settings.cpp reg1.h usage.h		\
  usage.cpp main.cpp utilities.h utilities.cpp phedata.h phedata.cpp	\
  cholesky.h cholesky.cpp regdata.h regdata.cpp coxph_data.h		\
  coxph_data.cpp maskedmatrix.cpp maskedmatrix.h eigen_mematrix.h 	\
