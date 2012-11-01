@@ -52,11 +52,8 @@ AC_FUNC_FSEEKO
 # Check for presence of sed. Needed to replace path to /etc in probabel.pl
 AC_PROG_SED
 
-# Check for presence of pdfLaTeX
-AC_CHECK_PROG(CUT, cut, cut)
-if test -z "$CUT"; then
-  AC_MSG_WARN([Can't find the 'cut' binary. Some tests won't run correctly])
-fi
+# Check for the presence of awk. Needed in the test suite
+AC_PROG_AWK
 
 # Check for presence of pdfLaTeX
 AC_CHECK_PROG(PDFLATEX, pdflatex, pdflatex)

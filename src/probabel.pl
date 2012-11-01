@@ -38,7 +38,7 @@ my @method = ("linear", "logistic", "coxph");
 my %cohorts;
 my @mlinfos;
 my @mldoses;
-my @mlprobes;
+my @mlprobs;
 my @legends;
 
 
@@ -58,7 +58,7 @@ for(my $i=0 ; my $line = <CFG> ; $i++)
     $cohorts{$line_array[0]} = $i;
     $mlinfos[$i]  = $line_array[1];
     $mldoses[$i]  = $line_array[2];
-    $mlprobes[$i] = $line_array[3];
+    $mlprobs[$i] = $line_array[3];
     $legends[$i]  = $line_array[4];
 }
 close(CFG);
@@ -143,7 +143,7 @@ Available cohorts are ";
 
 my $mlinfo = $mlinfos[$cohort_position];
 my $mldose = $mldoses[$cohort_position];
-my $mlprobe = $mlprobes[$cohort_position];
+my $mlprob = $mlprobs[$cohort_position];
 my $legend = $legends[$cohort_position];
 
 
@@ -167,12 +167,12 @@ chop($keys);
 
 
 my $model_option_num=0;
-
+my $mldose_prob;
 if($model eq "--additive") {
-    my $mldose_probe = $mldose;
+    $mldose_prob = $mldose;
     $model_option_num=1;
 } elsif($model eq "--allmodels") {
-    my $mldose_probe = $mlprobe;
+    $mldose_prob = $mlprob;
     $model_option_num=2;
 } else {
     die "error: Wrong key for model. You can use \"--additive\" or \"--allmodels\" only\n";
@@ -195,7 +195,7 @@ if ($chr eq "X" || $chr eq "Y") {
     $mlinfo_arg = $mlinfo;
     $mlinfo_arg =~ s/$chr_replacement/$chr/g;
 
-    $mldose_arg = $mldose;
+    $mldose_arg = $mldose_prob;
     $mldose_arg =~ s/$chr_replacement/$chr/g;
 
     $legend_arg = $legend;
@@ -208,7 +208,7 @@ if ($chr eq "X" || $chr eq "Y") {
 	my $head="--no-head";
     }
 
-    print `$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_arg -d $mldose_arg -m $legend_arg --chrom $chr -o $phename $head $keys`;
+    system "$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_arg -d $mldose_arg -m $legend_arg --chrom $chr -o $phename $head $keys";
 
     exit;
 }
@@ -237,7 +237,7 @@ for($chr=$startchr; $chr<=$endchr; $chr++) {
 	$mlinfo_arg =~ s/$chr_replacement/$chr/g;
 	$mlinfo_arg =~ s/$chunk_replacement/$chunk/g;
 
-	$mldose_arg = $mldose;
+	$mldose_arg = $mldose_prob;
 	$mldose_arg =~ s/$chr_replacement/$chr/g;
 	$mldose_arg =~ s/$chunk_replacement/$chunk/g;
 
