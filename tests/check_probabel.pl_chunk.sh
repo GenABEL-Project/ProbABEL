@@ -5,6 +5,7 @@
 
 echo "Testing probabel.pl..."
 
+# -------- Set some default paths and file names -------
 if [ -z ${srcdir} ]; then
     srcdir="."
 fi
@@ -39,80 +40,107 @@ echo "TestCohortChunk,$base.info,$base.dose,$base.prob,$base.map" \
     >> probabel_config.cfg
 
 
-# ------------------ No chunks test -------------------
-# Split the dose, prob and info files up into two chromosomes with some
-# chunks
-awk '{print $1,$2,$3,$4}'    $dosefile > chr1.dose
-awk '{print $1,$2,$5,$6,$7}' $dosefile > chr2.dose
+# ---------- function definitions ----------
+function prepare_input
+{
+    if [ "$1" == "nochunk" ]; then
+	# ------------------ No chunks test -------------------
+	# Split the dose, prob and info files up into two chromosomes
+	# with some  chunks
+	awk '{print $1,$2,$3,$4}'    $dosefile > chr1.dose
+	awk '{print $1,$2,$5,$6,$7}' $dosefile > chr2.dose
 
-awk '{print $1,$2,$3,$4,$5,$6}'          $probfile > chr1.prob
-awk '{print $1,$2,$7,$8,$9,$10,$11,$12}' $probfile > chr2.prob
+	awk '{print $1,$2,$3,$4,$5,$6}'          $probfile > chr1.prob
+	awk '{print $1,$2,$7,$8,$9,$10,$11,$12}' $probfile > chr2.prob
 
-sed -n '1,3p' $infofile >  chr1.info
-sed -n '1p'   $infofile >  chr2.info
-sed -n '4,6p' $infofile >> chr2.info
+	sed -n '1,3p' $infofile >  chr1.info
+	sed -n '1p'   $infofile >  chr2.info
+	sed -n '4,6p' $infofile >> chr2.info
 
-sed -n '1,3p' $mapfile > chr1.map
-sed -n '1p'   $mapfile >  chr2.map
-sed -n '4,6p' $mapfile >> chr2.map
+	sed -n '1,3p' $mapfile > chr1.map
+	sed -n '1p'   $mapfile >  chr2.map
+	sed -n '4,6p' $mapfile >> chr2.map
 
-# Run an analysis on dosage data
-outfile="height_add.out.txt"
-rm -f $outfile
-./probabel.pl 1 2 linear TestCohortNoChunk --additive height
-echo "Checking output using dosages without chunks..."
-diff $outfile $results/$outfile
+	WithOrWithout="without"
+    elif [ "$1" == "chunk" ]; then
+	# ------------------ Chunks test ----------------------
+	# Split the dose and info files up into two chromosomes with
+	# some chunks
+	awk '{print $1,$2,$3}'    $dosefile > chr1.chunk1.dose
+	awk '{print $1,$2,$4}'    $dosefile > chr1.chunk2.dose
+	awk '{print $1,$2,$5,$6}' $dosefile > chr2.chunk1.dose
+	awk '{print $1,$2,$7}'    $dosefile > chr2.chunk2.dose
 
+	awk '{print $1,$2,$3,$4}'        $probfile > chr1.chunk1.prob
+	awk '{print $1,$2,$5,$6}'        $probfile > chr1.chunk2.prob
+	awk '{print $1,$2,$7,$8,$9,$10}' $probfile > chr2.chunk1.prob
+	awk '{print $1,$2,$11,$12}'      $probfile > chr2.chunk2.prob
 
-# Run an analysis on probabilities
-outfile="height_2df.out.txt"
-rm -f $outfile
-./probabel.pl 1 2 linear TestCohortNoChunk --allmodels height
-echo "Checking output using probabilities without chunks..."
-diff $outfile $results/$outfile
+	sed -n '1,2p' $infofile >  chr1.chunk1.info
+	sed -n '1p'   $infofile >  chr1.chunk2.info
+	sed -n '3p'   $infofile >> chr1.chunk2.info
+	sed -n '1p'   $infofile >  chr2.chunk1.info
+	sed -n '4,5p' $infofile >> chr2.chunk1.info
+	sed -n '1p'   $infofile >  chr2.chunk2.info
+	sed -n '6p'   $infofile >> chr2.chunk2.info
 
+	sed -n '1,2p' $mapfile >  chr1.chunk1.map
+	sed -n '1p'   $mapfile >  chr1.chunk2.map
+	sed -n '3p'   $mapfile >> chr1.chunk2.map
+	sed -n '1p'   $mapfile >  chr2.chunk1.map
+	sed -n '4,5p' $mapfile >> chr2.chunk1.map
+	sed -n '1p'   $mapfile >  chr2.chunk2.map
+	sed -n '6p'   $mapfile >> chr2.chunk2.map
 
+	WithOrWithout="with"
+    else
+	echo "Run this function with one of these arguments: 'chunk'
+	or 'nochunk'."
+	exit 1
+    fi
 
-# ------------------ Chunks test ----------------------
-# Split the dose and info files up into two chromosomes with some
-# chunks
-awk '{print $1,$2,$3}'    $dosefile > chr1.chunk1.dose
-awk '{print $1,$2,$4}'    $dosefile > chr1.chunk2.dose
-awk '{print $1,$2,$5,$6}' $dosefile > chr2.chunk1.dose
-awk '{print $1,$2,$7}'    $dosefile > chr2.chunk2.dose
-
-awk '{print $1,$2,$3,$4}'        $probfile > chr1.chunk1.prob
-awk '{print $1,$2,$5,$6}'        $probfile > chr1.chunk2.prob
-awk '{print $1,$2,$7,$8,$9,$10}' $probfile > chr2.chunk1.prob
-awk '{print $1,$2,$11,$12}'      $probfile > chr2.chunk2.prob
-
-sed -n '1,2p' $infofile >  chr1.chunk1.info
-sed -n '1p'   $infofile >  chr1.chunk2.info
-sed -n '3p'   $infofile >> chr1.chunk2.info
-sed -n '1p'   $infofile >  chr2.chunk1.info
-sed -n '4,5p' $infofile >> chr2.chunk1.info
-sed -n '1p'   $infofile >  chr2.chunk2.info
-sed -n '6p'   $infofile >> chr2.chunk2.info
-
-sed -n '1,2p' $mapfile >  chr1.chunk1.map
-sed -n '1p'   $mapfile >  chr1.chunk2.map
-sed -n '3p'   $mapfile >> chr1.chunk2.map
-sed -n '1p'   $mapfile >  chr2.chunk1.map
-sed -n '4,5p' $mapfile >> chr2.chunk1.map
-sed -n '1p'   $mapfile >  chr2.chunk2.map
-sed -n '6p'   $mapfile >> chr2.chunk2.map
-
-# Run an analysis on dosage data
-outfile="height_add.out.txt"
-rm -f $outfile
-./probabel.pl 1 2 linear TestCohortChunk --additive height
-echo "Checking output using dosages with chunks..."
-diff $outfile $results/$outfile
+}
 
 
-# Run an analysis on probabilities
-outfile="height_2df.out.txt"
-rm -f $outfile
-./probabel.pl 1 2 linear TestCohortNoChunk --allmodels height
-echo "Checking output using probabilities without chunks:"
-diff $outfile $results/$outfile
+function run_test
+{
+    # Run an analysis on dosage data
+    outfile="height_add.out.txt"
+    rm -f $outfile
+    ./probabel.pl 1 2 linear TestCohortChunk --additive height
+    echo "Checking output using dosages $WithOrWithout chunks..."
+    diff $outfile $results/$outfile
+
+    # Run an analysis on probabilities
+    outfilelist[1]="height_ngp2_2df.out.txt"
+    outfilelist[2]="height_ngp2_recess.out.txt"
+    outfilelist[3]="height_ngp2_over_domin.out.txt"
+    outfilelist[4]="height_ngp2_domin.out.txt"
+    outfilelist[5]="height_ngp2_add.out.txt"
+    for i in {1..5}; do
+	rm -f ${outfilelist[$i]}
+    done
+
+    ./probabel.pl 1 2 linear TestCohortNoChunk --allmodels height -o _ngp2
+    echo "Checking output using probabilities $WithOrWithout chunks..."
+    for i in {1..5}; do
+	echo -n "  Verifying ${outfilelist[$i]}"
+	diff ${outfilelist[$i]} $results/${outfilelist[$i]}
+	if [ $? == 0 ]; then
+	    echo -e "\t\tOK"
+	else
+	    echo -e "\t\tFAILED"
+	fi
+    done
+}
+
+# ---------- Continuation of the main function ----------
+prepare_input nochunk
+
+run_test
+echo "-------------------- Finished check without chunks --------------------"
+
+prepare_input chunk
+
+run_test
+echo "-------------------- Finished check with chunks --------------------"

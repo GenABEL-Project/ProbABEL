@@ -19,7 +19,6 @@ my $_domin_file_postfix = "_domin.out.txt";
 my $_recess_file_postfix = "_recess.out.txt";
 my $_over_domin_file_postfix = "_over_domin.out.txt";
 
-
 # Separators in the config file
 my $separator_cfg = ",";
 my $chr_replacement = "_._chr_._";
@@ -28,8 +27,8 @@ my $chunk_replacement = "_._chunk_._";
 # Set file locations
 my $base_path = "./";
 my @anprog = ($base_path . "palinear",
-	   $base_path . "palogist",
-	   $base_path . "pacoxph");
+	      $base_path . "palogist",
+	      $base_path . "pacoxph");
 my $config = "probabel_config.cfg";
 
 # Define the regression methods that are implemented
@@ -159,21 +158,34 @@ die "error: Wrong method. method has to be one of: @method\n" if (!$passed);
 
 
 my $phename = $ARGV[5];
+my $outfile_prefix = $phename;
 my $keys="";
 for (my $i=6; $i<@ARGV; $i++) {
-    $keys = $keys.$ARGV[$i]." ";
+    if ($ARGV[$i] eq "-o")
+    {
+	# Apparently the user wants to change the output file name
+	# Let's interpret this as an addition to our own prefix
+	$outfile_prefix = $outfile_prefix.$ARGV[$i+1];
+
+	# Skip the next argument (supposedly the addition to the
+	# output file name).
+	$i++;
+    }
+    else
+    {
+	$keys = $keys.$ARGV[$i]." ";
+    }
 }
 chop($keys);
 
-
-my $model_option_num=0;
+my $model_option_num = 0;
 my $mldose_prob;
 if($model eq "--additive") {
     $mldose_prob = $mldose;
-    $model_option_num=1;
+    $model_option_num = 1;
 } elsif($model eq "--allmodels") {
     $mldose_prob = $mlprob;
-    $model_option_num=2;
+    $model_option_num = 2;
 } else {
     die "error: Wrong key for model. You can use \"--additive\" or \"--allmodels\" only\n";
 }
@@ -208,7 +220,7 @@ if ($chr eq "X" || $chr eq "Y") {
 	my $head="--no-head";
     }
 
-    system "$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_arg -d $mldose_arg -m $legend_arg --chrom $chr -o $phename $head $keys";
+    system "$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_arg -d $mldose_arg -m $legend_arg --chrom $chr -o $outfile_prefix $head $keys";
 
     exit;
 }
@@ -245,53 +257,53 @@ for($chr=$startchr; $chr<=$endchr; $chr++) {
 	$legend_arg =~ s/$chr_replacement/$chr/g;
 	$legend_arg =~ s/$chunk_replacement/$chunk/g;
 
-	system "$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_arg -d $mldose_arg -m $legend_arg --chrom $chr -o $phename.chunk$chunk.chr$chr $head $keys";
+	system "$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_arg -d $mldose_arg -m $legend_arg --chrom $chr -o $outfile_prefix.chunk$chunk.chr$chr $head $keys";
 
 	if($model_option_num==2)
 	{
-	    `cat $phename.chunk${chunk}.chr${chr}$_2df_file_postfix >> ${phename}.${chr}${_2df_file_postfix}`;
-	    `rm $phename.chunk${chunk}.chr${chr}$_2df_file_postfix`;
+	    `cat $outfile_prefix.chunk${chunk}.chr${chr}$_2df_file_postfix >> ${outfile_prefix}.${chr}${_2df_file_postfix}`;
+	    `rm $outfile_prefix.chunk${chunk}.chr${chr}$_2df_file_postfix`;
 
-	    `cat $phename.chunk${chunk}.chr${chr}$_add_file_postfix >> ${phename}.${chr}${_add_file_postfix}`;
-	    `rm $phename.chunk${chunk}.chr${chr}$_add_file_postfix`;
+	    `cat $outfile_prefix.chunk${chunk}.chr${chr}$_add_file_postfix >> ${outfile_prefix}.${chr}${_add_file_postfix}`;
+	    `rm $outfile_prefix.chunk${chunk}.chr${chr}$_add_file_postfix`;
 
-	    `cat $phename.chunk${chunk}.chr${chr}$_domin_file_postfix >> ${phename}.${chr}${_domin_file_postfix}`;
-	    `rm $phename.chunk${chunk}.chr${chr}$_domin_file_postfix`;
+	    `cat $outfile_prefix.chunk${chunk}.chr${chr}$_domin_file_postfix >> ${outfile_prefix}.${chr}${_domin_file_postfix}`;
+	    `rm $outfile_prefix.chunk${chunk}.chr${chr}$_domin_file_postfix`;
 
-	    `cat $phename.chunk${chunk}.chr${chr}$_recess_file_postfix >> ${phename}.${chr}${_recess_file_postfix}`;
-	    `rm $phename.chunk${chunk}.chr${chr}$_recess_file_postfix`;
+	    `cat $outfile_prefix.chunk${chunk}.chr${chr}$_recess_file_postfix >> ${outfile_prefix}.${chr}${_recess_file_postfix}`;
+	    `rm $outfile_prefix.chunk${chunk}.chr${chr}$_recess_file_postfix`;
 
-	    `cat $phename.chunk${chunk}.chr${chr}$_over_domin_file_postfix >> ${phename}.${chr}${_over_domin_file_postfix}`;
-	    `rm $phename.chunk${chunk}.chr${chr}$_over_domin_file_postfix`;
+	    `cat $outfile_prefix.chunk${chunk}.chr${chr}$_over_domin_file_postfix >> ${outfile_prefix}.${chr}${_over_domin_file_postfix}`;
+	    `rm $outfile_prefix.chunk${chunk}.chr${chr}$_over_domin_file_postfix`;
 	} else {
-	    `cat $phename.chunk${chunk}.chr${chr}$_add_file_postfix >> $phename.${chr}${_add_file_postfix}`;
-	    print "cat $phename.chunk${chunk}.chr${chr}$_add_file_postfix >> $phename.chr${chr}${_add_file_postfix}\n";
-	    `rm $phename.chunk${chunk}.chr${chr}$_add_file_postfix`;
-	    print "rm $phename.chunk${chunk}.chr${chr}$_add_file_postfix\n";
+	    `cat $outfile_prefix.chunk${chunk}.chr${chr}$_add_file_postfix >> $outfile_prefix.${chr}${_add_file_postfix}`;
+	    print "cat $outfile_prefix.chunk${chunk}.chr${chr}$_add_file_postfix >> $outfile_prefix.chr${chr}${_add_file_postfix}\n";
+	    `rm $outfile_prefix.chunk${chunk}.chr${chr}$_add_file_postfix`;
+	    print "rm $outfile_prefix.chunk${chunk}.chr${chr}$_add_file_postfix\n";
 	}
     }
 
     if($model_option_num==2)
     {
-	`cat $phename.${chr}$_2df_file_postfix >> ${phename}${_2df_file_postfix}`;
-	`rm $phename.${chr}$_2df_file_postfix`;
+	`cat $outfile_prefix.${chr}$_2df_file_postfix >> ${outfile_prefix}${_2df_file_postfix}`;
+	`rm $outfile_prefix.${chr}$_2df_file_postfix`;
 
-	`cat $phename.${chr}$_add_file_postfix >> ${phename}${_add_file_postfix}`;
-	`rm $phename.${chr}$_add_file_postfix`;
+	`cat $outfile_prefix.${chr}$_add_file_postfix >> ${outfile_prefix}${_add_file_postfix}`;
+	`rm $outfile_prefix.${chr}$_add_file_postfix`;
 
-	`cat $phename.${chr}$_domin_file_postfix >> ${phename}${_domin_file_postfix}`;
-	`rm $phename.${chr}$_domin_file_postfix`;
+	`cat $outfile_prefix.${chr}$_domin_file_postfix >> ${outfile_prefix}${_domin_file_postfix}`;
+	`rm $outfile_prefix.${chr}$_domin_file_postfix`;
 
-	`cat $phename.${chr}$_recess_file_postfix >> ${phename}${_recess_file_postfix}`;
-	`rm $phename.${chr}$_recess_file_postfix`;
+	`cat $outfile_prefix.${chr}$_recess_file_postfix >> ${outfile_prefix}${_recess_file_postfix}`;
+	`rm $outfile_prefix.${chr}$_recess_file_postfix`;
 
-	`cat $phename.${chr}$_over_domin_file_postfix >> ${phename}${_over_domin_file_postfix}`;
-	`rm $phename.${chr}$_over_domin_file_postfix`;
+	`cat $outfile_prefix.${chr}$_over_domin_file_postfix >> ${outfile_prefix}${_over_domin_file_postfix}`;
+	`rm $outfile_prefix.${chr}$_over_domin_file_postfix`;
     } else {
-	`cat $phename.${chr}$_add_file_postfix >> $phename${_add_file_postfix}`;
-	print "cat $phename.${chr}$_add_file_postfix >> $phename${_add_file_postfix}\n";
-	`rm $phename.${chr}$_add_file_postfix`;
-	print "rm $phename.${chr}$_add_file_postfix\n";
+	`cat $outfile_prefix.${chr}$_add_file_postfix >> $outfile_prefix${_add_file_postfix}`;
+	print "cat $outfile_prefix.${chr}$_add_file_postfix >> $outfile_prefix${_add_file_postfix}\n";
+	`rm $outfile_prefix.${chr}$_add_file_postfix`;
+	print "rm $outfile_prefix.${chr}$_add_file_postfix\n";
     }
 }
 
