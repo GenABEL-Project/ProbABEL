@@ -24,6 +24,11 @@ fi
 # with its own defaults
 AC_PROG_CXX
 
+# Since most of our code is in C++, set that language as the default
+# for the subsequent checks
+AC_LANG_PUSH([C++])
+
+
 # Checks for libraries.
 
 # Checks for header files.
@@ -54,9 +59,7 @@ if test "x$eigen" = "xyes"; then
     dnl AC_SUBST([EIGEN_CFLAGS])
 
     # Check for the EIGEN header files
-    AC_LANG_PUSH([C++])
     AC_CHECK_HEADERS([Eigen/Dense Eigen/LU])
-    AC_LANG_POP([C++])
 
     if test x$ac_cv_header_Eigen_Dense = xno; then
       AC_MSG_ERROR([Could not find the Eigen header files. Did you specify \
@@ -78,7 +81,7 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([pow putenv sqrt strdup strncasecmp])
+AC_CHECK_FUNCS([pow putenv sqrt strdup strncasecmp floor])
 
 # Check if we can use large (>2GB) files on 32 bit platforms
 AC_SYS_LARGEFILE
