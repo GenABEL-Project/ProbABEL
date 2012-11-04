@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # L.C. Karssen
 # This script is used to test whether probabel.pl works correctly when
 # input is cut up in chunks
@@ -41,9 +41,9 @@ echo "TestCohortChunk,$base.info,$base.dose,$base.prob,$base.map" \
 
 
 # ---------- function definitions ----------
-function prepare_input
+prepare_input ()
 {
-    if [ "$1" == "nochunk" ]; then
+    if [ "$1" = "nochunk" ]; then
 	# ------------------ No chunks test -------------------
 	# Split the dose, prob and info files up into two chromosomes
 	# with some  chunks
@@ -62,7 +62,7 @@ function prepare_input
 	sed -n '4,6p' $mapfile >> chr2.map
 
 	WithOrWithout="without"
-    elif [ "$1" == "chunk" ]; then
+    elif [ "$1" = "chunk" ]; then
 	# ------------------ Chunks test ----------------------
 	# Split the dose and info files up into two chromosomes with
 	# some chunks
@@ -102,14 +102,21 @@ function prepare_input
 }
 
 
-function run_test
+run_test ()
 {
     # Run an analysis on dosage data
     outfile="height_add.out.txt"
     rm -f $outfile
-    ./probabel.pl 1 2 linear TestCohortChunk --additive height
     echo "Checking output using dosages $WithOrWithout chunks..."
+    ./probabel.pl 1 2 linear $1 --additive height
+    echo -n "  Verifying $outfile"
     diff $outfile $results/$outfile
+    if [ $? == 0 ]; then
+	echo -e "\t\tOK"
+    else
+	echo -e "\t\tFAILED"
+	exit 1
+    fi
 
     # Run an analysis on probabilities
     outfilelist[1]="height_ngp2_2df.out.txt"
@@ -121,8 +128,8 @@ function run_test
 	rm -f ${outfilelist[$i]}
     done
 
-    ./probabel.pl 1 2 linear TestCohortNoChunk --allmodels height -o _ngp2
     echo "Checking output using probabilities $WithOrWithout chunks..."
+    ./probabel.pl 1 2 linear $1 --allmodels height -o _ngp2
     for i in {1..5}; do
 	echo -n "  Verifying ${outfilelist[$i]}"
 	diff ${outfilelist[$i]} $results/${outfilelist[$i]}
@@ -130,6 +137,7 @@ function run_test
 	    echo -e "\t\tOK"
 	else
 	    echo -e "\t\tFAILED"
+	    exit 1
 	fi
     done
 }
@@ -137,10 +145,10 @@ function run_test
 # ---------- Continuation of the main function ----------
 prepare_input nochunk
 
-run_test
+run_test TestCohortNoChunk
 echo "-------------------- Finished check without chunks --------------------"
 
 prepare_input chunk
 
-run_test
+run_test TestCohortChunk
 echo "-------------------- Finished check with chunks --------------------"
