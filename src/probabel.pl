@@ -233,7 +233,12 @@ for($chr=$startchr; $chr<=$endchr; $chr++) {
     my $infofiles = $mlinfo;
     $infofiles =~ s/$chr_replacement/$chr/g;
     $infofiles =~ s/$chunk_replacement/*/g;
-    $nrchunks = `ls $infofiles | wc -l`;
+    $nrchunks = `ls $infofiles 2>/dev/null | wc -l`;
+    if ($nrchunks==0) {
+	# If no chunked info files exist the 'wc -l' command returns 0
+	# so that actually means 1 chunk containing all data.
+	$nrchunks = 1;
+    }
     print "Nr. of chunks: $nrchunks";
 
     # Loop over all chunks
@@ -257,7 +262,9 @@ for($chr=$startchr; $chr<=$endchr; $chr++) {
 	$legend_arg =~ s/$chr_replacement/$chr/g;
 	$legend_arg =~ s/$chunk_replacement/$chunk/g;
 
-	system "$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_arg -d $mldose_arg -m $legend_arg --chrom $chr -o $outfile_prefix.chunk$chunk.chr$chr $head $keys";
+	my $command = "$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_arg -d $mldose_arg -m $legend_arg --chrom $chr -o $outfile_prefix.chunk$chunk.chr$chr $head $keys";
+	print "$command \n";
+	system $command;
 
 	if($model_option_num==2)
 	{
