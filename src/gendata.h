@@ -16,24 +16,18 @@
 #include "mematrix.h"
 #endif
 
-class gendata
-{
+class gendata {
 public:
     unsigned int nsnps;
     unsigned int nids;
     unsigned int ngpreds;
     gendata();
-    void re_gendata(char * fname, unsigned int insnps,
-		    unsigned int ingpreds, unsigned int npeople,
-		    unsigned int nmeasured,
-		    unsigned short int * allmeasured,
-		    int skipd,
-		    std::string * idnames);
-    void re_gendata(string filename, unsigned int insnps,
-		    unsigned int ingpreds, unsigned int npeople,
-		    unsigned int nmeasured,
-		    unsigned short int * allmeasured,
-		    std::string * idnames);
+    void re_gendata(char * fname, unsigned int insnps, unsigned int ingpreds,
+            unsigned int npeople, unsigned int nmeasured,
+            unsigned short int * allmeasured, int skipd, std::string * idnames);
+    void re_gendata(string filename, unsigned int insnps, unsigned int ingpreds,
+            unsigned int npeople, unsigned int nmeasured,
+            unsigned short int * allmeasured, std::string * idnames);
     void get_var(int var, float * data);
     ~gendata();
 

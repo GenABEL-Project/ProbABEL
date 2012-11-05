@@ -10,16 +10,26 @@
 
 #if EIGEN
 #include "eigen_mematrix.h"
+#include "eigen_mematri1.h"
 #else
 #include "mematrix.h"
+#include "mematri1.h"
 #endif
 
-class phedata
-{
+class phedata {
 
 public:
     phedata()
     {
+        nids_all = 0;
+        nids = 0;
+        noutcomes = 0;
+        ncov = 0;
+        allmeasured = NULL;
+        idnames = NULL;
+        is_interaction_excluded = 0;
+        n_model_terms = 0;
+        model_terms = NULL;
 
     }
     phedata(char * fname, int noutc, int npeople, int interaction, bool iscox);

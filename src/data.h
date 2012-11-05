@@ -14,8 +14,7 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople);
 #include "phedata.h"
 #include "gendata.h"
 
-class mlinfo
-{
+class mlinfo {
 public:
     int nsnps;
     std::string * name;
@@ -28,16 +27,23 @@ public:
     std::string * map;
     mlinfo()
     {
+        Freq1 = NULL;
+        MAF = NULL;
+        Quality = NULL;
+        Rsq = NULL;
+        nsnps = 0;
+        A1 = NULL;
+        A2 = NULL;
+        name = NULL;
+        map = NULL;
     }
     mlinfo(char * filename, char * mapname);
     ~mlinfo();
 };
 
-class InvSigma
-{
+class InvSigma {
 
 private:
-
     static const unsigned MAXIMUM_PEOPLE_AMOUNT = 1000000;
     unsigned npeople; //amount of people
     std::string filename;
