@@ -30,7 +30,7 @@ distributions.
    Hit the enter key to confirm the settings. Several files need to be
    edited.
    - debian/control
-   - debian/changelog
+   - debian/changelog (this file can be edited with 'dch' for convenience)
    - debian/copyright
    - debian/README.Debian
    dh_make also creates several example scripts in the debian/
