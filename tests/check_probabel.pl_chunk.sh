@@ -109,7 +109,7 @@ run_test ()
     rm -f $outfile
     echo "Checking output using dosages $WithOrWithout chunks..."
     ./probabel.pl 1 2 linear $1 --additive height
-    echo -n "  Verifying $outfile"
+    echo -n "  Verifying $outfile: "
     if diff $outfile $results/$outfile; then
 	echo -e "\t\tOK"
     else
@@ -118,20 +118,19 @@ run_test ()
     fi
 
     # Run an analysis on probabilities
-    outfilelist[1]="height_ngp2_2df.out.txt"
-    outfilelist[2]="height_ngp2_recess.out.txt"
-    outfilelist[3]="height_ngp2_over_domin.out.txt"
-    outfilelist[4]="height_ngp2_domin.out.txt"
-    outfilelist[5]="height_ngp2_add.out.txt"
-    for i in {1..5}; do
-	rm -f ${outfilelist[$i]}
+    outfilelist="height_ngp2_2df.out.txt height_ngp2_recess.out.txt
+    height_ngp2_over_domin.out.txt height_ngp2_domin.out.txt
+    height_ngp2_add.out.txt"
+
+    for file in $outfilelist; do
+	rm -f $file
     done
 
     echo "Checking output using probabilities $WithOrWithout chunks..."
     ./probabel.pl 1 2 linear $1 --allmodels height -o _ngp2
-    for i in {1..5}; do
-	echo -n "  Verifying ${outfilelist[$i]}"
-	if diff ${outfilelist[$i]} $results/${outfilelist[$i]}; then
+    for file in $outfilelist; do
+	echo -n "  Verifying $file: "
+	if diff $file $results/$file; then
 	    echo -e "\t\tOK"
 	else
 	    echo -e "\t\tFAILED"
