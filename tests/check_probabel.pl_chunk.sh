@@ -110,8 +110,7 @@ run_test ()
     echo "Checking output using dosages $WithOrWithout chunks..."
     ./probabel.pl 1 2 linear $1 --additive height
     echo -n "  Verifying $outfile"
-    diff $outfile $results/$outfile
-    if [ $? == 0 ]; then
+    if diff $outfile $results/$outfile; then
 	echo -e "\t\tOK"
     else
 	echo -e "\t\tFAILED"
@@ -132,8 +131,7 @@ run_test ()
     ./probabel.pl 1 2 linear $1 --allmodels height -o _ngp2
     for i in {1..5}; do
 	echo -n "  Verifying ${outfilelist[$i]}"
-	diff ${outfilelist[$i]} $results/${outfilelist[$i]}
-	if [ $? == 0 ]; then
+	if diff ${outfilelist[$i]} $results/${outfilelist[$i]}; then
 	    echo -e "\t\tOK"
 	else
 	    echo -e "\t\tFAILED"
