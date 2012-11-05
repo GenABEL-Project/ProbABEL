@@ -1,4 +1,4 @@
-cohort,mlinfo_path,mldose_path,mlprob_path,legend_path
+cohort,info_path,dose_path,prob_path,legend_path
 # Configuration file for the probabel.pl wrapper script
 #
 # This file contains the location of the files with imputed data for the
