@@ -205,5 +205,5 @@ int main(int argc, char* argv[])
 	exit(1);
     }
 
-    delete data[];
+    delete [] data;
 }
