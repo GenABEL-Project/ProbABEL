@@ -1,4 +1,4 @@
-***** v.0.2.1 (2012)
+***** v.0.2.1 (2012.11.05)
 * Fixed bug #2295: the inverse variance-covariance matrix (used with
   the --mmscore option) was incorrectly subsetted when NAs are present
   for one or more SNP dosages (so this is not an issue for people using

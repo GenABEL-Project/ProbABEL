@@ -8,6 +8,7 @@ distributions.
    - dh-make
    - fakeroot
    - lintian
+   - devscripts (not necessary, but has some nice utilities like dch)
 ** Building the package for the first time
    First check to see if everything compiles and all files are included
    in the automake files:
