@@ -1,3 +1,10 @@
+***** v.0.2.2 (2012.11.05)
+* No change in the code compared to v.0.2.1. Due to a mistake with the
+  Ubuntu packaging (which was based on SVN r997, which contained a
+  major bug in the tests and which was uploaded to the GenABEL PPA)
+  I'm releasing a new package based on the same source code as
+  ProbABEL v.0.2.1 (except for the version numbers of course).
+
 ***** v.0.2.1 (2012.11.05)
 * Fixed bug #2295: the inverse variance-covariance matrix (used with
   the --mmscore option) was incorrectly subsetted when NAs are present
