@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT(ProbABEL, 0.2.0, genabel-devel@r-forge.wu-wien.ac.at)
-AM_INIT_AUTOMAKE(ProbABEL, 0.2.0)
+AC_INIT(ProbABEL, 0.2.2, genabel-devel@r-forge.wu-wien.ac.at)
+AM_INIT_AUTOMAKE(ProbABEL, 0.2.2)
 AC_CONFIG_SRCDIR([src/data.h])
 AC_CONFIG_HEADERS([src/config.h])
 
@@ -27,7 +27,6 @@ AC_PROG_CXX
 # Since most of our code is in C++, set that language as the default
 # for the subsequent checks
 AC_LANG_PUSH([C++])
-
 
 # Checks for libraries.
 
@@ -93,6 +92,9 @@ AC_FUNC_FSEEKO
 # Check for presence of sed. Needed to replace path to /etc in probabel.pl
 AC_PROG_SED
 
+# Check for the presence of awk. Needed in the test suite
+AC_PROG_AWK
+
 # Check for presence of pdfLaTeX
 AC_CHECK_PROG(PDFLATEX, pdflatex, pdflatex)
 if test -z "$PDFLATEX"; then
@@ -103,7 +105,8 @@ AM_CONDITIONAL([HAVE_PDFLATEX], test -n "$PDFLATEX")
 
 # Since pacoxph is buggy it needs to be enabled explixitly
 AC_ARG_ENABLE([pacoxph],
-    [AS_HELP_STRING([--enable-pacoxph], [build the pacoxph binary (still contains lots of bugs)])],
+    [AS_HELP_STRING([--enable-pacoxph], [build the pacoxph binary (still \
+contains lots of bugs)])],
     [pacoxph=${enableval}],
     [pacoxph=no])
 
@@ -119,6 +122,7 @@ AC_CONFIG_FILES([
 	src/Makefile
 	doc/Makefile
 	examples/Makefile
+	tests/Makefile
 ])
 # Create output files
 AC_OUTPUT
