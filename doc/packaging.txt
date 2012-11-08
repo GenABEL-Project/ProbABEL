@@ -8,6 +8,7 @@ distributions.
    - dh-make
    - fakeroot
    - lintian
+   - devscripts (not necessary, but has some nice utilities like dch)
 ** Building the package for the first time
    First check to see if everything compiles and all files are included
    in the automake files:
@@ -30,7 +31,7 @@ distributions.
    Hit the enter key to confirm the settings. Several files need to be
    edited.
    - debian/control
-   - debian/changelog
+   - debian/changelog (this file can be edited with 'dch' for convenience)
    - debian/copyright
    - debian/README.Debian
    dh_make also creates several example scripts in the debian/
