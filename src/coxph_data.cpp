@@ -4,8 +4,13 @@
  *  Created on: Mar 31, 2012
  *      Author: mkooyman
  */
-
 #include "coxph_data.h"
+#include <cmath>
+extern "C" {
+#include "survproto.h"
+}
+
+//  #include "reg1.h"
 #include "fvlib/AbstractMatrix.h"
 #include "fvlib/CastUtils.h"
 #include "fvlib/const.h"
@@ -23,22 +28,22 @@ int cmpfun(const void *a, const void *b)
     double el2 = *(double*) b;
     if (el1 > el2)
     {
-	return 1;
+        return 1;
     }
     if (el1 < el2)
     {
-	return -1;
+        return -1;
     }
     if (el1 == el2)
     {
-	return 0;
+        return 0;
     }
 
     // You should never come here...
     return -9;
 }
 
-coxph_data::coxph_data( coxph_data &obj)
+coxph_data::coxph_data(const coxph_data &obj)
 {
     nids = obj.nids;
     ncov = obj.ncov;
@@ -52,25 +57,25 @@ coxph_data::coxph_data( coxph_data &obj)
     order = obj.order;
     masked_data = new unsigned short int[nids];
     for (int i = 0; i < nids; i++)
-	masked_data[i] = 0;
+        masked_data[i] = 0;
 }
-coxph_data::coxph_data( phedata &phed,  gendata &gend, int snpnum)
+coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
 {
     nids = gend.nids;
     masked_data = new unsigned short int[nids];
     for (int i = 0; i < nids; i++)
-	masked_data[i] = 0;
+        masked_data[i] = 0;
     ngpreds = gend.ngpreds;
     if (snpnum >= 0)
-	ncov = phed.ncov + ngpreds;
+        ncov = phed.ncov + ngpreds;
     else
-	ncov = phed.ncov;
+        ncov = phed.ncov;
     if (phed.noutcomes != 2)
     {
-	fprintf(stderr,
-		"coxph_data: number of outcomes should be 2 (now: %d)\n",
-		phed.noutcomes);
-	exit(1);
+        fprintf(stderr,
+                "coxph_data: number of outcomes should be 2 (now: %d)\n",
+                phed.noutcomes);
+        exit(1);
     }
     //      X.reinit(nids,(ncov+1));
     X.reinit(nids, ncov);
@@ -82,29 +87,29 @@ coxph_data::coxph_data( phedata &phed,  gendata &gend, int snpnum)
     order.reinit(nids, 1);
     for (int i = 0; i < nids; i++)
     {
-	//          X.put(1.,i,0);
-	stime[i] = (phed.Y).get(i, 0);
-	sstat[i] = int((phed.Y).get(i, 1));
-	if (sstat[i] != 1 && sstat[i] != 0)
-	{
-	    fprintf(stderr,
-		    "coxph_data: status not 0/1 (right order: id, fuptime, status ...) %d \n",
-		    phed.noutcomes);
-	    exit(1);
-	}
+        //          X.put(1.,i,0);
+        stime[i] = (phed.Y).get(i, 0);
+        sstat[i] = int((phed.Y).get(i, 1));
+        if (sstat[i] != 1 && sstat[i] != 0)
+        {
+            fprintf(stderr,
+                    "coxph_data: status not 0/1 (right order: id, fuptime, status ...) %d \n",
+                    phed.noutcomes);
+            exit(1);
+        }
     }
     for (int j = 0; j < phed.ncov; j++)
-	for (int i = 0; i < nids; i++)
-	    X.put((phed.X).get(i, j), i, j);
+        for (int i = 0; i < nids; i++)
+            X.put((phed.X).get(i, j), i, j);
 
     if (snpnum > 0)
-	for (int j = 0; j < ngpreds; j++)
-	{
-	    float snpdata[nids];
-	    gend.get_var(snpnum * ngpreds + j, snpdata);
-	    for (int i = 0; i < nids; i++)
-		X.put(snpdata[i], i, (ncov - ngpreds + j));
-	}
+        for (int j = 0; j < ngpreds; j++)
+        {
+            float snpdata[nids];
+            gend.get_var(snpnum * ngpreds + j, snpdata);
+            for (int i = 0; i < nids; i++)
+                X.put(snpdata[i], i, (ncov - ngpreds + j));
+        }
 
     //          for (int i=0;i<nids;i++)
     //              for (int j=0;j<ngpreds;j++)
@@ -112,36 +117,36 @@ coxph_data::coxph_data( phedata &phed,  gendata &gend, int snpnum)
 
     for (int i = 0; i < nids; i++)
     {
-	weights[i] = 1.0;
-	offset[i] = 0.0;
-	strata[i] = 0;
+        weights[i] = 1.0;
+        offset[i] = 0.0;
+        strata[i] = 0;
     }
     // sort by time
     double tmptime[nids];
     int passed_sorted[nids];
     for (int i = 0; i < nids; i++)
     {
-	tmptime[i] = stime[i];
-	passed_sorted[i] = 0;
+        tmptime[i] = stime[i];
+        passed_sorted[i] = 0;
     }
     qsort(tmptime, nids, sizeof(double), cmpfun);
     for (int i = 0; i < nids; i++)
     {
-	int passed = 0;
-	for (int j = 0; j < nids; j++)
-	    if (tmptime[j] == stime[i])
-		if (!passed_sorted[j])
-		{
-		    order[i] = j;
-		    passed_sorted[j] = 1;
-		    passed = 1;
-		    break;
-		}
-	if (passed != 1)
-	{
-	    fprintf(stderr, "cannot recover element %d\n", i);
-	    exit(1);
-	}
+        int passed = 0;
+        for (int j = 0; j < nids; j++)
+            if (tmptime[j] == stime[i])
+                if (!passed_sorted[j])
+                {
+                    order[i] = j;
+                    passed_sorted[j] = 1;
+                    passed = 1;
+                    break;
+                }
+        if (passed != 1)
+        {
+            fprintf(stderr, "cannot recover element %d\n", i);
+            exit(1);
+        }
     }
     stime = reorder(stime, order);
     sstat = reorder(sstat, order);
@@ -156,22 +161,22 @@ coxph_data::coxph_data( phedata &phed,  gendata &gend, int snpnum)
     //      stime.print();
     //      sstat.print();
 }
-void coxph_data::update_snp( gendata &gend, int snpnum)
+void coxph_data::update_snp(gendata &gend, int snpnum)
 {
     // note this sorts by "order"!!!
 
     for (int j = 0; j < ngpreds; j++)
     {
-	float snpdata[nids];
-	for (int i = 0; i < nids; i++)
-	    masked_data[i] = 0;
-	gend.get_var(snpnum * ngpreds + j, snpdata);
-	for (int i = 0; i < nids; i++)
-	{
-	    X.put(snpdata[i], (ncov - ngpreds + j), order[i]);
-	    if (isnan(snpdata[i]))
-		masked_data[order[i]] = 1;
-	}
+        float snpdata[nids];
+        for (int i = 0; i < nids; i++)
+            masked_data[i] = 0;
+        gend.get_var(snpnum * ngpreds + j, snpdata);
+        for (int i = 0; i < nids; i++)
+        {
+            X.put(snpdata[i], (ncov - ngpreds + j), order[i]);
+            if (isnan(snpdata[i]))
+                masked_data[order[i]] = 1;
+        }
     }
     //      for (int i=0;i<nids;i++)
     //          for (int j=0;j<ngpreds;j++)
@@ -197,8 +202,8 @@ coxph_data coxph_data::get_unmasked_data()
 
     int nmeasured = 0;
     for (int i = 0; i < nids; i++)
-	if (masked_data[i] == 0)
-	    nmeasured++;
+        if (masked_data[i] == 0)
+            nmeasured++;
     to.nids = nmeasured;
 //      std::cout << "nmeasured=" << nmeasured << "\n";
     to.ncov = ncov;
@@ -222,25 +227,75 @@ coxph_data coxph_data::get_unmasked_data()
     for (int i = 0; i < nids; i++)
     {
 //          std::cout << nids << " " << i << " " << masked_data[i] << "\n";
-	if (masked_data[i] == 0)
-	{
-	    (to.weights).put(weights.get(i, 1), j, 1);
-	    (to.stime).put(stime.get(i, 1), j, 1);
-	    (to.sstat).put(sstat.get(i, 1), j, 1);
-	    (to.offset).put(offset.get(i, 1), j, 1);
-	    (to.strata).put(strata.get(i, 1), j, 1);
-	    (to.order).put(order.get(i, 1), j, 1);
-	    for (int nc = 0; nc < dim1X; nc++)
-		(to.X).put(X.get(nc, i), nc, j);
-	    j++;
-	}
+        if (masked_data[i] == 0)
+        {
+            (to.weights).put(weights.get(i, 1), j, 1);
+            (to.stime).put(stime.get(i, 1), j, 1);
+            (to.sstat).put(sstat.get(i, 1), j, 1);
+            (to.offset).put(offset.get(i, 1), j, 1);
+            (to.strata).put(strata.get(i, 1), j, 1);
+            (to.order).put(order.get(i, 1), j, 1);
+            for (int nc = 0; nc < dim1X; nc++)
+                (to.X).put(X.get(nc, i), nc, j);
+            j++;
+        }
     }
 //      std::cout << " !!! just after cycle !!! ";
 
     //delete [] to.masked_data;
     to.masked_data = new unsigned short int[to.nids];
     for (int i = 0; i < to.nids; i++)
-	to.masked_data[i] = 0;
+        to.masked_data[i] = 0;
     //fprintf(stdout,"get_unmasked: %i %i %i\n",to.nids,dim2X,dim2Y);
     return (to);
 }
+
+coxph_reg::coxph_reg(coxph_data &cdatain)
+{
+    coxph_data cdata = cdatain.get_unmasked_data();
+    beta.reinit(cdata.X.nrow, 1);
+    sebeta.reinit(cdata.X.nrow, 1);
+    loglik = -9.999e+32;
+    sigma2 = -1.;
+    chi2_score = -1.;
+    niter = 0;
+}
+
+void coxph_reg::estimate(coxph_data &cdatain, int verbose, int maxiter,
+        double eps, double tol_chol, int model, int interaction, int ngpreds,
+        bool iscox, int nullmodel)
+{
+    coxph_data cdata = cdatain.get_unmasked_data();
+    mematrix<double> X = t_apply_model(cdata.X, model, interaction, ngpreds,
+            iscox, nullmodel);
+    //      X.print();
+    int length_beta = X.nrow;
+    beta.reinit(length_beta, 1);
+    sebeta.reinit(length_beta, 1);
+    mematrix<double> newoffset = cdata.offset;
+    newoffset = cdata.offset - (cdata.offset).column_mean(0);
+    mematrix<double> means(X.nrow, 1);
+    for (int i = 0; i < X.nrow; i++)
+        beta[i] = 0.;
+    mematrix<double> u(X.nrow, 1);
+    mematrix<double> imat(X.nrow, X.nrow);
+    double work[X.ncol * 2 + 2 * (X.nrow) * (X.nrow) + 3 * (X.nrow)];
+    double loglik_int[2];
+    int flag;
+    double sctest = 1.0;
+
+    //TODO(maarten): this function works only  in combination with eigen remove .data() from arguments to make is available under old matrix
+    coxfit2(&maxiter, &cdata.nids, &X.nrow, cdata.stime.data.data(),
+            cdata.sstat.data.data(), X.data.data(), newoffset.data.data(),
+            cdata.weights.data.data(), cdata.strata.data.data(),
+            means.data.data(), beta.data.data(), u.data.data(),
+            imat.data.data(), loglik_int, &flag, work, &eps, &tol_chol,
+            &sctest);
+    for (int i = 0; i < X.nrow; i++)
+    {
+        sebeta[i] = sqrt(imat.get(i, i));
+    }
+    loglik = loglik_int[1];
+    niter = maxiter;
+}
+

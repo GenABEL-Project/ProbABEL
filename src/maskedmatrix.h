@@ -10,19 +10,18 @@
 
 #if EIGEN
 #include "eigen_mematrix.h"
-#include "eigen_mematri1.h"
+#include "eigen_mematrix.cpp"
 #else
 #include "mematrix.h"
 #include "mematri1.h"
 #endif
 
-class masked_matrix
-{
+class masked_matrix {
 public:
     masked_matrix();
     masked_matrix(mematrix<double> M);
-    void set_matrix(const mematrix<double> M);
-    virtual ~masked_matrix();
+    void set_matrix(const mematrix<double> &M);
+    ~masked_matrix();
     void update_mask(short unsigned int *newmask);
 //    mematrix<double>* get_matrix();
     mematrix<double> matrix_original;

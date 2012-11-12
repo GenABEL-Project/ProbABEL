@@ -8,7 +8,6 @@
 #include <cstdio>
 #include <cstdlib>
 
-
 using namespace Eigen;
 //
 // constructors
@@ -30,7 +29,7 @@ mematrix<DT>::mematrix(int nr, int nc)
     this->nrow = nr;
     this->ncol = nc;
     this->nelements = nr * nc;
-    this->data.resize(nr,nc);
+    this->data.resize(nr, nc);
 }
 template<class DT>
 mematrix<DT>::mematrix(const mematrix<DT> & M)
@@ -140,11 +139,15 @@ mematrix<DT> mematrix<DT>::operator*(const mematrix<DT> &M)
         fprintf(stderr, "mematrix*: ncol != nrow (%d,%d) and (%d,%d)", nrow,
                 ncol, M.nrow, M.ncol);
     }
+
     mematrix<DT> temp;
     temp.data = data * M.data;
     temp.ncol = temp.data.cols();
     temp.nrow = temp.data.rows();
     temp.nelements = temp.nrow * temp.ncol;
+//    fprintf(stderr, "mematrix*:  (%d,%d) and (%d,%d):result%d\n", nrow,
+//            ncol, M.nrow, M.ncol,temp.nrow * temp.ncol);
+//	std::cout.flush();
 
     return temp;
 }
@@ -162,6 +165,8 @@ mematrix<DT> mematrix<DT>::operator*(const mematrix<DT> *M)
     temp.ncol = temp.data.cols();
     temp.nrow = temp.data.rows();
     temp.nelements = temp.nrow * temp.ncol;
+//    fprintf(stderr, "mematrix*:  (%d,%d) and (%d,%d):result%d\n", nrow,
+//            ncol, M->nrow, M->ncol,temp.nrow * temp.ncol);
 
     return temp;
 }
@@ -195,6 +200,7 @@ void mematrix<DT>::reinit(int nr, int nc)
 template<class DT>
 DT mematrix<DT>::get(int nr, int nc)
 {
+#if !NDEBUG
     if (nc < 0 || nc > ncol)
     {
         fprintf(stderr,
@@ -207,15 +213,14 @@ DT mematrix<DT>::get(int nr, int nc)
         printf("mematrix::get: row out of range: %d not in (0,%d)\n", nr, nrow);
         exit(1);
     }
+#endif
     DT temp = data(nr, nc);
     return temp;
 }
 template<class DT>
 void mematrix<DT>::put(DT value, int nr, int nc)
 {
-//    printf("put val:%f  nr=%i nc=%i \n", value, nr, nc);
-//     printf("mat  nr=%i nc=%i \n", data.rows(),data.cols());
-//     printf("mat  nr=%i nc=%i \n", nrow,ncol);
+#if !NDEBUG
     if (nc < 0 || nc > ncol)
     {
         fprintf(stderr,
@@ -228,6 +233,7 @@ void mematrix<DT>::put(DT value, int nr, int nc)
         printf("mematrix::put: row out of range: %d not in (0,%d)\n", nr, nrow);
         exit(1);
     }
+#endif
     data(nr, nc) = value;
 }
 
@@ -327,7 +333,7 @@ mematrix<DT> invert(const mematrix<DT> &M)
 }
 
 template<class DT>
-mematrix<DT> productMatrDiag( const mematrix<DT> &M,  const mematrix<DT> &D)
+mematrix<DT> productMatrDiag(const mematrix<DT> &M, const mematrix<DT> &D)
 {
     //multiply all rows of M by value of first row of D
     if (M.ncol != D.nrow)
@@ -337,11 +343,11 @@ mematrix<DT> productMatrDiag( const mematrix<DT> &M,  const mematrix<DT> &D)
     }
     mematrix<DT> temp = M;
     //make a array of the first row of D in the same way orientation as M.data.row(i).array()
-    Array<DT,Dynamic,Dynamic> row=D.data.block(0,0,M.ncol,1).transpose();
+    Array<DT, Dynamic, Dynamic> row = D.data.block(0, 0, M.ncol, 1).transpose();
 
     for (int i = 0; i < temp.nrow; i++)
     {
-       temp.data.row(i) = M.data.row(i).array() * row;
+        temp.data.row(i) = M.data.row(i).array() * row;
     }
     return temp;
 }

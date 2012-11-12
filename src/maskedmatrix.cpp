@@ -8,7 +8,7 @@
 #include "maskedmatrix.h"
 #if EIGEN
 #include "eigen_mematrix.h"
-#include "eigen_mematri1.h"
+#include "eigen_mematrix.cpp"
 #else
 #include "mematrix.h"
 #include "mematri1.h"
@@ -37,7 +37,7 @@ masked_matrix::masked_matrix(mematrix<double> M)
     //type="symmetric";
 }
 
-void masked_matrix::set_matrix(const mematrix<double> M)
+void masked_matrix::set_matrix(const mematrix<double> &M)
 {
     matrix_original = M;
     masked_data = &matrix_original;
@@ -56,7 +56,7 @@ void masked_matrix::set_matrix(const mematrix<double> M)
 masked_matrix::~masked_matrix()
 {
     // TODO Auto-generated destructor stub
-    delete[]  mask_of_old;
+    delete[] mask_of_old;
 }
 void masked_matrix::update_mask(short unsigned int *newmask)
 {
@@ -75,16 +75,14 @@ void masked_matrix::update_mask(short unsigned int *newmask)
     {
         //masked matrix is the same as original matrix
         masked_data = &matrix_original;
-    }
-    else
+    } else
     {
         //Check update mask is the same as old matrix
         if (is_equal_array(newmask, mask_of_old, length_of_mask))
         {
             //new mask is the same as old matrix
             masked_data = &matrix_masked_data;
-        }
-        else
+        } else
         {
             //new mask differs from old matrix and create new.
 //			//mask_of_old = newmask;

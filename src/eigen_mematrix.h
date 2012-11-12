@@ -6,8 +6,7 @@
 using namespace Eigen;
 using namespace std;
 
-template<class DT> class mematrix
-{
+template<class DT> class mematrix {
 public:
     int nrow;
     int ncol;
@@ -55,8 +54,5 @@ public:
     DT column_sum(int nc);
     void print(void);
 };
-
-//mematrix transpose(mematrix M);
-//mematrix invert(mematrix M);
 
 #endif

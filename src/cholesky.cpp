@@ -6,7 +6,7 @@
  */
 #if EIGEN
 #include "eigen_mematrix.h"
-#include "eigen_mematri1.h"
+#include "eigen_mematrix.cpp"
 #else
 #include "mematrix.h"
 #include "mematri1.h"
@@ -73,8 +73,7 @@ int cholesky2_mm(mematrix<double> &matrix, double toler)
             matrix[i * n + i] = 0;
             if (pivot < -8 * eps)
                 nonneg = -1;
-        }
-        else
+        } else
         {
             rank++;
             for (j = (i + 1); j < n; j++)
@@ -133,8 +132,7 @@ void chinv2_mm(mematrix<double> &matrix)
                 matrix[j * n + i] = 0;
             for (j = i; j < n; j++)
                 matrix[i * n + j] = 0;
-        }
-        else
+        } else
         {
             for (j = (i + 1); j < n; j++)
             {

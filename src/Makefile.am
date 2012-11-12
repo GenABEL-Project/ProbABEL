@@ -6,9 +6,9 @@
 REGFILES = data.h data.cpp gendata.h gendata.cpp mematrix.h mematri1.h	\
  command_line_settings.h command_line_settings.cpp reg1.h usage.h		\
  usage.cpp main.cpp utilities.h utilities.cpp phedata.h phedata.cpp	\
- cholesky.h cholesky.cpp regdata.h regdata.cpp coxph_data.h		\
- coxph_data.cpp maskedmatrix.cpp maskedmatrix.h eigen_mematrix.h 	\
- eigen_mematri1.h
+ cholesky.h cholesky.cpp regdata.h regdata.cpp 	\
+ maskedmatrix.cpp maskedmatrix.h eigen_mematrix.h 	\
+ eigen_mematrix.cpp reg1.cpp
 
 ## Filevector files:
 FVSRC = fvlib/AbstractMatrix.cpp fvlib/CastUtils.cpp			\
@@ -47,7 +47,7 @@ palogist_CXXFLAGS = -DLOGISTIC $(AM_CXXFLAGS)
 palogist_CPPFLAGS = $(AM_CPPFLAGS)
 
 pacoxph_SOURCES = $(COXSRC) $(REGFILES) $(FVSRC) $(FVHEADERS)	\
- $(RHEADERS) survS.h survproto.h
+ $(RHEADERS) survS.h survproto.h coxph_data.h coxph_data.cpp
 pacoxph_CXXFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CXXFLAGS)
 pacoxph_CPPFLAGS = $(AM_CPPFLAGS)
 pacoxph_CFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CFLAGS)

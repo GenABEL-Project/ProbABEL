@@ -9,7 +9,7 @@
 #include "fvlib/FileVector.h"
 #if EIGEN
 #include "eigen_mematrix.h"
-#include "eigen_mematri1.h"
+#include "eigen_mematrix.cpp"
 #else
 #include "mematrix.h"
 #include "mematri1.h"

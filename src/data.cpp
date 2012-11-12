@@ -17,7 +17,7 @@
 
 #if EIGEN
 #include "eigen_mematrix.h"
-#include "eigen_mematri1.h"
+#include "eigen_mematrix.cpp"
 #else
 #include "mematrix.h"
 #include "mematri1.h"
@@ -80,8 +80,7 @@ mlinfo::mlinfo(char * filename, char * mapname)
             nlin++;
         }
         nlin--; // Subtract one, the previous loop added 1 too much
-    }
-    else
+    } else
     {
         std::cerr << "mlinfo: cannot open file " << filename << endl;
         exit(1);
@@ -217,8 +216,7 @@ InvSigma::InvSigma(const char * filename_, phedata * phe)
             row++;
         }
         myfile.close();
-    }
-    else
+    } else
     {
         fprintf(stderr, "error: inv file: cannot open file '%s'\n", filename_);
     }

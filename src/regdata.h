@@ -10,7 +10,7 @@
 
 #if EIGEN
 #include "eigen_mematrix.h"
-#include "eigen_mematri1.h"
+#include "eigen_mematrix.cpp"
 #else
 #include "mematrix.h"
 #include "mematri1.h"
@@ -18,8 +18,7 @@
 #include "gendata.h"
 #include "phedata.h"
 
-class regdata
-{
+class regdata {
 public:
     int nids;
     int ncov;
@@ -31,7 +30,8 @@ public:
     mematrix<double> Y;
     regdata();
     regdata(const regdata &obj);
-    regdata(phedata &phed, gendata &gend, int snpnum,bool ext_is_interaction_excluded);
+    regdata(phedata &phed, gendata &gend, int snpnum,
+            bool ext_is_interaction_excluded);
     mematrix<double> extract_genotypes();
     void update_snp(gendata &gend, int snpnum);
     regdata get_unmasked_data();
