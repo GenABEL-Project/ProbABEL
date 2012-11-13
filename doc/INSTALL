@@ -1,11 +1,30 @@
 These instructions show how to build ProbABEL.
 
+* Dependencies
+  ProbABEL can be compiled without depending on other
+  libraries. However, when the Eigen library is present
+  (http://eigen.tuxfamily.org) matrix manipulation is much more
+  efficient and fast. On Debian/Ubuntu systems the Eigen library can
+  be installed in the following way:
+apt-get install libeigen3-dev
+
+  If you install the eigen library by hand (e.g. after downloading the
+  files from the aforementioned website) you have to specify the
+  location of the header files when running ./configure (see below):
+./configure --with-eigen-include-path=/your/path/to/eigen
+  The default for this option is /usr/include/eigen3. This is the
+  directory in which files like Eigen/Dense and Eigen/Cholesky can be
+  found.
+
+  If ./configure cannot find the Eigen library it will say so. To
+  disable the use of Eigen (even if the library is present) use:
+./configure --disable-eigen
+
+
 * Compiling for Linux
-
-  If you downloaded the source from SVN (this is not
-  necessary when installing from the distributed .tar.gz file), run:
+  If you downloaded the source from SVN (this is not necessary when
+  installing from the distributed .tar.gz file), run:
 autoreconf -i
-
   to generate the ./configure script and some other files.
 
   Now, you are ready to compile and install the package. Run the
@@ -56,15 +75,15 @@ make distclean
 
   Running
 make uninstall
-
   will uninstall the files previously installed by 'make install'.
+
 
 * Making packages for Linux distributions
   Instructions for creating a package for your favourite Linux
   distribution can be found in doc/packaging.txt
 
-* Cross-compiling for Windows on Linux
 
+* Cross-compiling for Windows on Linux
   The following steps show how to compile 32bit windows binaries on a
   Linux machine.
   First, install the necessary MINGW32 packages. On Debian/Ubuntu this
