@@ -125,7 +125,7 @@ void loadInvSigma(cmdvars& input_var, phedata& phd, masked_matrix& invvarmatrix)
     // invvarmatrix = inv.get_matrix();
     //double par = 1.; //var(phd.Y)*phd.nids/(phd.nids-phd.ncov-1);
     invvarmatrix.set_matrix(inv.get_matrix());    // = invvarmatrix * par;
-    std::cout << " loaded InvSigma ...";
+    std::cout << " loaded InvSigma ..." << std::flush;
 }
 
 void create_start_of_header(std::vector<std::ofstream*>& outfile,
@@ -280,13 +280,13 @@ int main(int argc, char * argv[])
      #endif
      */
 
-    std::cout << "Reading data ...";
+    std::cout << "Reading data ..." << std::flush;
     if (input_var.getInverseFilename() != NULL)
     {
         loadInvSigma(input_var, phd, invvarmatrix);
         //	matrix.print();
     }
-    std::cout.flush();
+
     gendata gtd;
     if (!input_var.getIsFvf())
         //use the non non filevector input format
@@ -299,7 +299,7 @@ int main(int argc, char * argv[])
                 input_var.getNgpreds(), phd.nids_all, phd.nids, phd.allmeasured,
                 phd.idnames);
 
-    std::cout << " loaded genotypic data ...";
+    std::cout << " loaded genotypic data ..." << std::flush;
     /**
      if (input_var.getIsFvf())
      gendata gtd (str_genfilename,nsnps,input_var.getNgpreds(),phd.nids_all,phd.allmeasured,phd.idnames);
@@ -315,7 +315,7 @@ int main(int argc, char * argv[])
     regdata nrgd = regdata(phd, gtd, -1, input_var.isIsInteractionExcluded());
 #endif
 
-    std::cout << " loaded null data ...";
+    std::cout << " loaded null data ..." << std::flush;
 #if LOGISTIC
     logistic_reg nrd = logistic_reg(nrgd);
     nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0, input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
@@ -343,8 +343,7 @@ int main(int argc, char * argv[])
 
     std::cout << " formed regression object ...";
 
-    std::cout << " done\n";
-    std::cout.flush();
+    std::cout << " done\n" << std::flush;
 
     //________________________________________________________________
     //Maksim, 9 Jan, 2009
