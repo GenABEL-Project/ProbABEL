@@ -43,8 +43,8 @@ public:
     int noutcomes;
     int ncov;
     unsigned short int * allmeasured;
-    mematrix<double> X;
-    mematrix<double> Y;
+    mematrix<double> X;       /* Will contain the values of the covariate(s) */
+    mematrix<double> Y;       /* Will contain the values of the outcome(s) */
     std::string * idnames;
     std::string model;
     std::string * model_terms;

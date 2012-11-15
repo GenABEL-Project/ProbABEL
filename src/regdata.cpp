@@ -95,10 +95,12 @@ void regdata::update_snp(gendata &gend, int snpnum)
         float snpdata[nids];
         for (int i = 0; i < nids; i++)
             masked_data[i] = 0;
+
         gend.get_var(snpnum * ngpreds + j, snpdata);
+
         for (int i = 0; i < nids; i++)
         {
-            X.put(snpdata[i], i, (ncov + 1 - j - 1));
+            X.put(snpdata[i], i, (ncov - j));
             if (isnan(snpdata[i]))
                 masked_data[i] = 1;
         }

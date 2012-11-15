@@ -92,12 +92,12 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
         sstat[i] = int((phed.Y).get(i, 1));
         if (sstat[i] != 1 && sstat[i] != 0)
         {
-            fprintf(stderr,
-                    "coxph_data: status not 0/1 (right order: id, fuptime, status ...) %d \n",
-                    phed.noutcomes);
+	  std::cerr << "coxph_data: status not 0/1 (correct order: id, fuptime, status ...)"
+		    << endl;
             exit(1);
         }
     }
+
     for (int j = 0; j < phed.ncov; j++)
         for (int i = 0; i < nids; i++)
             X.put((phed.X).get(i, j), i, j);
@@ -163,25 +163,37 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
 }
 void coxph_data::update_snp(gendata &gend, int snpnum)
 {
-    // note this sorts by "order"!!!
+  /**
+   * This is the main part of the fix of bug #1846
+   * (C) of the fix:
+   *   UMC St Radboud Nijmegen,
+   *   Dept of Epidemiology & Biostatistics,
+   *   led by Prof. B. Kiemeney
+   *
+   * Note this sorts by "order"!!!
+   * Here we deal with transposed X, hence last two arguments are swapped
+   * compared to the other 'update_snp'
+   * Also, the starting column-1 is not necessary for cox X therefore
+   * 'ncov-j' changes to 'ncov-j-1'
+   **/
 
     for (int j = 0; j < ngpreds; j++)
     {
         float snpdata[nids];
         for (int i = 0; i < nids; i++)
             masked_data[i] = 0;
+
         gend.get_var(snpnum * ngpreds + j, snpdata);
+
         for (int i = 0; i < nids; i++)
         {
-            X.put(snpdata[i], (ncov - ngpreds + j), order[i]);
+            X.put(snpdata[i], (ncov - j - 1), order[i]);
             if (isnan(snpdata[i]))
                 masked_data[order[i]] = 1;
         }
     }
-    //      for (int i=0;i<nids;i++)
-    //          for (int j=0;j<ngpreds;j++)
-    //              X.put((gend.G).get(i,(snpnum*ngpreds+j)),(ncov-ngpreds+j),order[i]);
 }
+
 coxph_data::~coxph_data()
 {
     delete[] coxph_data::masked_data;
