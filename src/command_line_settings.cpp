@@ -154,8 +154,7 @@ void cmdvars::set_variables(int argc, char * argv[])
     { "mmscore", 1, NULL, 'v' },
     { "robust", 0, NULL, 'u' },
     { NULL, 0, NULL, 0 } };
-    char * program_name = argv[0];
-    fprintf(stdout, "Usage: %s options\n", PACKAGE_VERSION);
+    program_name = argv[0];
 
     do
     {
