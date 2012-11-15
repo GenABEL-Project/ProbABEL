@@ -82,7 +82,7 @@ mlinfo::mlinfo(char * filename, char * mapname)
         nlin--; // Subtract one, the previous loop added 1 too much
     } else
     {
-        std::cerr << "mlinfo: cannot open file " << filename << endl;
+        std::cerr << "mlinfo: cannot open info file " << filename << endl;
         exit(1);
     }
     infile.close();
@@ -106,7 +106,7 @@ mlinfo::mlinfo(char * filename, char * mapname)
     infile.open(filename);
     if (!infile)
     { // file couldn't be opened
-        std::cerr << "mlinfo: cannot open file " << filename << endl;
+        std::cerr << "mlinfo: cannot open info file " << filename << endl;
         exit(1);
     }
     /* Read the header and discard it */
@@ -140,7 +140,7 @@ mlinfo::mlinfo(char * filename, char * mapname)
         char line[BFS], tmp[BFS];
         if (!instr.is_open())
         {
-            std::cerr << "mlinfo: cannot open file " << mapname << endl;
+            std::cerr << "mlinfo: cannot open map file " << mapname << endl;
             exit(1);
         }
         instr.getline(line, BFS);
