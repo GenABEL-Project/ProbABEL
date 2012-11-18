@@ -584,8 +584,6 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
      fprintf(stdout,"tXInv %f %f %f\n",tX.get(0,0),tX.get(1,0),tX.get(2,0));
      if (X.ncol==4) fprintf(stdout,"X[4] %f\n",tX.get(3,0));
      */
-    //TODO(maarten): remove this unused variable if there is not a reason to keep it
-    //double N;
     niter = 0;
     double delta = 1.;
     double prevlik = 0.;

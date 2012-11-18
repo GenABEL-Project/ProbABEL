@@ -23,7 +23,6 @@ masked_matrix::masked_matrix()
 
 masked_matrix::masked_matrix(mematrix<double> M)
 {
-    // TODO Auto-generated constructor stub
     matrix_original = M;
     masked_data = &matrix_original;
     mask_of_old = new unsigned short int[M.nrow];
@@ -33,7 +32,7 @@ masked_matrix::masked_matrix(mematrix<double> M)
     }
     //TODO:set length of mask for all types
     length_of_mask = M.nrow;
-    //TODO:snet type (row,column,symmetric)
+    //TODO:set type (row,column,symmetric)
     //type="symmetric";
 }
 
@@ -55,7 +54,6 @@ void masked_matrix::set_matrix(const mematrix<double> &M)
 
 masked_matrix::~masked_matrix()
 {
-    // TODO Auto-generated destructor stub
     delete[] mask_of_old;
 }
 void masked_matrix::update_mask(short unsigned int *newmask)
@@ -110,17 +108,12 @@ void masked_matrix::mask_symmetric(int nmeasured)
             for (int j = 0; j < length_of_mask; j++)
                 if (mask_of_old[j] == 0)
                 {
-                    //fprintf(stdout, "val%i %i\n", i1,j1);
                     matrix_masked_data.put(matrix_original.get(i, j), i1, j1);
                     j1++;
                 }
             i1++;
         }
 }
-//mematrix<double>* masked_matrix::get_matrix()
-//{
-// //   return masked_matrix;
-//}
 
 bool masked_matrix::is_equal_array(unsigned short int *a, unsigned short int *b,
         int size)

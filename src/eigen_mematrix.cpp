@@ -293,14 +293,16 @@ mematrix<DT> reorder(const mematrix<DT> &M, const mematrix<int> order)
 {
     if (M.nrow != order.nrow)
     {
-        fprintf(stderr, "reorder: M & order have differet # of rows\n");
+        fprintf(stderr, "reorder: M & order have different # of rows\n");
         exit(1);
     }
     mematrix<DT> temp(M.nrow, M.ncol);
-//FIXME(maarten): commented out to get compilation running
-//    for (int i = 0; i < temp.nrow; i++)
-//        for (int j = 0; j < temp.ncol; j++)
-//            temp.data[order[i] * temp.ncol + j] = M.data[i * M.ncol + j];
+    int source;
+    for (int i = 0; i < temp.nrow; i++)
+    {
+        source = order.data(i, 0);
+        temp.data.row(i) = M.data.row(source);
+    }
     return temp;
 }
 //

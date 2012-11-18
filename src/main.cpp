@@ -307,8 +307,6 @@ int main(int argc, char * argv[])
      gendata gtd (input_var.getGenfilename(),nsnps,input_var.getNgpreds(),phd.nids_all,phd.nids,phd.allmeasured,skipd,phd.idnames);
      **/
     // estimate null model
-    //TODO(maarten): remove this unused variable if there is not a reason to keep it
-    //double null_loglik = 0.;
 #if COXPH
     coxph_data nrgd = coxph_data(phd, gtd, -1);
 #else
