@@ -1,15 +1,11 @@
 //=============================================================================
-//
 //           Filename:  src/main.cpp
 //
 //        Description:  ProbABEL head file.
 //
-//            Version:  0.1-3
-//            Created:  ---
-//           Revision:  none
-//
 //             Author:  Yurii S. Aulchenko (cox, log, lin regressions)
-//             Modified by: L.C. Karssen,
+//             Modified by: M. Kooyman,
+//                          L.C. Karssen,
 //                          Maksim V. Struchalin
 //
 // modified 14-May-2009 by MVS:  interaction with SNP, interaction with SNP
@@ -23,7 +19,6 @@
 // of beta(interaction) based on src/main.cpp version 0.1-0 as of Oct 19, 2009
 //
 //  Company:  Department of Epidemiology, ErasmusMC Rotterdam, The Netherlands.
-//    Email:  i.aoultchenko@erasmusmc.nl, m.struchalin@erasmusmc.nl
 //
 //=============================================================================
 #include <stdio.h>
@@ -57,18 +52,22 @@
 
 void update_progress_to_cmd_line(int csnp, int nsnps)
 {
+    std::cout << setprecision(2) << fixed;
+
     if (csnp % 1000 == 0)
     {
         if (csnp == 0)
         {
-            fprintf(stdout, "Analysis: %6.2f ...",
-                    100. * static_cast<double>(csnp)
-                            / static_cast<double>(nsnps));
+            std::cout << "Analysis: "
+                      << setw (5) << 100. * static_cast<double>(csnp)
+                              / static_cast<double>(nsnps)
+                      << "%...";
         } else
         {
-            fprintf(stdout, "\b\b\b\b\b\b\b\b\b\b%6.2f ...",
-                    100. * static_cast<double>(csnp)
-                            / static_cast<double>(nsnps));
+            std::cout << "\b\b\b\b\b\b\b\b\b"
+                      << setw (5) << 100. * static_cast<double>(csnp)
+                              / static_cast<double>(nsnps)
+                      << "%...";
         }
         std::cout.flush();
     }
@@ -90,7 +89,7 @@ void open_files_for_output(std::vector<std::ofstream*>& outfile,
         outfile[i]->open((filenames[i]).c_str());
         if (!outfile[i]->is_open())
         {
-            std::cerr << "Can not open file for writing: " << filenames[i]
+            std::cerr << "Cannot open file for writing: " << filenames[i]
                     << "\n";
             exit(1);
         }
@@ -253,7 +252,7 @@ int main(int argc, char * argv[])
     input_var.printinfo();
     //	if (allcov && ngpreds>1)
     //	{
-    //		fprintf(stdout,"\n\nWARNING: --allcov allowed only for 1 predictor (MLDOSE)\n");
+    //		std::cout << "\n\nWARNING: --allcov allowed only for 1 predictor (MLDOSE)\n";
     //		allcov = 0;
     //	}
     mlinfo mli(input_var.getMlinfofilename(), input_var.getMapfilename());
@@ -363,7 +362,7 @@ int main(int argc, char * argv[])
 
         if (!outfile[0]->is_open())
         {
-            std::cerr << "Can not open file for writing: " << outfilename_str
+            std::cerr << "Cannot open file for writing: " << outfilename_str
                     << "\n";
             exit(1);
         }
@@ -901,9 +900,8 @@ int main(int argc, char * argv[])
         update_progress_to_cmd_line(csnp, nsnps);
     }
 
-    fprintf(stdout, "\b\b\b\b\b\b\b\b\b\b%6.2f", 100.);
-
-    fprintf(stdout, " ... done\n");
+    std::cout << "\b\b\b\b\b\b\b\b\b" << 100.;
+    std::cout << "%... done\n";
 
     //________________________________________________________________
     //Maksim, 9 Jan, 2009

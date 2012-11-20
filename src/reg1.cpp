@@ -204,7 +204,8 @@ mematrix<double> t_apply_model(mematrix<double>& X, int model, int interaction,
 linear_reg::linear_reg(regdata& rdatain)
 {
     regdata rdata = rdatain.get_unmasked_data();
-    //fprintf(stdout,"linear_reg: %i %i %i\n",rdata.nids,(rdata.X).ncol,(rdata.Y).ncol);
+    // std::cout << "linear_reg: " << rdata.nids << " " << (rdata.X).ncol
+    //           << " " << (rdata.Y).ncol << "\n";
     int length_beta = (rdata.X).ncol;
     beta.reinit(length_beta, 1);
     sebeta.reinit(length_beta, 1);
@@ -280,16 +281,16 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     {
         cout << rdata.is_interaction_excluded
                 << " <-irdata.is_interaction_excluded\n";
-        printf("invvarmatrix:\n");
+        std::cout << "invvarmatrix:\n";
         invvarmatrixin.masked_data->print();
-        printf("rdata.X:\n");
+        std::cout << "rdata.X:\n";
         rdata.X.print();
     }
     mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,
             rdata.is_interaction_excluded, false, nullmodel);
     if (verbose)
     {
-        printf("X:\n");
+        std::cout << "X:\n";
         X.print();
     }
     int length_beta = X.ncol;
@@ -330,17 +331,17 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     beta = tXX_i * tXY;
     if (verbose)
     {
-        printf("tX:\n");
+        std::cout << "tX:\n";
         tX.print();
-        printf("tXX:\n");
+        std::cout << "tXX:\n";
         tXX.print();
-        printf("chole tXX:\n");
+        std::cout << "chole tXX:\n";
         tXX_i.print();
-        printf("tXX-1:\n");
+        std::cout << "tXX-1:\n";
         tXX_i.print();
-        printf("tXY:\n");
+        std::cout << "tXY:\n";
         tXY.print();
-        printf("beta:\n");
+        std::cout << "beta:\n";
         (beta).print();
     }
     // now compute residual variance
@@ -348,22 +349,22 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     mematrix<double> ttX = transpose(tX);
     mematrix<double> sigma2_matrix = rdata.Y;
     mematrix<double> sigma2_matrix1 = ttX * beta;
-    //        printf("sigma2_matrix");
+    //        std::cout << "sigma2_matrix\n";
     //        sigma2_matrix.print();
     //
-    //        printf("sigma2_matrix1");
+    //        std::cout << "sigma2_matrix1\n";
     //        sigma2_matrix1.print();
     sigma2_matrix = sigma2_matrix - sigma2_matrix1;
-    //        printf("sigma2_matrix");
+    //        std::cout << "sigma2_matrix\n";
     //        sigma2_matrix.print();
     static double val;
     //  std::cout<<"sigma2_matrix.nrow="<<sigma2_matrix.nrow<<"sigma2_matrix.ncol"<<sigma2_matrix.ncol<<"\n";
     for (int i = 0; i < sigma2_matrix.nrow; i++)
     {
         val = sigma2_matrix.get(i, 0);
-        //            printf("val = %f\n", val);
+        //            std::cout << "val = " << val << "\n";
         sigma2 += val * val;
-        //            printf("sigma2+= = %f\n", sigma2);
+        //            std::cout << "sigma2+= " << sigma2 << "\n";
     }
     double sigma2_internal = sigma2 / (N - static_cast<double>(length_beta));
     // now compute residual variance
@@ -379,12 +380,12 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     //  std::cout<<"sigma2_internal="<<sigma2_internal<<"\n";
     //      replaced for ML
     //      sigma2_internal = sigma2/(N - double(length_beta) - 1);
-    //        printf("sigma2/=N = %f\n", sigma2);
+    //        std::cout << "sigma2/=N = "<< sigma2 << "\n";
     sigma2 /= N;
     //  std::cout<<"N="<<N<<", length_beta="<<length_beta<<"\n";
     if (verbose)
     {
-        printf("sigma2 = %f\n", sigma2);
+        std::cout << "sigma2 = " << sigma2 << "\n";
     }
     /*
      loglik = 0.;
@@ -489,7 +490,7 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     //cout << "estimate E\n";
     if (verbose)
     {
-        printf("sebeta (%d):\n", sebeta.nrow);
+        std::cout << "sebeta (" << sebeta.nrow << "):\n";
         sebeta.print();
     }
 }
@@ -563,7 +564,7 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
     double prev = (rdata.Y).column_mean(0);
     if (prev >= 1. || prev <= 0.)
     {
-        fprintf(stderr, "prevalence not within (0,1)\n");
+        std::cerr << "prevalence not within (0,1)\n";
         exit(1);
     }
     for (int i = 0; i < length_beta; i++)
@@ -576,14 +577,19 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
         tX = tX * invvarmatrix;
     }
     /*
-     fprintf(stdout,"\n");
-     fprintf(stdout,"X %f %f %f\n",X.get(0,0),X.get(0,1),X.get(0,2));
-     if (X.ncol==4) fprintf(stdout,"X[4] %f\n",X.get(0,3));
-     fprintf(stdout,"Inv %f %f %f\n",invvarmatrix.get(0,0),invvarmatrix.get(0,1),invvarmatrix.get(0,2));
-     if (X.ncol==4) fprintf(stdout,"X[4] %f\n",invvarmatrix.get(0,3));
-     fprintf(stdout,"tXInv %f %f %f\n",tX.get(0,0),tX.get(1,0),tX.get(2,0));
-     if (X.ncol==4) fprintf(stdout,"X[4] %f\n",tX.get(3,0));
-     */
+      std::cout << "\n";
+      std::cout << "X " << X.get(0,0) << " " << X.get(0,1) << " "
+      << X.get(0,2) << "\n";
+      if (X.ncol==4) std::cout << "X[4] " << X.get(0,3) << "\n";
+      std::cout << "Inv " << invvarmatrix.get(0,0) << " "
+                << invvarmatrix.get(0,1) << " "
+                << invvarmatrix.get(0,2) << "\n";
+
+      if (X.ncol==4) std::cout << ,"X[4] " << invvarmatrix.get(0,3) << "\n";
+      std::cout << "tXInv " << tX.get(0,0) << " " << tX.get(1,0) << " "
+                << tX.get(2,0) << "%f\n";
+      if (X.ncol==4) std::cout << "X[4] " << tX.get(3,0) << "\n";
+    */
     niter = 0;
     double delta = 1.;
     double prevlik = 0.;
@@ -608,51 +614,52 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
         mematrix<double> tmp = productMatrDiag(tX, W);
         if (verbose)
         {
-            printf("tXW:\n");
+            std::cout << "tXW:\n";
             tmp.print();
         }
         mematrix<double> tXWX = tmp * (X);
         //N = tXWX.get(0, 0);
         if (verbose)
         {
-            printf("tXWX:\n");
+            std::cout << "tXWX:\n";
             tXWX.print();
         }
-        //printf("tXWX:\n");tXWX.print();
+        // std::cout << "tXWX:\n";tXWX.print();
         //
         // use cholesky to invert
         //
         tXWX_i = tXWX;
         //cholesky2_mm(tXWX_i,tol_chol);
-        //if (verbose) {printf("chole tXWX:\n");tXWX_i.print();}
-        //printf("chole tXWX:\n");tXWX_i.print();
+        //if (verbose) {std::cout << "chole tXWX:\n"; tXWX_i.print();}
+        //std::cout << "chole tXWX:\n"; tXWX_i.print();
         //chinv2_mm(tXWX_i);
         // was before
         tXWX_i = invert(tXWX);
         if (verbose)
         {
-            printf("tXWX-1:\n");
+            std::cout << "tXWX-1:\n";
             tXWX_i.print();
         }
-        //fprintf(stdout,"*** tXWX_i\n");tXWX_i.print();
+        // std::cout << "*** tXWX_i\n"; tXWX_i.print();
         mematrix<double> tmp1 = productMatrDiag(tX, W);
         mematrix<double> tXWz = tmp1 * z;
         if (verbose)
         {
-            printf("tXWz:\n");
+            std::cout << "tXWz:\n";
             tXWz.print();
         }
         beta = tXWX_i * tXWz;
-        //fprintf(stdout,"*** res: %f %f %f\n",residuals[0],residuals[1],residuals[2]);
+        // std::cout << "*** res: " << residuals[0] << " "
+        //           << residuals[1] << " " << residuals[2] << "\n";
         //mematrix<double> txres = tx * residuals;
-        //fprintf(stdout,"*** txres\n");txres.print();
+        // std::cout << "*** txres\n";txres.print();
         //beta = txwx_i* txres;
         if (verbose)
         {
-            printf("beta:\n");
+            std::cout << "beta:\n";
             beta.print();
         }
-        //printf("beta:\n");beta.print();
+        // std::cout << "beta:\n"; beta.print();
         // compute likelihood
         prevlik = loglik;
         loglik = 0.;
@@ -726,12 +733,12 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
     }
     if (verbose)
     {
-        printf("sebeta (%d):\n", sebeta.nrow);
+        std::cout << "sebeta (" << sebeta.nrow << "):\n";
         sebeta.print();
     }
-    //printf("sebeta (%d):\n",beta.nrow);beta.print();
-    //printf("sebeta (%d):\n",sebeta.nrow);sebeta.print();
-    //exit(1);
+    // std::cout << "beta (" << beta.nrow << "):\n"; beta.print();
+    // std::cout << "sebeta (" << sebeta.nrow << "):\n"; sebeta.print();
+    // exit(1);
 }
 
 void logistic_reg::score(mematrix<double>& resid, regdata& rdata, int verbose,

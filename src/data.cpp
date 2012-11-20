@@ -23,6 +23,7 @@
 #include "mematri1.h"
 #endif
 #include "utilities.h"
+
 using namespace std;
 
 unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
@@ -206,9 +207,9 @@ InvSigma::InvSigma(const char * filename_, phedata * phe)
 
             if (col != npeople)
             {
-                fprintf(stderr,
-                        "error: inv file: Number of columns in row %d equals to %d but people amount is %d\n",
-                        row, col, npeople);
+                std::cerr << "error: inv file: Number of columns in row "
+                          << row << " equals to " << col
+                          << " but number of people is " << npeople << "\n";
                 myfile.close();
                 exit(1);
             }
@@ -218,7 +219,8 @@ InvSigma::InvSigma(const char * filename_, phedata * phe)
         myfile.close();
     } else
     {
-        fprintf(stderr, "error: inv file: cannot open file '%s'\n", filename_);
+        std::cerr << "error: inv file: cannot open file '"
+                  << filename_ << "'\n";
     }
 
     delete[] line;

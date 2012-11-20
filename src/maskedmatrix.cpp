@@ -108,6 +108,7 @@ void masked_matrix::mask_symmetric(int nmeasured)
             for (int j = 0; j < length_of_mask; j++)
                 if (mask_of_old[j] == 0)
                 {
+                    //std::cout << "val" << i1 << " " << j1 << "\n";
                     matrix_masked_data.put(matrix_original.get(i, j), i1, j1);
                     j1++;
                 }

@@ -5,6 +5,7 @@
  *      Author: mkooyman
  */
 #include "coxph_data.h"
+#include <iostream>
 #include <cmath>
 extern "C" {
 #include "survproto.h"
@@ -72,9 +73,8 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
         ncov = phed.ncov;
     if (phed.noutcomes != 2)
     {
-        fprintf(stderr,
-                "coxph_data: number of outcomes should be 2 (now: %d)\n",
-                phed.noutcomes);
+        std::cerr << "coxph_data: number of outcomes should be 2 (now: "
+                  << phed.noutcomes ")\n";
         exit(1);
     }
     //      X.reinit(nids,(ncov+1));
@@ -92,8 +92,8 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
         sstat[i] = int((phed.Y).get(i, 1));
         if (sstat[i] != 1 && sstat[i] != 0)
         {
-	  std::cerr << "coxph_data: status not 0/1 (correct order: id, fuptime, status ...)"
-		    << endl;
+          std::cerr << "coxph_data: status not 0/1 (correct order: id, fuptime, status ...)"
+                    << endl;
             exit(1);
         }
     }
@@ -144,7 +144,7 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
                 }
         if (passed != 1)
         {
-            fprintf(stderr, "cannot recover element %d\n", i);
+            std::cerr << "cannot recover element " << i << "\n";
             exit(1);
         }
     }
@@ -258,7 +258,8 @@ coxph_data coxph_data::get_unmasked_data()
     to.masked_data = new unsigned short int[to.nids];
     for (int i = 0; i < to.nids; i++)
         to.masked_data[i] = 0;
-    //fprintf(stdout,"get_unmasked: %i %i %i\n",to.nids,dim2X,dim2Y);
+    // std::cout << "get_unmasked: " << to.nids << " "
+    //           << dim2X << " " << dim2Y << "\n";
     return (to);
 }
 
@@ -310,4 +311,3 @@ void coxph_reg::estimate(coxph_data &cdatain, int verbose, int maxiter,
     loglik = loglik_int[1];
     niter = maxiter;
 }
-

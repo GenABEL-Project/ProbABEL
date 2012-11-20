@@ -29,7 +29,8 @@ void gendata::get_var(int var, float * data)
         for (unsigned int i = 0; i < DAG->getNumObservations(); i++)
             if (!DAGmask[i])
                 data[j++] = tmpdata[i];
-        //fprintf(stdout,"%i %i %i\n",j,DAG->get_nobservations(),nids);
+        // std::cout << j << " " << DAG->get_nobservations() << " "
+        //           << nids << "\n";
     } else
         report_error("cannot get gendata");
 }
@@ -79,7 +80,7 @@ void gendata::re_gendata(string filename, unsigned int insnps,
 
     }
     nids = j + 1;
-    //fprintf(stdout,"in INI: %i %i\n",nids,npeople);
+    // std::cout << "in INI: " << nids << " " << npeople << "\n";
     if (nids != nmeasured)
         report_error("nids != mneasured (%i != %i)\n", nids, nmeasured);
 
@@ -128,7 +129,8 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 } else
                 {
                     tmpid = tmpstr;
-                    //fprintf(stdout,"%s;%s;%s;%s;%s\n",tmp,ttt,tmpn,tmpid.c_str(),idnames[k].c_str());
+                    // std::cout << tmp << ";" << ttt << ";" << tmpn
+                    // << tmpid.c_str() << ";" << idnames[k].c_str() << "\n";
                 }
                 if (tmpid != idnames[k])
                 {

@@ -158,79 +158,79 @@ void cmdvars::set_variables(int argc, char * argv[])
 
     do
     {
-	next_option = getopt_long(argc, argv, short_options, long_options,
-		NULL);
+        next_option = getopt_long(argc, argv, short_options, long_options,
+                NULL);
 
-	switch (next_option)
-	{
-	case 'h':
-	    print_help(program_name, 0);
-	case 'p':
-	    phefilename = optarg;
-	    neco[0] = 1;
-	    fprintf(stdout, "phenoint\n");
-	    break;
-	case 'i':
-	    mlinfofilename = optarg;
-	    neco[1] = 1;
-	    break;
-	case 'd':
-	    genfilename = optarg;
-	    neco[2] = 1;
-	    break;
-	case 'm':
-	    mapfilename = optarg;
-	    break;
-	case 'n':
-	    npeople = atoi(optarg);
-	    break;
-	case 'c':
-	    chrom = optarg;
-	    break;
-	case 'o':
-	    outfilename = optarg;
-	    break;
-	case 's':
-	    skipd = atoi(optarg);
-	    break;
-	case 't':
-	    noutcomes = atoi(optarg);
-	    break;
-	case 'g':
-	    ngpreds = atoi(optarg);
-	    break;
-	case 'a':
-	    sep = optarg;
-	    break;
-	case 'e':
-	    nohead = 1;
-	    break;
-	case 'r':
-	    score = 1;
-	    break;
-	case 'l':
-	    allcov = 1;
-	    break;
-	case 'b':
-	    interaction = atoi(optarg);
-	    break;
-	case 'k':
-	    interaction_excluded = atoi(optarg);
-	    break;
-	case 'v':
-	    inverse_filename = optarg;
-	    break;
-	case 'u':
-	    robust = 1;
-	    break;
+        switch (next_option)
+        {
+        case 'h':
+            print_help(program_name, 0);
+        case 'p':
+            phefilename = optarg;
+            neco[0] = 1;
+            cout << "phenoint" << endl;
+            break;
+        case 'i':
+            mlinfofilename = optarg;
+            neco[1] = 1;
+            break;
+        case 'd':
+            genfilename = optarg;
+            neco[2] = 1;
+            break;
+        case 'm':
+            mapfilename = optarg;
+            break;
+        case 'n':
+            npeople = atoi(optarg);
+            break;
+        case 'c':
+            chrom = optarg;
+            break;
+        case 'o':
+            outfilename = optarg;
+            break;
+        case 's':
+            skipd = atoi(optarg);
+            break;
+        case 't':
+            noutcomes = atoi(optarg);
+            break;
+        case 'g':
+            ngpreds = atoi(optarg);
+            break;
+        case 'a':
+            sep = optarg;
+            break;
+        case 'e':
+            nohead = 1;
+            break;
+        case 'r':
+            score = 1;
+            break;
+        case 'l':
+            allcov = 1;
+            break;
+        case 'b':
+            interaction = atoi(optarg);
+            break;
+        case 'k':
+            interaction_excluded = atoi(optarg);
+            break;
+        case 'v':
+            inverse_filename = optarg;
+            break;
+        case 'u':
+            robust = 1;
+            break;
 
-	case '?':
-	    print_usage(program_name, 1);
-	case -1:
-	    break;
-	default:
-	    abort();
-	} // end of switch
+        case '?':
+            print_usage(program_name, 1);
+        case -1:
+            break;
+        default:
+            abort();
+        } // end of switch
     } while (next_option != -1);
 } // end of function
 
@@ -241,114 +241,116 @@ bool cmdvars::isIsInteractionExcluded() const
 
 void cmdvars::printinfo()
 {
-    fprintf(stdout,
-	    "%s v. %s (C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EMCR\n\n",
-	    PACKAGE, PACKAGE_VERSION);
+    cout << PACKAGE
+              << " v. " << PACKAGE_VERSION
+              << "(C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EMCR\n\n";
 #if EIGEN
-    fprintf(stdout, "Using EIGEN for matrix operations\n");
+    cout << "Using EIGEN for matrix operations\n";
 #endif
 
     if (neco[0] != 1 || neco[1] != 1 || neco[2] != 1)
     {
-	print_usage(program_name, 1);
+        print_usage(program_name, 1);
     }
 
     if (score)
     {
-	cout << "option --score suppressed from v 0.1-6\n";
-	exit(1);
+        cout << "option --score suppressed from v 0.1-6\n";
+        exit(1);
     }
 
     str_genfilename = genfilename;
     if (str_genfilename.find(FILEVECTOR_INDEX_FILE_SUFFIX) != string::npos
-	    || str_genfilename.find(FILEVECTOR_DATA_FILE_SUFFIX)
-		    != string::npos)
-	isFVF = 1;
+            || str_genfilename.find(FILEVECTOR_DATA_FILE_SUFFIX)
+                    != string::npos)
+        isFVF = 1;
 
-    fprintf(stdout, "Options in effect:\n");
-    fprintf(stdout, "\t --pheno   = %s\n", phefilename);
-    fprintf(stdout, "\t --info    = %s\n", mlinfofilename);
-    fprintf(stdout, "\t --dose    = %s\n", genfilename);
+    cout << "Options in effect:\n";
+    cout << "\t --pheno   = "          << phefilename << endl;
+    cout << "\t --info    = "          << mlinfofilename << endl;
+    cout << "\t --dose    = "          << genfilename << endl;
     if (isFVF)
-	fprintf(stdout, "\t             (using FVF data)\n");
-    fprintf(stdout, "\t --ntraits = %d\n", noutcomes);
-    fprintf(stdout, "\t --ngpreds = %d\n", ngpreds);
-    fprintf(stdout, "\t --interaction = %d\n", interaction);
-    fprintf(stdout, "\t --interaction_only = %d\n", interaction_excluded);
+        cout << "\t             (using FVF data)" << endl;
+    cout << "\t --ntraits = "          << noutcomes << endl;
+    cout << "\t --ngpreds = "          << ngpreds << endl;
+    cout << "\t --interaction = "      << interaction << endl;
+    cout << "\t --interaction_only = " << interaction_excluded << endl;
 
     if (inverse_filename != NULL)
-	fprintf(stdout, "\t --mmscore = %s\n", inverse_filename);
+        cout << "\t --mmscore = "      << inverse_filename << endl;
     else
-	fprintf(stdout, "\t --mmscore     = not in output\n");
-//  fprintf(stdout,"\t --mmscore = %s\n",inverse_filename);
+        cout << "\t --mmscore     = not in output" << endl;
 
     if (mapfilename != NULL)
-	fprintf(stdout, "\t --map     = %s\n", mapfilename);
+        cout << "\t --map     = "      <<  mapfilename << endl;
     else
-	fprintf(stdout, "\t --map     = not in output\n");
+        cout << "\t --map     = not in output" << endl;
     if (npeople > 0)
-	fprintf(stdout, "\t --nids    = %d\n", npeople);
+        cout << "\t --nids    = "      << npeople << endl;
     else
-	fprintf(stdout, "\t --nids    = estimated from data\n");
+        cout << "\t --nids    = estimated from data" << endl;
     if (chrom != "-1")
-	cout << "\t --chrom   = " << chrom << "\n";
+        cout << "\t --chrom   = "      << chrom << endl;
     else
-	cout << "\t --chrom   = not in output\n";
+        cout << "\t --chrom   = not in output\n";
     if (outfilename != NULL)
-	fprintf(stdout, "\t --out     = %s\n", outfilename);
+        cout << "\t --out     = "      << outfilename << endl;
     else
-	fprintf(stdout, "\t --out     = regression.out.txt\n");
-    fprintf(stdout, "\t --skipd   = %d\n", skipd);
-    cout << "\t --separat = \"" << sep << "\"\n";
+        cout << "\t --out     = "      << "regression.out.txt" << endl;
+    cout << "\t --skipd   = "          << skipd << endl;
+    cout << "\t --separat = \""        << sep << "\"" << endl;
     if (score)
-	fprintf(stdout, "\t --score   = ON\n");
+        cout << "\t --score   = ON"    << endl;
     else
-	fprintf(stdout, "\t --score   = OFF\n");
+        cout << "\t --score   = OFF"   << endl;
     if (nohead)
-	fprintf(stdout, "\t --nohead  = ON\n");
+        cout << "\t --nohead  = ON"    << endl;
     else
-	fprintf(stdout, "\t --nohead  = OFF\n");
+        cout << "\t --nohead  = OFF"   << endl;
     if (allcov)
-	fprintf(stdout, "\t --allcov  = ON\n");
+        cout << "\t --allcov  = ON"    << endl;
     else
-	fprintf(stdout, "\t --allcov  = OFF\n");
+        cout << "\t --allcov  = OFF"   << endl;
     if (robust)
-	fprintf(stdout, "\t --robust  = ON\n");
+        cout << "\t --robust  = ON"    << endl;
     else
-	fprintf(stdout, "\t --robust  = OFF\n");
+        cout << "\t --robust  = OFF"   << endl;
 
     if (ngpreds != 1 && ngpreds != 2)
     {
-	fprintf(stderr,
-		"\n\n--ngpreds should be 1 for MLDOSE or 2 for MLPROB\n");
-	exit(1);
+        cerr << "\n\n--ngpreds should be 1 for MLDOSE or 2 for MLPROB"
+             << endl;
+        exit(1);
     }
 
     if (interaction_excluded != 0)
     {
-	interaction = interaction_excluded; //ups
-	is_interaction_excluded = true;
+        interaction = interaction_excluded; //ups
+        is_interaction_excluded = true;
     }
     if (outfilename == NULL)
     {
-	outfilename = (char *) string("regression").c_str();
+        outfilename = (char *) string("regression").c_str();
     }
 #if COXPH
     if (score)
     {
-	fprintf(stderr, "\n\nOption --score is implemented for linear and logistic models only\n");
-	exit(1);
+        cerr << "\n\nOption --score is implemented for linear and logistic models only\n"
+             << endl;
+        exit(1);
     }
 
     if (inverse_filename != NULL)
     {
-	std::cerr << "ERROR: mmscore is forbidden for cox regression\n";
-	exit(1);
+        cerr << "ERROR: mmscore is forbidden for cox regression"
+             << endl;
+        exit(1);
     }
     if (robust)
     {
-	std::cerr << "ERROR: robust standard errors not implemented for Cox regression\n";
-	exit(1);
+        cerr << "ERROR: robust standard errors not implemented for Cox regression"
+             << endl;
+        exit(1);
     }
 #endif
 }

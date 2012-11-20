@@ -153,7 +153,8 @@ regdata regdata::get_unmasked_data()
     to.masked_data = new unsigned short int[to.nids];
     for (int i = 0; i < to.nids; i++)
         to.masked_data[i] = 0;
-    //fprintf(stdout,"get_unmasked: %i %i %i\n",to.nids,dim2X,dim2Y);
+    // std::cout << "get_unmasked: " << to.nids << " "
+    //           << dim2X << " " << dim2Y << "\n";
     return (to);
 }
 
@@ -166,4 +167,3 @@ mematrix<double> regdata::extract_genotypes(void)
             out[i * ngpreds + j] = X.get(i, (ncov - ngpreds + 1 + j));
     return out;
 }
-

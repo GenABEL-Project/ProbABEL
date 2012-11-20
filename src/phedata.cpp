@@ -171,7 +171,9 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
             nids++;
     }
     infile.close();
-    //		printf("npeople = %d, no. all measured = %d\n",nids_all,nids);
+    // std::cout << "npeople = " << nids_all
+    //           << ", no. all measured = " << nids << "\n";
+
     // allocate objects
     int ntmpcov = 1;
     if (ncov > 0)
@@ -223,4 +225,3 @@ phedata::~phedata()
     //		delete Y;
     //		delete [] allmeasured;
 }
-
