@@ -17,7 +17,7 @@ if test -z "$CXXFLAGS"; then
     CXXFLAGS="-g -O2"
 fi
 if test -z "$CPPFLAGS"; then
-   # User did not set CXXFLAGS, so we can put in our own defaults
+   # User did not set CPPFLAGS, so we can put in our own defaults
     CPPFLAGS="-Wall"
 fi
 # If CXXFLAGS/CPPFLAGS are already set AC_PROG_CXX will not overwrite them
