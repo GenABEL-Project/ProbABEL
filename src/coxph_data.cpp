@@ -74,7 +74,7 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
     if (phed.noutcomes != 2)
     {
         std::cerr << "coxph_data: number of outcomes should be 2 (now: "
-                  << phed.noutcomes ")\n";
+                  << phed.noutcomes << ")\n";
         exit(1);
     }
     //      X.reinit(nids,(ncov+1));
