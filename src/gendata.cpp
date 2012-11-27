@@ -35,11 +35,8 @@ void gendata::get_var(int var, float * data)
         report_error("cannot get gendata");
 }
 
-gendata::gendata()
+gendata::gendata() : nsnps(0), nids(0), ngpreds(0), DAG(NULL), DAGmask(NULL)
 {
-    nsnps = nids = ngpreds = 0;
-    DAG = NULL;
-    DAGmask = NULL;
 }
 
 void gendata::re_gendata(string filename, unsigned int insnps,
@@ -85,6 +82,7 @@ void gendata::re_gendata(string filename, unsigned int insnps,
         report_error("nids != mneasured (%i != %i)\n", nids, nmeasured);
 
 }
+
 void gendata::re_gendata(char * fname, unsigned int insnps,
         unsigned int ingpreds, unsigned int npeople, unsigned int nmeasured,
         unsigned short int * allmeasured, int skipd, std::string * idnames)
@@ -105,68 +103,70 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
         std::cerr << "gendata: cannot open file " << fname << endl;
     }
 
-    char tmp[100], tmpn[100];
     std::string tmpid, tmpstr;
 
     int k = 0;
     for (unsigned int i = 0; i < npeople; i++)
+    {
         if (allmeasured[i] == 1)
         {
             if (skipd > 0)
             {
-                //				int ttt;
-                char ttt[100];
-                infile >> tmp;
-                //				sscanf(tmp,"%d->%s",&ttt, tmpn);
-                //		these changes are thanks to BMM & BP :)
-                //				sscanf(tmp,"%s->%s",&ttt, tmpn);
-                //				sscanf(tmp,"%[^->]->%[^->]",&ttt, tmpn);
-                tmpstr = tmp;
-                if (tmpstr.find("->") != string::npos)
+                // Read the genotype data and look for the signature
+                // arrow of MaCH/minimac. If found only use the part
+                // after the arrow as ID.
+                infile >> tmpstr;
+                size_t strpos = tmpstr.find("->") ;
+                if (strpos != string::npos)
                 {
-                    sscanf(tmp, "%[^->]->%s", ttt, tmpn);
-                    tmpid = tmpn;
+                    tmpid = tmpstr.substr(strpos+2, string::npos);
                 } else
                 {
                     tmpid = tmpstr;
-                    // std::cout << tmp << ";" << ttt << ";" << tmpn
-                    // << tmpid.c_str() << ";" << idnames[k].c_str() << "\n";
                 }
                 if (tmpid != idnames[k])
                 {
                     cerr << "phenotype file and dose or probability file "
-                            << "did not match at line " << i + 2 << "(" << tmpid
-                            << " != " << idnames[k] << ")" << endl;
+                         << "did not match at line " << i + 2 << "(" << tmpid
+                         << " != " << idnames[k] << ")" << endl;
                     infile.close();
                     exit(1);
                 }
             }
+
             for (int j = 1; j < skipd; j++)
             {
-                infile >> tmp;
+                infile >> tmpstr;
             }
+
             for (int j = 0; j < (nsnps * ngpreds); j++)
             {
                 if (infile.good())
                 {
-                    infile >> tmp;
+                    infile >> tmpstr;
+                    // tmpstr contains the dosage in string form. Convert
+                    // it to float (if tmpstr is NaN it will be set to nan).
+                    // Note that Valgrind 3.7.0 gives "Invalid read of
+                    // size 8" error messages here. A bug in Valgrind?!
+                    float dosage = strtod(tmpstr.c_str(), (char **) NULL);
+                    G.put(dosage, k, j);
                 } else
                 {
-                    std::cerr
-                            << "cannot read dose-file: check skipd and ngpreds parameters\n";
+                    std::cerr << "cannot read dose-file: "
+                              << "check skipd and ngpreds parameters\n";
                     infile.close();
                     exit(1);
                 }
-                G.put(atof(tmp), k, j);
             }
             k++;
         } else
         {
             for (int j = 0; j < skipd; j++)
-                infile >> tmp;
+                infile >> tmpstr;
             for (int j = 0; j < (nsnps * ngpreds); j++)
-                infile >> tmp;
+                infile >> tmpstr;
         }
+    }
     infile.close();
 }
 // HERE NEED A NEW CONSTRUCTOR BASED ON DATABELBASECPP OBJECT
