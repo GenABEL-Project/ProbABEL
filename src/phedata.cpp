@@ -6,7 +6,7 @@
 #include <phedata.h>
 
 phedata::phedata(char * fname, int noutc, int npeople, int interaction,
-        bool iscox)
+                 bool iscox)
 {
     setphedata(fname, noutc, npeople, interaction, iscox);
 }
@@ -15,8 +15,9 @@ void phedata::set_is_interaction_excluded(bool int_exl)
 {
     is_interaction_excluded = int_exl;
 }
+
 void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
-        bool iscox)
+                         bool iscox)
 {
     static const unsigned int BFS = 1000;
     std::ifstream myfile(fname);
@@ -32,13 +33,14 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     {
         myfile.getline(line, BFS);
         std::stringstream line_stream(line);
-        //			std::cout << line << "\n ";
+        // std::cout << line << "\n ";
         while (line_stream >> tmp)
         {
 
             nphenocols++;
-            //				std::cout << tmp << " " << nphenocols << " ";
+            // std::cout << tmp << " " << nphenocols << " ";
         }
+
         while (myfile.getline(line, BFS))
         {
             int tmplins = 0;
@@ -48,7 +50,7 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
             if (tmplins != nphenocols)
             {
                 std::cerr << "phenofile: number of variables different from "
-                        << nphenocols << " in line " << tmplins << endl;
+                          << nphenocols << " in line " << tmplins << endl;
                 myfile.close();
                 exit(1);
             }
@@ -62,6 +64,7 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
         exit(1);
     }
     std::cout << "Actual number of people in phenofile = " << npeople;
+
     if (savenpeople > 0)
     {
         npeople = savenpeople;
@@ -110,8 +113,8 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
         {
             infile >> tmp;
 
-            //				if(iscox && ) {if(n_model_terms+1 == interaction-1) {continue;} }
-            //				else      {if(n_model_terms+1 == interaction) {continue;} }
+            // if(iscox && ) {if(n_model_terms+1 == interaction-1) {continue;} }
+            // else      {if(n_model_terms+1 == interaction) {continue;} }
             model = model + " + ";
             model = model + tmp;
             model_terms[n_model_terms++] = tmp;
@@ -136,12 +139,12 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
         if (iscox)
         {
             std::cout << "model is running without "
-                    << model_terms[interaction - 1] << ", term\n";
+                      << model_terms[interaction - 1] << ", term\n";
         }
         else
         {
             std::cout << "model is running without " << model_terms[interaction]
-                    << ", term\n";
+                      << ", term\n";
         }
     }
 
@@ -194,6 +197,7 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     {
         infile >> tmp;
     }
+
     //TODO: remove this unused variable if there is not a reason to keep it
     //int k = 0;
     int m = 0;
@@ -221,7 +225,9 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
 }
 phedata::~phedata()
 {
-    //		delete X;
-    //		delete Y;
-    //		delete [] allmeasured;
+    // delete X;
+    // delete Y;
+    // delete [] allmeasured;
+    // delete [] model_terms;
+    // delete [] idnames;
 }

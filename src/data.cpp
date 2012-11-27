@@ -168,9 +168,8 @@ mlinfo::~mlinfo()
 
 //_________________________________________Maksim_start
 
-InvSigma::InvSigma(const char * filename_, phedata * phe)
+InvSigma::InvSigma(const char * filename_, phedata * phe) : filename(filename_)
 {
-    filename = filename_;
     npeople = phe->nids;
     std::ifstream myfile(filename_);
     char * line = new char[MAXIMUM_PEOPLE_AMOUNT];
@@ -178,7 +177,7 @@ InvSigma::InvSigma(const char * filename_, phedata * phe)
 
     matrix.reinit(npeople, npeople);
 
-//idnames[k], if (allmeasured[i]==1)
+    // idnames[k], if (allmeasured[i]==1)
 
     if (myfile.is_open())
     {
@@ -193,9 +192,9 @@ InvSigma::InvSigma(const char * filename_, phedata * phe)
             if (phe->idnames[row] != id)
             {
                 std::cerr << "error:in row " << row << " id="
-                        << phe->idnames[row]
-                        << " in inverse variance matrix but id=" << id
-                        << " must be there. Wrong inverse variance matrix (only measured id must be there)\n";
+                          << phe->idnames[row]
+                          << " in inverse variance matrix but id=" << id
+                          << " must be there. Wrong inverse variance matrix (only measured id must be there)\n";
                 exit(1);
             }
             unsigned col = 0;

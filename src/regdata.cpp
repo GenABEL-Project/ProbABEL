@@ -29,15 +29,13 @@ regdata::regdata()
 }
 ;
 
-regdata::regdata(const regdata &obj)
+regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
 {
     nids = obj.nids;
     ncov = obj.ncov;
     ngpreds = obj.ngpreds;
     noutcomes = obj.noutcomes;
     is_interaction_excluded = obj.is_interaction_excluded;
-    X = obj.X;
-    Y = obj.Y;
     masked_data = new unsigned short int[nids];
     for (int i = 0; i < nids; i++)
     {

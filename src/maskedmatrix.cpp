@@ -21,9 +21,9 @@ masked_matrix::masked_matrix()
     mask_of_old = NULL;
 }
 
-masked_matrix::masked_matrix(mematrix<double> M)
+masked_matrix::masked_matrix(mematrix<double> M) : matrix_original(M)
 {
-    matrix_original = M;
+//    matrix_original = M;
     masked_data = &matrix_original;
     mask_of_old = new unsigned short int[M.nrow];
     for (int i = 0; i < M.nrow; i++)

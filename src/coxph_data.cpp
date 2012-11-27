@@ -44,14 +44,13 @@ int cmpfun(const void *a, const void *b)
     return -9;
 }
 
-coxph_data::coxph_data(const coxph_data &obj)
+coxph_data::coxph_data(const coxph_data &obj) : sstat(obj.sstat)
 {
     nids = obj.nids;
     ncov = obj.ncov;
     ngpreds = obj.ngpreds;
     weights = obj.weights;
     stime = obj.stime;
-    sstat = obj.sstat;
     offset = obj.offset;
     strata = obj.strata;
     X = obj.X;
@@ -60,23 +59,27 @@ coxph_data::coxph_data(const coxph_data &obj)
     for (int i = 0; i < nids; i++)
         masked_data[i] = 0;
 }
+
 coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
 {
     nids = gend.nids;
     masked_data = new unsigned short int[nids];
     for (int i = 0; i < nids; i++)
         masked_data[i] = 0;
+
     ngpreds = gend.ngpreds;
     if (snpnum >= 0)
         ncov = phed.ncov + ngpreds;
     else
         ncov = phed.ncov;
+
     if (phed.noutcomes != 2)
     {
         std::cerr << "coxph_data: number of outcomes should be 2 (now: "
                   << phed.noutcomes << ")\n";
         exit(1);
     }
+
     //      X.reinit(nids,(ncov+1));
     X.reinit(nids, ncov);
     stime.reinit(nids, 1);
@@ -275,21 +278,26 @@ coxph_reg::coxph_reg(coxph_data &cdatain)
 }
 
 void coxph_reg::estimate(coxph_data &cdatain, int verbose, int maxiter,
-        double eps, double tol_chol, int model, int interaction, int ngpreds,
-        bool iscox, int nullmodel)
+                         double eps, double tol_chol, int model,
+                         int interaction, int ngpreds, bool iscox,
+                         int nullmodel)
 {
     coxph_data cdata = cdatain.get_unmasked_data();
     mematrix<double> X = t_apply_model(cdata.X, model, interaction, ngpreds,
-            iscox, nullmodel);
+                                       iscox, nullmodel);
     //      X.print();
     int length_beta = X.nrow;
     beta.reinit(length_beta, 1);
     sebeta.reinit(length_beta, 1);
-    mematrix<double> newoffset = cdata.offset;
-    newoffset = cdata.offset - (cdata.offset).column_mean(0);
+    mematrix<double> newoffset = cdata.offset -
+        (cdata.offset).column_mean(0);
     mematrix<double> means(X.nrow, 1);
+
     for (int i = 0; i < X.nrow; i++)
+    {
         beta[i] = 0.;
+    }
+
     mematrix<double> u(X.nrow, 1);
     mematrix<double> imat(X.nrow, X.nrow);
     double work[X.ncol * 2 + 2 * (X.nrow) * (X.nrow) + 3 * (X.nrow)];
@@ -304,6 +312,7 @@ void coxph_reg::estimate(coxph_data &cdatain, int verbose, int maxiter,
             means.data.data(), beta.data.data(), u.data.data(),
             imat.data.data(), loglik_int, &flag, work, &eps, &tol_chol,
             &sctest);
+
     for (int i = 0; i < X.nrow; i++)
     {
         sebeta[i] = sqrt(imat.get(i, i));

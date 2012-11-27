@@ -628,7 +628,7 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
         //
         // use cholesky to invert
         //
-        tXWX_i = tXWX;
+        // tXWX_i = tXWX;
         //cholesky2_mm(tXWX_i,tol_chol);
         //if (verbose) {std::cout << "chole tXWX:\n"; tXWX_i.print();}
         //std::cout << "chole tXWX:\n"; tXWX_i.print();
