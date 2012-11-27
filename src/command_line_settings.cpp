@@ -168,7 +168,6 @@ void cmdvars::set_variables(int argc, char * argv[])
         case 'p':
             phefilename = optarg;
             neco[0] = 1;
-            cout << "phenoint" << endl;
             break;
         case 'i':
             mlinfofilename = optarg;
