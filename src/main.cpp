@@ -230,7 +230,7 @@ void create_header_1(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
 }
 
 void create_header2(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
-                    phedata phd, int interaction_cox)
+                    phedata& phd, int interaction_cox)
 {
     create_start_of_header(outfile, input_var, phd);
     *outfile[0] << input_var.getSep() << "beta_SNP_add"

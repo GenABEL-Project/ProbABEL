@@ -231,7 +231,7 @@ phedata::~phedata()
 {
     // delete X;
     // delete Y;
-    // delete [] allmeasured;
-    // delete [] model_terms;
-    // delete [] idnames;
+    delete [] allmeasured;
+    delete [] model_terms;
+    delete [] idnames;
 }
