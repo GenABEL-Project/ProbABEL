@@ -19,15 +19,14 @@
 
 regdata::regdata()
 {
-    nids = 0;
-    ncov = 0;
-    ngpreds = 0;
-    noutcomes = 0;
+    nids                    = 0;
+    ncov                    = 0;
+    ngpreds                 = 0;
+    noutcomes               = 0;
     is_interaction_excluded = false;
-    masked_data = NULL;
-
+    masked_data             = NULL;
 }
-;
+
 
 regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
 {
@@ -37,13 +36,15 @@ regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
     noutcomes = obj.noutcomes;
     is_interaction_excluded = obj.is_interaction_excluded;
     masked_data = new unsigned short int[nids];
+
     for (int i = 0; i < nids; i++)
     {
         masked_data[i] = 0;
     }
 }
+
 regdata::regdata(phedata &phed, gendata &gend, int snpnum,
-        bool ext_is_interaction_excluded)
+                 bool ext_is_interaction_excluded)
 {
     nids = gend.nids;
     masked_data = new unsigned short int[nids];
@@ -69,9 +70,15 @@ regdata::regdata(phedata &phed, gendata &gend, int snpnum,
         X.put(1., i, 0);
         Y.put((phed.Y).get(i, 0), i, 0);
     }
+
     for (int j = 1; j <= phed.ncov; j++)
+    {
         for (int i = 0; i < nids; i++)
+        {
             X.put((phed.X).get(i, j - 1), i, j);
+        }
+    }
+
     if (snpnum > 0)
         for (int j = 0; j < ngpreds; j++)
         {
@@ -80,19 +87,21 @@ regdata::regdata(phedata &phed, gendata &gend, int snpnum,
             for (int i = 0; i < nids; i++)
                 X.put(snpdata[i], i, (ncov - ngpreds + 1 + j));
         }
-    //          for (int i=0;i<nids;i++)
-    //              for (int j=0;j<ngpreds;j++)
-    //                  X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+j));
+        // for (int i=0;i<nids;i++)
+        //     for (int j=0;j<ngpreds;j++)
+        //       X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+j));
     is_interaction_excluded = ext_is_interaction_excluded;
-
 }
+
 void regdata::update_snp(gendata &gend, int snpnum)
 {
     for (int j = 0; j < ngpreds; j++)
     {
         float snpdata[nids];
         for (int i = 0; i < nids; i++)
+        {
             masked_data[i] = 0;
+        }
 
         gend.get_var(snpnum * ngpreds + j, snpdata);
 
@@ -104,6 +113,7 @@ void regdata::update_snp(gendata &gend, int snpnum)
         }
     }
 }
+
 regdata::~regdata()
 {
     delete[] regdata::masked_data;
@@ -116,13 +126,15 @@ regdata regdata::get_unmasked_data()
     regdata to; // = regdata(*this);
     int nmeasured = 0;
     for (int i = 0; i < nids; i++)
+    {
         if (masked_data[i] == 0)
             nmeasured++;
-    to.nids = nmeasured;
-    //cout << to.nids << " in get_unmasked_data\n";
-    to.ncov = ncov;
-    to.ngpreds = ngpreds;
-    to.noutcomes = noutcomes;
+    }
+
+    to.nids                    = nmeasured;
+    to.ncov                    = ncov;
+    to.ngpreds                 = ngpreds;
+    to.noutcomes               = noutcomes;
     to.is_interaction_excluded = is_interaction_excluded;
     int dim2Y = Y.ncol;
     int dim2X = X.ncol;
@@ -150,7 +162,9 @@ regdata regdata::get_unmasked_data()
     //delete [] to.masked_data;
     to.masked_data = new unsigned short int[to.nids];
     for (int i = 0; i < to.nids; i++)
+    {
         to.masked_data[i] = 0;
+    }
     // std::cout << "get_unmasked: " << to.nids << " "
     //           << dim2X << " " << dim2Y << "\n";
     return (to);
@@ -161,7 +175,11 @@ mematrix<double> regdata::extract_genotypes(void)
     mematrix<double> out;
     out.reinit(X.nrow, ngpreds);
     for (int i = 0; i < X.nrow; i++)
+    {
         for (int j = 0; j < ngpreds; j++)
+        {
             out[i * ngpreds + j] = X.get(i, (ncov - ngpreds + 1 + j));
+        }
+    }
     return out;
 }

@@ -59,10 +59,11 @@ void update_progress_to_cmd_line(int csnp, int nsnps)
         if (csnp == 0)
         {
             std::cout << "Analysis: "
-                      << setw (5) << 100. * static_cast<double>(csnp)
+                      << setw(5) << 100. * static_cast<double>(csnp)
                               / static_cast<double>(nsnps)
                       << "%...";
-        } else
+        }
+        else
         {
             std::cout << "\b\b\b\b\b\b\b\b\b"
                       << setw (5) << 100. * static_cast<double>(csnp)
@@ -116,8 +117,8 @@ int create_phenotype(phedata& phd, cmdvars& input_var)
         input_var.getInteraction() > phd.ncov ||
         interaction_cox > phd.ncov)
     {
-        std::cerr << "error: Interaction parameter is out of range (interaction="
-                  << input_var.getInteraction() << ") \n";
+        std::cerr << "error: Interaction parameter is out of range "
+                  << "(interaction=" << input_var.getInteraction() << ") \n";
         exit(1);
     }
 
@@ -232,19 +233,20 @@ void create_header2(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
                     phedata phd, int interaction_cox)
 {
     create_start_of_header(outfile, input_var, phd);
-    *outfile[0] << input_var.getSep() << "beta_SNP_add" << input_var.getSep()
-                << "sebeta_SNP_add";
+    *outfile[0] << input_var.getSep() << "beta_SNP_add"
+                << input_var.getSep() << "sebeta_SNP_add";
 
     if (input_var.getInteraction() != 0)
     {
         *outfile[0] << input_var.getSep() << "beta_SNP_"
-                    << phd.model_terms[interaction_cox] << input_var.getSep()
-                    << "sebeta_SNP_" << phd.model_terms[interaction_cox];
+                    << phd.model_terms[interaction_cox]
+                    << input_var.getSep() << "sebeta_SNP_"
+                    << phd.model_terms[interaction_cox];
     }
 
     if (input_var.getInverseFilename() == NULL)
-    //Han Chen
     {
+        //Han Chen
 #if !COXPH
         if (input_var.getInteraction() != 0 && !input_var.getAllcov())
         {
@@ -266,7 +268,8 @@ int main(int argc, char * argv[])
     input_var.printinfo();
     //	if (allcov && ngpreds>1)
     //	{
-    //		std::cout << "\n\nWARNING: --allcov allowed only for 1 predictor (MLDOSE)\n";
+    //      cout << "\n\n"
+    //           << "WARNING: --allcov allowed only for 1 predictor (MLDOSE)\n";
     //		allcov = 0;
     //	}
     mlinfo mli(input_var.getMlinfofilename(), input_var.getMapfilename());
@@ -275,21 +278,32 @@ int main(int argc, char * argv[])
     int interaction_cox = create_phenotype(phd, input_var);
 
     //interaction--;
-    //	if(input_var.getInverseFilename()!= NULL && phd.ncov > 1)
-    //		{
-    //		std::cerr<<"Error: In mmscore you can not use any covariates. You phenotype file must conatin id column and trait (residuals) only\n";
-    //		exit(1);
-    //		}
-    //	if(input_var.getInverseFilename()!= NULL && (allcov == 1 || score == 1 || input_var.getInteraction()!= 0 || ngpreds==2))
-    //		{
-    //		std::cerr<<"Error: In mmscore you can use additive model without any inetractions only\n";
-    //		exit(1);
-    //		}
+    //	if (input_var.getInverseFilename()!= NULL && phd.ncov > 1)
+    //     {
+    //         std::cerr << "Error: In mmscore you can not use any covariates."
+    //                   << " You phenotype file must conatin id column and "
+    //                   << "trait (residuals) only\n";
+    //         exit(1);
+    //      }
+    //	if (input_var.getInverseFilename()!= NULL &&
+    //      (allcov == 1 || score == 1
+    //                   || input_var.getInteraction()!= 0
+    //                   || ngpreds==2))
+    //      {
+    //          std::cerr << "Error: In mmscore you can use additive model "
+    //                    << "without any inetractions only\n";
+    //          exit(1);
+    //      }
     masked_matrix invvarmatrix;
+
     /*
      * now should be possible... delete this part later when everything works
      #if LOGISTIC
-     if(input_var.getInverseFilename()!= NULL) {std::cerr<<"ERROR: mmscore is forbidden for logistic regression\n";exit(1);}
+     if (input_var.getInverseFilename()!= NULL)
+     {
+         std::cerr << "ERROR: mmscore is forbidden for logistic regression\n";
+         exit(1);
+     }
      #endif
      */
 
@@ -297,7 +311,6 @@ int main(int argc, char * argv[])
     if (input_var.getInverseFilename() != NULL)
     {
         loadInvSigma(input_var, phd, invvarmatrix);
-        //	matrix.print();
     }
 
     gendata gtd;
@@ -316,10 +329,14 @@ int main(int argc, char * argv[])
     std::cout << " loaded genotypic data ..." << std::flush;
     /**
        if (input_var.getIsFvf())
-     gendata gtd (str_genfilename,nsnps,input_var.getNgpreds(),phd.nids_all,phd.allmeasured,phd.idnames);
-     else
-     gendata gtd (input_var.getGenfilename(),nsnps,input_var.getNgpreds(),phd.nids_all,phd.nids,phd.allmeasured,skipd,phd.idnames);
+          gendata gtd(str_genfilename, nsnps, input_var.getNgpreds(),
+                      phd.nids_all, phd.allmeasured, phd.idnames);
+       else
+           gendata gtd(input_var.getGenfilename(), nsnps,
+                       input_var.getNgpreds(), phd.nids_all, phd.nids,
+                       phd.allmeasured, skipd, phd.idnames);
      **/
+
     // estimate null model
 #if COXPH
     coxph_data nrgd = coxph_data(phd, gtd, -1);
@@ -357,14 +374,13 @@ int main(int argc, char * argv[])
 #endif
 
     std::cout << " formed regression object ...";
-
     std::cout << " done\n" << std::flush;
 
     //________________________________________________________________
     //Maksim, 9 Jan, 2009
-
     std::string outfilename_str(input_var.getOutfilename());
     std::vector<std::ofstream*> outfile;
+
     //All models output.One file per each model
     if (input_var.getNgpreds() == 2)
     {
@@ -373,7 +389,8 @@ int main(int argc, char * argv[])
         {
             create_header_1(outfile, input_var, phd, interaction_cox);
         }
-    } else //Only additive model. Only one output file
+    }
+    else //Only additive model. Only one output file
     {
         outfile.push_back(
             new std::ofstream((outfilename_str + "_add.out.txt").c_str()));
@@ -409,19 +426,32 @@ int main(int argc, char * argv[])
      }
      if (input_var.getNgpreds()==2)
      {
-     outfile << input_var.getSep() << "beta_SNP_A1A2" << input_var.getSep() << "beta_SNP_A1A1" << input_var.getSep()
-     << "sebeta_SNP_A1A2" << input_var.getSep() << "sebeta_SNP_a1A1" << input_var.getSep() << "chi2_SNP_2df"
-     << input_var.getSep() << "beta_SNP_addA1" << input_var.getSep() << "sebeta_SNP_addA1" << input_var.getSep() << "chi2_SNP_addA1"
-     << input_var.getSep() << "beta_SNP_domA1" << input_var.getSep() << "sebeta_SNP_domA1" << input_var.getSep() << "chi2_SNP_domA1"
-     << input_var.getSep() << "beta_SNP_recA1" << input_var.getSep() << "sebeta_SNP_recA1" << input_var.getSep() << "chi2_SNP_recA1"
-     << input_var.getSep() << "beta_SNP_odom" << input_var.getSep() << "sebeta_SNP_odom" << input_var.getSep() << "chi2_SNP_odom\n";
+        outfile << input_var.getSep() << "beta_SNP_A1A2"
+                << input_var.getSep() << "beta_SNP_A1A1"
+                << input_var.getSep() << "sebeta_SNP_A1A2"
+                << input_var.getSep() << "sebeta_SNP_a1A1"
+                << input_var.getSep() << "chi2_SNP_2df"
+                << input_var.getSep() << "beta_SNP_addA1"
+                << input_var.getSep() << "sebeta_SNP_addA1"
+                << input_var.getSep() << "chi2_SNP_addA1"
+                << input_var.getSep() << "beta_SNP_domA1"
+                << input_var.getSep() << "sebeta_SNP_domA1"
+                << input_var.getSep() << "chi2_SNP_domA1"
+                << input_var.getSep() << "beta_SNP_recA1"
+                << input_var.getSep() << "sebeta_SNP_recA1"
+                << input_var.getSep() << "chi2_SNP_recA1"
+                << input_var.getSep() << "beta_SNP_odom"
+                << input_var.getSep() << "sebeta_SNP_odom"
+                << input_var.getSep() << "chi2_SNP_odom\n";
      }
      else
      {
-     outfile << input_var.getSep() << "beta_SNP_add" << input_var.getSep() << "sebeta_SNP_add" << input_var.getSep() << "chi2_SNP_add\n";
+         outfile << input_var.getSep() << "beta_SNP_add"
+                 << input_var.getSep() << "sebeta_SNP_add"
+                 << input_var.getSep() << "chi2_SNP_add\n";
      }
-     }
-     */
+
+    */
     //	exit(1);
     //________________________________________________________________
     //Maksim, 9 Jan, 2009
@@ -462,7 +492,8 @@ int main(int argc, char * argv[])
                     gcount++;
                     freq += snpdata1[ii] + snpdata2[ii] * 0.5;
                 }
-        } else
+        }
+        else
         {
             // freq = (gtd.G).column_mean(csnp)/2.;
             gtd.get_var(csnp, snpdata1);
@@ -579,7 +610,8 @@ int main(int argc, char * argv[])
                                             << input_var.getSep()
                                             << rd.covariance[pos - 2];
                                     }
-                                } else
+                                }
+                                else
                                 {
                                     *covvalue[model] << rd.covariance[pos - 1];
                                 }
@@ -595,13 +627,15 @@ int main(int argc, char * argv[])
                     {
                         //*chi2[model] << 2.*(rd.loglik-null_loglik);
                         *chi2[model] << rd.loglik;
-                    } else
+                    }
+                    else
                     {
                         //*chi2[model] << rd.chi2_score;
                         *chi2[model] << "nan";
                     }
                     //________________________________
-                } else //beta, sebeta = nan
+                }
+                else //beta, sebeta = nan
                 {
                     if (!input_var.getAllcov() && model == 0
                         && input_var.getInteraction() == 0)
@@ -621,7 +655,8 @@ int main(int argc, char * argv[])
                     if (model == 0)
                     {
                         end_pos = rgd.X.ncol;
-                    } else
+                    }
+                    else
                     {
                         end_pos = rgd.X.ncol - 1;
                     }
@@ -643,7 +678,8 @@ int main(int argc, char * argv[])
                         {
                             *covvalue[model] << "nan"
                                              << input_var.getSep() << "nan";
-                        } else
+                        }
+                        else
                         {
                             *covvalue[model] << "nan";
                         }
@@ -700,7 +736,8 @@ int main(int argc, char * argv[])
 #endif
             *outfile[4] << chi2[4]->str() << "\n";
             //Oct 26, 2009
-        } else //Only additive model. Only one output file
+        }
+        else //Only additive model. Only one output file
         {
             //Write mlinfo to output:
             *outfile[0] << mli.name[csnp]
@@ -771,7 +808,8 @@ int main(int argc, char * argv[])
                     cout << rd.loglik << " <-logliken\n";
                     cout << rd.sigma2 << " <-sigma2\n";
 #endif
-                } else
+                }
+                else
                 {
                     // if(input_var.getInverseFilename()== NULL)
                     // {
@@ -815,8 +853,9 @@ int main(int argc, char * argv[])
                     //}
                     //else
                     //{
-                    //rd.mmscore(rgd,0,CHOLTOL,model,  input_var.getInteraction(),
-                    //input_var.getNgpreds(), invvarmatrix);
+                    //   rd.mmscore(rgd, 0, CHOLTOL, model,
+                    //              input_var.getInteraction(),
+                    //              input_var.getNgpreds(), invvarmatrix);
                     //}
                 }
 #elif COXPH
@@ -829,11 +868,13 @@ int main(int argc, char * argv[])
                 if (!input_var.getAllcov() && input_var.getInteraction() == 0)
                 {
                     start_pos = rd.beta.nrow - 1;
-                } else if (!input_var.getAllcov()
-                           && input_var.getInteraction() != 0)
+                }
+                else if (!input_var.getAllcov()
+                         && input_var.getInteraction() != 0)
                 {
                     start_pos = rd.beta.nrow - 2;
-                } else
+                }
+                else
                 {
                     start_pos = 0;
                 }
@@ -869,13 +910,15 @@ int main(int argc, char * argv[])
                     if (input_var.getScore() == 0)
                     {
                         *chi2[0] << rd.loglik; //2.*(rd.loglik-null_loglik);
-                    } else
+                    }
+                    else
                     {
                         *chi2[0] << "nan"; //rd.chi2_score;
                     }
                 }
                 //________________________________
-            } else //beta, sebeta = nan
+            }
+            else //beta, sebeta = nan
             {
                 if (!input_var.getAllcov() && input_var.getInteraction() == 0)
                     start_pos = rgd.X.ncol - 1;
@@ -927,7 +970,8 @@ int main(int argc, char * argv[])
 #endif
                 *outfile[0] << chi2[model]->str() << "\n";
                 //Oct 26, 2009
-            } else
+            }
+            else
             {
                 *outfile[0] << beta_sebeta[0]->str() << "\n";
 #if DEBUG

@@ -4,6 +4,11 @@
  *  Created on: Mar 15, 2012
  *      Author: mkooyman
  */
+#include <string>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
+
 #if EIGEN
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
@@ -12,10 +17,6 @@
 #include "mematri1.h"
 #endif
 
-#include <string>
-#include <cstdarg>
-#include <cstdio>
-#include <cstdlib>
 
 /*  SCCS @(#)cholesky2.c    5.2 10/27/98
  ** subroutine to do Cholesky decompostion on a matrix: C = FDF'
@@ -73,7 +74,8 @@ int cholesky2_mm(mematrix<double> &matrix, double toler)
             matrix[i * n + i] = 0;
             if (pivot < -8 * eps)
                 nonneg = -1;
-        } else
+        }
+        else
         {
             rank++;
             for (j = (i + 1); j < n; j++)
@@ -132,7 +134,8 @@ void chinv2_mm(mematrix<double> &matrix)
                 matrix[j * n + i] = 0;
             for (j = i; j < n; j++)
                 matrix[i * n + j] = 0;
-        } else
+        }
+        else
         {
             for (j = (i + 1); j < n; j++)
             {
@@ -149,4 +152,3 @@ void chinv2_mm(mematrix<double> &matrix)
         for (int row = 0; row < col; row++)
             matrix[col * n + row] = matrix[row * n + col];
 }
-

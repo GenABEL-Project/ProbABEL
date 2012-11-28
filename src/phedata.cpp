@@ -36,7 +36,6 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
         // std::cout << line << "\n ";
         while (line_stream >> tmp)
         {
-
             nphenocols++;
             // std::cout << tmp << " " << nphenocols << " ";
         }
@@ -180,7 +179,9 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     // allocate objects
     int ntmpcov = 1;
     if (ncov > 0)
+    {
         ntmpcov = ncov;
+    }
     idnames = new std::string[nids];
 
     X.reinit(nids, ntmpcov);
@@ -219,10 +220,13 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
             m++;
         }
         else
+        {
             for (int j = 0; j < nphenocols; j++)
                 infile >> tmp;
+        }
     infile.close();
 }
+
 phedata::~phedata()
 {
     // delete X;

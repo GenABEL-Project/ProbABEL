@@ -30,7 +30,8 @@ void print_usage(char * program_name, int exit_code)
     cout << "\t --ntraits : [optional] how many traits are analysed (default 1)"
          << endl;
 #endif
-    cout << "\t --ngpreds : [optional] how many predictor columns per marker\n\t              (default 1 = MLDOSE; else use 2 for MLPROB)"
+    cout << "\t --ngpreds : [optional] how many predictor columns per marker"
+         <<"\n\t              (default 1 = MLDOSE; else use 2 for MLPROB)"
          << endl;
     cout << "\t --separat : [optional] character to separate fields "
          << "(default is space)"

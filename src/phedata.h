@@ -17,7 +17,6 @@
 #endif
 
 class phedata {
-
 public:
     phedata()
     {
@@ -54,4 +53,5 @@ public:
 
     ~phedata();
 };
+
 #endif /* PHEDATA_H_ */
