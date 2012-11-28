@@ -241,8 +241,9 @@ bool cmdvars::isIsInteractionExcluded() const
 void cmdvars::printinfo()
 {
     cout << PACKAGE
-              << " v. " << PACKAGE_VERSION
-              << "(C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EMCR\n\n";
+         << " v. " << PACKAGE_VERSION
+         << "\n(C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, "
+         << "EMCR\n\n";
 #if EIGEN
     cout << "Using EIGEN for matrix operations\n";
 #endif
@@ -334,7 +335,8 @@ void cmdvars::printinfo()
 #if COXPH
     if (score)
     {
-        cerr << "\n\nOption --score is implemented for linear and logistic models only\n"
+        cerr << "\n\nOption --score is implemented for "
+             << "linear and logistic models only\n"
              << endl;
         exit(1);
     }
@@ -347,7 +349,8 @@ void cmdvars::printinfo()
     }
     if (robust)
     {
-        cerr << "ERROR: robust standard errors not implemented for Cox regression"
+        cerr << "ERROR: robust standard errors not implemented "
+             << "for Cox regression"
              << endl;
         exit(1);
     }

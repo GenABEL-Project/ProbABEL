@@ -7,13 +7,13 @@
 
 #ifndef COMMAND_LINE_SETTINGS_H_
 #define COMMAND_LINE_SETTINGS_H_
+#include <string>
 
 using namespace std;
 
 class cmdvars
 {
 private:
-
     char * program_name;
 
     char *phefilename;
@@ -48,16 +48,16 @@ public:
         program_name = NULL;
 
         std::fill_n(neco, 3, 0);
-        phefilename = NULL;
-        mlinfofilename = NULL;
-        genfilename = NULL;
-        mapfilename = NULL;
-        outfilename = NULL;
+        phefilename      = NULL;
+        mlinfofilename   = NULL;
+        genfilename      = NULL;
+        mapfilename      = NULL;
+        outfilename      = NULL;
         inverse_filename = NULL;
 
-        sep = " ";
-        nohead = 0;
-        score = 0;
+        sep     = " ";
+        nohead  = 0;
+        score   = 0;
         npeople = -1;
         ngpreds = 1;
         interaction = 0;
@@ -66,20 +66,18 @@ public:
         robust = 0;
         chrom = "-1";
         str_genfilename = "";
-
-        isFVF = 0;
-
-        skipd = 2;
+        isFVF  = 0;
+        skipd  = 2;
         allcov = 0;
 #if COXPH
         noutcomes = 2;
-        iscox=true;
+        iscox     = true;
 #else
         noutcomes = 1;
-        iscox = false;
+        iscox     = false;
 #endif
-
     }
+
     void set_variables(int, char *[]);
     char* getPhefilename() const;
     int getAllcov() const;

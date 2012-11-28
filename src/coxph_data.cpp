@@ -95,8 +95,9 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
         sstat[i] = int((phed.Y).get(i, 1));
         if (sstat[i] != 1 && sstat[i] != 0)
         {
-          std::cerr << "coxph_data: status not 0/1 (correct order: id, fuptime, status ...)"
-                    << endl;
+            std::cerr << "coxph_data: status not 0/1 "
+                      <<"(correct order: id, fuptime, status ...)"
+                      << endl;
             exit(1);
         }
     }
@@ -114,9 +115,9 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
                 X.put(snpdata[i], i, (ncov - ngpreds + j));
         }
 
-    //          for (int i=0;i<nids;i++)
-    //              for (int j=0;j<ngpreds;j++)
-    //                  X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+j));
+        // for (int i=0;i<nids;i++)
+        //     for (int j=0;j<ngpreds;j++)
+        //         X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+j));
 
     for (int i = 0; i < nids; i++)
     {
@@ -127,6 +128,7 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
     // sort by time
     double tmptime[nids];
     int passed_sorted[nids];
+
     for (int i = 0; i < nids; i++)
     {
         tmptime[i] = stime[i];
@@ -305,7 +307,8 @@ void coxph_reg::estimate(coxph_data &cdatain, int verbose, int maxiter,
     int flag;
     double sctest = 1.0;
 
-    //TODO(maarten): this function works only  in combination with eigen remove .data() from arguments to make is available under old matrix
+    //TODO(maarten): this function works only in combination with eigen
+    //  remove .data() from arguments to make is available under old matrix
     coxfit2(&maxiter, &cdata.nids, &X.nrow, cdata.stime.data.data(),
             cdata.sstat.data.data(), X.data.data(), newoffset.data.data(),
             cdata.weights.data.data(), cdata.strata.data.data(),

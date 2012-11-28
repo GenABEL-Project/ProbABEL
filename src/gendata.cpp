@@ -31,8 +31,11 @@ void gendata::get_var(int var, float * data)
                 data[j++] = tmpdata[i];
         // std::cout << j << " " << DAG->get_nobservations() << " "
         //           << nids << "\n";
-    } else
+    }
+    else
+    {
         report_error("cannot get gendata");
+    }
 }
 
 gendata::gendata() : nsnps(0), nids(0), ngpreds(0), DAG(NULL), DAGmask(NULL)
@@ -40,8 +43,10 @@ gendata::gendata() : nsnps(0), nids(0), ngpreds(0), DAG(NULL), DAGmask(NULL)
 }
 
 void gendata::re_gendata(string filename, unsigned int insnps,
-        unsigned int ingpreds, unsigned int npeople, unsigned int nmeasured,
-        unsigned short int * allmeasured, std::string * idnames)
+                         unsigned int ingpreds, unsigned int npeople,
+                         unsigned int nmeasured,
+                         unsigned short int * allmeasured,
+                         std::string * idnames)
 {
     nsnps = insnps;
     ngpreds = ingpreds;
@@ -49,9 +54,12 @@ void gendata::re_gendata(string filename, unsigned int insnps,
     DAGmask = new unsigned short int[DAG->getNumObservations()];
     if (DAG->getNumObservations() != npeople)
         report_error("dimension of fvf-data and phenotype data do not match\n");
+
     if (DAG->getNumVariables() != insnps * ingpreds)
         report_error("dimension of fvf-data and mlinfo data do not match\n");
+
     long int j = -1;
+
     for (unsigned int i = 0; i < npeople; i++)
     {
         if (allmeasured[i] == 0)
@@ -66,31 +74,34 @@ void gendata::re_gendata(string filename, unsigned int insnps,
         if (DAGobsname.find("->") != string::npos)
             DAGobsname = DAGobsname.substr(DAGobsname.find("->") + 2);
 
-//if (allmeasured[i] && idnames[j] != DAGobsname)
-        //		error("names do not match for observation at phenofile line (phe/geno) %i/+1 (%s/%s)\n",
-        //			i+1,idnames[i].c_str(),DAGobsname.c_str());
+        // if (allmeasured[i] && idnames[j] != DAGobsname)
+        //  std::cerr << "names do not match for observation at phenofile "
+        //            << "line (phe/geno) " << i+1 << "/+1 ("
+        //            << idnames[i].c_str() << "/"
+        //            << DAGobsname.c_str() << ")\n";
         // fix thanks to Vadym Pinchuk
         if (allmeasured[i] && idnames[j] != DAGobsname)
             report_error(
-                    "names do not match for observation at phenofile line(phe/geno) %i/+1 (%s/%s)\n",
-                    i + 1, idnames[j].c_str(), DAGobsname.c_str());
+                "names do not match for observation at phenofile line(phe/geno) %i/+1 (%s/%s)\n",
+                i + 1, idnames[j].c_str(), DAGobsname.c_str());
 
     }
     nids = j + 1;
     // std::cout << "in INI: " << nids << " " << npeople << "\n";
     if (nids != nmeasured)
         report_error("nids != mneasured (%i != %i)\n", nids, nmeasured);
-
 }
 
 void gendata::re_gendata(char * fname, unsigned int insnps,
-        unsigned int ingpreds, unsigned int npeople, unsigned int nmeasured,
-        unsigned short int * allmeasured, int skipd, std::string * idnames)
+                         unsigned int ingpreds, unsigned int npeople,
+                         unsigned int nmeasured,
+                         unsigned short int * allmeasured, int skipd,
+                         std::string * idnames)
 {
-    nids = nmeasured;
-    nsnps = insnps;
+    nids    = nmeasured;
+    nsnps   = insnps;
     ngpreds = ingpreds;
-    DAG = NULL;
+    DAG     = NULL;
     //	int nids_all = npeople;
 
     G.reinit(nids, (nsnps * ngpreds));
@@ -116,11 +127,12 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 // arrow of MaCH/minimac. If found only use the part
                 // after the arrow as ID.
                 infile >> tmpstr;
-                size_t strpos = tmpstr.find("->") ;
+                size_t strpos = tmpstr.find("->");
                 if (strpos != string::npos)
                 {
                     tmpid = tmpstr.substr(strpos+2, string::npos);
-                } else
+                }
+                else
                 {
                     tmpid = tmpstr;
                 }
@@ -150,7 +162,8 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                     // size 8" error messages here. A bug in Valgrind?!
                     float dosage = strtod(tmpstr.c_str(), (char **) NULL);
                     G.put(dosage, k, j);
-                } else
+                }
+                else
                 {
                     std::cerr << "cannot read dose-file: "
                               << "check skipd and ngpreds parameters\n";
@@ -159,7 +172,8 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 }
             }
             k++;
-        } else
+        }
+        else
         {
             for (int j = 0; j < skipd; j++)
                 infile >> tmpstr;
@@ -172,7 +186,6 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
 // HERE NEED A NEW CONSTRUCTOR BASED ON DATABELBASECPP OBJECT
 gendata::~gendata()
 {
-
     if (DAG != NULL)
     {
         delete DAG;

@@ -22,7 +22,6 @@
 
 class coxph_data {
 public:
-
     coxph_data get_unmasked_data();
     coxph_data()
     {
@@ -48,6 +47,7 @@ public:
     mematrix<int> order;
     unsigned short int * masked_data;
 };
+
 class coxph_reg {
 public:
     mematrix<double> beta;

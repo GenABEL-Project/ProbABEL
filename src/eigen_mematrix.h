@@ -1,6 +1,7 @@
 #ifndef __EIGEN_MEMATRIX_H__
 #define __EIGEN_MEMATRIX_H__
 #include <Eigen/Dense>
+#include <Eigen/LU>
 #include <iostream>
 
 using namespace Eigen;

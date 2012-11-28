@@ -49,17 +49,16 @@ void masked_matrix::set_matrix(const mematrix<double> &M)
     length_of_mask = M.nrow;
     //TODO:set type (row,column,symmetric)
     //type="symmetric";
-
 }
 
 masked_matrix::~masked_matrix()
 {
     delete[] mask_of_old;
 }
+
 void masked_matrix::update_mask(short unsigned int *newmask)
 {
-
-//find length of masked matrix
+    //find length of masked matrix
     int nmeasured = 0;
     for (int i = 0; i < length_of_mask; i++)
     {
@@ -68,22 +67,25 @@ void masked_matrix::update_mask(short unsigned int *newmask)
             nmeasured++;
         }
     }
+
     //Check update mask is the same as original matrix
     if (nmeasured == length_of_mask)
     {
         //masked matrix is the same as original matrix
         masked_data = &matrix_original;
-    } else
+    }
+    else
     {
         //Check update mask is the same as old matrix
         if (is_equal_array(newmask, mask_of_old, length_of_mask))
         {
             //new mask is the same as old matrix
             masked_data = &matrix_masked_data;
-        } else
+        }
+        else
         {
-            //new mask differs from old matrix and create new.
-//			//mask_of_old = newmask;
+            // new mask differs from old matrix and create new.
+            // mask_of_old = newmask;
             //TODO(maarten): there must be a smarter way to copy these values
             for (int i = 0; i < length_of_mask; i++)
             {
@@ -97,10 +99,11 @@ void masked_matrix::update_mask(short unsigned int *newmask)
 
 void masked_matrix::mask_symmetric(int nmeasured)
 {
-//mask a symmetric matrix: this matrix is always a square matrix and will mask
-//rows and columns. The result is always a square matrix
+    // Mask a symmetric matrix: this matrix is always a square matrix and will
+    // mask rows and columns. The result is always a square matrix
     matrix_masked_data.reinit(nmeasured, nmeasured);
     int i1 = 0, j1 = 0;
+
     for (int i = 0; i < length_of_mask; i++)
         if (mask_of_old[i] == 0)
         {
@@ -117,7 +120,7 @@ void masked_matrix::mask_symmetric(int nmeasured)
 }
 
 bool masked_matrix::is_equal_array(unsigned short int *a, unsigned short int *b,
-        int size)
+                                   int size)
 {
     for (int i = 0; i < size; i++)
     {

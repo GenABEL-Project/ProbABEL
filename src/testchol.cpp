@@ -1,16 +1,16 @@
+#include <stdio.h>
+#include <getopt.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <iomanip>
-#include <stdio.h>
-#include <getopt.h>
 #if EIGEN
-#include "mematrix.h"
-#include "mematri1.h"
-#else
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
+#else
+#include "mematrix.h"
+#include "mematri1.h"
 #endif
 #include "data.h"
 #include "reg1.h"

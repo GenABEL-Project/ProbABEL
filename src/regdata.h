@@ -36,8 +36,8 @@ public:
     void update_snp(gendata &gend, int snpnum);
     regdata get_unmasked_data();
     ~regdata();
-private:
 
+private:
 };
 
 #endif /* REGDATA_H_ */

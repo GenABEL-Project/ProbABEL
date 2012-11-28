@@ -69,7 +69,6 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
 
 mlinfo::mlinfo(char * filename, char * mapname)
 {
-
     char tmp[100];
     unsigned int nlin = 0;
     std::ifstream infile(filename);
@@ -95,14 +94,14 @@ mlinfo::mlinfo(char * filename, char * mapname)
     }
     nsnps = int(nlin / 7) - 1;
     std::cout << "Number of SNPs = " << nsnps << endl;
-    name = new std::string[nsnps];
-    A1 = new std::string[nsnps];
-    A2 = new std::string[nsnps];
-    Freq1 = new double[nsnps];
-    MAF = new double[nsnps];
+    name    = new std::string[nsnps];
+    A1      = new std::string[nsnps];
+    A2      = new std::string[nsnps];
+    Freq1   = new double[nsnps];
+    MAF     = new double[nsnps];
     Quality = new double[nsnps];
-    Rsq = new double[nsnps];
-    map = new std::string[nsnps];
+    Rsq     = new double[nsnps];
+    map     = new std::string[nsnps];
 
     infile.open(filename);
     if (!infile)
@@ -185,7 +184,6 @@ InvSigma::InvSigma(const char * filename_, phedata * phe) : filename(filename_)
         unsigned row = 0;
         while (myfile.getline(line, MAXIMUM_PEOPLE_AMOUNT))
         {
-
             std::stringstream line_stream(line);
             line_stream >> id;
 
@@ -194,7 +192,8 @@ InvSigma::InvSigma(const char * filename_, phedata * phe) : filename(filename_)
                 std::cerr << "error:in row " << row << " id="
                           << phe->idnames[row]
                           << " in inverse variance matrix but id=" << id
-                          << " must be there. Wrong inverse variance matrix (only measured id must be there)\n";
+                          << " must be there. Wrong inverse variance matrix"
+                          << " (only measured id must be there)\n";
                 exit(1);
             }
             unsigned col = 0;
@@ -224,11 +223,10 @@ InvSigma::InvSigma(const char * filename_, phedata * phe) : filename(filename_)
 
     delete[] line;
 }
-;
+
 
 InvSigma::~InvSigma()
 {
-//af af
 }
 
 mematrix<double> & InvSigma::get_matrix(void)

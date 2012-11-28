@@ -7,6 +7,7 @@
 
 #ifndef DATA_H_
 #define DATA_H_
+#include <string>
 
 extern bool is_interaction_excluded;
 
@@ -42,12 +43,12 @@ public:
 };
 
 class InvSigma {
-
 private:
     static const unsigned MAXIMUM_PEOPLE_AMOUNT = 1000000;
     unsigned npeople; //amount of people
     std::string filename;
     mematrix<double> matrix; //file is stored here
+
 public:
     InvSigma(const char * filename_, phedata * phe);
     mematrix<double> & get_matrix();

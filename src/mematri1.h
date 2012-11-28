@@ -6,7 +6,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
-// 
+//
 // constructors
 //
 
@@ -33,8 +33,8 @@ mematrix<DT>::mematrix(int nr, int nc)
                 nrow, ncol);
         exit(1);
     }
-    //	fprintf(stderr,"mematrix(nr,nc): can allocate memory (%d,%d)\n",nrow,ncol);
 }
+
 template<class DT>
 mematrix<DT>::mematrix(const mematrix<DT> & M)
 {
@@ -53,7 +53,8 @@ mematrix<DT>::mematrix(const mematrix<DT> & M)
     for (int i = 0; i < M.ncol * M.nrow; i++)
         data[i] = M.data[i];
 }
-// 
+
+//
 // operators
 //
 template<class DT>
@@ -75,11 +76,13 @@ mematrix<DT> &mematrix<DT>::operator=(const mematrix<DT> &M)
         nrow = M.nrow;
         nelements = M.nelements;
         for (int i = 0; i < M.ncol * M.nrow; i++)
+        {
             data[i] = M.data[i];
-        //		fprintf(stderr,"mematrix=: can allocate memory (%d,%d)\n",M.nrow,M.ncol);
+        }
     }
     return *this;
 }
+
 template<class DT>
 DT &mematrix<DT>::operator[](int i)
 {
@@ -91,6 +94,7 @@ DT &mematrix<DT>::operator[](int i)
     }
     return data[i];
 }
+
 template<class DT>
 mematrix<DT> mematrix<DT>::operator+(DT toadd)
 {
@@ -99,6 +103,7 @@ mematrix<DT> mematrix<DT>::operator+(DT toadd)
         temp.data[i] = data[i] + toadd;
     return temp;
 }
+
 template<class DT>
 mematrix<DT> mematrix<DT>::operator+(mematrix<DT> &M)
 {
@@ -114,6 +119,7 @@ mematrix<DT> mematrix<DT>::operator+(mematrix<DT> &M)
         temp.data[i] = data[i] + M.data[i];
     return temp;
 }
+
 template<class DT>
 mematrix<DT> mematrix<DT>::operator-(DT toadd)
 {
@@ -122,6 +128,7 @@ mematrix<DT> mematrix<DT>::operator-(DT toadd)
         temp.data[i] = data[i] - toadd;
     return temp;
 }
+
 template<class DT>
 mematrix<DT> mematrix<DT>::operator-(mematrix<DT> &M)
 {
@@ -137,6 +144,7 @@ mematrix<DT> mematrix<DT>::operator-(mematrix<DT> &M)
         temp.data[i] = data[i] - M.data[i];
     return temp;
 }
+
 template<class DT>
 mematrix<DT> mematrix<DT>::operator*(DT toadd)
 {
@@ -146,6 +154,7 @@ mematrix<DT> mematrix<DT>::operator*(DT toadd)
         temp.data[i] = data[i] * toadd;
     return temp;
 }
+
 template<class DT>
 mematrix<DT> mematrix<DT>::operator*(mematrix<DT> &M)
 {
@@ -192,7 +201,7 @@ mematrix<DT> mematrix<DT>::operator*(mematrix<DT> *M)
     return temp;
 }
 
-// 
+//
 // operations
 //
 template<class DT>
@@ -221,6 +230,7 @@ void mematrix<DT>::reinit(int nr, int nc)
         exit(1);
     }
 }
+
 template<class DT>
 DT mematrix<DT>::get(int nr, int nc)
 {
@@ -239,6 +249,7 @@ DT mematrix<DT>::get(int nr, int nc)
     DT temp = data[nr * ncol + nc];
     return temp;
 }
+
 template<class DT>
 void mematrix<DT>::put(DT value, int nr, int nc)
 {
@@ -256,6 +267,7 @@ void mematrix<DT>::put(DT value, int nr, int nc)
     }
     data[nr * ncol + nc] = value;
 }
+
 template<class DT>
 DT mematrix<DT>::column_mean(int nc)
 {
@@ -270,6 +282,7 @@ DT mematrix<DT>::column_mean(int nc)
     out /= DT(nrow);
     return out;
 }
+
 template<class DT>
 void mematrix<DT>::print(void)
 {
@@ -283,6 +296,7 @@ void mematrix<DT>::print(void)
         cout << "\n";
     }
 }
+
 template<class DT>
 void mematrix<DT>::delete_column(int delcol)
 {
@@ -313,8 +327,8 @@ void mematrix<DT>::delete_column(int delcol)
             if (nc != delcol)
                 data[nr * ncol + (newcol++)] = temp[nr * temp.ncol + nc];
     }
-
 }
+
 template<class DT>
 void mematrix<DT>::delete_row(int delrow)
 {
@@ -345,10 +359,9 @@ void mematrix<DT>::delete_row(int delrow)
             if (nr != delrow)
                 data[nr * ncol + (newrow++)] = temp[nr * temp.ncol + nc];
     }
-
 }
 
-// 
+//
 // other functions
 //
 template<class DT>
@@ -365,6 +378,7 @@ mematrix<DT> column_sum(mematrix<DT> &M)
     }
     return out;
 }
+
 template<class DT>
 mematrix<DT> column_mean(mematrix<DT> &M)
 {
@@ -380,6 +394,7 @@ mematrix<DT> column_mean(mematrix<DT> &M)
     }
     return out;
 }
+
 template<class DT>
 mematrix<DT> transpose(mematrix<DT> &M)
 {

@@ -10,7 +10,7 @@
 //  last modification:  11-Jan-2009
 //
 //             Author:  Yurii S. Aulchenko
-//			  modified by: 	Maksim V. Struchalin, 11-Jan-2009
+//                        modified by:  Maksim V. Struchalin, 11-Jan-2009
 //
 // Modified by Han Chen (hanchen@bu.edu) on Nov 9, 2009
 // based on src/reg1.h version 0.2 as of Oct 19, 2009
@@ -56,7 +56,6 @@ public:
 
 class linear_reg: public base_reg {
 public:
-
     linear_reg(regdata& rdatain);
     ~linear_reg()
     {
