@@ -1,8 +1,6 @@
 #ifndef EIGEN_MEMATRI1_H
 #define EIGEN_MEMATRI1_H
 #include "eigen_mematrix.h"
-#include <Eigen/Dense>
-#include <Eigen/LU>
 #include <iostream>
 #include <string>
 #include <cstdarg>
