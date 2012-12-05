@@ -10,6 +10,9 @@
 #include <iostream>
 #include "usage.h"
 #include "command_line_settings.h"
+#if EIGEN
+#include "eigen_mematrix.h"
+#endif
 
 // config.h and fvlib/FileVector.h are included for the upper case variables
 #if HAVE_CONFIG_H
@@ -245,7 +248,9 @@ void cmdvars::printinfo()
          << "\n(C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, "
          << "EMCR\n\n";
 #if EIGEN
-    cout << "Using EIGEN for matrix operations\n";
+    cout << "Using EIGEN version "<<EIGEN_WORLD_VERSION
+         <<"."<<EIGEN_MAJOR_VERSION<<"."<<EIGEN_MINOR_VERSION
+         << " for matrix operations\n";
 #endif
 
     if (neco[0] != 1 || neco[1] != 1 || neco[2] != 1)
