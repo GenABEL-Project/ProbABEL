@@ -5,7 +5,7 @@
 #include <string>
 #include <cstdarg>
 #include <cstdio>
-#include <cstdlib>
+
 //
 // constructors
 //
@@ -49,7 +49,8 @@ mematrix<DT>::mematrix(const mematrix<DT> & M)
                 M.nrow, M.ncol);
         exit(1);
     }
-    //	fprintf(stderr,"mematrix const(mematrix): can allocate memory (%d,%d)\n",M.nrow,M.ncol);
+    //	std::cerr << "mematrix const(mematrix): can allocate memory ("
+    //            << M.nrow << "," << M.ncol << ")\n";
     for (int i = 0; i < M.ncol * M.nrow; i++)
         data[i] = M.data[i];
 }
@@ -607,4 +608,4 @@ DT var(mematrix<DT> &M)
     return sum2 / (M.nelements - 1);
 }
 //_________Maksim____________
-#endif
+#endif /* MEMATRI1_H */
