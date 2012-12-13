@@ -106,7 +106,7 @@ run_test ()
 {
     # Run an analysis on dosage data
     outfile="height_add.out.txt"
-    rm -f $outfile
+
     echo "Checking output using dosages $WithOrWithout chunks..."
     ./probabel.pl 1 2 linear $1 --additive height
     echo -n "  Verifying $outfile: "
@@ -121,10 +121,6 @@ run_test ()
     outfilelist="height_ngp2_2df.out.txt height_ngp2_recess.out.txt
     height_ngp2_over_domin.out.txt height_ngp2_domin.out.txt
     height_ngp2_add.out.txt"
-
-    for file in $outfilelist; do
-        rm -f $file
-    done
 
     echo "Checking output using probabilities $WithOrWithout chunks..."
     ./probabel.pl 1 2 linear $1 --allmodels height -o _ngp2

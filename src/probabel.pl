@@ -201,6 +201,7 @@ my $head;
 my $mlinfo_arg;
 my $mldose_arg;
 my $legend_arg;
+my $outfile_arg;
 
 # Separate command for the sex chromosomes.
 if ($chr eq "X" || $chr eq "Y") {
@@ -223,6 +224,18 @@ if ($chr eq "X" || $chr eq "Y") {
     system "$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_arg -d $mldose_arg -m $legend_arg --chrom $chr -o $outfile_prefix $head $keys";
 
     exit;
+}
+
+# Clean up any existing output files
+if($model_option_num==2)
+{
+    system "rm ${outfile_prefix}${_2df_file_postfix} 2>/dev/null";
+    system "rm ${outfile_prefix}${_add_file_postfix} 2>/dev/null";
+    system "rm ${outfile_prefix}${_domin_file_postfix} 2>/dev/null";
+    system "rm ${outfile_prefix}${_recess_file_postfix} 2>/dev/null";
+    system "rm ${outfile_prefix}${_over_domin_file_postfix} 2>/dev/null";
+} else {
+    system "rm ${outfile_prefix}${_add_file_postfix} 2>/dev/null";
 }
 
 # Commands for the autosomes
@@ -262,34 +275,42 @@ for($chr=$startchr; $chr<=$endchr; $chr++) {
         $legend_arg =~ s/$chr_replacement/$chr/g;
         $legend_arg =~ s/$chunk_replacement/$chunk/g;
 
-        my $command = "$prog -p $phename.PHE --ngpreds $model_option_num -i $mlinfo_arg -d $mldose_arg -m $legend_arg --chrom $chr -o $outfile_prefix.chunk$chunk.chr$chr $head $keys";
+        $outfile_arg = "$outfile_prefix.chunk${chunk}.chr${chr}";
+
+        my $command = "$prog -p $phename.PHE --ngpreds $model_option_num ";
+        $command = $command . "-i $mlinfo_arg -d $mldose_arg -m $legend_arg";
+        $command = $command . " --chrom $chr";
+        $command = $command . " -o $outfile_arg ";
+        $command = $command . "$head $keys";
         print "$command \n";
         system $command;
 
+        # Combine the output data for all chunks of this chromosome
         if($model_option_num==2)
         {
-            `cat $outfile_prefix.chunk${chunk}.chr${chr}$_2df_file_postfix >> ${outfile_prefix}.${chr}${_2df_file_postfix}`;
-            `rm $outfile_prefix.chunk${chunk}.chr${chr}$_2df_file_postfix`;
+            `cat $outfile_arg$_2df_file_postfix >> ${outfile_prefix}.${chr}${_2df_file_postfix}`;
+            `rm $outfile_arg$_2df_file_postfix`;
 
-            `cat $outfile_prefix.chunk${chunk}.chr${chr}$_add_file_postfix >> ${outfile_prefix}.${chr}${_add_file_postfix}`;
-            `rm $outfile_prefix.chunk${chunk}.chr${chr}$_add_file_postfix`;
+            `cat $outfile_arg$_add_file_postfix >> ${outfile_prefix}.${chr}${_add_file_postfix}`;
+            `rm $outfile_arg$_add_file_postfix`;
 
-            `cat $outfile_prefix.chunk${chunk}.chr${chr}$_domin_file_postfix >> ${outfile_prefix}.${chr}${_domin_file_postfix}`;
-            `rm $outfile_prefix.chunk${chunk}.chr${chr}$_domin_file_postfix`;
+            `cat $outfile_arg$_domin_file_postfix >> ${outfile_prefix}.${chr}${_domin_file_postfix}`;
+            `rm $outfile_arg$_domin_file_postfix`;
 
-            `cat $outfile_prefix.chunk${chunk}.chr${chr}$_recess_file_postfix >> ${outfile_prefix}.${chr}${_recess_file_postfix}`;
-            `rm $outfile_prefix.chunk${chunk}.chr${chr}$_recess_file_postfix`;
+            `cat $outfile_arg$_recess_file_postfix >> ${outfile_prefix}.${chr}${_recess_file_postfix}`;
+            `rm $outfile_arg$_recess_file_postfix`;
 
-            `cat $outfile_prefix.chunk${chunk}.chr${chr}$_over_domin_file_postfix >> ${outfile_prefix}.${chr}${_over_domin_file_postfix}`;
-            `rm $outfile_prefix.chunk${chunk}.chr${chr}$_over_domin_file_postfix`;
+            `cat $outfile_arg$_over_domin_file_postfix >> ${outfile_prefix}.${chr}${_over_domin_file_postfix}`;
+            `rm $outfile_arg$_over_domin_file_postfix`;
         } else {
-            `cat $outfile_prefix.chunk${chunk}.chr${chr}$_add_file_postfix >> $outfile_prefix.${chr}${_add_file_postfix}`;
-            print "cat $outfile_prefix.chunk${chunk}.chr${chr}$_add_file_postfix >> $outfile_prefix.chr${chr}${_add_file_postfix}\n";
-            `rm $outfile_prefix.chunk${chunk}.chr${chr}$_add_file_postfix`;
-            print "rm $outfile_prefix.chunk${chunk}.chr${chr}$_add_file_postfix\n";
+            `cat $outfile_arg$_add_file_postfix >> $outfile_prefix.${chr}${_add_file_postfix}`;
+            print "cat $outfile_arg$_add_file_postfix >> $outfile_prefix.chr${chr}${_add_file_postfix}\n";
+            `rm $outfile_arg$_add_file_postfix`;
+            print "rm $outfile_arg$_add_file_postfix\n";
         }
     }
 
+    # Combine the output data for all chromosomes into one file
     if($model_option_num==2)
     {
         `cat $outfile_prefix.${chr}$_2df_file_postfix >> ${outfile_prefix}${_2df_file_postfix}`;
@@ -307,8 +328,8 @@ for($chr=$startchr; $chr<=$endchr; $chr++) {
         `cat $outfile_prefix.${chr}$_over_domin_file_postfix >> ${outfile_prefix}${_over_domin_file_postfix}`;
         `rm $outfile_prefix.${chr}$_over_domin_file_postfix`;
     } else {
-        `cat $outfile_prefix.${chr}$_add_file_postfix >> $outfile_prefix${_add_file_postfix}`;
-        print "cat $outfile_prefix.${chr}$_add_file_postfix >> $outfile_prefix${_add_file_postfix}\n";
+        `cat $outfile_prefix.${chr}$_add_file_postfix >> ${outfile_prefix}${_add_file_postfix}`;
+        print "cat $outfile_prefix.${chr}$_add_file_postfix >> ${outfile_prefix}${_add_file_postfix}\n";
         `rm $outfile_prefix.${chr}$_add_file_postfix`;
         print "rm $outfile_prefix.${chr}$_add_file_postfix\n";
     }
