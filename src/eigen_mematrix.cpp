@@ -30,6 +30,7 @@ mematrix<DT>::mematrix(int nr, int nc)
     this->nelements = nr * nc;
     this->data.resize(nr, nc);
 }
+
 template<class DT>
 mematrix<DT>::mematrix(const mematrix<DT> & M)
 {
@@ -38,6 +39,7 @@ mematrix<DT>::mematrix(const mematrix<DT> & M)
     nelements = M.nelements;
     data = M.data;
 }
+
 //
 // operators
 //
@@ -77,6 +79,7 @@ DT & mematrix<DT>::operator[](const int i)
 //        temp.data[i] = data[i] + toadd;
 //    return temp;
 //}
+
 template<class DT>
 mematrix<DT> mematrix<DT>::operator+(const mematrix<DT> &M)
 {
@@ -103,6 +106,7 @@ mematrix<DT> mematrix<DT>::operator-(const DT toadd)
     temp.data = data.array() - toadd;
     return temp;
 }
+
 template<class DT>
 mematrix<DT> mematrix<DT>::operator-(const mematrix<DT> &M)
 {
@@ -197,40 +201,42 @@ void mematrix<DT>::reinit(int nr, int nc)
     data.resize(nr, nc);
     data.setZero();
 }
+
 template<class DT>
 DT mematrix<DT>::get(int nr, int nc)
 {
-#if !NDEBUG
-    if (nc < 0 || nc > ncol)
+#ifndef NDEBUG
+    if (nc < 0 || nc > ncol -1)
     {
-        std::cerr << "mematrix::get: column out of range: " << nc
-                  << " not in (0," << ncol << ")\n";
+        std::cerr << "mematrix::get: column out of range: " << nc + 1
+                  << " not between (1," << ncol << ")\n" << std::flush;
         exit(1);
     }
-    if (nr < 0 || nr > nrow)
+    if (nr < 0 || nr > nrow -1)
     {
-        std::cerr << "mematrix::get: row out of range: " << nr
-                  << " not in (0," << nrow << ")\n";
+        std::cerr << "mematrix::get: row out of range: " << nr + 1
+                  << " not between (1," << nrow << ")\n" << std::flush;
         exit(1);
     }
 #endif
     DT temp = data(nr, nc);
     return temp;
 }
+
 template<class DT>
 void mematrix<DT>::put(DT value, int nr, int nc)
 {
-#if !NDEBUG
-    if (nc < 0 || nc > ncol)
+#ifndef NDEBUG
+    if (nc < 0 || nc > ncol -1)
     {
-        std::cerr << "mematrix::put: column out of range: " << nc
-                  << " not in (0," << ncol << ")\n";
+        std::cerr << "mematrix::put: column out of range: " << nc + 1
+                  << " not between (1," << ncol << ")\n" << std::flush;
         exit(1);
     }
-    if (nr < 0 || nr > nrow)
+    if (nr < 0 || nr > nrow -1)
     {
-        std::cerr << "mematrix::put: row out of range: " << nr
-                  << " not in (0," << nrow << ")\n";
+        std::cerr << "mematrix::put: row out of range: " << nr + 1
+                  << " not between (1," << nrow << ")\n" << std::flush;
         exit(1);
     }
 #endif
@@ -257,6 +263,7 @@ mematrix<DT> column_sum(const mematrix<DT> &M)
     out.data = M.data.colwise().mean();
     return out;
 }
+
 template<class DT>
 void mematrix<DT>::print(void)
 {
@@ -270,9 +277,10 @@ void mematrix<DT>::print(void)
         std::cout << "\n";
     }
 }
+
+//
 // other functions
 //
-
 template<class DT>
 mematrix<DT> transpose(const mematrix<DT> &M)
 {
@@ -307,8 +315,7 @@ mematrix<DT> reorder(const mematrix<DT> &M, const mematrix<int> order)
     }
     return temp;
 }
-//
-//
+
 //template<class DT>
 //mematrix<double> todouble(mematrix<DT> &M)
 //{
@@ -317,9 +324,6 @@ mematrix<DT> reorder(const mematrix<DT> &M, const mematrix<int> order)
 //        temp.data[i] = double(M.data[i]);
 //    return temp;
 //}
-//
-
-//
 
 template<class DT>
 mematrix<DT> invert(const mematrix<DT> &M)

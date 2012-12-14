@@ -235,16 +235,16 @@ void mematrix<DT>::reinit(int nr, int nc)
 template<class DT>
 DT mematrix<DT>::get(int nr, int nc)
 {
-    if (nc < 0 || nc > ncol)
+    if (nc < 0 || nc > ncol -1)
     {
-        fprintf(stderr,
-                "mematrix::get: column out of range: %d not in (0,%d)\n", nc,
-                ncol);
+        std::cerr << "mematrix::get: column out of range: " << nc + 1
+                  << " not between (1," << ncol << ")\n" << std::flush;
         exit(1);
     }
-    if (nr < 0 || nr > nrow)
+    if (nr < 0 || nr > nrow -1)
     {
-        printf("mematrix::get: row out of range: %d not in (0,%d)\n", nr, nrow);
+        std::cerr << "mematrix::get: row out of range: " << nr + 1
+                  <<" not between (1," << nrow << ")\n" << std::flush;
         exit(1);
     }
     DT temp = data[nr * ncol + nc];
@@ -254,16 +254,16 @@ DT mematrix<DT>::get(int nr, int nc)
 template<class DT>
 void mematrix<DT>::put(DT value, int nr, int nc)
 {
-    if (nc < 0 || nc > ncol)
+    if (nc < 0 || nc > ncol -1)
     {
-        fprintf(stderr,
-                "mematrix::put: column out of range: %d not in (0,%d)\n", nc,
-                ncol);
+        std::cerr << "mematrix::put: column out of range: " << nc + 1
+                  << " not between (1," << ncol << ")\n" << std::flush;
         exit(1);
     }
-    if (nr < 0 || nr > nrow)
+    if (nr < 0 || nr > nrow -1)
     {
-        printf("mematrix::put: row out of range: %d not in (0,%d)\n", nr, nrow);
+        std::cerr << "mematrix::put: row out of range: " << nr + 1
+                  <<" not between (1," << nrow << ")\n" << std::flush;
         exit(1);
     }
     data[nr * ncol + nc] = value;
