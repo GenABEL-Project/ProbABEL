@@ -1,3 +1,18 @@
+***** v.0.3.0 (2012)
+* This is a major rewrite of several important parts of the ProbABEL
+  code. ProbABEL can now make use of the Eigen matrix library
+  (http://eigen.tuxfamily.org) for matrix operations. Especially when
+  using the mmscore option this makes ProbABEL run ~ 5 times faster.
+  Unfortunately the CoxPH module is still broken.
+  This version completes several months of work by Maarten Kooyman who
+  took up this challenge. Thanks to Maarten!
+* Fixed bug #2436: probabel.pl doesn't overwrite output file (as it used
+  to do before 0.2.2). This bug was introduced with the possibility of
+  using SNP dosages/probabilities that are split into (sub-chromosomal)
+  chunks.
+* Fixed a small bug (without ID) where the column/row addressing of
+  matrices as incorrectly checked (off-by-one error) (svn rev.1056).
+
 ***** v.0.2.2 (2012.11.05)
 * No change in the code compared to v.0.2.1. Due to a mistake with the
   Ubuntu packaging (which was based on SVN r997, which contained a
