@@ -9,13 +9,22 @@ distributions.
    - fakeroot
    - lintian
    - devscripts (not necessary, but has some nice utilities like dch)
-** Building the package for the first time
+** Checking whether the source code builds correctly
    First check to see if everything compiles and all files are included
-   in the automake files:
+   in the automake files (if you have multi-core CPU with e.g. 4
+   cores, you can add the -j4 option to the make commands):
     ./configure
     make distcheck
    If there are no errors, a tar.gz file of the source should have been
-   created. Let's create the package.
+   created. We will use this file in the next step where the actual
+   package is built. But first we need to check whether the source
+   builds correctly for various settings of the ./configure
+   options. Run the following:
+    DISTCHECK_CONFIGURE_FLAGS="--disable-eigen" make distcheck
+    DISTCHECK_CONFIGURE_FLAGS="--enable-pacoxph" make distcheck
+** Building the package for the first time
+   Now that we verified that the source code builds without problems,
+   let's create the package.
     mkdir /tmp/PA-deb
     cp ProbABEL-0.2.0.tar.gz /tmp/PA-deb
     cd /tmp/PA-deb

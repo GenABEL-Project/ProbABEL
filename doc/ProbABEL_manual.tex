@@ -1,6 +1,6 @@
 \documentclass[12pt,a4paper]{article}
 
-\title{Manual for ProbABEL v0.2.2}
+\title{Manual for ProbABEL v0.3.0}
 \author{
 Maksim Struchalin$^{1}$, Lennart Karssen$^{1}$, Yurii Aulchenko$^{2}$ \\
 \\
@@ -89,7 +89,7 @@ in a fast, memory-efficient and consequently genome-wide feasible manner.
 Currently, \PA{} implements linear, logistic regression,
 and Cox proportional hazards models. The corresponding analysis
 programs are called \texttt{palinear},  \texttt{palogist},
-and \texttt{pacoxph}\footnote{Please note that in ProbABEL v.0.2.2 the
+and \texttt{pacoxph}\footnote{Please note that in ProbABEL v.0.3.0 the
   \texttt{pacoxph} program is not built by default because it is still
 too buggy for production use. Instructions on how to compile the
 \texttt{pacoxph} module can be found in the \texttt{CHANGES.LOG} file
@@ -274,7 +274,7 @@ actually used to generate the output.
 To run linear regression, you should use the program called
 \texttt{palinear}; for logistic analysis use \texttt{palogist}, and
 for the Cox proportional hazards model use
-\texttt{pacoxph}\footnote{Please note that in ProbABEL v.0.2.2 the
+\texttt{pacoxph}\footnote{Please note that in ProbABEL v.0.3.0 the
   \texttt{pacoxph} program is not built by default because it is still
   too buggy for production use. Instructions on how to compile the
   \texttt{pacoxph} module can be found in the \texttt{CHANGES.LOG}
@@ -293,31 +293,31 @@ ProbABEL v. 0.2.0 (C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EM
 
 Usage: /tmp/PAInst/bin/palogist options
 Options:
-	 --pheno   : phenotype file name
-	 --info    : information (e.g. MLINFO) file name
-	 --dose    : predictor (e.g. MLDOSE/MLPROB) file name
-	 --map     : [optional] map file name
-	 --nids    : [optional] number of people to analyse
-	 --chrom   : [optional] chromosome (to be passed to output)
-	 --out     : [optional] output file name (default is regression.out.txt)
-	 --skipd   : [optional] how many columns to skip in the predictor
-		      (dose/prob) file (default 2)
-	 --ntraits : [optional] how many traits are analysed (default 1)
-	 --ngpreds : [optional] how many predictor columns per marker
-		      (default 1 = MLDOSE; else use 2 for MLPROB)
-	 --separat : [optional] character to separate fields (default is space)
-	 --score   : use score test
-	 --no-head : do not report header line
-	 --allcov  : report estimates for all covariates (large outputs!)
-	 --interaction: Which covariate to use for interaction with SNP analysis (default is no interaction, 0)
-	 --interaction_only: like previous but without covariate acting in interaction with SNP (default is no interaction, 0)
-	 --mmscore : score test in samples of related individuals. File with inverse of variance-covariance matrix (for palinear) or inverse correlation (for palogist) as input parameter
-	 --robust  : report robust (aka sandwich, aka Hubert-White) standard errors
-	 --help    : print help
+         --pheno   : phenotype file name
+         --info    : information (e.g. MLINFO) file name
+         --dose    : predictor (e.g. MLDOSE/MLPROB) file name
+         --map     : [optional] map file name
+         --nids    : [optional] number of people to analyse
+         --chrom   : [optional] chromosome (to be passed to output)
+         --out     : [optional] output file name (default is regression.out.txt)
+         --skipd   : [optional] how many columns to skip in the predictor
+                      (dose/prob) file (default 2)
+         --ntraits : [optional] how many traits are analysed (default 1)
+         --ngpreds : [optional] how many predictor columns per marker
+                      (default 1 = MLDOSE; else use 2 for MLPROB)
+         --separat : [optional] character to separate fields (default is space)
+         --score   : use score test
+         --no-head : do not report header line
+         --allcov  : report estimates for all covariates (large outputs!)
+         --interaction: Which covariate to use for interaction with SNP analysis (default is no interaction, 0)
+         --interaction_only: like previous but without covariate acting in interaction with SNP (default is no interaction, 0)
+         --mmscore : score test in samples of related individuals. File with inverse of variance-covariance matrix (for palinear) or inverse correlation (for palogist) as input parameter
+         --robust  : report robust (aka sandwich, aka Hubert-White) standard errors
+         --help    : print help
 \end{verbatim}
 %%		--interaction_only: like previos but without covariate acting in
 %%                    interaction with SNP
-%%									  (default is no ineraction, 0)
+%%                                                                        (default is no ineraction, 0)
 
 
 \subsection{Basic analysis options}
@@ -336,7 +336,7 @@ If you change to the \texttt{examples} directory you can run
 an analysis of height by running
 \begin{verbatim}
 user@server:~/ProbABEL/examples/$ ../bin/palinear -p height.txt \
-				 -d test.mldose -i test.mlinfo
+                                 -d test.mldose -i test.mlinfo
 \end{verbatim}
 Output from the analysis will be directed to the
 \texttt{regression.out.csv} file.
@@ -344,18 +344,18 @@ Output from the analysis will be directed to the
 The analysis of a binary trait (e.g.~chd) can be run with
 \begin{verbatim}
 user@server:~/ProbABEL/examples/$ ../bin/palogist -p logist_data.txt \
-				 -d test.mldose -i test.mlinfo
+                                 -d test.mldose -i test.mlinfo
 \end{verbatim}
 
 To run a Cox proportional hazards model\footnote{Please note that in
-  ProbABEL v.0.2.2 the \texttt{pacoxph} program is not built by
+  ProbABEL v.0.3.0 the \texttt{pacoxph} program is not built by
   default because it is still too buggy for production
   use. Instructions on how to compile the \texttt{pacoxph} module can
   be found in the \texttt{CHANGES.LOG} file in the \texttt{doc/}
   directory of the installation package.}, try
 \begin{verbatim}
 user@server:~/ProbABEL/examples/$ ../bin/pacoxph -p coxph_data.txt \
-				 -d test.mldose -i test.mlinfo
+                                 -d test.mldose -i test.mlinfo
 \end{verbatim}
 
 Please have a look at the shell script files \texttt{example\_qt.sh},
@@ -367,8 +367,8 @@ with the \texttt{-d} option and also specify that there are two
 genetic predictors per SNP, e.g.~you can run linear model with
 \begin{verbatim}
 user@server:~/ProbABEL/examples/$ ../bin/palinear -p height.txt \
-				 -d test.mlprob -i test.mlinfo \
-				 --ngpreds=2
+                                 -d test.mlprob -i test.mlinfo \
+                                 --ngpreds=2
 \end{verbatim}
 
 \subsection{Advanced analysis options}
@@ -838,7 +838,7 @@ BMC Bioinformatics. 2010, 11:134.
 \end{quote}
 A proper reference may look like
 \begin{quote}
-For the analysis of imputed data, we used the \PA{} v.0.2.2
+For the analysis of imputed data, we used the \PA{} v.0.3.0
 from the \texttt{GenABEL} suite of programs (Aulchenko \emph{et al.}, 2010).
 \end{quote}
 
@@ -869,7 +869,7 @@ as implemented by T. Lumley.
 %\hline
 %Distribution & $\mu$ & $\tau^2$ & $v(\mu)$ \\
 %\hline
-%Normal	 &            $\eta$ & $\sigma^2$ & \\
+%Normal  &            $\eta$ & $\sigma^2$ & \\
 %Binomial & $1/(1+e^{-\eta})$ & & \\
 %Poisson  &        $e^{\eta}$ & & \\
 %\hline
