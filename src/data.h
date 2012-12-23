@@ -45,9 +45,9 @@ public:
 class InvSigma {
 private:
     static const unsigned MAXIMUM_PEOPLE_AMOUNT = 1000000;
-    unsigned npeople; //amount of people
+    unsigned int npeople;       /* number of people */
     std::string filename;
-    mematrix<double> matrix; //file is stored here
+    mematrix<double> matrix;    /* file is stored here */
 
 public:
     InvSigma(const char * filename_, phedata * phe);

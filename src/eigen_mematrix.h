@@ -17,8 +17,6 @@ public:
     mematrix()
     {
         nrow = ncol = nelements = 0;
-//        std::cout << "[DEBUG]   creating object" << std::endl;
-
         data.resize(1, 1);
     }
     mematrix(int nr, int nc);

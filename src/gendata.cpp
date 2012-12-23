@@ -19,16 +19,24 @@
 void gendata::get_var(int var, float * data)
 {
     if (DAG == NULL)
+    {
         for (int i = 0; i < G.nrow; i++)
+        {
             data[i] = G.get(i, var);
+        }
+    }
     else if (DAG != NULL)
     {
         float tmpdata[DAG->getNumObservations()];
         DAG->readVariableAs((unsigned long int) var, tmpdata);
         unsigned int j = 0;
         for (unsigned int i = 0; i < DAG->getNumObservations(); i++)
+        {
             if (!DAGmask[i])
+            {
                 data[j++] = tmpdata[i];
+            }
+        }
         // std::cout << j << " " << DAG->get_nobservations() << " "
         //           << nids << "\n";
     }

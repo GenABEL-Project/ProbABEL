@@ -244,7 +244,7 @@ DT mematrix<DT>::get(int nr, int nc)
     if (nr < 0 || nr > nrow -1)
     {
         std::cerr << "mematrix::get: row out of range: " << nr + 1
-                  <<" not between (1," << nrow << ")\n" << std::flush;
+                  << " not between (1," << nrow << ")\n" << std::flush;
         exit(1);
     }
     DT temp = data[nr * ncol + nc];
@@ -263,7 +263,7 @@ void mematrix<DT>::put(DT value, int nr, int nc)
     if (nr < 0 || nr > nrow -1)
     {
         std::cerr << "mematrix::put: row out of range: " << nr + 1
-                  <<" not between (1," << nrow << ")\n" << std::flush;
+                  << " not between (1," << nrow << ")\n" << std::flush;
         exit(1);
     }
     data[nr * ncol + nc] = value;
@@ -411,7 +411,7 @@ mematrix<DT> reorder(mematrix<DT> &M, mematrix<int> order)
 {
     if (M.nrow != order.nrow)
     {
-        fprintf(stderr, "reorder: M & order have differet # of rows\n");
+        std::cerr << "reorder: M & order have different # of rows\n";
         exit(1);
     }
     mematrix<DT> temp(M.nrow, M.ncol);
