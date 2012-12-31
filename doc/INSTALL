@@ -18,7 +18,7 @@ apt-get install libeigen3-dev
 
   If ./configure cannot find the Eigen library it will say so. To
   disable the use of Eigen (even if the library is present) use:
-./configure --disable-eigen
+./configure --without-eigen
 
 
 * Compiling for Linux

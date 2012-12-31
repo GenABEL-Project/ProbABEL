@@ -39,10 +39,10 @@ AC_CHECK_HEADERS([float.h inttypes.h libintl.h limits.h stddef.h \
 
 # See if we want use of the Eigen library enabled (yes by default) and if so,
 # whether we can find the library files.
-AC_ARG_ENABLE([eigen],
- [AS_HELP_STRING([--enable-eigen], [Use the Eigen template library for fast \
+AC_ARG_WITH([eigen],
+ [AS_HELP_STRING([--with-eigen], [Use the Eigen template library for fast \
 				    linear algebra (Eigen can be downloaded \
-				    from eigen.tuxfamily.org). This is enabled \
+				    from eigen.tuxfamily.org); this is enabled \
 				    by default])],
  [eigen=${enableval}],
  [eigen=yes])
@@ -63,7 +63,7 @@ if test "x$eigen" = "xyes"; then
 
     if test x$ac_cv_header_Eigen_Dense = xno; then
       AC_MSG_ERROR([Could not find the Eigen header files. Did you specify \
---with-eigen-include-path correctly? Or use --disable-eigen \
+--with-eigen-include-path correctly? Or use --without-eigen \
 to disable use of fast linear algebra.])
     fi
 else
