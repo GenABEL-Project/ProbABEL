@@ -8,6 +8,12 @@ AM_SILENT_RULES
 AC_CONFIG_SRCDIR([src/data.h])
 AC_CONFIG_HEADERS([src/config.h])
 
+# Add the --disable-maintainer-mode option used by e.g. Debian and
+# Gentoo to disable rebuilding the autotools-generated files after
+# e.g. a patch has been applied to them. The default is 'disabled', we
+# change it here to keep the old behaviour by default.
+AM_MAINTAINER_MODE([enable])
+
 # Checks for programs.
 AC_PROG_CC
 AM_PROG_CC_C_O
