@@ -1,4 +1,4 @@
-***** v.0.3.0 (2012)
+***** v.0.3.0 (2013.01.01)
 * This is a major rewrite of several important parts of the ProbABEL
   code. ProbABEL can now make use of the Eigen matrix library
   (http://eigen.tuxfamily.org) for matrix operations. Especially when
@@ -13,12 +13,14 @@
 * Fixed a small bug (without ID) where the column/row addressing of
   matrices as incorrectly checked (off-by-one error) (svn rev.1056).
 
+
 ***** v.0.2.2 (2012.11.05)
 * No change in the code compared to v.0.2.1. Due to a mistake with the
   Ubuntu packaging (which was based on SVN r997, which contained a
   major bug in the tests and which was uploaded to the GenABEL PPA)
   I'm releasing a new package based on the same source code as
   ProbABEL v.0.2.1 (except for the version numbers of course).
+
 
 ***** v.0.2.1 (2012.11.05)
 * Fixed bug #2295: the inverse variance-covariance matrix (used with
