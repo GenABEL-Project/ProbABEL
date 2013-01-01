@@ -26,15 +26,14 @@ distributions.
    Now that we verified that the source code builds without problems,
    let's create the package.
     mkdir /tmp/PA-deb
-    cp ProbABEL-0.2.0.tar.gz /tmp/PA-deb
+    cp probabel-0.3.0.tar.gz /tmp/PA-deb
     cd /tmp/PA-deb
    Debian packages must have lowercase letters, so we'll have to rename
    the directory after untar-ing it.
-    tar -xzf ProbABEL-0.2.0.tar.gz
-    mv ProbABEL-0.2.0 probabel-0.2-0
-    cd probabel-0.2.0
+    tar -xzf probabel-0.3.0.tar.gz
+    cd probabel-0.3.0
     dh_make --single --email youremail@example.com \
-     --file ../ProbABEL-0.2.0.tar.gz --copyright gpl2 \
+     --file ../probabel-0.3.0.tar.gz --copyright gpl2 \
      --packagename probabel
 
    Hit the enter key to confirm the settings. Several files need to be
@@ -45,13 +44,13 @@ distributions.
    - debian/README.Debian
    dh_make also creates several example scripts in the debian/
    directory. We don't need them, so they can be delete:
-    rm debian/*.ex debian/*.EX
+    rm debian/*.ex debian/*.EX debian/README.source
    Now the package can be built (NOTE that dpkg-buildpackage replaces
    our default CXXFLAGS with "-g -O2"):
     dpkg-buildpackage -rfakeroot -us -uc
    This creates an unsigned ~.deb~ file in the parent directory. As a
    final touch you can check you package for errors with
-    lintian ../probabel_0.2.0-1_amd64.deb
+    lintian ../probabel_0.3.0-1_amd64.deb
    Several warnings will show up (e.g. binaries without man-pages),
    but we ignore these for now. If you are interested in a more
    detailed explanation of the warnings, add the -i option to the
@@ -65,4 +64,4 @@ distributions.
    where YOURKEYID is the ID of the gpg key you use for signing your
    package (this key should be known by launchpad).
    To upload the package created above to the GenABEL PPA simply type:
-    dput ppa:l.c.karssen/genabel-ppa ../probabel_0.2.0-1_source.changes
+    dput ppa:l.c.karssen/genabel-ppa ../probabel_0.3.0-1_source.changes
