@@ -10,7 +10,7 @@ run_diff()
         echo -e "\t\tOK"
     else
         echo -e "\t\tFAILED"
-//        exit 1
+#        exit 1
     fi
 }
 
