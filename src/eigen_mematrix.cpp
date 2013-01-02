@@ -311,7 +311,7 @@ mematrix<DT> reorder(const mematrix<DT> &M, const mematrix<int> order)
     for (int i = 0; i < temp.nrow; i++)
     {
         source = order.data(i, 0);
-        temp.data.row(i) = M.data.row(source);
+        temp.data.row(source) = M.data.row(i);
     }
     return temp;
 }

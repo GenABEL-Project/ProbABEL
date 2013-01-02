@@ -23,6 +23,7 @@
 class coxph_data {
 public:
     coxph_data get_unmasked_data();
+
     coxph_data()
     {
         nids = 0;
@@ -30,6 +31,7 @@ public:
         ngpreds = 0;
         masked_data = NULL;
     }
+
     coxph_data(const coxph_data &obj);
     coxph_data(phedata &phed, gendata &gend, int snpnum);
     void update_snp(gendata &gend, int snpnum);
@@ -40,11 +42,11 @@ public:
     int ngpreds;
     mematrix<double> weights;
     mematrix<double> stime;
-    mematrix<int> sstat;
+    mematrix<int>    sstat;
     mematrix<double> offset;
-    mematrix<int> strata;
+    mematrix<int>    strata;
     mematrix<double> X;
-    mematrix<int> order;
+    mematrix<int>    order;
     unsigned short int * masked_data;
 };
 
