@@ -1,0 +1,29 @@
+cohort,info_path,dose_path,prob_path,legend_path
+# Configuration file for the probabel.pl wrapper script
+#
+# This file contains the location of the files with imputed data for the
+# cohorts/imputations that are available to the user.
+#
+# Use one line per cohort configuration. Each line consists of the following
+# entries, separated by a comma:
+# - cohort: a discriptive name for the cohort/imputation, e.g. MyCohort_HM2
+# - mlinfo_path: path to the file with the SNP imputation information
+# - mldose_path: path to the file with imputed genotype dosages
+# - mlprob_path: path to the file with imputed genotype probabilities
+# - legend_path: path to the legend file used for the imputations
+#
+# If the dosage and probability files are in DatABEL format (i.e. filenames
+# ending in .fvi and .fvd), either of these extensions can be used.
+#
+# Use "_._chr_._" to specify a chromosome number in the configured paths. This
+# can be used multiple times per line, e.g.:
+#
+# mldose_path: /data/Cohort1/MachFiles/_._chr_._/mach_._chr_._-out.mldose
+#
+# For chromosome 1 this will be replaced with:
+#             /data/Cohort1/MachFiles/1/mach1-out.mldose
+#
+#
+
+STUDY_1,script_test/merlin._._chr_._.collected.ped.out.mlinfo,script_test/merlin._._chr_._.collected.ped.out.mldose,script_test/merlin._._chr_._.collected.ped.out.mlprob,script_test/genotypes_chr_._chr_.__CEU_r22_nr.b36_fwd_legend.txt
+STUDY_2,/tmp/PAtest/chunk_._chunk_._-chr_._chr_._.mlinfo,/tmp/PAtest/chunk_._chunk_._-chr_._chr_._.mldose,/tmp/PAtest/chunk_._chunk_._-chr_._chr_._.mlprob,/tmp/PAtest/genotypes_chr_._chr_.__CEU_r22_nr.b36_fwd_legend.txt

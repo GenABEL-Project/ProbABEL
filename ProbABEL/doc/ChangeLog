@@ -1,0 +1,331 @@
+***** v.0.3.0 (2013.01.01)
+* This is a major rewrite of several important parts of the ProbABEL
+  code. ProbABEL can now make use of the Eigen matrix library
+  (http://eigen.tuxfamily.org) for matrix operations. Especially when
+  using the mmscore option this makes ProbABEL run ~ 5 times faster.
+  Unfortunately the CoxPH module is still broken.
+  This version completes several months of work by Maarten Kooyman who
+  took up this challenge. Thanks to Maarten!
+* Fixed bug #2436: probabel.pl doesn't overwrite output file (as it used
+  to do before 0.2.2). This bug was introduced with the possibility of
+  using SNP dosages/probabilities that are split into (sub-chromosomal)
+  chunks.
+* Fixed a small bug (without ID) where the column/row addressing of
+  matrices as incorrectly checked (off-by-one error) (svn rev.1056).
+
+
+***** v.0.2.2 (2012.11.05)
+* No change in the code compared to v.0.2.1. Due to a mistake with the
+  Ubuntu packaging (which was based on SVN r997, which contained a
+  major bug in the tests and which was uploaded to the GenABEL PPA)
+  I'm releasing a new package based on the same source code as
+  ProbABEL v.0.2.1 (except for the version numbers of course).
+
+
+***** v.0.2.1 (2012.11.05)
+* Fixed bug #2295: the inverse variance-covariance matrix (used with
+  the --mmscore option) was incorrectly subsetted when NAs are present
+  for one or more SNP dosages (so this is not an issue for people using
+  imputed data). As a result the invvarmatrix that was actually used in
+  the regression contained rows and columns of zeroes. Thanks to Maarten
+  Kooyman for reporting this bug.
+
+* Fixed bug #1186: When .map file is missing (but --map option was
+  given), the wrong error message was displayed. Thanks to Nicola
+  Pirastu for reporting this bug.
+
+* Fixed bug #2147: The value of the Rsq column in the info file should
+  be > 0, unlike what was mentioned in the documentation.
+
+* Update of the probabel.pl script and probabel_config.cfg.
+  The .cfg file now accepts the chr separator in multiple locations in the path
+  (thanks to Marijn Verkerk).
+  probabel.pl can now also run Y chromosome analysis and the help
+  message has been updated.
+
+* probabel.pl and probabel_config.cfg now also accept chunks, where
+  dose, prob, info and map files are split into multiple chunks. This
+  is now the default for people following the 1000 genomes imputation
+  cookbook for MaCH/minimac (the recipe uses the chunkchromosome tool
+  to split the data into smaller pieces, speeding up imputation on
+  computer clusters). See probabel_config.cfg.example for an
+  example. (Lennart)
+
+
+
+***** v.0.2.0 (2012.06.10)
+* The v.0.1-9e fix for working with prob files in pacoxph has been
+  forward-ported to this branch as well (Lennart and Yurii).
+
+* pacoxph will not be built by default, because it is quite buggy. See
+  ./configure notes below on how to enable building it anyway (Lennart).
+
+* ProbABEL can now (experimentally!) analyze binary traits accounting
+  for relationship structure (thanks to Yurii and Nicola Pirastu). This
+  adds '--mmscore' option for logistic regression. Important: compared
+  to 'palinear' the matrix which should be supplied to palogist with
+  --mmscore should contain an inverse of the correlation matrix (not the
+  inverse of var-cov matrix, as is the case for 'palinear' with
+  --mmscore). This matrix can be obtained through (GenABEL notation):
+
+h2.object$InvSigma * h2.object$h2an$estimate[length(h2.object$h2an$estimate)]
+
+  where h2.object is the object returned by 'polygenic()'. Documentation
+  explains this procedure in more details; a wrapper function to prepare
+  and export correct objects for ProbABEL is planned. (thanks to Yurii)
+
+* Small changes (thanks to Lennart).
+- in probabel.pl the location for the probabel config file is now set
+  to /etc/, the default location it will end up. Before it still
+  pointed to the location the probabel.pl file was in. However, a
+  better fix would be to somehow put in the actual value of the
+  --sysconfdir option to ./configure.
+- The PDF of the LaTeX documentation is now only generated if the
+  pdflatex binary can be found. So now we also build the documentation
+  using autotools.
+- On 32bit Linux systems ProbABEL can now also use large (>4GB) input files.
+
+
+* ProbABEL uses autoconf and automake now (thanks to Lennart).
+  After downloading the source from SVN run
+autoreconf -i
+
+  to generate the ./configure script and some other files (this is not
+  necessary when installing from the distributed .tar.gz file).
+
+  To compile and install the package run
+./configure
+make
+make check
+make install
+
+  This will install the binaries (palinear etc.) in /usr/local/bin/,
+  the documentation in /usr/local/share/doc/probabel/, the
+  probabel_config.cfg.example file in /usr/local/etc/, and the examples in
+  /usr/local/share/ProbABEL/examples/. The ./configure script tests
+  for the presence of the pdflatex program. If it is not present the
+  PDF version of the documentation will not be built.
+
+  For more information see the file doc/INSTALL.
+
+In the ProbABEL autotools integration branch:
+- Removed the old Makefile
+- Added configure.ac that servers as input for auto(re)conf
+- Added the Makefile.am files needed by automake to generate the final Makefiles.
+
+
+***** v.0.1-9e (2011.05.15)
+Previous version wouldn't compile because of missing frerror. file.
+Fixes bug #1339 (the bug fix was done a month ago, but no package had
+been release since then).
+
+***** v.0.1-9d (2010.10.08)
+
+fix related to compilation with updated 'filevector' library
+
+***** v.0.1-9c (2010.08.01)
+
+Bug identification and fix by Vadim Pinchuk (McGill). Here is his report:
+
+I have found a small bug that caused reporting of incorrect
+subject IDs in the error message when I tried to run palinear
+analysis. It caused a bit of confusion on my side.
+... I fixed it in downloaded copy of the source code and it reports
+correct subject IDs. We were able to overcome the problems in the data
+after the fix and submit analysis successfully.
+
+Bravo, Vadim! Thumbs up, and many thanks from us (and of course all users)!
+
+
+***** v.0.1-9b (2010.06.02)
+
+changes in filevector part
+
+***** v.0.1-9 (2010.05.28)
+
+changes in filevector part
+
+cox regression does not work
+
+***** v.0.1-8 (2010.05.10)
+
+changes in filevector part
+
+***** v.0.1-6b (2010.04.22)
+
+error message with missing map-file reported absence of
+other file, fixed: thanks to N. Pirastu for noticing!
+
+***** v.0.1-6 (2010.04.02)
+
+bug fix in palogist, coxph (would not run with missing genotypic data present)
+
+Thanks to Ida Surakka, Pau Navarro and Kati Kristiansson for spotting the problem!
+
+***** v.0.1-5 (2010.03.07)
+
+Use of updated FILEVECTOR (r300)
+
+Fixed bug preventing coxph to run
+
+***** v.0.1-4 (2010.02.12)
+
+Instead chi2, log-likelihood is reported
+
+ProbABEL can now work in very low memory mode, using filevector library
+(see examples/prepare_data.R for examples how to convert data from
+MACH to filevector format).
+
+Can also treat missing values (NA, nan)
+
+***** v.0.1-3 (2009.11.25)
+
+This version is courtesy of Han Chen (Nov 9, 2009). The modifications allow
+to extract the covariance between the estimate of beta(SNP) and the estimate
+of beta(interaction). This information can be used to, e.g., to perform a
+rigorous 2df meta-analysis of interactions later on.
+
+Here is a more detailed description of what the changes concern (by Han Chen):
+
+For model
+
+Y = b_0 + b_cov1 * cov1 + b_cov2 * cov2 + ... + b_covN * covN + b_SNP * SNP + b_covX_SNP * covX * SNP
+
+(1<=X<=N, covX can be any covariate in the phenotype file, from cov1 to covN,
+option --interaction=X, see ProbABEL manual for details)
+Or model
+
+Y = b_0 + b_cov1 * cov1 + b_cov2 * cov2 + ... + b_covX-1 * covX-1 + b_covX+1 * covX+1 + ... + b_covN * covN + b_SNP * SNP + b_covX_SNP * covX * SNP
+
+(1<=X<=N, covX can be any covariate in the phenotype file, from cov1 to covN,
+option --interaction_only=X, see ProbABEL manual for details)
+This "plus" version reports naive covariance (default) or robust covariance
+(option --robust) between b_SNP and b_covX_SNP estimates, for palinear and
+palogist (can NOT report covariance for pacoxph, Cox regression).
+Covariances are no reported for options --score, --allcov, --mmscore
+
+LINEAR REGRESSION OR LOGISTIC REGRESSION ONLY
+
+Bravo, Han! -- and many thanks!
+
+
+***** v.0.1-2 (2009.10.19)
+
+Minor bug fix: allele frequency was estimated wrongly when option --ngpreds=2
+was used. The bug had no effect anything else (betas, ses, chi2s were correct).
+Many thanks to Han Chen (Boston University) for identification of this bug
+and providing us with an excellent summary which allowed fixing the bug easily!
+
+***** v.0.1-1 (2009.09.22)
+
+Added "robust" option, which computes SEs using formula
+(X'X)^(-1) (X' V X) (X'X)^(-1) where V is diagonal matrix containing
+squares of residuals. In standard analysis, V is diagonal matrix
+containing constant = RSS/N
+
+***** v.0.1-0 (2009.08.15)
+
+fixed a bug in phedata class: if ID was starting with 'N' or 'n', it
+was counted as NA (thanks to Youfan & Ida Surakka for pointing the
+bug out)
+
+
+***** v.0.0-9 (2009.07.20)
+
+mmscore bug fixed (ses of betas were inflated by sd of the trait's distribution)
+
+
+***** v.0.0-8 (2009.06.09)
+
+1. New interaction option added. Key --interaction_only=<number> allows you to perform interaction analysis without covariate acting in ineraction.
+Examlple: trait ~ cov1 + cov2 + cov3*SNP
+In previos versions only models like trait ~ cov1 + cov2 + cov3 + cov3*SNP were possible
+
+2. mmoscore option modified. Now any amount of covariates is possible.
+
+
+***** v.0.0-7 (2009.03.19)
+
+Bug with interaction in survival analysis fixed.
+
+
+***** v.0.0-6 (2009.01.28)
+
+Added score test for association between a trait and genetic
+polymorphism, in samples of related individuals.
+Use key --mmscore <file with inverse of variance-covariance matrix>
+File must contain the first column with id names like in phenotype file.
+The rest is the matrix itself.
+In case of mmscore phenotype file contain only two columns - id names and trait.
+
+See example/mmscore.R and example/mmscore.sh.
+
+
+***** v.0.0-5d (2009.01.11)
+
+Possibility of analysis for SNP interaction has been added.
+New key is --interaction=<covariate number>.
+Default is --interaction=0. The first covariate is --interaction=1.
+
+Output organizing has been changed. Now there is one file per one model.
+Output file names consist of prefix which goes together with input
+parameter --out and one of following postfixes:
+"_2df.out.txt", "_add.out.txt", "_domin.out.txt", "_recess.out.txt", "_over_domin.out.txt".
+If postfix is not given name "regression" is used.
+
+
+File bin/probabel_system_example.pl has been changedand renamed
+to probabel.pl_example. This script combines all ProbABEL functions and allows
+you to organize work with your MACH output files. Just change configuration
+file probabel_config.cfg_example and probabel.pl_example like it is written in manual.
+
+Now chi2 is likelihood ration test when null model is without SNP and alternative - with SNP and interaction.
+
+
+***** v.0.0-5c (2008.12.05)
+
+Changed presentation of output: effective allele (A1) is mentioned
+in exact manner
+
+
+***** v.0.0-5b (2008.11.20)
+
+Output from analysis with ngpred=2 (MLPROB files) fixed (models were
+named wrongly)
+
+
+***** v.0.0-5a (2008.10.05)
+
+--allcov option added (allows output of estimates for all covariates)
+
+example system-wide perl script running the analysis for
+(potentially multiple cohorts) and joining single-chomosome
+outputs to single file provided
+
+A change in the procedure to read genotypic files, read format of the
+beging of every line changed from "%d->%s" to "%[^->]->%[^->]" (thanks to
+Bertram Muller-Myhsok & Benno Puetz)
+
+
+***** v.0.0-5 (2008.06.07)
+
+More than one genomic predictor per point: possibility to
+work with MLPROB files (options --ngpreds added).
+
+
+***** v.0.0-4 (2008.05.20)
+
+Score test implemented (palinear, palogistic)
+
+Logistic regression: eps-loglikelihood change as convergence criterium
+
+
+***** v.0.0-3
+
+Survival analysis added
+
+SNP Z and Chi-square statistics added to output
+
+Output generated in tab-delimited format
+
+Documentation updated
