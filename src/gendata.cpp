@@ -147,7 +147,7 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 if (tmpid != idnames[k])
                 {
                     cerr << "phenotype file and dose or probability file "
-                         << "did not match at line " << i + 2 << "(" << tmpid
+                         << "did not match at line " << i + 2 << " (" << tmpid
                          << " != " << idnames[k] << ")" << endl;
                     infile.close();
                     exit(1);
