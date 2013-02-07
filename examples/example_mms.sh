@@ -71,7 +71,7 @@ run_diff mmscore_prob_2df.out.txt mmscore_prob_fv_2df.out.txt
 # Commented out because of slightly different output formats. We need
 # something smart here.
 # echo "mmscore check: prob vs. dose"
-# diff mmscore_prob_add.out.txt mmscore_add.out.txt
+# diff mmscore_prob_add.out.txt mmscore_dose_add.out.txt
 
 # echo "mmscore check: prob_fv vs. dose_fv"
-# diff mmscore_prob_fv_add.out.txt mmscore_fv_add.out.txt
+# diff mmscore_prob_fv_add.out.txt mmscore_dose_fv_add.out.txt
