@@ -46,7 +46,9 @@ dist_example_DATA = $(examplefiles)
 
 TESTS_ENVIRONMENT = sh
 check_SCRIPTS = example_bt.sh example_qt.sh example_mms.sh
-# example_cox.sh: don't run this test. It takes several hours...
+if BUILD_pacoxph
+check_SCRIPTS +=  example_cox.sh
+endif
 
 TESTS = $(check_SCRIPTS)
 
@@ -98,7 +100,7 @@ height_ngp2_robust_int1_fv_2df.out.txt					\
 height_ngp2_allcov_fv_2df.out.txt height_ngp2_robust_fv_add.out.txt	\
 height_ngp2_allcov_2df.out.txt
 
-cleanfiles_mms = mmscore_add.out.txt mmscore_fv_add.out.txt		\
+cleanfiles_mms = mmscore_dose_add.out.txt mmscore_dose_fv_add.out.txt	\
 mmscore_prob_fv_over_domin.out.txt mmscore_prob_fv_domin.out.txt	\
 mmscore_prob_over_domin.out.txt mmscore_prob_fv_add.out.txt		\
 mmscore_prob_fv_recess.out.txt mmscore_prob_domin.out.txt		\
