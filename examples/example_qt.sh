@@ -1,3 +1,22 @@
+#!/bin/sh
+# This script runs checks on ProbABEL's palinear module for
+# quantitative traits.
+
+run_diff()
+{
+    # This function is run after each check. It needs two arguments:
+    # $1: first file to compare
+    # $2: second file to compare
+    if diff "$1" "$2"; then
+        echo -e "\t\tOK"
+    else
+        echo -e "\t\tFAILED"
+        exit 1
+    fi
+}
+
+
+# ---- The checks start here ----
 echo "analysing QT"
 if [ -z ${srcdir} ]; then
     srcdir="."
@@ -20,8 +39,8 @@ echo "base analysis"
     -c 19 \
     -o height_base_fv
 
-echo "QT check: dose vs. dose_fv"
-diff height_base_add.out.txt height_base_fv_add.out.txt
+echo -n "QT check: dose vs. dose_fv"
+run_diff height_base_add.out.txt height_base_fv_add.out.txt
 
 
 echo "Option --allcov"
@@ -39,8 +58,8 @@ echo "Option --allcov"
     -c 19 --allcov \
     -o height_allcov_fv
 
-echo "QT check: allcov: dose vs. dose_fv"
-diff height_allcov_add.out.txt height_allcov_fv_add.out.txt
+echo -n "QT check: allcov: dose vs. dose_fv"
+run_diff height_allcov_add.out.txt height_allcov_fv_add.out.txt
 
 
 echo "Option --interaction=1"
@@ -59,8 +78,8 @@ echo "Option --interaction=1"
     -c 19 --interaction=1 \
     -o height_int1_fv
 
-echo "QT check: interactions: dose vs. dose_fv"
-diff height_int1_add.out.txt height_int1_fv_add.out.txt
+echo -n "QT check: interactions: dose vs. dose_fv"
+run_diff height_int1_add.out.txt height_int1_fv_add.out.txt
 
 
 echo "Option --robust"
@@ -79,8 +98,8 @@ echo "Option --robust"
     -c 19 --robust \
     -o height_robust_fv
 
-echo "QT check: robust: dose vs. dose_fv"
-diff height_robust_add.out.txt height_robust_fv_add.out.txt
+echo -n "QT check: robust: dose vs. dose_fv"
+run_diff height_robust_add.out.txt height_robust_fv_add.out.txt
 
 
 echo "Option --robust --interaction=1"
@@ -99,8 +118,8 @@ echo "Option --robust --interaction=1"
     -c 19 --robust --interaction=1 \
     -o height_robust_int1_fv
 
-echo "QT check: robust & interaction: dose vs. dose_fv"
-diff height_robust_int1_add.out.txt height_robust_int1_fv_add.out.txt
+echo -n "QT check: robust & interaction: dose vs. dose_fv"
+run_diff height_robust_int1_add.out.txt height_robust_int1_fv_add.out.txt
 
 
 echo "Option --ngp=2, mlprob file"
@@ -119,12 +138,13 @@ echo "Option --ngp=2, mlprob file"
     -c 19 --ngp=2 \
     -o height_ngp2_fv
 
-echo "QT check: prob vs. prob_fv"
-diff height_ngp2_add.out.txt height_ngp2_fv_add.out.txt
-diff height_ngp2_domin.out.txt height_ngp2_fv_domin.out.txt
-diff height_ngp2_over_domin.out.txt height_ngp2_fv_over_domin.out.txt
-diff height_ngp2_recess.out.txt height_ngp2_fv_recess.out.txt
-diff height_ngp2_2df.out.txt height_ngp2_fv_2df.out.txt
+# echo -n "QT check: dose vs prob (additive model)"
+# run_diff height_base_add.out.txt height_ngp2_add.out.txt
+
+for model in add domin over_domin recess 2df; do
+    echo -n "QT check ($model model): prob vs. prob_fv"
+    run_diff height_ngp2_${model}.out.txt height_ngp2_fv_${model}.out.txt
+done
 
 
 echo "Option --ngp=2 --allcov"
@@ -143,11 +163,10 @@ echo "Option --ngp=2 --allcov"
     -c 19 --ngp=2 --allcov \
     -o height_ngp2_allcov_fv
 
-diff height_ngp2_allcov_add.out.txt height_ngp2_allcov_fv_add.out.txt
-diff height_ngp2_allcov_domin.out.txt height_ngp2_allcov_fv_domin.out.txt
-diff height_ngp2_allcov_over_domin.out.txt height_ngp2_allcov_fv_over_domin.out.txt
-diff height_ngp2_allcov_recess.out.txt height_ngp2_allcov_fv_recess.out.txt
-diff height_ngp2_allcov_2df.out.txt height_ngp2_allcov_fv_2df.out.txt
+for model in add domin over_domin recess 2df; do
+    echo -n "QT check --allcov ($model model): prob vs. prob_fv"
+    run_diff height_ngp2_allcov_${model}.out.txt height_ngp2_allcov_fv_${model}.out.txt
+done
 
 
 echo "Option --ngp=2 --interaction=1"
@@ -166,11 +185,10 @@ echo "Option --ngp=2 --interaction=1"
     -c 19 --ngp=2 --interaction=1 \
     -o height_ngp2_int1_fv
 
-diff height_ngp2_int1_add.out.txt height_ngp2_int1_fv_add.out.txt
-diff height_ngp2_int1_domin.out.txt height_ngp2_int1_fv_domin.out.txt
-diff height_ngp2_int1_over_domin.out.txt height_ngp2_int1_fv_over_domin.out.txt
-diff height_ngp2_int1_recess.out.txt height_ngp2_int1_fv_recess.out.txt
-diff height_ngp2_int1_2df.out.txt height_ngp2_int1_fv_2df.out.txt
+for model in add domin over_domin recess 2df; do
+    echo -n "QT check --interactions ($model model): prob vs. prob_fv"
+    run_diff height_ngp2_int1_${model}.out.txt height_ngp2_int1_fv_${model}.out.txt
+done
 
 
 echo "Option --ngp=2 --robust"
@@ -189,11 +207,10 @@ echo "Option --ngp=2 --robust"
     -c 19 --ngp=2 --robust \
     -o height_ngp2_robust_fv
 
-diff height_ngp2_robust_add.out.txt height_ngp2_robust_fv_add.out.txt
-diff height_ngp2_robust_domin.out.txt height_ngp2_robust_fv_domin.out.txt
-diff height_ngp2_robust_over_domin.out.txt height_ngp2_robust_fv_over_domin.out.txt
-diff height_ngp2_robust_recess.out.txt height_ngp2_robust_fv_recess.out.txt
-diff height_ngp2_robust_2df.out.txt height_ngp2_robust_fv_2df.out.txt
+for model in add domin over_domin recess 2df; do
+    echo -n "QT check --robust ($model model): prob vs. prob_fv"
+    run_diff height_ngp2_robust_${model}.out.txt height_ngp2_robust_fv_${model}.out.txt
+done
 
 
 echo "Option --ngp=2 --robust --interaction=1"
@@ -212,8 +229,7 @@ echo "Option --ngp=2 --robust --interaction=1"
     -c 19 --ngp=2 --robust --interaction=1 \
     -o height_ngp2_robust_int1_fv
 
-diff height_ngp2_robust_int1_add.out.txt height_ngp2_robust_int1_fv_add.out.txt
-diff height_ngp2_robust_int1_domin.out.txt height_ngp2_robust_int1_fv_domin.out.txt
-diff height_ngp2_robust_int1_over_domin.out.txt height_ngp2_robust_int1_fv_over_domin.out.txt
-diff height_ngp2_robust_int1_recess.out.txt height_ngp2_robust_int1_fv_recess.out.txt
-diff height_ngp2_robust_int1_2df.out.txt height_ngp2_robust_int1_fv_2df.out.txt
+for model in add domin over_domin recess 2df; do
+    echo -n "QT check --robust --interactions ($model model): prob vs. prob_fv"
+    run_diff height_ngp2_robust_int1_${model}.out.txt height_ngp2_robust_int1_fv_${model}.out.txt
+done
