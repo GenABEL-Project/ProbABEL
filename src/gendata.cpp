@@ -37,7 +37,7 @@ void gendata::get_var(int var, float * data)
                 data[j++] = tmpdata[i];
             }
         }
-        // std::cout << j << " " << DAG->get_nobservations() << " "
+        // std::cout << j << " " << DAG->getNumObservations() << " "
         //           << nids << "\n";
     }
     else
@@ -147,7 +147,7 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 if (tmpid != idnames[k])
                 {
                     cerr << "phenotype file and dose or probability file "
-                         << "did not match at line " << i + 2 << "(" << tmpid
+                         << "did not match at line " << i + 2 << " (" << tmpid
                          << " != " << idnames[k] << ")" << endl;
                     infile.close();
                     exit(1);
@@ -173,7 +173,7 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 }
                 else
                 {
-                    std::cerr << "cannot read dose-file: "
+                    std::cerr << "cannot read dose-file: " << fname
                               << "check skipd and ngpreds parameters\n";
                     infile.close();
                     exit(1);
