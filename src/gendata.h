@@ -43,7 +43,6 @@ private:
     mematrix<float> G;
     AbstractMatrix * DAG;
     unsigned short int * DAGmask;
-    //	mematrix<double> G;
 };
 
 #endif /* GENDATA_H_ */

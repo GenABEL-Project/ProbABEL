@@ -359,8 +359,8 @@ int main(int argc, char * argv[])
     nrd.estimate(nrgd, 0, CHOLTOL, 0, input_var.getInteraction(),
                  input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
 #elif COXPH
-    coxph_reg nrd(nrgd);
-
+    coxph_reg nrd = coxph_reg(nrgd);
+// LCK    std::cout << "Starting estimation of null model...\n";
     nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0,
                  input_var.getInteraction(), input_var.getNgpreds(), 1);
 #endif
@@ -372,8 +372,8 @@ int main(int argc, char * argv[])
 #else
     regdata rgd(phd, gtd, 0, input_var.isIsInteractionExcluded());
 #endif
-
     std::cout << " formed regression object ...";
+//    rgd.X.print();
     std::cout << " done\n" << std::flush;
 
     //________________________________________________________________
@@ -498,11 +498,13 @@ int main(int argc, char * argv[])
             // freq = (gtd.G).column_mean(csnp)/2.;
             gtd.get_var(csnp, snpdata1);
             for (unsigned int ii = 0; ii < gtd.nids; ii++)
+            {
                 if (!isnan(snpdata1[ii]))
                 {
                     gcount++;
                     freq += snpdata1[ii] * 0.5;
                 }
+            }
         }
         freq /= static_cast<double>(gcount);
         int poly = 1;
@@ -535,7 +537,7 @@ int main(int argc, char * argv[])
 
             for (int model = 0; model < maxmod; model++)
             {
-                if (poly) //allel freq is not to rare
+                if (poly) //allele freq is not too rare
                 {
 #if LOGISTIC
                     logistic_reg rd(rgd);
@@ -567,9 +569,11 @@ int main(int argc, char * argv[])
                     }
 #elif COXPH
                     coxph_reg rd(rgd);
+// LCK                    std::cout << "HERE, model="<<model<<"\n";
                     rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
                                 input_var.getInteraction(), true,
                                 input_var.getNgpreds());
+// LCK                    std::cout << "HERE DONE\n";
 #endif
 
                     if (!input_var.getAllcov() && model == 0
