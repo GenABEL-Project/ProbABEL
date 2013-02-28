@@ -74,7 +74,7 @@ to disable use of fast linear algebra.])
 else
    AC_MSG_NOTICE([not using Eigen for linear algebra])
 fi
-AM_CONDITIONAL([WITH_EIGEN], test "x$with_eigen" = "xyes")
+AM_CONDITIONAL([WITH_EIGEN], test "x$with_eigen" != "xno")
 
 
 # Checks for typedefs, structures, and compiler characteristics.
