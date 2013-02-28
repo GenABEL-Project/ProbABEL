@@ -95,7 +95,6 @@ int cmdvars::getNpeople() const
 
 string cmdvars::getOutfilename() const
 {
-    cout << "getoutputfilename:" << outfilename << ":\n";
     return outfilename;
 }
 
