@@ -54,7 +54,7 @@ if (!require(GenABEL))
   stop("further code requires the GenABEL library to be installed")
 if (!require(DatABEL))
   stop("further code requires the DatABEL library to be installed")
-unlink("*.fv?")
+
 
 fvdose <- mach2databel(imputedg="test.mldose",
                        mlinfo="test.mlinfo",
