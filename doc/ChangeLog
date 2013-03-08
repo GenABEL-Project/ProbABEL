@@ -1,6 +1,8 @@
 ***** v.0.4.0 (2013.)
 * Fixed bug #2575: ProbABEL chooses weird file names if the -o option is
   not specified.
+* Fixed bug #2598: The prepare_data.R script is mentioned in the manual,
+  but not distributed in .deb or .tar.gz
 
 ***** v.0.3.0 (2013.01.01)
 * This is a major rewrite of several important parts of the ProbABEL
