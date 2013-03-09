@@ -63,7 +63,7 @@ void update_progress_to_cmd_line(int csnp, int nsnps)
                             / static_cast<double>(nsnps) << "%...";
         } else
         {
-            `
+
             std::cout << "\b\b\b\b\b\b\b\b\b" << setw(5)
                     << 100. * static_cast<double>(csnp)
                             / static_cast<double>(nsnps) << "%...";
