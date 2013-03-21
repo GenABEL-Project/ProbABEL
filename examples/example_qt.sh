@@ -38,7 +38,6 @@ echo "base analysis"
     -c 19 \
     -o height_base \
     >& 3
-
 ../src/palinear \
     -p ${srcdir}/height.txt \
     -d ${srcdir}/test.dose.fvi \
@@ -58,14 +57,16 @@ echo "Option --allcov"
     -i ${srcdir}/test.mlinfo \
     -m ${srcdir}/test.map \
     -c 19 --allcov \
-    -o height_allcov
+    -o height_allcov \
+    >& 3
 ../src/palinear \
     -p ${srcdir}/height.txt \
     -d ${srcdir}/test.dose.fvi \
     -i ${srcdir}/test.mlinfo \
     -m ${srcdir}/test.map \
     -c 19 --allcov \
-    -o height_allcov_fv
+    -o height_allcov_fv \
+    >& 3
 
 echo -n "QT check: allcov: dose vs. dose_fv"
 run_diff height_allcov_add.out.txt height_allcov_fv_add.out.txt
