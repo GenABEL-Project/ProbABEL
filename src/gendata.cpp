@@ -159,7 +159,7 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 infile >> tmpstr;
             }
 
-            for (int j = 0; j < (nsnps * ngpreds); j++)
+            for (unsigned int j = 0; j < (nsnps * ngpreds); j++)
             {
                 if (infile.good())
                 {
@@ -185,7 +185,7 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
         {
             for (int j = 0; j < skipd; j++)
                 infile >> tmpstr;
-            for (int j = 0; j < (nsnps * ngpreds); j++)
+            for (unsigned int j = 0; j < (nsnps * ngpreds); j++)
                 infile >> tmpstr;
         }
     }

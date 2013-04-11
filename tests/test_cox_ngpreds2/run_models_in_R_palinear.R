@@ -6,7 +6,7 @@
 pheno <- read.table("../../examples/height.txt", head=TRUE, string=FALSE)
 
 # load genetic DOSE data
-dose <- read.table("../../examples/test.mldose.2", head=FALSE, string=FALSE)
+dose <- read.table("../../examples/test.mldose", head=FALSE, string=FALSE)
 # remove "1->" from the names of dose-IDs
 idNames <- dose[, 1]
 idNames <- sub("[0-9]+->", "", idNames)
