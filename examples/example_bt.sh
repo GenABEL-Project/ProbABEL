@@ -1,6 +1,6 @@
 #!/bin/sh
-# This script runs checks on ProbABEL's palinear module for
-# quantitative traits.
+# This script runs checks on ProbABEL's palogist module for
+# binary traits.
 
 run_diff()
 {
@@ -26,7 +26,6 @@ fi
 # the first argument is "verbose" then redirect handle 3 to stdout
 exec 3>/dev/null
 if [ "$1" = "verbose" ]; then
-    echo "Verbose mode ON"
     exec 3>&1
 fi
 
