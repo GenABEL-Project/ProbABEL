@@ -2,21 +2,8 @@
 # This script runs checks on ProbABEL's palogist module for
 # binary traits.
 
-run_diff()
-{
-    # This function is run after each check. It needs two arguments:
-    # $1: first file to compare
-    # $2: second file to compare
-    if diff "$1" "$2"; then
-        echo -e "\t\tOK"
-    else
-        echo -e "\t\tFAILED"
-        exit 1
-    fi
-}
+. ./run_diff.sh
 
-
-# ---- The checks start here ----
 echo "analysing BT"
 if [ -z ${srcdir} ]; then
     srcdir="."
@@ -47,8 +34,10 @@ fi
     -o logist_fv \
     >& 3
 
-echo "BT check: dose vs. dose_fv"
-run_diff logist_add.out.txt logist_fv_add.out.txt
+
+run_diff logist_add.out.txt \
+    logist_fv_add.out.txt \
+    "BT check: dose vs. dose_fv"
 
 ../src/palogist \
     -p ${srcdir}/logist_data.txt \
@@ -71,8 +60,9 @@ run_diff logist_add.out.txt logist_fv_add.out.txt
     >& 3
 
 for model in add domin over_domin recess 2df; do
-    echo -n "BT check ($model model): prob vs. prob_fv"
-    run_diff logist_prob_${model}.out.txt logist_prob_fv_${model}.out.txt
+    run_diff logist_prob_${model}.out.txt \
+        logist_prob_fv_${model}.out.txt \
+        "BT check ($model model): prob vs. prob_fv"
 done
 
 # Commented out because of slightly different output formats. We need
