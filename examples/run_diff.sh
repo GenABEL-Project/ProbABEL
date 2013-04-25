@@ -21,7 +21,7 @@ run_diff()
     if diff "$file1" "$file2" $args; then
         echo -e "${name}${blanks:${#name}} OK"
     else
-        echo -e "\t\tFAILED"
+        echo -e "${name}${blanks:${#name}} FAILED"
         exit 1
     fi
 }
