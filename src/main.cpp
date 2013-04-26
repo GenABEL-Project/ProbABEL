@@ -59,34 +59,32 @@ void update_progress_to_cmd_line(int csnp, int nsnps)
         if (csnp == 0)
         {
             std::cout << "Analysis: "
-                    << setw(5)
-                    << 100. * static_cast<double>(csnp)
-                            / static_cast<double>(nsnps)
-                    << "%...";
-        } else
+                      << setw(5) << 100. * static_cast<double>(csnp)
+                              / static_cast<double>(nsnps)
+                      << "%...";
+        }
+        else
         {
-
             std::cout << "\b\b\b\b\b\b\b\b\b"
-                    << setw(5)
-                    << 100. * static_cast<double>(csnp)
-                            / static_cast<double>(nsnps)
-                    << "%...";
+                      << setw (5) << 100. * static_cast<double>(csnp)
+                              / static_cast<double>(nsnps)
+                      << "%...";
         }
         std::cout.flush();
     }
 }
 
 void open_files_for_output(std::vector<std::ofstream*>& outfile,
-        std::string& outfilename_str)
+                           std::string& outfilename_str)
 {
     //create a list of filenames
     const int amount_of_files = 5;
-    std::string filenames[amount_of_files] = {
-        outfilename_str + "_2df.out.txt",
-        outfilename_str + "_add.out.txt",
-        outfilename_str + "_domin.out.txt",
-        outfilename_str + "_recess.out.txt",
-        outfilename_str + "_over_domin.out.txt" };
+    std::string filenames[amount_of_files] =
+        { outfilename_str + "_2df.out.txt",
+          outfilename_str + "_add.out.txt",
+          outfilename_str + "_domin.out.txt",
+          outfilename_str + "_recess.out.txt",
+          outfilename_str + "_over_domin.out.txt" };
 
     for (int i = 0; i < amount_of_files; i++)
     {
@@ -94,9 +92,8 @@ void open_files_for_output(std::vector<std::ofstream*>& outfile,
         outfile[i]->open((filenames[i]).c_str());
         if (!outfile[i]->is_open())
         {
-            std::cerr << "Cannot open file for writing: "
-                    << filenames[i]
-                    << "\n";
+            std::cerr << "Cannot open file for writing: " << filenames[i]
+                      << "\n";
             exit(1);
         }
     }
@@ -105,22 +102,23 @@ void open_files_for_output(std::vector<std::ofstream*>& outfile,
 int create_phenotype(phedata& phd, cmdvars& input_var)
 {
     phd.set_is_interaction_excluded(input_var.isIsInteractionExcluded());
-    phd.setphedata(input_var.getPhefilename(), input_var.getNoutcomes(),
-            input_var.getNpeople(), input_var.getInteraction(),
-            input_var.isIscox());
+    phd.setphedata(input_var.getPhefilename(),
+                   input_var.getNoutcomes(),
+                   input_var.getNpeople(),
+                   input_var.getInteraction(),
+                   input_var.isIscox());
 
     int interaction_cox = input_var.getInteraction();
 #if COXPH
     interaction_cox--;
 #endif
 
-    if (input_var.getInteraction() < 0 || input_var.getInteraction() > phd.ncov
-            || interaction_cox > phd.ncov)
+    if (input_var.getInteraction() < 0 ||
+        input_var.getInteraction() > phd.ncov ||
+        interaction_cox > phd.ncov)
     {
         std::cerr << "error: Interaction parameter is out of range "
-                << "(interaction="
-                << input_var.getInteraction()
-                << ") \n";
+                  << "(interaction=" << input_var.getInteraction() << ") \n";
         exit(1);
     }
 
@@ -142,23 +140,15 @@ void create_start_of_header(std::vector<std::ofstream*>& outfile,
 {
     for (unsigned int i = 0; i < outfile.size(); i++)
     {
-        (*outfile[i]) << "name"
-                << input_var.getSep()
-                << "A1"
-                << input_var.getSep()
-                << "A2"
-                << input_var.getSep()
-                << "Freq1"
-                << input_var.getSep()
-                << "MAF"
-                << input_var.getSep()
-                << "Quality"
-                << input_var.getSep()
-                << "Rsq"
-                << input_var.getSep()
-                << "n"
-                << input_var.getSep()
-                << "Mean_predictor_allele";
+        (*outfile[i]) << "name" << input_var.getSep()
+                      << "A1" << input_var.getSep()
+                      << "A2" << input_var.getSep()
+                      << "Freq1" << input_var.getSep()
+                      << "MAF" << input_var.getSep()
+                      << "Quality" << input_var.getSep()
+                      << "Rsq" << input_var.getSep()
+                      << "n"   << input_var.getSep()
+                      << "Mean_predictor_allele";
         if (input_var.getChrom() != "-1")
             (*outfile[i]) << input_var.getSep() << "chrom";
         if (input_var.getMapfilename() != NULL)
@@ -170,11 +160,9 @@ void create_start_of_header(std::vector<std::ofstream*>& outfile,
         for (unsigned int file = 0; file < outfile.size(); file++)
             for (int i = 0; i < phd.n_model_terms - 1; i++)
                 *outfile[file] << input_var.getSep()
-                        << "beta_"
-                        << phd.model_terms[i]
-                        << input_var.getSep()
-                        << "sebeta_"
-                        << phd.model_terms[i];
+                               << "beta_" << phd.model_terms[i]
+                               << input_var.getSep() << "sebeta_"
+                               << phd.model_terms[i];
     }
 }
 
@@ -183,74 +171,52 @@ void create_header_1(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
 {
     create_start_of_header(outfile, input_var, phd);
 
-    *outfile[0] << input_var.getSep()
-            << "beta_SNP_A1A2"
-            << input_var.getSep()
-            << "beta_SNP_A1A1"
-            << input_var.getSep()
-            << "sebeta_SNP_A1A2"
-            << input_var.getSep()
-            << "sebeta_SNP_A1A1";
+    *outfile[0] << input_var.getSep() << "beta_SNP_A1A2" << input_var.getSep()
+                << "beta_SNP_A1A1" << input_var.getSep() << "sebeta_SNP_A1A2"
+                << input_var.getSep() << "sebeta_SNP_A1A1";
 
-    *outfile[1] << input_var.getSep()
-            << "beta_SNP_addA1"
-            << input_var.getSep()
-            << "sebeta_SNP_addA1";
-    *outfile[2] << input_var.getSep()
-            << "beta_SNP_domA1"
-            << input_var.getSep()
-            << "sebeta_SNP_domA1";
-    *outfile[3] << input_var.getSep()
-            << "beta_SNP_recA1"
-            << input_var.getSep()
-            << "sebeta_SNP_recA1";
-    *outfile[4] << input_var.getSep()
-            << "beta_SNP_odom"
-            << input_var.getSep()
-            << "sebeta_SNP_odom";
+    *outfile[1] << input_var.getSep() << "beta_SNP_addA1" << input_var.getSep()
+                << "sebeta_SNP_addA1";
+    *outfile[2] << input_var.getSep() << "beta_SNP_domA1" << input_var.getSep()
+                << "sebeta_SNP_domA1";
+    *outfile[3] << input_var.getSep() << "beta_SNP_recA1" << input_var.getSep()
+                << "sebeta_SNP_recA1";
+    *outfile[4] << input_var.getSep() << "beta_SNP_odom" << input_var.getSep()
+                << "sebeta_SNP_odom";
     if (input_var.getInteraction() != 0)
     {
         //Han Chen
-        *outfile[0] << input_var.getSep()
-                << "beta_SNP_A1A2_"
-                << phd.model_terms[interaction_cox]
-                << input_var.getSep()
-                << "sebeta_SNP_A1A2_"
-                << phd.model_terms[interaction_cox]
-                << input_var.getSep()
-                << "beta_SNP_A1A1_"
-                << phd.model_terms[interaction_cox]
-                << input_var.getSep()
-                << "sebeta_SNP_A1A1_"
-                << phd.model_terms[interaction_cox];
+        *outfile[0] << input_var.getSep() << "beta_SNP_A1A2_"
+                    << phd.model_terms[interaction_cox]
+                    << input_var.getSep() << "sebeta_SNP_A1A2_"
+                    << phd.model_terms[interaction_cox]
+                    << input_var.getSep() << "beta_SNP_A1A1_"
+                    << phd.model_terms[interaction_cox]
+                    << input_var.getSep() << "sebeta_SNP_A1A1_"
+                    << phd.model_terms[interaction_cox];
 #if !COXPH
         if (input_var.getInverseFilename() == NULL && !input_var.getAllcov())
         {
-            *outfile[0] << input_var.getSep()
-                    << "cov_SNP_A1A2_int_SNP_"
-                    << phd.model_terms[interaction_cox]
-                    << input_var.getSep()
-                    << "cov_SNP_A1A1_int_SNP_"
-                    << phd.model_terms[interaction_cox];
+            *outfile[0] << input_var.getSep() << "cov_SNP_A1A2_int_SNP_"
+                        << phd.model_terms[interaction_cox]
+                        << input_var.getSep() << "cov_SNP_A1A1_int_SNP_"
+                        << phd.model_terms[interaction_cox];
         }
 #endif
         //Oct 26, 2009
         for (unsigned int file = 1; file < outfile.size(); file++)
         {
-            *outfile[file] << input_var.getSep()
-                    << "beta_SNP_"
-                    << phd.model_terms[interaction_cox]
-                    << input_var.getSep()
-                    << "sebeta_SNP_"
-                    << phd.model_terms[interaction_cox];
+            *outfile[file] << input_var.getSep() << "beta_SNP_"
+                           << phd.model_terms[interaction_cox]
+                           << input_var.getSep() << "sebeta_SNP_"
+                           << phd.model_terms[interaction_cox];
             //Han Chen
 #if !COXPH
             if (input_var.getInverseFilename() == NULL
-                    && !input_var.getAllcov())
+                && !input_var.getAllcov())
             {
-                *outfile[file] << input_var.getSep()
-                        << "cov_SNP_int_SNP_"
-                        << phd.model_terms[interaction_cox];
+                *outfile[file] << input_var.getSep() << "cov_SNP_int_SNP_"
+                               << phd.model_terms[interaction_cox];
             }
 #endif
             //Oct 26, 2009
@@ -264,22 +230,18 @@ void create_header_1(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
 }
 
 void create_header2(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
-        phedata& phd, int interaction_cox)
+                    phedata& phd, int interaction_cox)
 {
     create_start_of_header(outfile, input_var, phd);
-    *outfile[0] << input_var.getSep()
-            << "beta_SNP_add"
-            << input_var.getSep()
-            << "sebeta_SNP_add";
+    *outfile[0] << input_var.getSep() << "beta_SNP_add"
+                << input_var.getSep() << "sebeta_SNP_add";
 
     if (input_var.getInteraction() != 0)
     {
-        *outfile[0] << input_var.getSep()
-                << "beta_SNP_"
-                << phd.model_terms[interaction_cox]
-                << input_var.getSep()
-                << "sebeta_SNP_"
-                << phd.model_terms[interaction_cox];
+        *outfile[0] << input_var.getSep() << "beta_SNP_"
+                    << phd.model_terms[interaction_cox]
+                    << input_var.getSep() << "sebeta_SNP_"
+                    << phd.model_terms[interaction_cox];
     }
 
     if (input_var.getInverseFilename() == NULL)
@@ -288,9 +250,8 @@ void create_header2(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
 #if !COXPH
         if (input_var.getInteraction() != 0 && !input_var.getAllcov())
         {
-            *outfile[0] << input_var.getSep()
-                    << "cov_SNP_int_SNP_"
-                    << phd.model_terms[interaction_cox];
+            *outfile[0] << input_var.getSep() << "cov_SNP_int_SNP_"
+                        << phd.model_terms[interaction_cox];
         }
 #endif
         *outfile[0] << input_var.getSep() << "loglik"; //"chi2_SNP";
@@ -299,92 +260,52 @@ void create_header2(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
     *outfile[0] << "\n";
 }
 
-void write_mlinfo(const std::vector<std::ofstream*>& outfile, unsigned int file,
-        const mlinfo& mli, int csnp, const cmdvars& input_var, int gcount,
-        double freq)
-{
-    *outfile[file] << mli.name[csnp]
-            << input_var.getSep()
-            << mli.A1[csnp]
-            << input_var.getSep()
-            << mli.A2[csnp]
-            << input_var.getSep()
-            << mli.Freq1[csnp]
-            << input_var.getSep()
-            << mli.MAF[csnp]
-            << input_var.getSep()
-            << mli.Quality[csnp]
-            << input_var.getSep()
-            << mli.Rsq[csnp]
-            << input_var.getSep()
-            << gcount
-            << input_var.getSep()
-            << freq;
-    if (input_var.getChrom() != "-1")
-    {
-        *outfile[file] << input_var.getSep() << input_var.getChrom();
-    }
-    if (input_var.getMapfilename() != NULL)
-    {
-        *outfile[file] << input_var.getSep() << mli.map[csnp];
-    }
-}
-
-int get_start_position(const cmdvars& input_var, int model,
-        int number_of_rows_or_columns)
-{
-    int start_pos;
-    if (!input_var.getAllcov() && model == 0 && input_var.getInteraction() == 0)
-    {
-        if (input_var.getNgpreds() == 2)
-        {
-            start_pos = number_of_rows_or_columns - 2;
-        } else
-        {
-            start_pos = number_of_rows_or_columns - 1;
-        }
-    } else if (!input_var.getAllcov() && model == 0
-            && input_var.getInteraction() != 0)
-    {
-        if (input_var.getNgpreds() == 2)
-        {
-            start_pos = number_of_rows_or_columns - 4;
-        } else
-        {
-            start_pos = number_of_rows_or_columns - 2;
-        }
-    } else if (!input_var.getAllcov() && model != 0
-            && input_var.getInteraction() == 0)
-    {
-        start_pos = number_of_rows_or_columns - 1;
-    } else if (!input_var.getAllcov() && model != 0
-            && input_var.getInteraction() != 0)
-    {
-        start_pos = number_of_rows_or_columns - 2;
-    } else
-    {
-        start_pos = 0;
-    }
-
-    return start_pos;
-}
-
 int main(int argc, char * argv[])
 {
     cmdvars input_var;
     input_var.set_variables(argc, argv);
 
     input_var.printinfo();
-
+    //	if (allcov && ngpreds>1)
+    //	{
+    //      cout << "\n\n"
+    //           << "WARNING: --allcov allowed only for 1 predictor (MLDOSE)\n";
+    //		allcov = 0;
+    //	}
     mlinfo mli(input_var.getMlinfofilename(), input_var.getMapfilename());
     int nsnps = mli.nsnps;
     phedata phd;
     int interaction_cox = create_phenotype(phd, input_var);
 
-
+    //interaction--;
+    //	if (input_var.getInverseFilename()!= NULL && phd.ncov > 1)
+    //     {
+    //         std::cerr << "Error: In mmscore you can not use any covariates."
+    //                   << " You phenotype file must conatin id column and "
+    //                   << "trait (residuals) only\n";
+    //         exit(1);
+    //      }
+    //	if (input_var.getInverseFilename()!= NULL &&
+    //      (allcov == 1 || score == 1
+    //                   || input_var.getInteraction()!= 0
+    //                   || ngpreds==2))
+    //      {
+    //          std::cerr << "Error: In mmscore you can use additive model "
+    //                    << "without any inetractions only\n";
+    //          exit(1);
+    //      }
     masked_matrix invvarmatrix;
 
-
+    /*
+     * now should be possible... delete this part later when everything works
+     #if LOGISTIC
+     if (input_var.getInverseFilename()!= NULL)
+     {
+         std::cerr << "ERROR: mmscore is forbidden for logistic regression\n";
+         exit(1);
+     }
+     #endif
+     */
 
     std::cout << "Reading data ..." << std::flush;
     if (input_var.getInverseFilename() != NULL)
@@ -396,17 +317,25 @@ int main(int argc, char * argv[])
     if (!input_var.getIsFvf())
         // use the non-filevector input format
         gtd.re_gendata(input_var.getGenfilename(), nsnps,
-                input_var.getNgpreds(), phd.nids_all, phd.nids, phd.allmeasured,
-                input_var.getSkipd(), phd.idnames);
+                       input_var.getNgpreds(), phd.nids_all, phd.nids,
+                       phd.allmeasured, input_var.getSkipd(), phd.idnames);
     else
         // use the filevector input format (missing second last skipd
         // parameter)
         gtd.re_gendata(input_var.getStrGenfilename(), nsnps,
-                input_var.getNgpreds(), phd.nids_all, phd.nids, phd.allmeasured,
-                phd.idnames);
+                       input_var.getNgpreds(), phd.nids_all, phd.nids,
+                       phd.allmeasured, phd.idnames);
 
     std::cout << " loaded genotypic data ..." << std::flush;
-
+    /**
+       if (input_var.getIsFvf())
+          gendata gtd(str_genfilename, nsnps, input_var.getNgpreds(),
+                      phd.nids_all, phd.allmeasured, phd.idnames);
+       else
+           gendata gtd(input_var.getGenfilename(), nsnps,
+                       input_var.getNgpreds(), phd.nids_all, phd.nids,
+                       phd.allmeasured, skipd, phd.idnames);
+     **/
 
     // estimate null model
 #if COXPH
@@ -419,8 +348,8 @@ int main(int argc, char * argv[])
 #if LOGISTIC
     logistic_reg nrd = logistic_reg(nrgd);
     nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0,
-            input_var.getInteraction(), input_var.getNgpreds(),
-            invvarmatrix, input_var.getRobust(), 1);
+                 input_var.getInteraction(), input_var.getNgpreds(),
+                 invvarmatrix, input_var.getRobust(), 1);
 #elif LINEAR
 
     linear_reg nrd = linear_reg(nrgd);
@@ -428,12 +357,12 @@ int main(int argc, char * argv[])
     std::cout << "[DEBUG] linear_reg nrd = linear_reg(nrgd); DONE.";
 #endif
     nrd.estimate(nrgd, 0, CHOLTOL, 0, input_var.getInteraction(),
-            input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
+                 input_var.getNgpreds(), invvarmatrix, input_var.getRobust(), 1);
 #elif COXPH
-    coxph_reg nrd(nrgd);
-
+    coxph_reg nrd = coxph_reg(nrgd);
+// LCK    std::cout << "Starting estimation of null model...\n";
     nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0,
-            input_var.getInteraction(), input_var.getNgpreds(), 1);
+                 input_var.getInteraction(), input_var.getNgpreds(), 1);
 #endif
 
     std::cout << " estimated null model ...";
@@ -443,8 +372,8 @@ int main(int argc, char * argv[])
 #else
     regdata rgd(phd, gtd, 0, input_var.isIsInteractionExcluded());
 #endif
-
     std::cout << " formed regression object ...";
+//    rgd.X.print();
     std::cout << " done\n" << std::flush;
 
     //________________________________________________________________
@@ -460,16 +389,16 @@ int main(int argc, char * argv[])
         {
             create_header_1(outfile, input_var, phd, interaction_cox);
         }
-    } else //Only additive model. Only one output file
+    }
+    else //Only additive model. Only one output file
     {
         outfile.push_back(
-                new std::ofstream((outfilename_str + "_add.out.txt").c_str()));
+            new std::ofstream((outfilename_str + "_add.out.txt").c_str()));
 
         if (!outfile[0]->is_open())
         {
-            std::cerr << "Cannot open file for writing: "
-                    << outfilename_str
-                    << "\n";
+            std::cerr << "Cannot open file for writing: " << outfilename_str
+                      << "\n";
             exit(1);
         }
         if (input_var.getNohead() != 1)
@@ -478,7 +407,54 @@ int main(int argc, char * argv[])
         }
     }
 
+    //________________________________________________________________
 
+    /*
+     if (input_var.getAllcov())
+     {
+     if (score)
+     {
+     outfile << input_var.getSep() << "beta_mu"; // << input_var.getSep() << "beta_SNP_A1";
+     outfile << input_var.getSep() << "sebeta_mu"; // << input_var.getSep() << "sebeta_SNP_A1";
+     }
+     else
+     {
+     for (int i =0; i<phd.n_model_terms-1;i++)
+     outfile << input_var.getSep() << "beta_" << phd.model_terms[i] << input_var.getSep() << "sebeta_" << phd.model_terms[i];
+     }
+     if(interactio != 0) outfile << input_var.getSep() << "beta_SNP_" << phd.model_terms[interaction];
+     }
+     if (input_var.getNgpreds()==2)
+     {
+        outfile << input_var.getSep() << "beta_SNP_A1A2"
+                << input_var.getSep() << "beta_SNP_A1A1"
+                << input_var.getSep() << "sebeta_SNP_A1A2"
+                << input_var.getSep() << "sebeta_SNP_a1A1"
+                << input_var.getSep() << "chi2_SNP_2df"
+                << input_var.getSep() << "beta_SNP_addA1"
+                << input_var.getSep() << "sebeta_SNP_addA1"
+                << input_var.getSep() << "chi2_SNP_addA1"
+                << input_var.getSep() << "beta_SNP_domA1"
+                << input_var.getSep() << "sebeta_SNP_domA1"
+                << input_var.getSep() << "chi2_SNP_domA1"
+                << input_var.getSep() << "beta_SNP_recA1"
+                << input_var.getSep() << "sebeta_SNP_recA1"
+                << input_var.getSep() << "chi2_SNP_recA1"
+                << input_var.getSep() << "beta_SNP_odom"
+                << input_var.getSep() << "sebeta_SNP_odom"
+                << input_var.getSep() << "chi2_SNP_odom\n";
+     }
+     else
+     {
+         outfile << input_var.getSep() << "beta_SNP_add"
+                 << input_var.getSep() << "sebeta_SNP_add"
+                 << input_var.getSep() << "chi2_SNP_add\n";
+     }
+
+    */
+    //	exit(1);
+    //________________________________________________________________
+    //Maksim, 9 Jan, 2009
     int maxmod = 5;
     int start_pos, end_pos;
 
@@ -516,197 +492,198 @@ int main(int argc, char * argv[])
                     gcount++;
                     freq += snpdata1[ii] + snpdata2[ii] * 0.5;
                 }
-        } else
+        }
+        else
         {
             // freq = (gtd.G).column_mean(csnp)/2.;
             gtd.get_var(csnp, snpdata1);
             for (unsigned int ii = 0; ii < gtd.nids; ii++)
+            {
                 if (!isnan(snpdata1[ii]))
                 {
                     gcount++;
                     freq += snpdata1[ii] * 0.5;
                 }
+            }
         }
         freq /= static_cast<double>(gcount);
         int poly = 1;
         if (fabs(freq) < 1.e-16 || fabs(1. - freq) < 1.e-16)
-        {
             poly = 0;
-        }
+
         if (fabs(mli.Rsq[csnp]) < 1.e-16)
-        {
             poly = 0;
-        }
-        //
         //All models output. One file per each model
-        //
         if (input_var.getNgpreds() == 2)
         {
             //Write mlinfo to output:
             for (unsigned int file = 0; file < outfile.size(); file++)
             {
-                write_mlinfo(outfile, file, mli, csnp, input_var, gcount, freq);
+                *outfile[file] << mli.name[csnp]
+                               << input_var.getSep() << mli.A1[csnp]
+                               << input_var.getSep() << mli.A2[csnp]
+                               << input_var.getSep() << mli.Freq1[csnp]
+                               << input_var.getSep() << mli.MAF[csnp]
+                               << input_var.getSep() << mli.Quality[csnp]
+                               << input_var.getSep() << mli.Rsq[csnp]
+                               << input_var.getSep() << gcount
+                               << input_var.getSep() << freq;
+                if (input_var.getChrom() != "-1")
+                    *outfile[file] << input_var.getSep()
+                                   << input_var.getChrom();
+                if (input_var.getMapfilename() != NULL)
+                    *outfile[file] << input_var.getSep() << mli.map[csnp];
             }
-        } else
-        {
 
-            int file = 0;
-            write_mlinfo(outfile, file, mli, csnp, input_var, gcount, freq);
-            maxmod = 1;
-
-        }
-
-        for (int model = 0; model < maxmod; model++)
-        {
-            if (poly) //allel freq is not to rare
+            for (int model = 0; model < maxmod; model++)
             {
-
-#if LOGISTIC
-                logistic_reg rd(rgd);
-                if (input_var.getScore())
-                rd.score(nrd.residuals, rgd, 0, CHOLTOL, model,
-                        input_var.getInteraction(),
-                        input_var.getNgpreds(),
-                        invvarmatrix);
-                else
-                rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
-                        input_var.getInteraction(),
-                        input_var.getNgpreds(),
-                        invvarmatrix,
-                        input_var.getRobust());
-#elif LINEAR
-                linear_reg rd(rgd);
-                if (input_var.getScore())
-                    rd.score(nrd.residuals, rgd, 0, CHOLTOL, model,
-                            input_var.getInteraction(), input_var.getNgpreds(),
-                            invvarmatrix);
-                else
+                if (poly) //allele freq is not too rare
                 {
-                    //	rd.mmscore(rgd,0,CHOLTOL,model,input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix);
-                    rd.estimate(rgd, 0, CHOLTOL, model,
-                            input_var.getInteraction(), input_var.getNgpreds(),
-                            invvarmatrix, input_var.getRobust());
-                }
+#if LOGISTIC
+                    logistic_reg rd(rgd);
+                    if (input_var.getScore())
+                        rd.score(nrd.residuals, rgd, 0, CHOLTOL, model,
+                                 input_var.getInteraction(),
+                                 input_var.getNgpreds(),
+                                 invvarmatrix);
+                    else
+                    rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
+                                input_var.getInteraction(),
+                                input_var.getNgpreds(),
+                                invvarmatrix,
+                                input_var.getRobust());
+#elif LINEAR
+                    linear_reg rd(rgd);
+                    if (input_var.getScore())
+                        rd.score(nrd.residuals, rgd, 0, CHOLTOL, model,
+                                 input_var.getInteraction(),
+                                 input_var.getNgpreds(),
+                                 invvarmatrix);
+                    else
+                    {
+                        //	rd.mmscore(rgd,0,CHOLTOL,model,input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix);
+                        rd.estimate(rgd, 0, CHOLTOL, model,
+                                input_var.getInteraction(),
+                                input_var.getNgpreds(), invvarmatrix,
+                                input_var.getRobust());
+                    }
 #elif COXPH
-                coxph_reg rd(rgd);
-                rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
-                        input_var.getInteraction(), true,
-                        input_var.getNgpreds());
+                    coxph_reg rd(rgd);
+// LCK                    std::cout << "HERE, model="<<model<<"\n";
+                    rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
+                                input_var.getInteraction(), true,
+                                input_var.getNgpreds());
+// LCK                    std::cout << "HERE DONE\n";
 #endif
 
-                int number_of_rows_or_columns = rd.beta.nrow;
-                start_pos = get_start_position(input_var, model,
-                        number_of_rows_or_columns);
-                cout << "start_pos" << start_pos << "\n";
-                for (int pos = start_pos; pos < rd.beta.nrow; pos++)
-                {
-                    *beta_sebeta[model] << input_var.getSep()
-                            << rd.beta[pos]
-                            << input_var.getSep()
-                            << rd.sebeta[pos];
-                    //Han Chen
+                    if (!input_var.getAllcov() && model == 0
+                        && input_var.getInteraction() == 0)
+                        start_pos = rd.beta.nrow - 2;
+                    else if (!input_var.getAllcov() && model == 0
+                             && input_var.getInteraction() != 0)
+                        start_pos = rd.beta.nrow - 4;
+                    else if (!input_var.getAllcov() && model != 0
+                             && input_var.getInteraction() == 0)
+                        start_pos = rd.beta.nrow - 1;
+                    else if (!input_var.getAllcov() && model != 0
+                             && input_var.getInteraction() != 0)
+                        start_pos = rd.beta.nrow - 2;
+                    else
+                        start_pos = 0;
+
+                    for (int pos = start_pos; pos < rd.beta.nrow; pos++)
+                    {
+                        *beta_sebeta[model] << input_var.getSep()
+                                            << rd.beta[pos]
+                                            << input_var.getSep()
+                                            << rd.sebeta[pos];
+                        //Han Chen
 #if !COXPH
-                    if (input_var.getInverseFilename() == NULL
+                        if (input_var.getInverseFilename() == NULL
                             && !input_var.getAllcov()
                             && input_var.getInteraction() != 0)
-                    {
-                        if (pos > start_pos)
                         {
-                            if (model == 0)
+                            if (pos > start_pos)
                             {
-                                if (input_var.getNgpreds() == 2)
+                                if (model == 0)
                                 {
                                     if (pos > start_pos + 2)
                                     {
-                                        *covvalue[model] << rd.covariance[pos
-                                                - 3]
-                                                << input_var.getSep()
-                                                << rd.covariance[pos - 2];
+                                        *covvalue[model]
+                                            << rd.covariance[pos - 3]
+                                            << input_var.getSep()
+                                            << rd.covariance[pos - 2];
                                     }
-
-                                } //end ngpred=2
+                                }
                                 else
                                 {
                                     *covvalue[model] << rd.covariance[pos - 1];
                                 }
-
-                            } //end model
-                            else
-                            {
-                                *covvalue[model] << rd.covariance[pos - 1];
-                            } //end ngpred==1
+                            }
                         }
-                    }
 #endif
-                    //Oct 26, 2009
-                }
+                        //Oct 26, 2009
+                    }
 
-                //calculate chi2
-                //________________________________
-                //cout <<  rd.loglik<<" "<<input_var.getNgpreds() << "\n";
-
-                if ((input_var.getInverseFilename() == NULL
-                        && input_var.getNgpreds() != 2)
-                        || input_var.getNgpreds() == 2)
-                {
-
+                    //calculate chi2
+                    //________________________________
                     if (input_var.getScore() == 0)
                     {
                         //*chi2[model] << 2.*(rd.loglik-null_loglik);
                         *chi2[model] << rd.loglik;
-                    } else
+                    }
+                    else
                     {
                         //*chi2[model] << rd.chi2_score;
                         *chi2[model] << "nan";
                     }
+                    //________________________________
                 }
-                //________________________________
-            } else //beta, sebeta = nan
-            {
-                int number_of_rows_or_columns = rgd.X.ncol;
-                start_pos = get_start_position(input_var, model,
-                        number_of_rows_or_columns);
+                else //beta, sebeta = nan
+                {
+                    if (!input_var.getAllcov() && model == 0
+                        && input_var.getInteraction() == 0)
+                        start_pos = rgd.X.ncol - 2;
+                    else if (!input_var.getAllcov() && model == 0
+                             && input_var.getInteraction() != 0)
+                        start_pos = rgd.X.ncol - 4;
+                    else if (!input_var.getAllcov() && model != 0
+                             && input_var.getInteraction() == 0)
+                        start_pos = rgd.X.ncol - 1;
+                    else if (!input_var.getAllcov() && model != 0
+                             && input_var.getInteraction() != 0)
+                        start_pos = rgd.X.ncol - 2;
+                    else
+                        start_pos = 0;
 
-                if (input_var.getInteraction() != 0 && !input_var.getAllcov()
-                        && input_var.getNgpreds() != 2)
-                {
-                    start_pos++;
-                }
+                    if (model == 0)
+                    {
+                        end_pos = rgd.X.ncol;
+                    }
+                    else
+                    {
+                        end_pos = rgd.X.ncol - 1;
+                    }
 
-                if (model == 0)
-                {
-                    end_pos = rgd.X.ncol;
-                } else
-                {
-                    end_pos = rgd.X.ncol - 1;
-                }
+                    if (input_var.getInteraction() != 0)
+                        end_pos++;
 
-                if (input_var.getInteraction() != 0)
-                {
-                    end_pos++;
-                }
-
-                for (int pos = start_pos; pos < end_pos; pos++)
-                {
-                    *beta_sebeta[model] << input_var.getSep()
-                            << "nan"
-                            << input_var.getSep()
-                            << "nan";
-                }
-
-                if (input_var.getNgpreds() == 2)
-                {
+                    for (int pos = start_pos; pos < end_pos; pos++)
+                    {
+                        *beta_sebeta[model] << input_var.getSep() << "nan"
+                                            << input_var.getSep() << "nan";
+                    }
                     //Han Chen
 #if !COXPH
                     if (!input_var.getAllcov()
-                            && input_var.getInteraction() != 0)
+                        && input_var.getInteraction() != 0)
                     {
                         if (model == 0)
                         {
                             *covvalue[model] << "nan"
-                                    << input_var.getSep()
-                                    << "nan";
-                        } else
+                                             << input_var.getSep() << "nan";
+                        }
+                        else
                         {
                             *covvalue[model] << "nan";
                         }
@@ -714,28 +691,8 @@ int main(int argc, char * argv[])
 #endif
                     //Oct 26, 2009
                     *chi2[model] << "nan";
-                } else
-                { //ngpreds=1
-                    if (input_var.getInverseFilename() == NULL)
-                    {
-                        //                     Han Chen
-#if !COXPH
-                        if (!input_var.getAllcov()
-                                && input_var.getInteraction() != 0)
-                        {
-                            *covvalue[model] << "nan";
-                        }
-#endif
-                        //Oct 26, 2009
-                        *chi2[model] << "nan";
-                    }
                 }
-
-            }
-        }
-        //end of model cycle
-        if (input_var.getNgpreds() == 2)
-        {
+            } //end of model cycle
 
             //Han Chen
             *outfile[0] << beta_sebeta[0]->str() << input_var.getSep();
@@ -783,9 +740,227 @@ int main(int argc, char * argv[])
 #endif
             *outfile[4] << chi2[4]->str() << "\n";
             //Oct 26, 2009
-
-        } else  //ngpreds == 1
+        }
+        else //Only additive model. Only one output file
         {
+            //Write mlinfo to output:
+            *outfile[0] << mli.name[csnp]
+                        << input_var.getSep() << mli.A1[csnp]
+                        << input_var.getSep() << mli.A2[csnp]
+                        << input_var.getSep();
+            *outfile[0] << mli.Freq1[csnp]
+                        << input_var.getSep() << mli.MAF[csnp]
+                        << input_var.getSep() << mli.Quality[csnp]
+                        << input_var.getSep() << mli.Rsq[csnp]
+                        << input_var.getSep();
+            *outfile[0] << gcount << input_var.getSep() << freq;
+            if (input_var.getChrom() != "-1")
+                *outfile[0] << input_var.getSep() << input_var.getChrom();
+            if (input_var.getMapfilename() != NULL)
+                *outfile[0] << input_var.getSep() << mli.map[csnp];
+            int model = 0;
+            if (poly) //allel freq is not to rare
+            {
+#if LOGISTIC
+                logistic_reg rd(rgd);
+                if (input_var.getScore())
+                    rd.score(nrd.residuals, rgd, 0, CHOLTOL, model,
+                             input_var.getInteraction(),
+                             input_var.getNgpreds(),
+                             invvarmatrix);
+                else
+                    rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
+                                input_var.getInteraction(),
+                                input_var.getNgpreds(),
+                                invvarmatrix,
+                                input_var.getRobust());
+#elif LINEAR
+                //cout << (rgd.get_unmasked_data()).nids << " 1\n";
+#if DEBUG
+                rgd.X.print();
+                rgd.Y.print();
+#endif
+                linear_reg rd(rgd);
+#if DEBUG
+                rgd.X.print();
+                rgd.Y.print();
+#endif
+                //cout << (rgd.get_unmasked_data()).nids << " 2\n";
+                if (input_var.getScore())
+                {
+#if DEBUG
+                    cout << "input_var.getScore/n";
+                    nrd.residuals.print();
+                    cout << CHOLTOL << " <-CHOLTOL\n";
+                    cout << model << " <-model\n";
+                    cout << input_var.getInteraction()
+                         << " <-input_var.getInteraction()\n";
+                    cout << input_var.getNgpreds()
+                         << " <-input_var.getNgpreds()\n";
+                    invvarmatrix.print();
+#endif
+                    rd.score(nrd.residuals, rgd, 0, CHOLTOL, model,
+                             input_var.getInteraction(),
+                             input_var.getNgpreds(),
+                             invvarmatrix);
+#if DEBUG
+                    rd.beta.print();
+                    cout << rd.chi2_score << " <-chi2_scoren\n";
+                    rd.covariance.print();
+                    rd.residuals.print();
+                    rd.sebeta.print();
+                    cout << rd.loglik << " <-logliken\n";
+                    cout << rd.sigma2 << " <-sigma2\n";
+#endif
+                }
+                else
+                {
+                    // if(input_var.getInverseFilename()== NULL)
+                    // {
+                    // cout << (rgd.get_unmasked_data()).nids << " 3\n";
+#if DEBUG
+                    cout << "rd.estimate\n";
+                    cout << CHOLTOL << " <-CHOLTOL\n";
+                    cout << model << " <-model\n";
+                    cout << input_var.getInteraction()
+                         << " <-input_var.getInteraction()\n";
+                    cout << input_var.getNgpreds()
+                         << " <-input_var.getNgpreds()\n";
+                    cout << input_var.getRobust()
+                         << " <-input_var.getRobust()\n";
+                    cout << "start invarmatrix\n";
+                    invvarmatrix.print();
+                    cout << "end invarmatrix\n";
+                    cout << rgd.is_interaction_excluded
+                         << " <-rgd.is_interaction_excluded\n";
+#endif
+                    rd.estimate(rgd, 0, CHOLTOL, model,
+                                input_var.getInteraction(),
+                                input_var.getNgpreds(),
+                                invvarmatrix,
+                                input_var.getRobust());
+
+#if DEBUG
+                    cout << "rd.beta\n";
+                    rd.beta.print();
+                    cout << rd.chi2_score << " <-chi2_scoren\n";
+                    cout << "rd.covariance\n";
+                    rd.covariance.print();
+                    cout << "rd.residuals\n";
+                    rd.residuals.print();
+                    cout << "rd.sebeta\n";
+                    rd.sebeta.print();
+                    cout << rd.loglik << " <-logliken\n";
+                    cout << rd.sigma2 << " <-sigma2\n";
+#endif
+                    //cout << (rgd.get_unmasked_data()).nids << " 4\n";
+                    //}
+                    //else
+                    //{
+                    //   rd.mmscore(rgd, 0, CHOLTOL, model,
+                    //              input_var.getInteraction(),
+                    //              input_var.getNgpreds(), invvarmatrix);
+                    //}
+                }
+#elif COXPH
+                coxph_reg rd(rgd);
+                rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
+                            input_var.getInteraction(), true,
+                            input_var.getNgpreds());
+#endif
+
+                if (!input_var.getAllcov() && input_var.getInteraction() == 0)
+                {
+                    start_pos = rd.beta.nrow - 1;
+                }
+                else if (!input_var.getAllcov()
+                         && input_var.getInteraction() != 0)
+                {
+                    start_pos = rd.beta.nrow - 2;
+                }
+                else
+                {
+                    start_pos = 0;
+                }
+#if DEBUG
+                cout << " start_pos;" << start_pos << "\n";
+#endif
+                for (int pos = start_pos; pos < rd.beta.nrow; pos++)
+                {
+                    *beta_sebeta[0] << input_var.getSep() << rd.beta[pos]
+                                    << input_var.getSep() << rd.sebeta[pos];
+                    //Han Chen
+#if !COXPH
+                    if (input_var.getInverseFilename() == NULL
+                        && !input_var.getAllcov()
+                        && input_var.getInteraction() != 0)
+                    {
+                        if (pos > start_pos)
+                        {
+                            *covvalue[0] << rd.covariance[pos - 1];
+                        }
+                    }
+#endif
+                    //Oct 26, 2009
+                }
+
+                //calculate chi2
+                //________________________________
+                if (input_var.getInverseFilename() == NULL)
+                {
+#if DEBUG
+                    cout << " inverse_filename == NULL" << "\n";
+#endif
+                    if (input_var.getScore() == 0)
+                    {
+                        *chi2[0] << rd.loglik; //2.*(rd.loglik-null_loglik);
+                    }
+                    else
+                    {
+                        *chi2[0] << "nan"; //rd.chi2_score;
+                    }
+                }
+                //________________________________
+            }
+            else //beta, sebeta = nan
+            {
+                if (!input_var.getAllcov() && input_var.getInteraction() == 0)
+                    start_pos = rgd.X.ncol - 1;
+                else if (!input_var.getAllcov()
+                         && input_var.getInteraction() != 0)
+                    start_pos = rgd.X.ncol - 2;
+                else
+                    start_pos = 0;
+
+                end_pos = rgd.X.ncol;
+                if (input_var.getInteraction() != 0)
+                {
+                    end_pos++;
+                }
+                if (input_var.getInteraction() != 0 && !input_var.getAllcov())
+                {
+                    start_pos++;
+                }
+
+                for (int pos = start_pos; pos < end_pos; pos++)
+                {
+                    *beta_sebeta[0] << input_var.getSep() << "nan"
+                                    << input_var.getSep() << "nan";
+                }
+                if (input_var.getInverseFilename() == NULL)
+                {
+                    //Han Chen
+#if !COXPH
+                    if (!input_var.getAllcov()
+                        && input_var.getInteraction() != 0)
+                    {
+                        *covvalue[0] << "nan";
+                    }
+#endif
+                    //Oct 26, 2009
+                    *chi2[0] << "nan";
+                }
+            }
 
             if (input_var.getInverseFilename() == NULL)
             {
@@ -797,18 +972,18 @@ int main(int argc, char * argv[])
                     *outfile[0] << covvalue[0]->str() << input_var.getSep();
                 }
 #endif
-                *outfile[0] << chi2[0]->str() << "\n";
+                *outfile[0] << chi2[model]->str() << "\n";
                 //Oct 26, 2009
-            } else
+            }
+            else
             {
                 *outfile[0] << beta_sebeta[0]->str() << "\n";
+#if DEBUG
+                cout << "Se beta" << beta_sebeta[0] << "\n";
+#endif
             }
-            //}  // end ngpreds ==1
-
         }
-
-//
-//clean chi2
+        //clean chi2
         for (int i = 0; i < 5; i++)
         {
             beta_sebeta[i]->str("");
@@ -823,8 +998,8 @@ int main(int argc, char * argv[])
     std::cout << "\b\b\b\b\b\b\b\b\b" << 100.;
     std::cout << "%... done\n";
 
-//________________________________________________________________
-//Maksim, 9 Jan, 2009
+    //________________________________________________________________
+    //Maksim, 9 Jan, 2009
 
     for (unsigned int i = 0; i < outfile.size(); i++)
     {
@@ -832,9 +1007,9 @@ int main(int argc, char * argv[])
         delete outfile[i];
     }
 
-//delete gtd;
+    //delete gtd;
 
-// Clean up a couple of vectors
+    // Clean up a couple of vectors
     std::vector<std::ostringstream *>::iterator it = beta_sebeta.begin();
     while (it != beta_sebeta.end())
     {

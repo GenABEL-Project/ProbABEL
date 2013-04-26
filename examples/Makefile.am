@@ -4,8 +4,7 @@ AUTOMAKE_OPTIONS = foreign color-tests
 
 examplefiles = height_ngp2_robust_int1_over_domin.out.txt.save		\
  test.prob.fvi mmscore_gen.prob.fvd test.map mldose.IDS			\
- impute_with_missing.mlinfo						\
- height_ngp2_robust_int1_recess.out.txt.save				\
+ impute_with_missing.mlinfo  height_ngp2_robust_int1_recess.out.txt.save \
  height_ngp2_2df.out.txt.save mmscore_gen.mlprob mmscore_gen.mlinfo	\
  height_ngp2_robust_recess.out.txt.save example_cox.sh test.mlprob	\
  test.prob.fvd impute_with_missing_robust_int1_add.out.txt.save		\
@@ -46,7 +45,9 @@ dist_example_DATA = $(examplefiles)
 
 TESTS_ENVIRONMENT = sh
 check_SCRIPTS = example_bt.sh example_qt.sh example_mms.sh
-# example_cox.sh: don't run this test. It takes several hours...
+if BUILD_pacoxph
+check_SCRIPTS +=  example_cox.sh
+endif
 
 TESTS = $(check_SCRIPTS)
 
@@ -98,13 +99,18 @@ height_ngp2_robust_int1_fv_2df.out.txt					\
 height_ngp2_allcov_fv_2df.out.txt height_ngp2_robust_fv_add.out.txt	\
 height_ngp2_allcov_2df.out.txt
 
-cleanfiles_mms = mmscore_add.out.txt mmscore_fv_add.out.txt		\
+cleanfiles_mms = mmscore_dose_add.out.txt mmscore_dose_fv_add.out.txt	\
 mmscore_prob_fv_over_domin.out.txt mmscore_prob_fv_domin.out.txt	\
 mmscore_prob_over_domin.out.txt mmscore_prob_fv_add.out.txt		\
 mmscore_prob_fv_recess.out.txt mmscore_prob_domin.out.txt		\
 mmscore_prob_recess.out.txt mmscore_prob_add.out.txt			\
 mmscore_prob_2df.out.txt mmscore_prob_fv_2df.out.txt
 
-cleanfiles_cox = coxph_add.out.txt coxph_fv_add.out.txt
+cleanfiles_cox = coxph_dose_add.out.txt coxph_dose_fv_add.out.txt	\
+coxph_prob_fv_over_domin.out.txt coxph_prob_fv_domin.out.txt		\
+coxph_prob_over_domin.out.txt coxph_prob_fv_add.out.txt			\
+coxph_prob_fv_recess.out.txt coxph_prob_domin.out.txt			\
+coxph_prob_recess.out.txt coxph_prob_add.out.txt			\
+coxph_prob_2df.out.txt coxph_prob_fv_2df.out.txt
 
 CLEANFILES = $(cleanfiles_bt) $(cleanfiles_qt) $(cleanfiles_mms) $(cleanfiles_cox)

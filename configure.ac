@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT(ProbABEL, 0.3.0, genabel-devel@r-forge.wu-wien.ac.at)
+AC_INIT(ProbABEL, 0.3.0-pacox-beta-1, genabel-devel@r-forge.wu-wien.ac.at)
 AM_INIT_AUTOMAKE([silent-rules])
 AM_SILENT_RULES
 AC_CONFIG_SRCDIR([src/data.h])
@@ -46,14 +46,14 @@ AC_CHECK_HEADERS([float.h inttypes.h libintl.h limits.h stddef.h \
 # See if we want use of the Eigen library enabled (yes by default) and if so,
 # whether we can find the library files.
 AC_ARG_WITH([eigen],
- AS_HELP_STRING([--with-eigen], [Use the Eigen template library for fast \
+ [AS_HELP_STRING([--with-eigen], [Use the Eigen template library for fast \
                                     linear algebra (Eigen can be downloaded \
                                     from eigen.tuxfamily.org); this is enabled \
-                                    by default]
-               )
-)
+                                    by default])],
+ [eigen=${enableval}],
+ [eigen=yes])
 
-if test "x$with_eigen" != "xno"; then
+if test "x$eigen" = "xyes"; then
     AC_MSG_NOTICE([building using the Eigen headers enabled])
 
     AC_ARG_WITH([eigen-include-path],
@@ -62,6 +62,7 @@ if test "x$with_eigen" != "xno"; then
         [CXXFLAGS+=" -I${withval}"],
         [CXXFLAGS+=' -I/usr/include/eigen3'
         CPPFLAGS+=' -I/usr/include/eigen3'])
+    dnl AC_SUBST([EIGEN_CFLAGS])
 
     # Check for the EIGEN header files
     AC_CHECK_HEADERS([Eigen/Dense Eigen/LU])
@@ -74,7 +75,7 @@ to disable use of fast linear algebra.])
 else
    AC_MSG_NOTICE([not using Eigen for linear algebra])
 fi
-AM_CONDITIONAL([WITH_EIGEN], test "x$with_eigen" != "xno")
+AM_CONDITIONAL([WITH_EIGEN], test "x$eigen" = "xyes")
 
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -111,10 +112,9 @@ AM_CONDITIONAL([HAVE_PDFLATEX], test -n "$PDFLATEX")
 
 # Since pacoxph is buggy it needs to be enabled explixitly
 AC_ARG_ENABLE([pacoxph],
-    [AS_HELP_STRING([--enable-pacoxph], [build the pacoxph binary (still \
-contains lots of bugs)])],
-    [pacoxph=${enableval}],
-    [pacoxph=no])
+    [AS_HELP_STRING([--disable-pacoxph], [disable building the pacoxph program])],
+    [pacoxph=no],
+    [pacoxph=${enableval}])
 
 if test "x$pacoxph" = "xyes"; then
    AC_MSG_NOTICE([building of pacoxph is enabled])

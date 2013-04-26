@@ -93,7 +93,7 @@ int cmdvars::getNpeople() const
     return npeople;
 }
 
-string cmdvars::getOutfilename() const
+char* cmdvars::getOutfilename() const
 {
     return outfilename;
 }
@@ -298,7 +298,7 @@ void cmdvars::printinfo()
         cout << "\t --chrom   = "      << chrom << endl;
     else
         cout << "\t --chrom   = not in output\n";
-    if (outfilename.compare("") != 0)
+    if (outfilename != NULL)
         cout << "\t --out     = "      << outfilename << endl;
     else
         cout << "\t --out     = "      << "regression.out.txt" << endl;
@@ -333,9 +333,9 @@ void cmdvars::printinfo()
         interaction = interaction_excluded; //ups
         is_interaction_excluded = true;
     }
-    if (outfilename.compare("") == 0)
+    if (outfilename == NULL)
     {
-        outfilename = string("regression");
+        outfilename = (char *) string("regression").c_str();
     }
 #if COXPH
     if (score)

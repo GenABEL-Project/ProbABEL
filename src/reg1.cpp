@@ -150,60 +150,65 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
         nX.reinit(X.nrow, (X.ncol - 1));
     }
 
-    int c1 = X.ncol - 2;
-    int c2 = X.ncol - 1;
+    int c1 = X.ncol - 2; // column with Prob(A1A2)
+    int c2 = X.ncol - 1; // column with Prob(A1A1). Note the order is swapped cf the file!
     for (int i = 0; i < X.nrow; i++)
         for (int j = 0; j < (X.ncol - 2); j++)
             nX[i * nX.ncol + j] = X[i * X.ncol + j];
 
     for (int i = 0; i < nX.nrow; i++)
     {
-        if (model == 1)
+        if (model == 1) // additive
             nX[i * nX.ncol + c1] = X[i * X.ncol + c1] + 2. * X[i * X.ncol + c2];
-        else if (model == 2)
+        else if (model == 2) //dominant
             nX[i * nX.ncol + c1] = X[i * X.ncol + c1] + X[i * X.ncol + c2];
-        else if (model == 3)
+        else if (model == 3) // recessive
             nX[i * nX.ncol + c1] = X[i * X.ncol + c2];
-        else if (model == 4)
+        else if (model == 4) // over-dominant
             nX[i * nX.ncol + c1] = X[i * X.ncol + c1];
 
         if (interaction != 0)
             nX[i * nX.ncol + c2] = X[i * nX.ncol + interaction]
                     * nX[i * nX.ncol + c1]; //Maksim: interaction with SNP
     }
+
     //Han Chen
-    if (is_interaction_excluded)
-    {
-        mematrix<double> nX_without_interact_phe;
-        nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
-        int col_new;
-        for (int row = 0; row < nX.nrow; row++)
-        {
-            col_new = -1;
-            for (int col = 0; col < nX.ncol; col++)
-            {
-                if (col != interaction && !iscox)
-                {
-                    col_new++;
-                    nX_without_interact_phe[row * nX_without_interact_phe.ncol
-                            + col_new] = nX[row * nX.ncol + col];
-                }
-                if (col != interaction - 1 && iscox)
-                {
-                    col_new++;
-                    nX_without_interact_phe[row * nX_without_interact_phe.ncol
-                            + col_new] = nX[row * nX.ncol + col];
-                }
-            }
-        }
-        return nX_without_interact_phe;
-    } //interaction_only, model!=0, ngpreds==2
+    // if (is_interaction_excluded)
+    // {
+    //     mematrix<double> nX_without_interact_phe;
+    //     nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
+    //     int col_new;
+    //     for (int row = 0; row < nX.nrow; row++)
+    //     {
+    //         col_new = -1;
+    //         for (int col = 0; col < nX.ncol; col++)
+    //         {
+    //             if (col != interaction && !iscox)
+    //             {
+    //                 col_new++;
+    //                 nX_without_interact_phe[row * nX_without_interact_phe.ncol
+    //                         + col_new] = nX[row * nX.ncol + col];
+    //             }
+    //             if (col != interaction - 1 && iscox)
+    //             {
+    //                 col_new++;
+    //                 nX_without_interact_phe[row * nX_without_interact_phe.ncol
+    //                         + col_new] = nX[row * nX.ncol + col];
+    //             }
+    //         }
+    //     }
+    //     std::cout<<"LEAVINGHERE\n";
+    //     return nX_without_interact_phe;
+    // } //interaction_only, model!=0, ngpreds==2
+// LCK    printf("In apply_model: nX.nrow: %i nX.ncol: %i\n", nX.nrow, nX.ncol);
     return nX;
 }
 
 mematrix<double> t_apply_model(mematrix<double>& X, int model, int interaction,
                                int ngpreds, bool iscox, int nullmodel)
 {
+// LCK    std::cout << "t_apply: ngpreds: " << ngpreds << "; model: "<< model<<"\n";
+
     mematrix<double> tmpX = transpose(X);
     mematrix<double> nX = apply_model(tmpX, model, interaction, ngpreds, iscox,
                                       nullmodel);
