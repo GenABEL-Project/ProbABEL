@@ -1,5 +1,6 @@
 #include "reg1.h"
 
+
 mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
                              int ngpreds, bool is_interaction_excluded,
                              bool iscox, int nullmodel)
@@ -294,8 +295,8 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     {
         cout << rdata.is_interaction_excluded
                 << " <-irdata.is_interaction_excluded\n";
-        std::cout << "invvarmatrix:\n";
-        invvarmatrixin.masked_data->print();
+        // std::cout << "invvarmatrix:\n";
+        // invvarmatrixin.masked_data->print();
         std::cout << "rdata.X:\n";
         rdata.X.print();
     }
@@ -306,6 +307,8 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     {
         std::cout << "X:\n";
         X.print();
+        std::cout << "Y:\n";
+        rdata.Y.print();
     }
     int length_beta = X.ncol;
     beta.reinit(length_beta, 1);
@@ -333,9 +336,39 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         // = invvarmatrix*X;
         // std::cout<<"new tX.nrow="<<X.nrow<<" tX.ncol="<<X.ncol<<"\n";
     }
+
     mematrix<double> tXX = tX * X;
-    //      double N = tXX.get(0,0);
     double N = X.nrow;
+
+#if EIGEN_COMMENTEDOUT
+    MatrixXd Xeigen    = X.data;
+    MatrixXd tXeigen   = Xeigen.transpose();
+    MatrixXd tXXeigen  = tXeigen * Xeigen;
+    VectorXd Yeigen    = rdata.Y.data;
+    VectorXd tXYeigen  = tXeigen * Yeigen;
+    // Solve X^T * X * beta = X^T * Y for beta:
+    VectorXd betaeigen = tXXeigen.fullPivLu().solve(tXYeigen);
+    beta.data = betaeigen;
+
+    if (verbose)
+    {
+        std::cout << setprecision(9) << "Xeigen:\n"  << Xeigen  << endl;
+        std::cout << setprecision(9) << "tX:\n"  << tXeigen  << endl;
+        std::cout << setprecision(9) << "tXX:\n" << tXXeigen << endl;
+        std::cout << setprecision(9) << "tXY:\n" << tXYeigen << endl;
+        std::cout << setprecision(9) << "beta:\n"<< betaeigen << endl;
+        printf("----\n");
+        printf("beta[0] = %e\n", betaeigen.data()[0]);
+        printf("----\n");
+//        (beta).print();
+        double relative_error = (tXXeigen * betaeigen - tXYeigen).norm() / tXYeigen.norm(); // norm() is L2 norm
+        cout << "The relative error is:\n" << relative_error << endl;
+
+    }
+
+    // This one is needed later on in this function
+    mematrix<double> tXX_i = invert(tXX);
+#else
     //
     // use cholesky to invert
     //
@@ -344,8 +377,10 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     chinv2_mm(tXX_i);
     // before was
     // mematrix<double> tXX_i = invert(tXX);
+
     mematrix<double> tXY = tX * (rdata.Y);
     beta = tXX_i * tXY;
+
     if (verbose)
     {
         std::cout << "tX:\n";
@@ -361,6 +396,7 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         std::cout << "beta:\n";
         (beta).print();
     }
+#endif
     // now compute residual variance
     sigma2 = 0.;
     mematrix<double> ttX = transpose(tX);

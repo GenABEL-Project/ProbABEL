@@ -16,29 +16,34 @@
 #endif
 #include "utilities.h"
 
-void gendata::get_var(int var, float * data)
+void gendata::get_var(int var, double * data)
 {
-    if (DAG == NULL)
+    if (DAG == NULL)            // Read from text file
     {
         for (int i = 0; i < G.nrow; i++)
         {
             data[i] = G.get(i, var);
         }
     }
-    else if (DAG != NULL)
+    else if (DAG != NULL)       // Read from fv file
     {
-        float tmpdata[DAG->getNumObservations()];
+        double tmpdata[DAG->getNumObservations()];
         DAG->readVariableAs((unsigned long int) var, tmpdata);
+
         unsigned int j = 0;
         for (unsigned int i = 0; i < DAG->getNumObservations(); i++)
         {
             if (!DAGmask[i])
             {
-                data[j++] = tmpdata[i];
+                // A dirty trick to get rid of conversion
+                // errors. Instead of casting float data to double we
+                // convert the data to string and then do strtod()
+                std::ostringstream strs;
+                strs << tmpdata[i];
+                std::string str = strs.str();
+                data[j++] = strtod(str.c_str(), (char **) NULL);
             }
         }
-        // std::cout << j << " " << DAG->get_nobservations() << " "
-        //           << nids << "\n";
     }
     else
     {
@@ -165,15 +170,15 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 {
                     infile >> tmpstr;
                     // tmpstr contains the dosage in string form. Convert
-                    // it to float (if tmpstr is NaN it will be set to nan).
+                    // it to double (if tmpstr is NaN it will be set to nan).
                     // Note that Valgrind 3.7.0 gives "Invalid read of
                     // size 8" error messages here. A bug in Valgrind?!
-                    float dosage = strtod(tmpstr.c_str(), (char **) NULL);
+                    double dosage = strtod(tmpstr.c_str(), (char **) NULL);
                     G.put(dosage, k, j);
                 }
                 else
                 {
-                    std::cerr << "cannot read dose-file: "
+                    std::cerr << "cannot read dose-file: " << fname
                               << "check skipd and ngpreds parameters\n";
                     infile.close();
                     exit(1);

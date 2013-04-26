@@ -74,6 +74,7 @@ void update_progress_to_cmd_line(int csnp, int nsnps)
         }
         std::cout.flush();
     }
+    std::cout << setprecision(6);
 }
 
 void open_files_for_output(std::vector<std::ofstream*>& outfile,
@@ -491,20 +492,25 @@ int main(int argc, char * argv[])
     for (int i = 0; i < maxmod; i++)
     {
         beta_sebeta.push_back(new std::ostringstream());
+        beta_sebeta[i]->precision(9);
         //Han Chen
         covvalue.push_back(new std::ostringstream());
+        covvalue[i]->precision(9);
         //Oct 26, 2009
         chi2.push_back(new std::ostringstream());
     }
 
+
+    // Here we start the analysis for each SNP.
     for (int csnp = 0; csnp < nsnps; csnp++)
     {
         rgd.update_snp(gtd, csnp);
         double freq = 0.;
-        int gcount = 0;
-        float snpdata1[gtd.nids];
-        float snpdata2[gtd.nids];
-        if (input_var.getNgpreds() == 2)
+        unsigned int gcount = 0;
+        double snpdata1[gtd.nids];
+        double snpdata2[gtd.nids];
+
+        if (input_var.getNgpreds() == 2) // Two predictors (probs)
         {
             //freq = ((gtd.G).column_mean(csnp*2)*2. +
             //        (gtd.G).column_mean(csnp*2+1))/2.;
@@ -516,7 +522,8 @@ int main(int argc, char * argv[])
                     gcount++;
                     freq += snpdata1[ii] + snpdata2[ii] * 0.5;
                 }
-        } else
+        }
+        else // Only one predictor (dosage data)
         {
             // freq = (gtd.G).column_mean(csnp)/2.;
             gtd.get_var(csnp, snpdata1);
@@ -533,34 +540,33 @@ int main(int argc, char * argv[])
         {
             poly = 0;
         }
+
         if (fabs(mli.Rsq[csnp]) < 1.e-16)
         {
             poly = 0;
         }
-        //
-        //All models output. One file per each model
+
+        // All models output. One file per model
         //
         if (input_var.getNgpreds() == 2)
         {
-            //Write mlinfo to output:
+            // Write mlinfo to output:
             for (unsigned int file = 0; file < outfile.size(); file++)
             {
                 write_mlinfo(outfile, file, mli, csnp, input_var, gcount, freq);
             }
         } else
         {
-
             int file = 0;
             write_mlinfo(outfile, file, mli, csnp, input_var, gcount, freq);
             maxmod = 1;
-
         }
 
+        // Run regression for each model
         for (int model = 0; model < maxmod; model++)
         {
-            if (poly) //allel freq is not to rare
+            if (poly) // Allele freq is not too rare; still ngpreds=2
             {
-
 #if LOGISTIC
                 logistic_reg rd(rgd);
                 if (input_var.getScore())
@@ -660,9 +666,10 @@ int main(int argc, char * argv[])
                         *chi2[model] << "nan";
                     }
                 }
-                //________________________________
-            } else //beta, sebeta = nan
-            {
+            } // END first part of if(poly); allele not too rare
+            else
+            {   // SNP is rare: beta, sebeta = nan
+
                 int number_of_rows_or_columns = rgd.X.ncol;
                 start_pos = get_start_position(input_var, model,
                         number_of_rows_or_columns);
@@ -730,13 +737,11 @@ int main(int argc, char * argv[])
                         *chi2[model] << "nan";
                     }
                 }
-
             }
         }
         //end of model cycle
         if (input_var.getNgpreds() == 2)
         {
-
             //Han Chen
             *outfile[0] << beta_sebeta[0]->str() << input_var.getSep();
 #if !COXPH
@@ -783,10 +788,9 @@ int main(int argc, char * argv[])
 #endif
             *outfile[4] << chi2[4]->str() << "\n";
             //Oct 26, 2009
-
-        } else  //ngpreds == 1
+        }
+        else // Dose data: only additive model. Only one output file
         {
-
             if (input_var.getInverseFilename() == NULL)
             {
                 //Han Chen
@@ -819,7 +823,7 @@ int main(int argc, char * argv[])
         }
         update_progress_to_cmd_line(csnp, nsnps);
     }
-
+    std::cout << setprecision(2) << fixed;
     std::cout << "\b\b\b\b\b\b\b\b\b" << 100.;
     std::cout << "%... done\n";
 
