@@ -108,7 +108,7 @@ run_test ()
     outfile="height_add.out.txt"
 
     echo "Checking output using dosages $WithOrWithout chunks..."
-    ./probabel.pl 1 2 linear $1 --additive height
+    ./probabel.pl 1 2 linear $1 --additive height > /dev/null
     echo -n "  Verifying $outfile: "
     if diff $outfile $results/$outfile; then
         echo -e "\t\tOK"
@@ -123,7 +123,7 @@ run_test ()
     height_ngp2_add.out.txt"
 
     echo "Checking output using probabilities $WithOrWithout chunks..."
-    ./probabel.pl 1 2 linear $1 --allmodels height -o _ngp2
+    ./probabel.pl 1 2 linear $1 --allmodels height -o _ngp2 > /dev/null
     for file in $outfilelist; do
         echo -n "  Verifying $file: "
         if diff $file $results/$file; then

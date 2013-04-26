@@ -22,7 +22,7 @@ sed 's/^[[:digit:]]*->//' $exampledir/test.mldose > test.mldose
     -i ${exampledir}/test.mlinfo \
     -m ${exampledir}/test.map \
     -c 19 \
-    -o height_base
+    -o height_base > /dev/null
 
 echo -n "  Verifying $outfile: "
 if diff $outfile $results/$outfile; then
