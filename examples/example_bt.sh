@@ -65,9 +65,12 @@ for model in add domin over_domin recess 2df; do
         "BT check ($model model): prob vs. prob_fv"
 done
 
-# Commented out because of slightly different output formats. We need
-# something smart here.
-# echo "BT check: prob vs. dose"
-# diff logist_prob_add.out.txt logist_add.out.txt
-# echo "BT check: prob_fv vs. dose_fv"
-# diff logist_prob_fv_add.out.txt logist_fv_add.out.txt
+run_diff logist_prob_add.out.txt \
+    logist_add.out.txt \
+    "BT check: prob vs. dose" \
+    -I beta_SNP
+
+run_diff logist_prob_fv_add.out.txt \
+    logist_fv_add.out.txt \
+    "BT check: prob_fv vs. dose_fv" \
+    -I beta_SNP
