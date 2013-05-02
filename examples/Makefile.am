@@ -44,7 +44,7 @@ examplefiles = height_ngp2_robust_int1_over_domin.out.txt.save		\
 exampledir = $(pkgdatadir)/examples
 dist_example_DATA = $(examplefiles)
 
-TESTS_ENVIRONMENT = sh
+TESTS_ENVIRONMENT = bash
 check_SCRIPTS = example_bt.sh example_qt.sh example_mms.sh
 # example_cox.sh: don't run this test. It takes several hours...
 

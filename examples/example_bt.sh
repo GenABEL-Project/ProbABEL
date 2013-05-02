@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # This script runs checks on ProbABEL's palogist module for
 # binary traits.
 
