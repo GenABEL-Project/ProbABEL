@@ -65,12 +65,13 @@ public:
     }
 
     void estimate(regdata& rdatain, int verbose, double tol_chol, int model,
-            int interaction, int ngpreds, masked_matrix& invvarmatrixin,
-            int robust, int nullmodel = 0);
+                  int interaction, int ngpreds,
+                  masked_matrix& invvarmatrixin,
+                  int robust, int nullmodel = 0);
 
     void score(mematrix<double>& resid, regdata& rdatain, int verbose,
-            double tol_chol, int model, int interaction, int ngpreds,
-            const masked_matrix& invvarmatrix, int nullmodel = 0);
+               double tol_chol, int model, int interaction, int ngpreds,
+               const masked_matrix& invvarmatrix, int nullmodel = 0);
 };
 
 class logistic_reg: public base_reg {
@@ -85,12 +86,13 @@ public:
     }
 
     void estimate(regdata& rdatain, int verbose, int maxiter, double eps,
-            double tol_chol, int model, int interaction, int ngpreds,
-            masked_matrix invvarmatrixin, int robust, int nullmodel = 0);
+                  double tol_chol, int model, int interaction, int ngpreds,
+                  masked_matrix& invvarmatrixin, int robust,
+                  int nullmodel = 0);
     // just a stupid copy from linear_reg
     void score(mematrix<double>& resid, regdata& rdata, int verbose,
-            double tol_chol, int model, int interaction, int ngpreds,
-            masked_matrix invvarmatrix, int nullmodel = 0);
+               double tol_chol, int model, int interaction, int ngpreds,
+               masked_matrix& invvarmatrix, int nullmodel = 0);
 };
 
 #endif

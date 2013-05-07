@@ -587,10 +587,10 @@ logistic_reg::logistic_reg(regdata& rdatain)
 void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
                             double eps, double tol_chol, int model,
                             int interaction, int ngpreds,
-                            masked_matrix invvarmatrixin, int robust,
+                            masked_matrix& invvarmatrixin, int robust,
                             int nullmodel)
 {
-    // on the contrast to the 'linear' 'invvarmatrix' contains
+    // In contrast to the 'linear' case 'invvarmatrix' contains the
     // inverse of correlation matrix (not the inverse of var-cov matrix)
     // h2.object$InvSigma * h.object2$h2an$estimate[length(h2$h2an$estimate)]
     // the inverse of var-cov matrix scaled by total variance
@@ -815,7 +815,7 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
 
 void logistic_reg::score(mematrix<double>& resid, regdata& rdata, int verbose,
                          double tol_chol, int model, int interaction,
-                         int ngpreds, masked_matrix invvarmatrix,
+                         int ngpreds, masked_matrix& invvarmatrix,
                          int nullmodel)
 {
     base_score(resid, rdata, verbose, tol_chol, model, interaction, ngpreds,
