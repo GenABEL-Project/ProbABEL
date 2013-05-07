@@ -395,16 +395,20 @@ int main(int argc, char * argv[])
 
     gendata gtd;
     if (!input_var.getIsFvf())
+    {
         // use the non-filevector input format
         gtd.re_gendata(input_var.getGenfilename(), nsnps,
-                input_var.getNgpreds(), phd.nids_all, phd.nids, phd.allmeasured,
-                input_var.getSkipd(), phd.idnames);
+                       input_var.getNgpreds(), phd.nids_all, phd.nids,
+                       phd.allmeasured, input_var.getSkipd(), phd.idnames);
+    }
     else
+    {
         // use the filevector input format (missing second last skipd
         // parameter)
         gtd.re_gendata(input_var.getStrGenfilename(), nsnps,
-                input_var.getNgpreds(), phd.nids_all, phd.nids, phd.allmeasured,
-                phd.idnames);
+                       input_var.getNgpreds(), phd.nids_all, phd.nids,
+                       phd.allmeasured, phd.idnames);
+    }
 
     std::cout << " loaded genotypic data ..." << std::flush;
 
@@ -420,8 +424,11 @@ int main(int argc, char * argv[])
 #if LOGISTIC
     logistic_reg nrd = logistic_reg(nrgd);
     nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0,
-            input_var.getInteraction(), input_var.getNgpreds(),
-            invvarmatrix, input_var.getRobust(), 1);
+                 input_var.getInteraction(),
+                 input_var.getNgpreds(),
+                 invvarmatrix,
+                 input_var.getRobust(),
+                 1);
 #elif LINEAR
 
     linear_reg nrd = linear_reg(nrgd);
@@ -446,7 +453,6 @@ int main(int argc, char * argv[])
 #endif
 
     std::cout << " formed regression object ...";
-    std::cout << " done\n" << std::flush;
 
     //________________________________________________________________
     //Maksim, 9 Jan, 2009
@@ -570,40 +576,49 @@ int main(int argc, char * argv[])
 #if LOGISTIC
                 logistic_reg rd(rgd);
                 if (input_var.getScore())
-                rd.score(nrd.residuals, rgd, 0, CHOLTOL, model,
-                        input_var.getInteraction(),
-                        input_var.getNgpreds(),
-                        invvarmatrix);
+                {
+                    rd.score(nrd.residuals, rgd, 0, CHOLTOL, model,
+                             input_var.getInteraction(),
+                             input_var.getNgpreds(),
+                             invvarmatrix);
+                }
                 else
-                rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
-                        input_var.getInteraction(),
-                        input_var.getNgpreds(),
-                        invvarmatrix,
-                        input_var.getRobust());
+                {
+                    rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
+                                input_var.getInteraction(),
+                                input_var.getNgpreds(),
+                                invvarmatrix,
+                                input_var.getRobust());
+                }
 #elif LINEAR
                 linear_reg rd(rgd);
                 if (input_var.getScore())
+                {
                     rd.score(nrd.residuals, rgd, 0, CHOLTOL, model,
-                            input_var.getInteraction(), input_var.getNgpreds(),
-                            invvarmatrix);
+                             input_var.getInteraction(),
+                             input_var.getNgpreds(),
+                             invvarmatrix);
+                }
                 else
                 {
-                    //	rd.mmscore(rgd,0,CHOLTOL,model,input_var.getInteraction(), input_var.getNgpreds(), invvarmatrix);
                     rd.estimate(rgd, 0, CHOLTOL, model,
-                            input_var.getInteraction(), input_var.getNgpreds(),
-                            invvarmatrix, input_var.getRobust());
+                                input_var.getInteraction(),
+                                input_var.getNgpreds(),
+                                invvarmatrix,
+                                input_var.getRobust());
                 }
 #elif COXPH
                 coxph_reg rd(rgd);
                 rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
-                        input_var.getInteraction(), true,
-                        input_var.getNgpreds());
+                            input_var.getInteraction(),
+                            true,
+                            input_var.getNgpreds());
 #endif
 
                 int number_of_rows_or_columns = rd.beta.nrow;
                 start_pos = get_start_position(input_var, model,
-                        number_of_rows_or_columns);
-                cout << "start_pos" << start_pos << "\n";
+                                               number_of_rows_or_columns);
+
                 for (int pos = start_pos; pos < rd.beta.nrow; pos++)
                 {
                     *beta_sebeta[model] << input_var.getSep()
