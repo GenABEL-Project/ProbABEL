@@ -3,6 +3,7 @@
   not specified.
 * Fixed bug #2598: The prepare_data.R script is mentioned in the manual,
   but not distributed in .deb or .tar.gz
+* Fixed bug #2772: palogist with mmscore crashes (memory issue)
 
 ***** v.0.3.0 (2013.01.01)
 * This is a major rewrite of several important parts of the ProbABEL
