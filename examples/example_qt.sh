@@ -2,12 +2,13 @@
 # This script runs checks on ProbABEL's palinear module for
 # quantitative traits.
 
-. ./run_diff.sh
-
 echo "analysing QT"
 if [ -z ${srcdir} ]; then
     srcdir="."
 fi
+
+. ${srcdir}/run_diff.sh
+
 
 # Redirect all output to file descriptor 3 to /dev/null except if
 # the first argument is "verbose" then redirect handle 3 to stdout

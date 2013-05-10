@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = foreign color-tests
 
 examplefiles = height_ngp2_robust_int1_over_domin.out.txt.save		\
  test.prob.fvi mmscore_gen.prob.fvd test.map mldose.IDS			\
- impute_with_missing.mlinfo						\
+ impute_with_missing.mlinfo run_diff.sh					\
  height_ngp2_robust_int1_recess.out.txt.save				\
  height_ngp2_2df.out.txt.save mmscore_gen.mlprob mmscore_gen.mlinfo	\
  height_ngp2_robust_recess.out.txt.save example_cox.sh test.mlprob	\
