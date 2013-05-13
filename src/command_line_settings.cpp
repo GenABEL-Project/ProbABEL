@@ -227,7 +227,7 @@ void cmdvars::set_variables(int argc, char * argv[])
             break;
 
         case '?':
-            print_usage(program_name, 1);
+            print_usage(program_name, 2);
         case -1:
             break;
         default:
@@ -248,13 +248,30 @@ void cmdvars::printinfo()
          << "\n(C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, "
          << "EMCR\n\n";
 #if EIGEN
-    cout << "Using EIGEN version "<<EIGEN_WORLD_VERSION
-         <<"."<<EIGEN_MAJOR_VERSION<<"."<<EIGEN_MINOR_VERSION
+    cout << "Using EIGEN version " << EIGEN_WORLD_VERSION
+         << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION
          << " for matrix operations\n";
 #endif
 
     if (neco[0] != 1 || neco[1] != 1 || neco[2] != 1)
     {
+        cerr << endl;
+        if (neco[0] != 1)
+        {
+            cerr << "Error: Missing required phenotype file (-p/--pheno option)"
+                 << endl;
+        }
+        if (neco[1] != 1)
+        {
+            cerr << "Error: Missing required info file (-i/--info option)"
+                 << endl;
+        }
+        if (neco[2] != 1)
+        {
+            cerr << "Error: Missing required genotype file (-d/--dose option)"
+                 << endl;
+        }
+        cerr << endl;
         print_usage(program_name, 1);
     }
 

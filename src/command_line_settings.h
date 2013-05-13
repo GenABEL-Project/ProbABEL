@@ -35,7 +35,7 @@ private:
     int robust;
     string chrom;
     string sep;
-    int neco[3];
+    int neco[3];                /* Necessary command line options */
     bool iscox;
     int isFVF;
     int noutcomes;
