@@ -6,7 +6,7 @@
 REGFILES = data.h data.cpp gendata.h gendata.cpp mematrix.h mematri1.h	\
  command_line_settings.h command_line_settings.cpp reg1.h usage.h		\
  usage.cpp main.cpp utilities.h utilities.cpp phedata.h phedata.cpp	\
- cholesky.h cholesky.cpp regdata.h regdata.cpp  \
+ cholesky.h cholesky.cpp regdata.h regdata.cpp 	\
  maskedmatrix.cpp maskedmatrix.h reg1.cpp
 
 EIGENFILES = eigen_mematrix.h eigen_mematrix.cpp
@@ -69,10 +69,6 @@ extract_snp_SOURCES = extract-snp.cpp $(FVSRC) $(FVHEADERS)
 
 ## Install these scripts in the bin directory as well:
 dist_bin_SCRIPTS = probabel.pl extIDS.pl
-
-## Install this R script in the examples directory
-scriptdir = $(pkgdatadir)/scripts
-dist_script_DATA = prepare_data.R
 
 ## Install the config file
 dist_sysconf_DATA = probabel_config.cfg.example

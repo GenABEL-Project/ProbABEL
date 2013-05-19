@@ -1,12 +1,3 @@
-***** v.0.4.0 (2013.)
-* Fixed bug #2575: ProbABEL chooses weird file names if the -o option is
-  not specified.
-* Fixed bug #2598: The prepare_data.R script is mentioned in the manual,
-  but not distributed in .deb or .tar.gz
-* Fixed bug #2772: palogist with mmscore crashes (memory issue)
-* Fixed bug #2529: ProbABEL doesn't warn when a required file is not
-  specified on the command line
-
 ***** v.0.3.0 (2013.01.01)
 * This is a major rewrite of several important parts of the ProbABEL
   code. ProbABEL can now make use of the Eigen matrix library

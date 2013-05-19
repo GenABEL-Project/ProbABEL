@@ -1,6 +1,4 @@
-# This file contains a function used in the various example/test
-# scripts. It relies on bashisms to get the substrings when running
-# the echo commands.
+# This file contains a function used in the various example/test scripts
 
 run_diff()
 {

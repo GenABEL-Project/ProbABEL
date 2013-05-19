@@ -21,7 +21,7 @@ fi
     -i ${srcdir}/mmscore_gen.mlinfo \
     -d ${srcdir}/mmscore_gen.mldose \
     --sep="," \
-    -o mmscore \
+    -o mmscore_dose \
     --mmscore ${srcdir}/mmscore_InvSigma_aj.sex.age.dat \
     >& 3
 
@@ -30,7 +30,7 @@ fi
     -i ${srcdir}/mmscore_gen.mlinfo \
     -d ${srcdir}/mmscore_gen.dose.fvi \
     --sep="," \
-    -o mmscore_fv \
+    -o mmscore_dose_fv \
     --mmscore ${srcdir}/mmscore_InvSigma_aj.sex.age.dat \
     >& 3
 

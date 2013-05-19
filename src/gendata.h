@@ -32,7 +32,7 @@ public:
             unsigned int npeople, unsigned int nmeasured,
             unsigned short int * allmeasured, std::string * idnames);
 
-    void get_var(int var, double * data);
+    void get_var(int var, float * data);
 
     ~gendata();
 
@@ -40,7 +40,7 @@ public:
     // ANOTHER PRIVATE OBJECT IS A POINTER TO DATABELBASECPP
     // UPDATE SNP, ALL REGRESSION METHODS: ACCOUNT FOR MISSING
 private:
-    mematrix<double> G;
+    mematrix<float> G;
     AbstractMatrix * DAG;
     unsigned short int * DAGmask;
 };

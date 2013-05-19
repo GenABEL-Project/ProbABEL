@@ -1,10 +1,3 @@
-# This R script serves as an example of how to create input files for
-# running ProbABEL.
-# It requires several files (listed below) and basically selects the
-# phenotype and covariates you want from a larger phenotype file,
-# orders them in the same order as the mldose file. At the end it
-# converts existing dose and prob files to DatABEL format.
-
 #
 # file containing all phenotypes
 # variables should be separated by space or tab, missing values coded as NA
@@ -42,31 +35,18 @@ covars <- c("sex","age")
 # code
 #
 
-ophe <- read.table(original_phenofile, header=TRUE, stringsAsFactors=FALSE)
+ophe <- read.table(original_phenofile,head=T,strings=F)
 rownames(ophe) <- ophe$id
-idso <- scan(ids_order_file, what=character())
+idso <- scan(ids_order_file,what=character())
 
-newphe <- ophe[idso, c("id", trait,covars)]
+newphe <- ophe[idso,c("id",trait,covars)]
 
-write.table(newphe, file=output_phenofile, quote=FALSE, row.names=FALSE)
+write.table(newphe,file=output_phenofile,quote=F,row.names=F)
 
-if (!require(GenABEL))
-  stop("further code requires the GenABEL library to be installed")
-if (!require(DatABEL))
-  stop("further code requires the DatABEL library to be installed")
-
-
-fvdose <- mach2databel(imputedg="test.mldose",
-                       mlinfo="test.mlinfo",
-                       out="test.dose")
-fvprob <- mach2databel(imputedg="test.mlprob",
-                       mlinfo="test.mlinfo",
-                       out="test.prob",
-                       isprob=TRUE)
-mmdose <- mach2databel("mmscore_gen.mldose",
-                       "mmscore_gen.mlinfo",
-                       "mmscore_gen.dose")
-mmprob <- mach2databel("mmscore_gen.mlprob",
-                       "mmscore_gen.mlinfo",
-                       "mmscore_gen.prob",
-                       isprob=TRUE)
+if (!require(GenABEL)) stop("further code requres GenABEL library installed")
+if (!require(DatABEL)) stop("further code requres DatABEL library installed")
+unlink("*.fv?")
+fvdose <- mach2databel(imputedg="test.mldose",mlinfo="test.mlinfo",out="test.dose")
+fvprob <- mach2databel(imputedg="test.mlprob",mlinfo="test.mlinfo",out="test.prob",isprob=TRUE)
+mmdose <- mach2databel("mmscore_gen.mldose","mmscore_gen.mlinfo","mmscore_gen.dose")
+mmprob <- mach2databel("mmscore_gen.mlprob","mmscore_gen.mlinfo","mmscore_gen.prob",isprob=TRUE)
