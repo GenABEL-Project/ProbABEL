@@ -114,7 +114,7 @@ AM_CONDITIONAL([HAVE_PDFLATEX], test -n "$PDFLATEX")
 AC_ARG_ENABLE([pacoxph],
     [AS_HELP_STRING([--disable-pacoxph], [disable building the pacoxph program])],
     [pacoxph=no],
-    [pacoxph=${enableval}])
+    [pacoxph=yes])
 
 if test "x$pacoxph" = "xyes"; then
    AC_MSG_NOTICE([building of pacoxph is enabled])

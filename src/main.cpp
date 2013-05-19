@@ -569,11 +569,9 @@ int main(int argc, char * argv[])
                     }
 #elif COXPH
                     coxph_reg rd(rgd);
-// LCK                    std::cout << "HERE, model="<<model<<"\n";
                     rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
-                                input_var.getInteraction(), true,
-                                input_var.getNgpreds());
-// LCK                    std::cout << "HERE DONE\n";
+                                input_var.getInteraction(),
+                                input_var.getNgpreds(), true, 0);
 #endif
 
                     if (!input_var.getAllcov() && model == 0
