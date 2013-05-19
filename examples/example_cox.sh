@@ -1,25 +1,12 @@
 #!/bin/sh
 # This script runs checks on ProbABEL's pacoxph module
 
-run_diff()
-{
-    # This function is run after each check. It needs two arguments:
-    # $1: first file to compare
-    # $2: second file to compare
-    if diff "$1" "$2"; then
-        echo -e "\t\tOK"
-    else
-        echo -e "\t\tFAILED"
-#        exit 1
-    fi
-}
-
-
-# ---- The checks start here ----
 echo "Analysing Cox model..."
 if [ -z ${srcdir} ]; then
     srcdir="."
 fi
+
+. ${srcdir}/run_diff.sh
 
 # Redirect all output to file descriptor 3 to /dev/null except if
 # the first argument is "verbose" then redirect handle 3 to stdout
@@ -47,8 +34,8 @@ fi
     -o coxph_dose_fv \
     >& 3
 
-echo -n "pacoxph check: dose vs. dose_fv "
-run_diff coxph_dose_add.out.txt coxph_dose_fv_add.out.txt
+run_diff coxph_dose_add.out.txt coxph_dose_fv_add.out.txt \
+    "pacoxph check: dose vs. dose_fv"
 
 
 ../src/pacoxph \
@@ -61,9 +48,8 @@ run_diff coxph_dose_add.out.txt coxph_dose_fv_add.out.txt
     -o coxph_prob \
     >& 3
 
-# Disabling this check for now because the output differs slightly
-echo -n "pacoxph check: dose vs. prob "
-run_diff coxph_dose_add.out.txt coxph_prob_add.out.txt
+run_diff coxph_dose_add.out.txt coxph_prob_add.out.txt \
+    "pacoxph check: dose vs. prob" -I SNP
 
 
 ../src/pacoxph \
@@ -77,6 +63,7 @@ run_diff coxph_dose_add.out.txt coxph_prob_add.out.txt
     >& 3
 
 for model in add domin recess over_domin 2df; do
-    echo -n "pacoxph check ($model model): prob vs. prob_fv "
-    run_diff coxph_prob_${model}.out.txt coxph_prob_fv_${model}.out.txt
+    run_diff coxph_prob_${model}.out.txt \
+        coxph_prob_fv_${model}.out.txt \
+        "pacoxph check ($model model): prob vs. prob_fv"
 done

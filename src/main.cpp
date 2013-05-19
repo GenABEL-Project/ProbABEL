@@ -440,7 +440,6 @@ int main(int argc, char * argv[])
                  input_var.getRobust(), 1);
 #elif COXPH
     coxph_reg nrd = coxph_reg(nrgd);
-// LCK    std::cout << "Starting estimation of null model...\n";
     nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0,
                  input_var.getInteraction(), input_var.getNgpreds(), 1);
 #endif
