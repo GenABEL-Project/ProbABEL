@@ -1,6 +1,5 @@
 #include "reg1.h"
 
-
 mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
                              int ngpreds, bool is_interaction_excluded,
                              bool iscox, int nullmodel)
@@ -151,27 +150,28 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
         nX.reinit(X.nrow, (X.ncol - 1));
     }
 
-    int c1 = X.ncol - 2;
-    int c2 = X.ncol - 1;
+    int c1 = X.ncol - 2; // column with Prob(A1A2)
+    int c2 = X.ncol - 1; // column with Prob(A1A1). Note the order is swapped cf the file!
     for (int i = 0; i < X.nrow; i++)
         for (int j = 0; j < (X.ncol - 2); j++)
             nX[i * nX.ncol + j] = X[i * X.ncol + j];
 
     for (int i = 0; i < nX.nrow; i++)
     {
-        if (model == 1)
+        if (model == 1) // additive
             nX[i * nX.ncol + c1] = X[i * X.ncol + c1] + 2. * X[i * X.ncol + c2];
-        else if (model == 2)
+        else if (model == 2) //dominant
             nX[i * nX.ncol + c1] = X[i * X.ncol + c1] + X[i * X.ncol + c2];
-        else if (model == 3)
+        else if (model == 3) // recessive
             nX[i * nX.ncol + c1] = X[i * X.ncol + c2];
-        else if (model == 4)
+        else if (model == 4) // over-dominant
             nX[i * nX.ncol + c1] = X[i * X.ncol + c1];
 
         if (interaction != 0)
             nX[i * nX.ncol + c2] = X[i * nX.ncol + interaction]
                     * nX[i * nX.ncol + c1]; //Maksim: interaction with SNP
     }
+
     //Han Chen
     if (is_interaction_excluded)
     {
@@ -206,8 +206,8 @@ mematrix<double> t_apply_model(mematrix<double>& X, int model, int interaction,
                                int ngpreds, bool iscox, int nullmodel)
 {
     mematrix<double> tmpX = transpose(X);
-    mematrix<double> nX = apply_model(tmpX, model, interaction, ngpreds, iscox,
-                                      nullmodel);
+    mematrix<double> nX = apply_model(tmpX, model, interaction, ngpreds,
+                                      interaction, iscox, nullmodel);
     mematrix<double> out = transpose(nX);
     return out;
 }
@@ -295,8 +295,8 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     {
         cout << rdata.is_interaction_excluded
                 << " <-irdata.is_interaction_excluded\n";
-        // std::cout << "invvarmatrix:\n";
-        // invvarmatrixin.masked_data->print();
+        std::cout << "invvarmatrix:\n";
+        invvarmatrixin.masked_data->print();
         std::cout << "rdata.X:\n";
         rdata.X.print();
     }
@@ -307,8 +307,6 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     {
         std::cout << "X:\n";
         X.print();
-        std::cout << "Y:\n";
-        rdata.Y.print();
     }
     int length_beta = X.ncol;
     beta.reinit(length_beta, 1);
@@ -336,39 +334,9 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         // = invvarmatrix*X;
         // std::cout<<"new tX.nrow="<<X.nrow<<" tX.ncol="<<X.ncol<<"\n";
     }
-
     mematrix<double> tXX = tX * X;
+    //      double N = tXX.get(0,0);
     double N = X.nrow;
-
-#if EIGEN_COMMENTEDOUT
-    MatrixXd Xeigen    = X.data;
-    MatrixXd tXeigen   = Xeigen.transpose();
-    MatrixXd tXXeigen  = tXeigen * Xeigen;
-    VectorXd Yeigen    = rdata.Y.data;
-    VectorXd tXYeigen  = tXeigen * Yeigen;
-    // Solve X^T * X * beta = X^T * Y for beta:
-    VectorXd betaeigen = tXXeigen.fullPivLu().solve(tXYeigen);
-    beta.data = betaeigen;
-
-    if (verbose)
-    {
-        std::cout << setprecision(9) << "Xeigen:\n"  << Xeigen  << endl;
-        std::cout << setprecision(9) << "tX:\n"  << tXeigen  << endl;
-        std::cout << setprecision(9) << "tXX:\n" << tXXeigen << endl;
-        std::cout << setprecision(9) << "tXY:\n" << tXYeigen << endl;
-        std::cout << setprecision(9) << "beta:\n"<< betaeigen << endl;
-        printf("----\n");
-        printf("beta[0] = %e\n", betaeigen.data()[0]);
-        printf("----\n");
-//        (beta).print();
-        double relative_error = (tXXeigen * betaeigen - tXYeigen).norm() / tXYeigen.norm(); // norm() is L2 norm
-        cout << "The relative error is:\n" << relative_error << endl;
-
-    }
-
-    // This one is needed later on in this function
-    mematrix<double> tXX_i = invert(tXX);
-#else
     //
     // use cholesky to invert
     //
@@ -377,10 +345,8 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     chinv2_mm(tXX_i);
     // before was
     // mematrix<double> tXX_i = invert(tXX);
-
     mematrix<double> tXY = tX * (rdata.Y);
     beta = tXX_i * tXY;
-
     if (verbose)
     {
         std::cout << "tX:\n";
@@ -396,7 +362,6 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         std::cout << "beta:\n";
         (beta).print();
     }
-#endif
     // now compute residual variance
     sigma2 = 0.;
     mematrix<double> ttX = transpose(tX);
@@ -587,10 +552,10 @@ logistic_reg::logistic_reg(regdata& rdatain)
 void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
                             double eps, double tol_chol, int model,
                             int interaction, int ngpreds,
-                            masked_matrix& invvarmatrixin, int robust,
+                            masked_matrix invvarmatrixin, int robust,
                             int nullmodel)
 {
-    // In contrast to the 'linear' case 'invvarmatrix' contains the
+    // on the contrast to the 'linear' 'invvarmatrix' contains
     // inverse of correlation matrix (not the inverse of var-cov matrix)
     // h2.object$InvSigma * h.object2$h2an$estimate[length(h2$h2an$estimate)]
     // the inverse of var-cov matrix scaled by total variance
@@ -815,7 +780,7 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
 
 void logistic_reg::score(mematrix<double>& resid, regdata& rdata, int verbose,
                          double tol_chol, int model, int interaction,
-                         int ngpreds, masked_matrix& invvarmatrix,
+                         int ngpreds, masked_matrix invvarmatrix,
                          int nullmodel)
 {
     base_score(resid, rdata, verbose, tol_chol, model, interaction, ngpreds,

@@ -181,7 +181,7 @@ void coxfit2(int *maxiter, int *nusedx, int *nvarx, double *time, int *status,
                 a2[i] = 0;
                 for (j = 0; j < nvar; j++)
                 {
-//		    std::cout << i << " " << j << "\n";
+//                  std::cout << i << " " << j << "\n";
                     cmat[i][j] = 0;
                     cmat2[i][j] = 0;
                 }
@@ -194,7 +194,7 @@ void coxfit2(int *maxiter, int *nusedx, int *nvarx, double *time, int *status,
         for (i = 0; i < nvar; i++)
         {
             zbeta += beta[i] * covar[i][person];
-//	    std::cout << zbeta << " " << beta[i] << " " << covar[i][person] << "\n";
+//          std::cout << zbeta << " " << beta[i] << " " << covar[i][person] << "\n";
         }
         risk = exp(zbeta) * weights[person];
 
@@ -242,7 +242,7 @@ void coxfit2(int *maxiter, int *nusedx, int *nvarx, double *time, int *status,
                 {
                     temp2 = (a[i] - temp * a2[i]) / d2;
                     u[i] -= wtave[person] * temp2;
-//		    std::cout << i << " " << wtave[person] << " " << temp2 << " " << a[i] << " " << a2[i] << "\n";
+//                  std::cout << i << " " << wtave[person] << " " << temp2 << " " << a[i] << " " << a2[i] << "\n";
                     for (j = 0; j <= i; j++)
                         imat[j][i] += wtave[person]
                                 * ((cmat[i][j] - temp * cmat2[i][j]) / d2
@@ -250,7 +250,7 @@ void coxfit2(int *maxiter, int *nusedx, int *nvarx, double *time, int *status,
                 }
             }
 //		std::cout << person << "\n";
-//    		print_prematrix(u,1,nvar);
+//              print_prematrix(u,1,nvar);
             efron_wt = 0;
             for (i = 0; i < nvar; i++)
             {
@@ -298,6 +298,11 @@ void coxfit2(int *maxiter, int *nusedx, int *nvarx, double *time, int *status,
         for (i = 1; i < nvar; i++)
             for (j = 0; j < i; j++)
                 imat[i][j] = imat[j][i];
+
+        free(covar);
+        free(imat);
+        free(cmat);
+        free(cmat2);
         return; /* and we leave the old beta in peace */
     }
 
@@ -411,6 +416,11 @@ void coxfit2(int *maxiter, int *nusedx, int *nvarx, double *time, int *status,
             if (halving == 1)
                 *flag = 1000; /*didn't converge after all */
             *maxiter = iter;
+
+            free(covar);
+            free(imat);
+            free(cmat);
+            free(cmat2);
             return;
         }
 
@@ -446,5 +456,11 @@ void coxfit2(int *maxiter, int *nusedx, int *nvarx, double *time, int *status,
     for (i = 0; i < nvar; i++)
         beta[i] = newbeta[i];
     *flag = 1000;
+
+
+    free(covar);
+    free(imat);
+    free(cmat);
+    free(cmat2);
     return;
 }

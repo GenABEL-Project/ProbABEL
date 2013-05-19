@@ -5,7 +5,6 @@
  *      Author: mkooyman
  */
 #include <string>
-#include <errno.h>
 #include "gendata.h"
 #include "fvlib/FileVector.h"
 #if EIGEN
@@ -17,53 +16,29 @@
 #endif
 #include "utilities.h"
 
-void gendata::get_var(int var, double * data)
+void gendata::get_var(int var, float * data)
 {
-    if (DAG == NULL)            // Read from text file
+    if (DAG == NULL)
     {
         for (int i = 0; i < G.nrow; i++)
         {
             data[i] = G.get(i, var);
         }
     }
-    else if (DAG != NULL)       // Read from fv file
+    else if (DAG != NULL)
     {
-        double tmpdata[DAG->getNumObservations()];
+        float tmpdata[DAG->getNumObservations()];
         DAG->readVariableAs((unsigned long int) var, tmpdata);
-
         unsigned int j = 0;
         for (unsigned int i = 0; i < DAG->getNumObservations(); i++)
         {
             if (!DAGmask[i])
             {
-                // A dirty trick to get rid of conversion
-                // errors. Instead of casting float data to double we
-                // convert the data to string and then do strtod()
-                std::ostringstream strs;
-                strs << tmpdata[i];
-                std::string str = strs.str();
-                double val;
-                char *endptr;
-                errno = 0;      // To distinguish success/failure
-                                // after strtod()
-                val = strtod(str.c_str(), &endptr);
-
-                if ((errno == ERANGE && (val == HUGE_VALF || val == HUGE_VALL))
-                    || (errno != 0 && val == 0)) {
-                    perror("Error while reading genetic data (strtod)");
-                    exit(EXIT_FAILURE);
-                }
-
-                if (endptr == str.c_str()) {
-                    cerr << "No digits were found while reading genetic data"
-                         << endl;
-                    exit(EXIT_FAILURE);
-                }
-
-                /* If we got here, strtod() successfully parsed a number */
-                data[j++] = val;
+                data[j++] = tmpdata[i];
             }
         }
+        // std::cout << j << " " << DAG->getNumObservations() << " "
+        //           << nids << "\n";
     }
     else
     {
@@ -190,27 +165,10 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 {
                     infile >> tmpstr;
                     // tmpstr contains the dosage in string form. Convert
-                    // it to double (if tmpstr is NaN it will be set to nan).
-                    double dosage;
-                    char *endptr;
-                    errno = 0;      // To distinguish success/failure
-                                    // after strtod()
-                    dosage = strtod(tmpstr.c_str(), &endptr);
-
-                    if ((errno == ERANGE &&
-                         (dosage == HUGE_VALF || dosage == HUGE_VALL))
-                        || (errno != 0 && dosage == 0)) {
-                        perror("Error while reading genetic data (strtod)");
-                        exit(EXIT_FAILURE);
-                    }
-
-                    if (endptr == tmpstr.c_str()) {
-                        cerr << "No digits were found while reading genetic data"
-                             << endl;
-                        exit(EXIT_FAILURE);
-                    }
-
-                    /* If we got here, strtod() successfully parsed a number */
+                    // it to float (if tmpstr is NaN it will be set to nan).
+                    // Note that Valgrind 3.7.0 gives "Invalid read of
+                    // size 8" error messages here. A bug in Valgrind?!
+                    float dosage = strtod(tmpstr.c_str(), (char **) NULL);
                     G.put(dosage, k, j);
                 }
                 else
