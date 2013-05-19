@@ -20,7 +20,7 @@ private:
     char *mlinfofilename;
     char *genfilename;
     char *mapfilename;
-    char *outfilename;
+    string outfilename;
     char *inverse_filename;
 
     string str_genfilename;
@@ -35,7 +35,7 @@ private:
     int robust;
     string chrom;
     string sep;
-    int neco[3];
+    int neco[3];                /* Necessary command line options */
     bool iscox;
     int isFVF;
     int noutcomes;
@@ -52,7 +52,7 @@ public:
         mlinfofilename   = NULL;
         genfilename      = NULL;
         mapfilename      = NULL;
-        outfilename      = NULL;
+        outfilename      = string("");
         inverse_filename = NULL;
 
         sep     = " ";
@@ -94,7 +94,7 @@ public:
     int getNohead() const;
     int getNoutcomes() const;
     int getNpeople() const;
-    char* getOutfilename() const;
+    string getOutfilename() const;
     char* getProgramName() const;
     int getRobust() const;
     int getScore() const;

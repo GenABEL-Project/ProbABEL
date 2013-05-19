@@ -293,7 +293,9 @@ void mematrix<DT>::print(void)
     {
         cout << "nr=" << i << ":\t";
         for (int j = 0; j < ncol; j++)
-            cout << data[i * ncol + j] << "\t";
+        {
+            printf("%e\t", data[i * ncol + j]);
+        }
         cout << "\n";
     }
 }

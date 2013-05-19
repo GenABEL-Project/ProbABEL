@@ -35,8 +35,8 @@ fi
     >& 3
 
 
-run_diff mmscore_add.out.txt \
-    mmscore_fv_add.out.txt \
+run_diff mmscore_dose_add.out.txt \
+    mmscore_dose_fv_add.out.txt \
     "mmscore check: dose vs. dose_fv"
 
 
@@ -60,8 +60,8 @@ run_diff mmscore_add.out.txt \
 
 for model in add domin over_domin recess 2df; do
     run_diff mmscore_prob_${model}.out.txt \
-        mmscore_prob_fv_${model}.out.txt \
-        "mmscore check ($model model): prob vs. prob_fv"
+	mmscore_prob_fv_${model}.out.txt \
+	"mmscore check ($model model): prob vs. prob_fv"
 done
 
 # The following checks are disabled because of the missing LogLik
