@@ -6,7 +6,17 @@ dist_doc_DATA = ProbABEL_manual.tex QuickStart.txt			\
  test.mlinfo test_regression.R COPYING LICENSE INSTALL ChangeLog	\
  TODO
 
-man_MANS = palinear.1 palogist.1 pacoxph.1
+man_MANS =
+if BUILD_palinear
+man_MANS += palinear.1
+endif
+if BUILD_palogist
+man_MANS += palogist.1
+endif
+if BUILD_pacoxph
+man_MANS += pacoxph.1
+endif
+
 EXTRA_DIST = $(man_MANS)
 
 if HAVE_PDFLATEX
@@ -26,8 +36,8 @@ endif
 .aux.pdf:
 	@echo === Making PDF ===
 	$(PDFLATEX) $(srcdir)/$(MANTEXSRC)
-	@while ( grep "Rerun to " 			\
-		$(MANNAME).log  ); do		\
+	@while ( grep "Rerun to "			\
+		$(MANNAME).log  ); do			\
 		echo '** Re-running LaTeX **';		\
 		$(PDFLATEX) $(srcdir)/$(MANTEXSRC);	\
 	done

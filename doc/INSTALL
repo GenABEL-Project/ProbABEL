@@ -56,15 +56,17 @@ make install
   to install ProbABEL in that subdirectory. Instead of using
   /usr/local/ as install root directory, it installs in /some/subdirectory.
 
-  The pacoxph binary will not be built by default because it is too
-  buggy at present. If you want to build and install it anyway use the
-  --enable function of ./configure:
-./configure --enable-pacoxph
+  ProbABEL consists of three main programs: palinear, palogist and
+  pacoxph. Building of each of these programs can be disabled by
+  adding a --disable- option to configure, for example:
+./configure --disable-palinear
 
   Another commonly used option is --enable-silent-rules, this reduces
   the output (sometimes considered to be noise) of the make step:
 ./configure --enable-silent-rules
 
+
+* Options for developers
   To generate a .tar.gz package for distribution run:
 ./configure
 make dist
@@ -110,8 +112,8 @@ apt-get install binutils-mingw-w64-i686 gcc-mingw-w64-base gcc-mingw-w64-i686 \
   running 'make install' the whole directory structure can be zipped
   easily):
 ./configure --host=i686-w64-mingw32 --build=i686-linux-gnu \
-	    --prefix=/tmp/PA --sysconfdir=/tmp/PA/ \
-	    --datarootdir=/tmp/PA --docdir=/tmp/PA/doc
+            --prefix=/tmp/PA --sysconfdir=/tmp/PA/ \
+            --datarootdir=/tmp/PA --docdir=/tmp/PA/doc
 
   The --host option sets the type of the host the programs will be run
   on, the --build option sets the type of machine you are building the

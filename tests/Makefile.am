@@ -2,7 +2,8 @@
 
 AUTOMAKE_OPTIONS = foreign color-tests
 
-tests_files = check_probabel.pl_chunk.sh check_dose_input.sh
+#tests_files = check_probabel.pl_chunk.sh check_dose_input.sh
+tests_files =  check_dose_input.sh
 verified_results = verified_results/height_add.out.txt	\
  verified_results/height_ngp2_add.out.txt			\
  verified_results/height_ngp2_2df.out.txt			\
@@ -36,8 +37,10 @@ other_files = probabel.pl probabel_config.cfg height.PHE test.mldose
 testsdir = $(pkgdatadir)/tests
 dist_tests_DATA = $(tests_files) $(verified_results)
 
-TESTS_ENVIRONMENT = sh
+TESTS_ENVIRONMENT = bash
+if BUILD_palinear
 check_SCRIPTS = $(tests_files)
+endif
 
 TESTS = $(check_SCRIPTS)
 

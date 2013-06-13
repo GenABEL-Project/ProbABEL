@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT(ProbABEL, 0.3.0, genabel-devel@r-forge.wu-wien.ac.at)
+AC_INIT(ProbABEL, 0.4.0-beta, genabel-devel@r-forge.wu-wien.ac.at)
 AM_INIT_AUTOMAKE([silent-rules])
 AM_SILENT_RULES
 AC_CONFIG_SRCDIR([src/data.h])
@@ -109,7 +109,28 @@ fi
 
 AM_CONDITIONAL([HAVE_PDFLATEX], test -n "$PDFLATEX")
 
-# Since pacoxph is buggy it needs to be enabled explixitly
+# Building of each of the three modules can be disabled on request
+AC_ARG_ENABLE([palinear],
+    [AS_HELP_STRING([--disable-palinear], [disable building the palinear program])],
+    [palinear=no],
+    [palinear=yes])
+
+if test "x$palinear" = "xyes"; then
+   AC_MSG_NOTICE([building of palinear is enabled])
+fi
+AM_CONDITIONAL([BUILD_palinear], test "x$palinear" = "xyes")
+
+AC_ARG_ENABLE([palogist],
+    [AS_HELP_STRING([--disable-palogist], [disable building the palogist program])],
+    [palogist=no],
+    [palogist=yes])
+
+if test "x$palogist" = "xyes"; then
+   AC_MSG_NOTICE([building of palogist is enabled])
+fi
+
+AM_CONDITIONAL([BUILD_palogist], test "x$palogist" = "xyes")
+
 AC_ARG_ENABLE([pacoxph],
     [AS_HELP_STRING([--disable-pacoxph], [disable building the pacoxph program])],
     [pacoxph=no],

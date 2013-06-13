@@ -45,7 +45,13 @@ exampledir = $(pkgdatadir)/examples
 dist_example_DATA = $(examplefiles)
 
 TESTS_ENVIRONMENT = bash
-check_SCRIPTS = example_bt.sh example_qt.sh example_mms.sh
+check_SCRIPTS =
+if BUILD_palinear
+check_SCRIPTS += example_qt.sh example_mms.sh
+endif
+if BUILD_palogist
+check_SCRIPTS += example_bt.sh
+endif
 if BUILD_pacoxph
 check_SCRIPTS +=  example_cox.sh
 endif
