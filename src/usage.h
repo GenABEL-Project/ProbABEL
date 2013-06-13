@@ -11,4 +11,6 @@ void print_usage(char * program_name, int exit_code);
 
 void print_help(char * program_name, int exit_code);
 
+void print_version(void);
+
 #endif /* USAGE_H_ */

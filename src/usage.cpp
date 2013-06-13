@@ -2,12 +2,22 @@
 #include <fstream>
 #include <cstdlib>
 #include <cstdio>
+#include "command_line_settings.h"
+
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#if EIGEN
+#include "eigen_mematrix.h"
+#endif
+
 
 using namespace std;
 
 void print_usage(char * program_name, int exit_code)
 {
-    cout << "Usage: " << program_name << " options" << endl;
+    cout << "\nUsage: " << program_name << " options" << endl;
     cout << "Options:" << endl;
     cout << "\t --pheno   : phenotype file name" << endl;
     cout << "\t --info    : information (e.g. MLINFO) file name" << endl;
@@ -57,7 +67,22 @@ void print_usage(char * program_name, int exit_code)
     exit(exit_code);
 }
 
+
+void print_version(void){
+    cout << PACKAGE
+         << " v. " << PACKAGE_VERSION
+         << "\n(C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, "
+         << "EMCR\n\n";
+#if EIGEN
+    cout << "Using EIGEN version " << EIGEN_WORLD_VERSION
+         << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION
+         << " for matrix operations\n";
+#endif
+}
+
+
 void print_help(char * program_name, int exit_code)
 {
+    print_version();
     print_usage(program_name, exit_code);
 }

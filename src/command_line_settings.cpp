@@ -243,19 +243,10 @@ bool cmdvars::isIsInteractionExcluded() const
 
 void cmdvars::printinfo()
 {
-    cout << PACKAGE
-         << " v. " << PACKAGE_VERSION
-         << "\n(C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, "
-         << "EMCR\n\n";
-#if EIGEN
-    cout << "Using EIGEN version " << EIGEN_WORLD_VERSION
-         << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION
-         << " for matrix operations\n";
-#endif
+    print_version();
 
     if (neco[0] != 1 || neco[1] != 1 || neco[2] != 1)
     {
-        cerr << endl;
         if (neco[0] != 1)
         {
             cerr << "Error: Missing required phenotype file (-p/--pheno option)"
@@ -272,8 +263,14 @@ void cmdvars::printinfo()
                  << endl;
         }
         cerr << endl;
-        print_usage(program_name, 1);
+//        print_usage(program_name, 1);
+        cout << "One or more required command line options appear to be missing."
+             << endl
+             << "Run " << program_name
+             << " --help for more information on the available options\n";
+        exit(3);
     }
+
 
     if (score)
     {
@@ -288,20 +285,20 @@ void cmdvars::printinfo()
         isFVF = 1;
 
     cout << "Options in effect:\n";
-    cout << "\t --pheno   = "          << phefilename << endl;
-    cout << "\t --info    = "          << mlinfofilename << endl;
-    cout << "\t --dose    = "          << genfilename << endl;
+    cout << "\t --pheno       = "      << phefilename << endl;
+    cout << "\t --info        = "      << mlinfofilename << endl;
+    cout << "\t --dose        = "      << genfilename << endl;
     if (isFVF)
         cout << "\t             (using FVF data)" << endl;
-    cout << "\t --ntraits = "          << noutcomes << endl;
-    cout << "\t --ngpreds = "          << ngpreds << endl;
+    cout << "\t --ntraits     = "      << noutcomes << endl;
+    cout << "\t --ngpreds     = "      << ngpreds << endl;
     cout << "\t --interaction = "      << interaction << endl;
     cout << "\t --interaction_only = " << interaction_excluded << endl;
 
     if (inverse_filename != NULL)
         cout << "\t --mmscore = "      << inverse_filename << endl;
     else
-        cout << "\t --mmscore     = not in output" << endl;
+        cout << "\t --mmscore = not in output" << endl;
 
     if (mapfilename != NULL)
         cout << "\t --map     = "      <<  mapfilename << endl;
