@@ -1,6 +1,6 @@
 \documentclass[12pt,a4paper]{article}
 
-\title{Manual for ProbABEL v0.3.0}
+\title{Manual for ProbABEL v0.4.0}
 \author{
 Maksim Struchalin$^{1}$, Lennart Karssen$^{1}$, Yurii Aulchenko$^{2}$ \\
 \\
@@ -277,14 +277,16 @@ program).
 
 There are in total 11 command line options you can specify to the
 \PA{} analysis functions \texttt{palinear} or \texttt{palogist}. If
-you run either program without any argument or with the
-\texttt{--help} option, you will get a short explanation to command
-line options:
+you run either program with the \texttt{--help} option, you will get a
+short explanation to the command line options:
 \begin{verbatim}
-user@server:~$ palogist
-ProbABEL v. 0.2.0 (C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EMCR
+user@server:~$ palogist --help
+probabel v. 0.4.0
+(C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EMCR
 
-Usage: /tmp/PAInst/bin/palogist options
+Using EIGEN version 3.1.2 for matrix operations
+
+Usage: src/palogist options
 Options:
          --pheno   : phenotype file name
          --info    : information (e.g. MLINFO) file name
@@ -294,7 +296,7 @@ Options:
          --chrom   : [optional] chromosome (to be passed to output)
          --out     : [optional] output file name (default is regression.out.txt)
          --skipd   : [optional] how many columns to skip in the predictor
-                      (dose/prob) file (default 2)
+                     (dose/prob) file (default 2)
          --ntraits : [optional] how many traits are analysed (default 1)
          --ngpreds : [optional] how many predictor columns per marker
                       (default 1 = MLDOSE; else use 2 for MLPROB)
@@ -308,9 +310,13 @@ Options:
          --robust  : report robust (aka sandwich, aka Hubert-White) standard errors
          --help    : print help
 \end{verbatim}
-%%		--interaction_only: like previos but without covariate acting in
-%%                    interaction with SNP
-%%                                                                        (default is no ineraction, 0)
+More information on the options can also be found in the manual page
+of each of the programs. For example, to access the manual page for
+\texttt{palinear} on a Linux system run\footnote{Use the \texttt{q}
+  key to quit the man page viewer.}:
+\begin{verbatim}
+user@server$ man palinear
+\end{verbatim}
 
 
 \subsection{Basic analysis options}
@@ -828,7 +834,7 @@ BMC Bioinformatics. 2010, 11:134.
 \end{quote}
 A proper reference may look like
 \begin{quote}
-For the analysis of imputed data, we used the \PA{} v.0.3.0
+For the analysis of imputed data, we used the \PA{} v.0.4.0
 from the \texttt{GenABEL} suite of programs (Aulchenko \emph{et al.}, 2010).
 \end{quote}
 
