@@ -91,11 +91,7 @@ in a fast, memory-efficient and consequently genome-wide feasible manner.
 Currently, \PA{} implements linear, logistic regression,
 and Cox proportional hazards models. The corresponding analysis
 programs are called \texttt{palinear},  \texttt{palogist},
-and \texttt{pacoxph}\footnote{Please note that in ProbABEL v.0.3.0 the
-  \texttt{pacoxph} program is not built by default because it is still
-too buggy for production use. Instructions on how to compile the
-\texttt{pacoxph} module can be found in the \texttt{CHANGES.LOG} file
-in the \texttt{doc/} directory of the installation package.}.
+and \texttt{pacoxph}.
 
 
 \section{Input files}
@@ -275,14 +271,9 @@ actually used to generate the output.
 \label{sec:runanalysis}
 To run linear regression, you should use the program called
 \texttt{palinear}; for logistic analysis use \texttt{palogist}, and
-for the Cox proportional hazards model use
-\texttt{pacoxph}\footnote{Please note that in ProbABEL v.0.3.0 the
-  \texttt{pacoxph} program is not built by default because it is still
-  too buggy for production use. Instructions on how to compile the
-  \texttt{pacoxph} module can be found in the \texttt{CHANGES.LOG}
-  file in the \texttt{doc/} directory of the installation package.}
-(all are found in the \texttt{bin/} directory after you have compiled
-the program).
+for the Cox proportional hazards model use \texttt{pacoxph} (all are
+found in the \texttt{bin/} directory after you have compiled the
+program).
 
 There are in total 11 command line options you can specify to the
 \PA{} analysis functions \texttt{palinear} or \texttt{palogist}. If
@@ -349,12 +340,7 @@ user@server:~/ProbABEL/examples/$ ../bin/palogist -p logist_data.txt \
                                  -d test.mldose -i test.mlinfo
 \end{verbatim}
 
-To run a Cox proportional hazards model\footnote{Please note that in
-  ProbABEL v.0.3.0 the \texttt{pacoxph} program is not built by
-  default because it is still too buggy for production
-  use. Instructions on how to compile the \texttt{pacoxph} module can
-  be found in the \texttt{CHANGES.LOG} file in the \texttt{doc/}
-  directory of the installation package.}, try
+To run a Cox proportional hazards model, try
 \begin{verbatim}
 user@server:~/ProbABEL/examples/$ ../bin/pacoxph -p coxph_data.txt \
                                  -d test.mldose -i test.mlinfo
