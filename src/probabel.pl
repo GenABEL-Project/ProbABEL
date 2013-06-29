@@ -158,14 +158,16 @@ die "error: Wrong method. method has to be one of: @method\n" if (!$passed);
 
 
 my $phename = $ARGV[5];
-my $outfile_prefix = $phename;
+# By default the output file prefix is the same as the name of the
+# phenotype file (minus the .PHE extension and any paths)
+use File::Basename;
+my $outfile_prefix = basename($phename);
 my $keys="";
 for (my $i=6; $i<@ARGV; $i++) {
     if ($ARGV[$i] eq "-o")
     {
         # Apparently the user wants to change the output file name
-        # Let's interpret this as an addition to our own prefix
-        $outfile_prefix = $outfile_prefix.$ARGV[$i+1];
+        $outfile_prefix = $ARGV[$i+1];
 
         # Skip the next argument (supposedly the addition to the
         # output file name).
