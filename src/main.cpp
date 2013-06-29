@@ -190,9 +190,9 @@ void create_header_1(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
     *outfile[0] << input_var.getSep()
                 << "beta_SNP_A1A2"
                 << input_var.getSep()
-                << "beta_SNP_A1A1"
-                << input_var.getSep()
                 << "sebeta_SNP_A1A2"
+                << input_var.getSep()
+                << "beta_SNP_A1A1"
                 << input_var.getSep()
                 << "sebeta_SNP_A1A1";
     *outfile[1] << input_var.getSep()
