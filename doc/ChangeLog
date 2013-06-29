@@ -1,16 +1,26 @@
-***** v.0.4.0 (2013.)
+***** v.0.4.0 (2013.06)
 * Fixed long-standing bug #1130: The Cox regression module of ProbABEL
   crashes (when using filevector files). Actually, the Cox PH module was
   broken ever since ProbABEL v0.1-9e. Thanks to the Erasmus Medical
   Center, Rotterdam (the group of prof. C.M. van Duijn) and the	Radboud
   University Medical Center, Nijmegen (the group of prof. Kiemeney) for
-  partially sponsoring the time spent on this fix.
-* Fixed bug #2575: ProbABEL chooses weird file names if the -o option is
-  not specified.
-* Fixed bug #2598: The prepare_data.R script is mentioned in the manual,
-  but not distributed in .deb or .tar.gz
+  partially sponsoring the time spent on this fix. Also thanks to Ben
+  Verhaaren and Anne Grotenhuis for testing!
 * Fixed bug #2772: palogist with mmscore crashes (memory issue). Thanks to
   Anuj Goel for reporting this bug.
+* Fixed bug #4700: wrong order of betas and se_betas in header of 2df
+  output files. Thanks to Anne Grotenhuis for reporting this bug and to
+  Yurii Aulchenko for solving it.
+* Fixed bug #2575: ProbABEL chooses weird file names if the -o option is
+  not specified.
+* Fixed bug #4683: probabel.pl writes to the wrong directory if a relative
+  path is given on the command line (Thanks to Aaron Isaacs for reporting
+  this bug). NOTE: As a result of this fix giving the -o option to
+  probabel.pl is no longer interpreted as an addition to the default
+  prefix (which was the name of the phenotype file), but as a full file
+  name (incl. path).
+* Fixed bug #2598: The prepare_data.R script is mentioned in the manual,
+  but not distributed in .deb or .tar.gz
 * Fixed bug #2529: ProbABEL doesn't warn when a required file is not
   specified on the command line
 
