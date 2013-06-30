@@ -59,7 +59,8 @@ if test "x$with_eigen" != "xno"; then
     AC_ARG_WITH([eigen-include-path],
         [AS_HELP_STRING([--with-eigen-include-path],
           [location of the Eigen headers, defaults to /usr/include/eigen3])],
-        [CXXFLAGS+=" -I${withval}"],
+        [CXXFLAGS+=" -I${withval}"
+        CPPFLAGS+=" -I${withval}"],
         [CXXFLAGS+=' -I/usr/include/eigen3'
         CPPFLAGS+=' -I/usr/include/eigen3'])
 
