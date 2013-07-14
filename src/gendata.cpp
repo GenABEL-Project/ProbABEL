@@ -19,6 +19,8 @@
 
 void gendata::get_var(int var, double * data)
 {
+    // Read the genetic data for SNP 'var' and store in the array 'data'
+
     if (DAG == NULL)            // Read from text file
     {
         for (int i = 0; i < G.nrow; i++)
@@ -56,10 +58,12 @@ void gendata::get_var(int var, double * data)
 
                 if (endptr == str.c_str()) {
                     cerr << "No digits were found while reading genetic data"
+                         << " (individual " << i + 1
+                         << ", position " << var + 1 ")"
                          << endl;
                     exit(EXIT_FAILURE);
                 }
-
+                cout << "!" << val << "# ";
                 /* If we got here, strtod() successfully parsed a number */
                 data[j++] = val;
             }
@@ -206,6 +210,8 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
 
                     if (endptr == tmpstr.c_str()) {
                         cerr << "No digits were found while reading genetic data"
+                             << " (individual " << i + 1
+                             << ", position " << j + 1 << ")"
                              << endl;
                         exit(EXIT_FAILURE);
                     }
