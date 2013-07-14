@@ -59,7 +59,7 @@ void gendata::get_var(int var, double * data)
                 if (endptr == str.c_str()) {
                     cerr << "No digits were found while reading genetic data"
                          << " (individual " << i + 1
-                         << ", position " << var + 1 ")"
+                         << ", position " << var + 1 << ")"
                          << endl;
                     exit(EXIT_FAILURE);
                 }
