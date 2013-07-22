@@ -62,8 +62,8 @@ public:
 
     coxph_reg(coxph_data &cdatain);
     void estimate(coxph_data &cdatain, int verbose, int maxiter, double eps,
-            double tol_chol, int model, int interaction, int ngpreds,
-            bool iscox, int nullmodel = 0);
+                  double tol_chol, int model, int interaction, int ngpreds,
+                  bool iscox, int nullmodel);
 };
 
 #endif /* COXPH_DATA_H_ */

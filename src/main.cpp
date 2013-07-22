@@ -441,7 +441,7 @@ int main(int argc, char * argv[])
 #elif COXPH
     coxph_reg nrd = coxph_reg(nrgd);
     nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0,
-                 input_var.getInteraction(), input_var.getNgpreds(), 1);
+                 input_var.getInteraction(), input_var.getNgpreds(), true, 1);
 #endif
 
     std::cout << " estimated null model ...";
