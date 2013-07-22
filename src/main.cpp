@@ -259,11 +259,11 @@ void create_header_1(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
             //Oct 26, 2009
         }
     }
-    *outfile[0] << input_var.getSep() << "loglik\n"; //"chi2_SNP_2df\n";
-    *outfile[1] << input_var.getSep() << "loglik\n"; //"chi2_SNP_A1\n";
-    *outfile[2] << input_var.getSep() << "loglik\n"; //"chi2_SNP_domA1\n";
-    *outfile[3] << input_var.getSep() << "loglik\n"; //"chi2_SNP_recA1\n";
-    *outfile[4] << input_var.getSep() << "loglik\n"; //"chi2_SNP_odom\n";
+    *outfile[0] << input_var.getSep() << "chi2_SNP_2df\n";  // "loglik\n";
+    *outfile[1] << input_var.getSep() << "chi2_SNP_A1\n";   // "loglik\n";
+    *outfile[2] << input_var.getSep() << "chi2_SNP_domA1\n";// "loglik\n";
+    *outfile[3] << input_var.getSep() << "chi2_SNP_recA1\n";// "loglik\n";
+    *outfile[4] << input_var.getSep() << "chi2_SNP_odom\n"; // "loglik\n";
 }
 
 void create_header2(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
@@ -296,7 +296,7 @@ void create_header2(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
                         << phd.model_terms[interaction_cox];
         }
 #endif
-        *outfile[0] << input_var.getSep() << "loglik"; //"chi2_SNP";
+        *outfile[0] << input_var.getSep() << "chi2_SNP"; //"loglik";
     }
     //Oct 26, 2009
     *outfile[0] << "\n";
@@ -443,6 +443,7 @@ int main(int argc, char * argv[])
     nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0,
                  input_var.getInteraction(), input_var.getNgpreds(), true, 1);
 #endif
+    double null_loglik = nrd.loglik;
 
     std::cout << " estimated null model ...";
     // end null
@@ -503,6 +504,7 @@ int main(int argc, char * argv[])
         covvalue[i]->precision(9);
         //Oct 26, 2009
         chi2.push_back(new std::ostringstream());
+        chi2[i]->precision(9);
     }
 
 
@@ -674,12 +676,23 @@ int main(int argc, char * argv[])
 
                     if (input_var.getScore() == 0)
                     {
-                        //*chi2[model] << 2.*(rd.loglik-null_loglik);
-                        *chi2[model] << rd.loglik;
+                        if (gcount != gtd.nids)
+                        {
+                            // If SNP data is missing we didn't
+                            // correctly compute the null likelihood
+                            *chi2[model] << "NaN";
+                        }
+                        else
+                        {
+                            // No missing SNP data, we can compute the LRT
+                            *chi2[model] << 2. * (rd.loglik - null_loglik);
+                        }
+                        //*chi2[model] << rd.loglik;
                     } else
                     {
-                        //*chi2[model] << rd.chi2_score;
-                        *chi2[model] << "nan";
+                        // We want score test output
+                        *chi2[model] << rd.chi2_score;
+                        //*chi2[model] << "nan";
                     }
                 }
             } // END first part of if(poly); allele not too rare
