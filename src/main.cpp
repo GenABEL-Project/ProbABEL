@@ -333,6 +333,7 @@ void write_mlinfo(const std::vector<std::ofstream*>& outfile, unsigned int file,
     }
 }
 
+
 int get_start_position(const cmdvars& input_var, int model,
         int number_of_rows_or_columns)
 {
@@ -454,12 +455,15 @@ int main(int argc, char * argv[])
 #endif
     std::cout << " formed regression object ...";
 
-    //________________________________________________________________
-    //Maksim, 9 Jan, 2009
+
+    // Open a vector of files that will be used for output. Depending
+    // on the number of genomic predictors we either open 5 files (one
+    // for each model if we have prob data) or one (if we have dosage
+    // data).
     std::string outfilename_str(input_var.getOutfilename());
     std::vector<std::ofstream*> outfile;
 
-    //All models output.One file per each model
+    // Prob data: All models output. One file per model
     if (input_var.getNgpreds() == 2)
     {
         open_files_for_output(outfile, outfilename_str);
@@ -467,7 +471,7 @@ int main(int argc, char * argv[])
         {
             create_header_1(outfile, input_var, phd, interaction_cox);
         }
-    } else //Only additive model. Only one output file
+    } else //Dosage data: Only additive model => only one output file
     {
         outfile.push_back(
             new std::ofstream((outfilename_str + "_add.out.txt").c_str()));
@@ -483,7 +487,7 @@ int main(int argc, char * argv[])
         {
             create_header2(outfile, input_var, phd, interaction_cox);
         }
-    }
+    } // END else: we have dosage data => only one file
 
 
     int maxmod = 5;
@@ -495,6 +499,9 @@ int main(int argc, char * argv[])
     //Oct 26, 2009
     std::vector<std::ostringstream *> chi2;
 
+    // Create string streams for betas, SEs, etc. These are used to
+    // later store the various output values that will be written to
+    // files.
     for (int i = 0; i < maxmod; i++)
     {
         beta_sebeta.push_back(new std::ostringstream());
@@ -524,11 +531,13 @@ int main(int argc, char * argv[])
             gtd.get_var(csnp * 2, snpdata1);
             gtd.get_var(csnp * 2 + 1, snpdata2);
             for (unsigned int ii = 0; ii < gtd.nids; ii++)
+            {
                 if (!isnan(snpdata1[ii]) && !isnan(snpdata2[ii]))
                 {
                     gcount++;
                     freq += snpdata1[ii] + snpdata2[ii] * 0.5;
                 }
+            }
         }
         else // Only one predictor (dosage data)
         {
@@ -543,7 +552,8 @@ int main(int argc, char * argv[])
                 }
             }
         }
-        freq /= static_cast<double>(gcount);
+        freq /= static_cast<double>(gcount); // Allele frequency
+
         int poly = 1;
         if (fabs(freq) < 1.e-16 || fabs(1. - freq) < 1.e-16)
         {
@@ -555,8 +565,7 @@ int main(int argc, char * argv[])
             poly = 0;
         }
 
-        // All models output. One file per model
-        //
+        // Prob data: All models output. One file per model
         if (input_var.getNgpreds() == 2)
         {
             // Write mlinfo to output:
@@ -567,15 +576,17 @@ int main(int argc, char * argv[])
             }
         } else
         {
+            // Dosage data: only additive model
             int file = 0;
             write_mlinfo(outfile, file, mli, csnp, input_var, gcount, freq);
-            maxmod = 1;
+            maxmod = 1;         // We can only calculate the additive
+                                // model with dosage data
         }
 
-        // Run regression for each model
+        // Run regression for each model for the current SNP
         for (int model = 0; model < maxmod; model++)
         {
-            if (poly) // Allele freq is not too rare; still ngpreds=2
+            if (poly) // Allele freq is not too rare
             {
 #if LOGISTIC
                 logistic_reg rd(rgd);
@@ -622,6 +633,8 @@ int main(int argc, char * argv[])
                 start_pos = get_start_position(input_var, model,
                                                number_of_rows_or_columns);
 
+                // The regression coefficients for the SNPs are in the
+                // last rows of beta[] and sebeta[].
                 for (int pos = start_pos; pos < rd.beta.nrow; pos++)
                 {
                     *beta_sebeta[model] << input_var.getSep()
@@ -648,22 +661,23 @@ int main(int argc, char * argv[])
                                             << rd.covariance[pos - 2];
                                     }
 
-                                } //end ngpred=2
+                                } // END ngpreds=2
                                 else
                                 {
                                     *covvalue[model] << rd.covariance[pos - 1];
                                 }
 
-                            } //end model
+                            } //END model == 0
                             else
                             {
                                 *covvalue[model] << rd.covariance[pos - 1];
-                            } //end ngpred==1
-                        }
+                            } // END model != 0
+                        } // END if pos > start_pos
                     }
 #endif
                     //Oct 26, 2009
-                }
+                } // END for(pos = start_pos; pos < rd.beta.nrow; pos++)
+
 
                 //calculate chi2
                 //________________________________
@@ -704,7 +718,7 @@ int main(int argc, char * argv[])
                         number_of_rows_or_columns);
 
                 if (input_var.getInteraction() != 0 && !input_var.getAllcov()
-                        && input_var.getNgpreds() != 2)
+                    && input_var.getNgpreds() != 2)
                 {
                     start_pos++;
                 }
@@ -751,7 +765,7 @@ int main(int argc, char * argv[])
                     //Oct 26, 2009
                     *chi2[model] << "nan";
                 } else
-                { //ngpreds=1
+                { //ngpreds==1 (and SNP is rare)
                     if (input_var.getInverseFilename() == NULL)
                     {
                         //                     Han Chen
@@ -764,11 +778,13 @@ int main(int argc, char * argv[])
 #endif
                         //Oct 26, 2009
                         *chi2[model] << "nan";
-                    }
-                }
-            }
-        }
-        //end of model cycle
+                    } // END if getInverseFilename == NULL
+                } // END ngpreds == 1 (and SNP is rare)
+            } // END else: SNP is rare
+        } // END of model cycle
+
+
+        // Start writing beta's, se_beta's etc. to file
         if (input_var.getNgpreds() == 2)
         {
             //Han Chen
@@ -836,30 +852,31 @@ int main(int argc, char * argv[])
             {
                 *outfile[0] << beta_sebeta[0]->str() << "\n";
             }
-            //}  // end ngpreds ==1
+        }  // End ngpreds == 1 when writing output files
 
-        }
 
-//
-//clean chi2
-        for (int i = 0; i < 5; i++)
+        // Clean chi2 and other streams
+        for (int model = 0; model < maxmod; model++)
         {
-            beta_sebeta[i]->str("");
+            beta_sebeta[model]->str("");
             //Han Chen
-            covvalue[i]->str("");
+            covvalue[model]->str("");
             //Oct 26, 2009
-            chi2[i]->str("");
+            chi2[model]->str("");
         }
+
         update_progress_to_cmd_line(csnp, nsnps);
-    }
+    } // END for loop over all SNPs
+
+
+    // We're almost done. All computations have finished, time to
+    // clean up.
 
     std::cout << setprecision(2) << fixed;
     std::cout << "\b\b\b\b\b\b\b\b\b" << 100.;
     std::cout << "%... done\n";
 
-    //________________________________________________________________
-    //Maksim, 9 Jan, 2009
-
+    // Close output files
     for (unsigned int i = 0; i < outfile.size(); i++)
     {
         outfile[i]->close();
