@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # L.C. Karssen
 # This script is used to test whether probabel.pl works correctly when
 # input is cut up in chunks
@@ -109,11 +109,13 @@ run_test ()
 
     echo "Checking output using dosages $WithOrWithout chunks..."
     ./probabel.pl 1 2 linear $1 --additive height > /dev/null
-    echo -n "  Verifying $outfile: "
+
+    blanks="                                                          "
+    echo -n "  Verifying "
     if diff $outfile $results/$outfile; then
-        echo -e "\t\tOK"
+        echo -e "${outfile}${blanks:${#outfile}} OK"
     else
-        echo -e "\t\tFAILED"
+        echo -e "${outfile}${blanks:${#outfile}} FAILED"
         exit 1
     fi
 
@@ -123,13 +125,13 @@ run_test ()
     height_ngp2_add.out.txt"
 
     echo "Checking output using probabilities $WithOrWithout chunks..."
-    ./probabel.pl 1 2 linear $1 --allmodels height -o _ngp2 > /dev/null
+    ./probabel.pl 1 2 linear $1 --allmodels height -o height_ngp2 > /dev/null
     for file in $outfilelist; do
-        echo -n "  Verifying $file: "
+        echo -n "  Verifying "
         if diff $file $results/$file; then
-            echo -e "\t\tOK"
+            echo -e "${file}${blanks:${#file}} OK"
         else
-            echo -e "\t\tFAILED"
+            echo -e "${file}${blanks:${#file}} FAILED"
             exit 1
         fi
     done

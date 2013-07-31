@@ -24,10 +24,11 @@ sed 's/^[[:digit:]]*->//' $exampledir/test.mldose > test.mldose
     -c 19 \
     -o height_base > /dev/null
 
-echo -n "  Verifying $outfile: "
+blanks="                                                          "
+echo -n "  Verifying "
 if diff $outfile $results/$outfile; then
-    echo -e "\t\tOK"
+    echo -e "${outfile}${blanks:${#outfile}} OK"
 else
-    echo -e "\t\tFAILED"
+    echo -e "${outfile}${blanks:${#outfile}} FAILED"
     exit 1
 fi
