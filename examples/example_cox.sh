@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # This script runs checks on ProbABEL's pacoxph module
 
 echo "Analysing Cox model..."

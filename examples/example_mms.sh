@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # This script runs checks on ProbABEL's palinear module for
 # quantitative traits combined with the mmscore option.
 
