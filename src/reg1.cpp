@@ -284,7 +284,7 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
                           masked_matrix& invvarmatrixin, int robust,
                           int nullmodel)
 {
-    //suda ineraction parameter
+    // suda interaction parameter
     // model should come here
     regdata rdata = rdatain.get_unmasked_data();
     if (invvarmatrixin.length_of_mask != 0)
