@@ -48,8 +48,8 @@ public:
     void put(DT value, int nr, int nc);
     DT column_mean(int nc);
     void print(void);
-    void delete_column(int delcol);
-    void delete_row(int delrow);
+    void delete_column(const int delcol);
+    void delete_row(const int delrow);
 
 };
 

@@ -39,7 +39,7 @@ regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
 
     for (int i = 0; i < nids; i++)
     {
-        masked_data[i] = 0;
+        masked_data[i] = obj.masked_data[i];
     }
 }
 
@@ -95,6 +95,9 @@ regdata::regdata(phedata &phed, gendata &gend, int snpnum,
 
 void regdata::update_snp(gendata &gend, int snpnum)
 {
+    // Add genotypic data (dosage or probabilities) to the design
+    // matrix X.
+
     for (int j = 0; j < ngpreds; j++)
     {
         double snpdata[nids];
@@ -109,8 +112,31 @@ void regdata::update_snp(gendata &gend, int snpnum)
         {
             X.put(snpdata[i], i, (ncov - j));
             if (isnan(snpdata[i]))
+            {
                 masked_data[i] = 1;
+            }
         }
+    }
+}
+
+void regdata::remove_snp_from_X()
+{
+    // update_snp() adds SNP information to the design matrix. This
+    // function allows you to strip that information from X again.
+    // This is used for example when calculating the null model.
+
+    if(ngpreds == 1)
+    {
+        X.delete_column(X.ncol -1);
+    }
+    else if(ngpreds == 2)
+    {
+        X.delete_column(X.ncol -1);
+        X.delete_column(X.ncol -1);
+    }
+    else
+    {
+        cerr << "ngpreds should be 1 or 2. you should never come here!\n";
     }
 }
 

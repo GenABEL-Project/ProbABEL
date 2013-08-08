@@ -4,12 +4,22 @@
 mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
                              int ngpreds, bool is_interaction_excluded,
                              bool iscox, int nullmodel)
+// if ngpreds==1 (dose data):
+// model 0 = additive 1 df
+// if ngpreds==2 (prob data):
 // model 0 = 2 df
 // model 1 = additive 1 df
 // model 2 = dominant 1 df
 // model 3 = recessive 1 df
 // model 4 = over-dominant 1 df
 {
+    if(nullmodel)
+    {
+        // No need to apply any genotypic model when calculating the
+        // null model
+        return (X);
+    }
+
     if (model == 0)
     {
         if (interaction != 0 && !nullmodel)
@@ -295,12 +305,13 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     if (verbose)
     {
         cout << rdata.is_interaction_excluded
-                << " <-irdata.is_interaction_excluded\n";
+             << " <-rdata.is_interaction_excluded\n";
         // std::cout << "invvarmatrix:\n";
         // invvarmatrixin.masked_data->print();
         std::cout << "rdata.X:\n";
         rdata.X.print();
     }
+
     mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,
                                      rdata.is_interaction_excluded, false,
                                      nullmodel);
@@ -311,6 +322,7 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         std::cout << "Y:\n";
         rdata.Y.print();
     }
+
     int length_beta = X.ncol;
     beta.reinit(length_beta, 1);
     sebeta.reinit(length_beta, 1);

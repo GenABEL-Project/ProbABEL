@@ -208,9 +208,9 @@ void create_header_1(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
                 << input_var.getSep()
                 << "sebeta_SNP_recA1";
     *outfile[4] << input_var.getSep()
-                << "beta_SNP_odom"
+                << "beta_SNP_odomA1"
                 << input_var.getSep()
-                << "sebeta_SNP_odom";
+                << "sebeta_SNP_odomA1";
     if (input_var.getInteraction() != 0)
     {
         //Han Chen
@@ -263,7 +263,7 @@ void create_header_1(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
     *outfile[1] << input_var.getSep() << "chi2_SNP_A1\n";   // "loglik\n";
     *outfile[2] << input_var.getSep() << "chi2_SNP_domA1\n";// "loglik\n";
     *outfile[3] << input_var.getSep() << "chi2_SNP_recA1\n";// "loglik\n";
-    *outfile[4] << input_var.getSep() << "chi2_SNP_odom\n"; // "loglik\n";
+    *outfile[4] << input_var.getSep() << "chi2_SNP_odomA1\n"; // "loglik\n";
 }
 
 void create_header2(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
@@ -389,7 +389,7 @@ int main(int argc, char * argv[])
 
     masked_matrix invvarmatrix;
 
-    std::cout << "Reading data ..." << std::flush;
+    std::cout << "Reading data..." << std::flush;
     if (input_var.getInverseFilename() != NULL)
     {
         loadInvSigma(input_var, phd, invvarmatrix);
@@ -412,7 +412,7 @@ int main(int argc, char * argv[])
                        phd.allmeasured, phd.idnames);
     }
 
-    std::cout << " loaded genotypic data ..." << std::flush;
+    std::cout << " loaded genotypic data..." << std::flush;
 
     // estimate null model
 #if COXPH
@@ -421,7 +421,7 @@ int main(int argc, char * argv[])
     regdata nrgd = regdata(phd, gtd, -1, input_var.isIsInteractionExcluded());
 #endif
 
-    std::cout << " loaded null data ..." << std::flush;
+    std::cout << " loaded null data..." << std::flush;
 #if LOGISTIC
     logistic_reg nrd = logistic_reg(nrgd);
     nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0,
@@ -446,14 +446,14 @@ int main(int argc, char * argv[])
 #endif
     double null_loglik = nrd.loglik;
 
-    std::cout << " estimated null model ...";
+    std::cout << " estimated null model...";
     // end null
 #if COXPH
     coxph_data rgd(phd, gtd, 0);
 #else
     regdata rgd(phd, gtd, 0, input_var.isIsInteractionExcluded());
 #endif
-    std::cout << " formed regression object ...";
+    std::cout << " formed regression object...\n";
 
 
     // Open a vector of files that will be used for output. Depending
@@ -505,13 +505,16 @@ int main(int argc, char * argv[])
     for (int i = 0; i < maxmod; i++)
     {
         beta_sebeta.push_back(new std::ostringstream());
-        beta_sebeta[i]->precision(9);
+        beta_sebeta[i]->precision(6);
+        //*beta_sebeta[i] << scientific;
         //Han Chen
         covvalue.push_back(new std::ostringstream());
-        covvalue[i]->precision(9);
+        covvalue[i]->precision(6);
+        //*covvalue[i] << scientific;
         //Oct 26, 2009
         chi2.push_back(new std::ostringstream());
-        chi2[i]->precision(9);
+        chi2[i]->precision(6);
+        //*chi2[i] << scientific;
     }
 
 
@@ -565,10 +568,10 @@ int main(int argc, char * argv[])
             poly = 0;
         }
 
+        // Write mlinfo information to the output file(s)
         // Prob data: All models output. One file per model
         if (input_var.getNgpreds() == 2)
         {
-            // Write mlinfo to output:
             for (unsigned int file = 0; file < outfile.size(); file++)
             {
                 write_mlinfo(outfile, file, mli, csnp, input_var,
@@ -679,7 +682,7 @@ int main(int argc, char * argv[])
                 } // END for(pos = start_pos; pos < rd.beta.nrow; pos++)
 
 
-                //calculate chi2
+                //calculate chi^2
                 //________________________________
                 //cout <<  rd.loglik<<" "<<input_var.getNgpreds() << "\n";
 
@@ -690,23 +693,41 @@ int main(int argc, char * argv[])
 
                     if (input_var.getScore() == 0)
                     {
+                        double loglik = rd.loglik;
                         if (gcount != gtd.nids)
                         {
                             // If SNP data is missing we didn't
                             // correctly compute the null likelihood
-                            *chi2[model] << "NaN";
+
+                            // Recalculate null likelihood by
+                            // stripping the SNP data column(s) from
+                            // the X matrix in the regression object
+                            // and run the null model estimation again
+                            // for this SNP.
+// BEWARE, ONLY IMPLEMENTED FOR LINEAR REG!!!
+// TODO LCK
+#ifdef LINEAR
+                            regdata new_rgd = rgd;
+                            new_rgd.remove_snp_from_X();
+                            linear_reg new_null_rd(new_rgd);
+                            new_null_rd.estimate(new_rgd, 0, CHOLTOL, model,
+                                                 input_var.getInteraction(),
+                                                 input_var.getNgpreds(),
+                                                 invvarmatrix,
+                                                 input_var.getRobust(), 1);
+
+                            *chi2[model] << 2. * (loglik - new_null_rd.loglik);
+#endif
                         }
                         else
                         {
                             // No missing SNP data, we can compute the LRT
-                            *chi2[model] << 2. * (rd.loglik - null_loglik);
+                            *chi2[model] << 2. * (loglik - null_loglik);
                         }
-                        //*chi2[model] << rd.loglik;
                     } else
                     {
                         // We want score test output
                         *chi2[model] << rd.chi2_score;
-                        //*chi2[model] << "nan";
                     }
                 }
             } // END first part of if(poly); allele not too rare

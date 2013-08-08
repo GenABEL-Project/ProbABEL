@@ -362,4 +362,30 @@ mematrix<DT> productMatrDiag(const mematrix<DT> &M, const mematrix<DT> &D)
     return temp;
 }
 
+
+template<class DT>
+void mematrix<DT>::delete_column(const int delcol)
+{
+    if (delcol > ncol || delcol < 0)
+    {
+        fprintf(stderr, "mematrix::delete_column: column out of range\n");
+        exit(1);
+    }
+
+    // Eigen::Matrix<DT,-1,-1,0,-1,-1> *auxdata =
+    //     new Eigen::Matrix<DT,-1,-1,0,-1,-1>;
+    MatrixXd auxdata = data;
+
+    data.resize(data.rows(), data.cols()-1);
+
+    int rightColsSize = auxdata.cols() - delcol - 1;
+
+    data.leftCols(delcol) = auxdata.leftCols(delcol);
+    data.rightCols(rightColsSize) = auxdata.rightCols(rightColsSize);
+
+    ncol--;
+}
+
+
+
 #endif

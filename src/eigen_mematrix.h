@@ -37,6 +37,8 @@ public:
     mematrix operator*(const mematrix &M);
     mematrix operator*(const mematrix *M);
 
+    void delete_column(const int delcol);
+
     void reinit(int nr, int nc);
 
     unsigned int getnrow(void)

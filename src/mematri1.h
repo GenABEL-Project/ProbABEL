@@ -301,7 +301,7 @@ void mematrix<DT>::print(void)
 }
 
 template<class DT>
-void mematrix<DT>::delete_column(int delcol)
+void mematrix<DT>::delete_column(const int delcol)
 {
     if (delcol > ncol || delcol < 0)
     {
@@ -333,7 +333,7 @@ void mematrix<DT>::delete_column(int delcol)
 }
 
 template<class DT>
-void mematrix<DT>::delete_row(int delrow)
+void mematrix<DT>::delete_row(const int delrow)
 {
     if (delrow > nrow || delrow < 0)
     {

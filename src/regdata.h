@@ -34,6 +34,7 @@ public:
             bool ext_is_interaction_excluded);
     mematrix<double> extract_genotypes();
     void update_snp(gendata &gend, int snpnum);
+    void remove_snp_from_X();
     regdata get_unmasked_data();
     ~regdata();
 
