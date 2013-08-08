@@ -2,8 +2,8 @@
 
 AUTOMAKE_OPTIONS = foreign color-tests
 
-#tests_files = check_probabel.pl_chunk.sh check_dose_input.sh
-tests_files =  check_dose_input.sh
+tests_files = check_probabel.pl_chunk.sh check_dose_input.sh
+
 verified_results = verified_results/height_add.out.txt	\
  verified_results/height_ngp2_add.out.txt			\
  verified_results/height_ngp2_2df.out.txt			\
