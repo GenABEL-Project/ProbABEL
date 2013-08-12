@@ -63,7 +63,6 @@ void gendata::get_var(int var, double * data)
                          << endl;
                     exit(EXIT_FAILURE);
                 }
-                cout << "!" << val << "# ";
                 /* If we got here, strtod() successfully parsed a number */
                 data[j++] = val;
             }
