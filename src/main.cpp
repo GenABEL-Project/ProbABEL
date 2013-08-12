@@ -716,8 +716,17 @@ int main(int argc, char * argv[])
                                                  invvarmatrix,
                                                  input_var.getRobust(), 1);
 
-                            *chi2[model] << 2. * (loglik - new_null_rd.loglik);
+#elif COXPH
+                            coxph_data new_rgd = rgd;
+                            new_rgd.remove_snp_from_X();
+                            coxph_reg new_null_rd(new_rgd);
+                            new_null_rd.estimate(new_rgd, 0, MAXITER, EPS,
+                                                 CHOLTOL, model,
+                                                 input_var.getInteraction(),
+                                                 input_var.getNgpreds(),
+                                                 true, 1);
 #endif
+                            *chi2[model] << 2. * (loglik - new_null_rd.loglik);
                         }
                         else
                         {

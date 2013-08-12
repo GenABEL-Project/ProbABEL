@@ -136,7 +136,8 @@ void regdata::remove_snp_from_X()
     }
     else
     {
-        cerr << "ngpreds should be 1 or 2. you should never come here!\n";
+        cerr << "Error: ngpreds should be 1 or 2. "
+             << "You should never come here!\n";
     }
 }
 

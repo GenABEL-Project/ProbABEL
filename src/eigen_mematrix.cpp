@@ -372,10 +372,7 @@ void mematrix<DT>::delete_column(const int delcol)
         exit(1);
     }
 
-    // Eigen::Matrix<DT,-1,-1,0,-1,-1> *auxdata =
-    //     new Eigen::Matrix<DT,-1,-1,0,-1,-1>;
     MatrixXd auxdata = data;
-
     data.resize(data.rows(), data.cols()-1);
 
     int rightColsSize = auxdata.cols() - delcol - 1;
@@ -384,6 +381,28 @@ void mematrix<DT>::delete_column(const int delcol)
     data.rightCols(rightColsSize) = auxdata.rightCols(rightColsSize);
 
     ncol--;
+}
+
+
+template<class DT>
+void mematrix<DT>::delete_row(const int delrow)
+{
+    if (delrow > nrow || delrow < 0)
+    {
+        fprintf(stderr, "mematrix::delete_row: row out of range\n");
+        exit(1);
+    }
+
+
+    MatrixXd auxdata = data;
+    data.resize(data.rows()-1, data.cols());
+
+    int bottomRowsSize = auxdata.rows() - delrow - 1;
+
+    data.topRows(delrow) = auxdata.topRows(delrow);
+    data.bottomRows(bottomRowsSize) = auxdata.bottomRows(bottomRowsSize);
+
+    nrow--;
 }
 
 

@@ -59,7 +59,7 @@ coxph_data::coxph_data(const coxph_data &obj) : sstat(obj.sstat)
 
     for (int i = 0; i < nids; i++)
     {
-        masked_data[i] = 0;
+        masked_data[i] = obj.masked_data[i];
     }
 }
 
@@ -168,7 +168,9 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
     strata  = reorder(strata, order);
     offset  = reorder(offset, order);
     X       = reorder(X, order);
-    X       = transpose(X);
+
+    // The coxfit2() function expects data in column major order.
+    X = transpose(X);
 
     // X.print();
     // offset.print();
@@ -211,6 +213,30 @@ void coxph_data::update_snp(gendata &gend, int snpnum)
         }
     }
 }
+
+
+void coxph_data::remove_snp_from_X()
+{
+    // update_snp() adds SNP information to the design matrix. This
+    // function allows you to strip that information from X again.
+    // This is used for example when calculating the null model.
+
+    if(ngpreds == 1)
+    {
+        X.delete_row(X.nrow -1);
+    }
+    else if(ngpreds == 2)
+    {
+        X.delete_row(X.nrow -1);
+        X.delete_row(X.nrow -1);
+    }
+    else
+    {
+        cerr << "Error: ngpreds should be 1 or 2. "
+             << "You should never come here!\n";
+    }
+}
+
 
 coxph_data::~coxph_data()
 {
@@ -283,7 +309,7 @@ coxph_reg::coxph_reg(coxph_data &cdatain)
     coxph_data cdata = cdatain.get_unmasked_data();
     beta.reinit(cdata.X.nrow, 1);
     sebeta.reinit(cdata.X.nrow, 1);
-    loglik = -9.999e+32;
+    loglik = - INFINITY;
     sigma2 = -1.;
     chi2_score = -1.;
     niter = 0;
@@ -295,6 +321,7 @@ void coxph_reg::estimate(coxph_data &cdatain, int verbose, int maxiter,
                          int nullmodel)
 {
     coxph_data cdata = cdatain.get_unmasked_data();
+
     mematrix<double> X = t_apply_model(cdata.X, model, interaction, ngpreds,
                                        iscox, nullmodel);
 
@@ -312,6 +339,7 @@ void coxph_reg::estimate(coxph_data &cdatain, int verbose, int maxiter,
 
     mematrix<double> u(X.nrow, 1);
     mematrix<double> imat(X.nrow, X.nrow);
+
     double work[X.ncol * 2 + 2 * (X.nrow) * (X.nrow) + 3 * (X.nrow)];
     double loglik_int[2];
     int flag;
@@ -334,6 +362,11 @@ void coxph_reg::estimate(coxph_data &cdatain, int verbose, int maxiter,
             imat.data, loglik_int, &flag, work, &eps, &tol_chol,
             &sctest);
 #endif
+
+    if (flag == 1000)
+    {
+        cerr << "Error: Cox regression did not converge\n";
+    }
 
     for (int i = 0; i < X.nrow; i++)
     {
