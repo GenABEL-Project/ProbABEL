@@ -179,7 +179,7 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
     // sstat.print();
 }
 
-void coxph_data::update_snp(gendata &gend, int snpnum)
+void coxph_data::update_snp(gendata &gend, const int snpnum)
 {
   /**
    * This is the main part of the fix of bug #1846
