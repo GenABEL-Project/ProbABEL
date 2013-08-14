@@ -63,7 +63,7 @@ coxph_data::coxph_data(const coxph_data &obj) : sstat(obj.sstat)
     }
 }
 
-coxph_data::coxph_data(phedata &phed, gendata &gend, int snpnum)
+coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
 {
     nids = gend.nids;
     masked_data = new unsigned short int[nids];
@@ -221,11 +221,11 @@ void coxph_data::remove_snp_from_X()
     // function allows you to strip that information from X again.
     // This is used for example when calculating the null model.
 
-    if(ngpreds == 1)
+    if (ngpreds == 1)
     {
         X.delete_row(X.nrow -1);
     }
-    else if(ngpreds == 2)
+    else if (ngpreds == 2)
     {
         X.delete_row(X.nrow -1);
         X.delete_row(X.nrow -1);

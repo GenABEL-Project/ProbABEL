@@ -34,7 +34,7 @@ public:
 
     coxph_data(const coxph_data &obj);
     coxph_data(phedata &phed, gendata &gend, int snpnum);
-    void update_snp(gendata &gend, int snpnum);
+    void update_snp(gendata &gend, const int snpnum);
     void remove_snp_from_X();
     ~coxph_data();
 
