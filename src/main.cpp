@@ -704,13 +704,23 @@ int main(int argc, char * argv[])
                             // the X matrix in the regression object
                             // and run the null model estimation again
                             // for this SNP.
-// BEWARE, ONLY IMPLEMENTED FOR LINEAR REG!!!
-// TODO LCK
 #ifdef LINEAR
                             regdata new_rgd = rgd;
                             new_rgd.remove_snp_from_X();
                             linear_reg new_null_rd(new_rgd);
-                            new_null_rd.estimate(new_rgd, 0, CHOLTOL, model,
+                            new_null_rd.estimate(new_rgd, 0,
+                                                 CHOLTOL, model,
+                                                 input_var.getInteraction(),
+                                                 input_var.getNgpreds(),
+                                                 invvarmatrix,
+                                                 input_var.getRobust(), 1);
+
+#elif LOGISTIC
+                            regdata new_rgd = rgd;
+                            new_rgd.remove_snp_from_X();
+                            logistic_reg new_null_rd(new_rgd);
+                            new_null_rd.estimate(new_rgd, 0, MAXITER, EPS,
+                                                 CHOLTOL, model,
                                                  input_var.getInteraction(),
                                                  input_var.getNgpreds(),
                                                  invvarmatrix,
