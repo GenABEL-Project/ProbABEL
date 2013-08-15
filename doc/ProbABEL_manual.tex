@@ -60,13 +60,13 @@ When we work with directly genotyped markers using such techniques as
 SNP or microsatellite typing, we would normally know the genotype of
 a particular person at a particular locus with very high degree of
 confidence, and, in case of biallelic marker, can state whether
-genotype is $AA$, $AB$ or $BB$.
+the genotype is $AA$, $AB$ or $BB$.
 
-On the contrary, when dealing with imputed or high-throughput
-sequencing data, for many of the genomic loci we are quite uncertain
-about the genotypic status of the person. Instead of dealing with
+On the other hand, when dealing with imputed or high-throughput
+sequencing data, the genotypic status of the person is known with a
+much lower confidence. Instead of dealing with
 known genotypes we work with a probability distribution that is based
-on observed information, and we have estimates that true underlying
+on observed information, and we have estimates that the true underlying
 genotype is either $AA$, $AB$ or $BB$. The degree of confidence about
 the real status is measured with the probability distribution
 $\{P(AA), P(AB), P(BB)\}$.
@@ -90,9 +90,9 @@ performing association analysis by means of regression of the
 outcome of interest onto estimated genotypic probabilities.
 
 The \PA{} package was designed to perform such regression
-in a fast, memory-efficient and consequently genome-wide feasible manner.
-Currently, \PA{} implements linear, logistic regression,
-and Cox proportional hazards models. The corresponding analysis
+in a fast, memory-efficient and, consequently, genome-wide feasible manner.
+Currently, \PA{} implements linear and logistic regression,
+as well as the Cox proportional hazards model. The corresponding analysis
 programs are called \texttt{palinear},  \texttt{palogist},
 and \texttt{pacoxph}.
 
@@ -109,8 +109,8 @@ files of HapMap).
 
 The dose/probability file may be supplied in filevector format
 in which case \PA{} will operate much faster, and
-in low-RAM mode (approx. $\approx$ 128 MB). See the R libraries \GA{} and
-\DA{} on how to convert MaCH and IMPUTE files to
+in low-RAM mode (approx.~128 MB). See the R libraries \GA{} and
+\DA{} on how to convert MaCH and IMPUTE2 files to
 filevector format (functions: \texttt{mach2databel()} and
 \texttt{impute2databel()}, respectively).
 
@@ -137,7 +137,6 @@ The example of SNP information file content follows here (also
 to be found in \texttt{ProbABEL/examples/test.mlinfo})
 
 \verbatiminput{test.mlinfo}
-
 Note that a header line is present in the file. The file describes
 five SNPs.
 
@@ -166,9 +165,11 @@ to be found in the file \texttt{ProbABEL/examples/test.mldose})
 \textbf{The order of SNPs in the SNP information file and DOSE or PROB
   file must be the same}. This should be the case if you just used
 MaCH/\texttt{minimac} outputs.
-
-Therefore, by all means, the number of columns in the genomic predictor file
-must be the same as the number of lines in the SNP information file plus one.
+Consequently, the number of columns in the genomic predictor file
+must be the same as the number of lines in the SNP information file
+plus one in the case of a DOSE file. Similarly, for a PROB file the
+number of columns must be equal to two times the number of SNPs plus
+1.
 
 The dose/probability file may be supplied in filevector format
 (\texttt{.fvi} and \texttt{.fvd} files) in which case
@@ -176,8 +177,8 @@ The dose/probability file may be supplied in filevector format
 (approx.~128 MB). On the command line simply specify the \texttt{.fvi}
 file as argument for the \texttt{--dose} option
 (cf.~section~\ref{sec:runanalysis} for more information on the options
-accepted by \texttt{ProbABEL}). See the R libraries GenABEL and
-DatABEL on how to convert MaCH and IMPUTE files to
+accepted by \texttt{ProbABEL}). See the R libraries \GA{} and
+\DA{} on how to convert MaCH and IMPUTE files to
 filevector format (functions: \texttt{mach2databel()} and
 \texttt{impute2databel()}, respectively).
 
@@ -199,17 +200,16 @@ other coding will be converted to some number which will be used in
 analysis! E.g.~coding missing as '-999.9' will result in an analysis which
 will consider -999.9 as indeed a true measurements of the trait/covariates.
 
-In the case of linear or logistic regression (programs \texttt{palinear} and
-\texttt{palogist}, respectively), the second column specifies the trait
-under analysis, while the third, fourth, etc.~provide information on
-covariates to be included into analysis.
-An example few lines of phenotypic information file designed for
-linear regression analysis follow here (also
-to be found in \texttt{examples/height.txt})
+In the case of linear or logistic regression (programs
+\texttt{palinear} and \texttt{palogist}, respectively), the second
+column specifies the trait under analysis, while the third, fourth,
+etc.~provide information on covariates to be included into analysis.
+As an example, a few lines of a phenotypic information file designed
+for linear regression analysis follow here (also to be found in
+\texttt{examples/height.txt})
 
 \verbatiminput{short_height.txt}
-
-Note again that the order of IDs is the same between the MLDOSE file
+Note again that the order of IDs is the same in the MLDOSE file
 and the phenotypic data file. The model specified by this file is
 \begin{equation*}
 \textrm{height} \sim \mu + \textrm{sex} + \textrm{age},
@@ -245,7 +245,6 @@ analysis follow here (also to be found in
 \texttt{examples/coxph\_data.txt})
 
 \verbatiminput{short_coxph_data.txt}
-
 You can see that for the first ten people, the event occurs for three of
 them, while for the other seven there is no event during the follow-up
 time, as indicated by the ``chd'' column. Follow-up time is specified in the preceding
@@ -422,7 +421,6 @@ variance should be fit as part of \GA{}'s
 %model and only the interaction term in the \PA{} analysis.
 
 \subsection{Running multiple analyses at once: \texttt{probabel.pl}}
-
 The Perl script \texttt{bin/probabel.pl} represents a handy wraper for
 \PA{} functions.  To start using it the configuration file
 \texttt{etc/probabel\_config.cfg.example} needs to be edited and
@@ -486,8 +484,12 @@ If the \texttt{--chrom} option was used, in the next column you will
 find the value specified by this option. If \texttt{--map} option was
 used, in the subsequent column you will find map location taken from
 the map-file. The subsequent columns provide coefficients of
-regression of the phenotype onto genotype, corresponding standard
-errors, and Wald $\chi^2$ test value.
+regression of the phenotype onto the genotype ($\beta$), corresponding
+standard errors ($\text{SE}_\beta$), and the $\chi^2$ test value based
+on the likelihood ratio test. Note that for the additive, recessive,
+dominant and overdominant genetic models this is a $\chi^2$ of 1
+degree of freedom, whereas for the genotypic model this is a $\chi^2$
+of 2df.
 
 
 \section{Preparing input files}
@@ -498,7 +500,7 @@ details.
 
 \section{Memory use and performance}
 Maximum likelihood regression is implemented in
-\PA{}. With 6,000 people and 2.5 millions SNPs, a
+\PA{}. With 6,000 people and 2.5 million SNPs, a
 genome-wide scan is completed in less that an hour for a linear model
 with 1-2 covariates and overnight for logistic regression or the Cox
 proportional hazards model (figures for a PC bought back in 2007).
@@ -507,15 +509,15 @@ Memory may be an issue with \PA{} if you use MaCH/\texttt{minimac}
 text dose/probability files, e.g. for large chromosomes, such as
 chromosome one consumed up to 5 GB of RAM with 6,000 people.
 
-We suggest that dose/probability file is to be supplied in filevector format
-in which case \PA{} will operate about 2-3 times faster, and
-in low-RAM mode (approx.~128 MB). See the R libraries \GA{} and
-\DA{} on how to convert MaCH and IMPUTE files to
-filevector format (functions: \texttt{mach2databel()} and
+We suggest that the genotype dosage/probability file is to be supplied
+in filevector format in which case \PA{} will operate about 2-3 times
+faster, and in low-RAM mode (approx.~128 MB). See the R libraries
+\GA{} and \DA{} on how to convert MaCH and IMPUTE files to filevector
+format (functions: \texttt{mach2databel()} and
 \texttt{impute2databel()}, respectively).
 
-When the \texttt{--mmscore} option is used, the analysis may take
-quite some time.
+When the \texttt{--mmscore} option is used, the analysis takes
+more time.
 
 \section{Methodology}
 \label{sec:methodology}
