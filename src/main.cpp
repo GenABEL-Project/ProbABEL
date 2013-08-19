@@ -216,9 +216,8 @@ void create_header(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
                             << phd.model_terms[interaction_cox];
             }
 #endif
-            *outfile[0] << input_var.getSep() << "chi2_SNP"; //"loglik";
         }
-        //Oct 26, 2009
+        *outfile[0] << input_var.getSep() << "chi2_SNP";
         *outfile[0] << "\n";
     } // ngpreds == 1
     else if (input_var.getNgpreds() == 2) // prob data: all models
@@ -692,11 +691,8 @@ int main(int argc, char * argv[])
                 //________________________________
                 //cout <<  rd.loglik<<" "<<input_var.getNgpreds() << "\n";
 
-                if ((input_var.getInverseFilename() == NULL
-                        && input_var.getNgpreds() != 2)
-                        || input_var.getNgpreds() == 2)
-                {
-
+                if (input_var.getInverseFilename() == NULL)
+                { // Only if we don't have an inv.sigma file can we use LRT
                     if (input_var.getScore() == 0)
                     {
                         double loglik = rd.loglik;
@@ -754,6 +750,13 @@ int main(int argc, char * argv[])
                         // We want score test output
                         *chi2[model] << rd.chi2_score;
                     }
+                } // END if( inv.sigma == NULL )
+                else if (input_var.getInverseFilename() != NULL)
+                {
+                    // We can't use the LRT here, because mmscore is a
+                    // REML method. Therefore go for the Wald test
+                    double Z = rd.beta[start_pos] / rd.sebeta[start_pos];
+                    *chi2[model] << Z * Z;
                 }
             } // END first part of if(poly); allele not too rare
             else
@@ -882,22 +885,14 @@ int main(int argc, char * argv[])
         }
         else // Dose data: only additive model. Only one output file
         {
-            if (input_var.getInverseFilename() == NULL)
-            {
-                //Han Chen
-                *outfile[0] << beta_sebeta[0]->str() << input_var.getSep();
+            *outfile[0] << beta_sebeta[0]->str() << input_var.getSep();
 #if !COXPH
-                if (!input_var.getAllcov() && input_var.getInteraction() != 0)
-                {
-                    *outfile[0] << covvalue[0]->str() << input_var.getSep();
-                }
-#endif
-                *outfile[0] << chi2[0]->str() << "\n";
-                //Oct 26, 2009
-            } else
+            if (!input_var.getAllcov() && input_var.getInteraction() != 0)
             {
-                *outfile[0] << beta_sebeta[0]->str() << "\n";
+                *outfile[0] << covvalue[0]->str() << input_var.getSep();
             }
+#endif
+            *outfile[0] << chi2[0]->str() << "\n";
         }  // End ngpreds == 1 when writing output files
 
 

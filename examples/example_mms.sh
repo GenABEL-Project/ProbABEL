@@ -64,14 +64,12 @@ for model in add domin over_domin recess 2df; do
         "mmscore check ($model model): prob vs. prob_fv"
 done
 
-# The following checks are disabled because of the missing LogLik
-# column in the prob data
-# run_diff mmscore_prob_add.out.txt \
-#     mmscore_add.out.txt \
-#     "mmscore check: prob vs. dose" \
-#     -I beta_SNP
+run_diff mmscore_prob_add.out.txt \
+    mmscore_dose_add.out.txt \
+    "mmscore check: prob vs. dose" \
+    -I SNP
 
-# run_diff mmscore_prob_fv_add.out.txt \
-#     mmscore_fv_add.out.txt \
-#     "mmscore check: prob_fv vs. dose_fv" \
-#     -I beta_SNP
+run_diff mmscore_prob_fv_add.out.txt \
+    mmscore_dose_fv_add.out.txt \
+    "mmscore check: prob_fv vs. dose_fv" \
+    -I SNP
