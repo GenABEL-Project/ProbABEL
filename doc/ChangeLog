@@ -1,6 +1,8 @@
 ***** v.0.4.0 (2013.08)
 * The output files now contain a chi^2 column with the chi^2 value based
-  on the LRT.
+  on the LRT when not using --mmscore. When using -mmscore, the chi^2
+  values are calculated from the Wald statistic (not implemented for the
+  2df model yet).
 * Fixed long-standing bug #1130: The Cox regression module of ProbABEL
   crashes (when using filevector files). Actually, the Cox PH module was
   broken ever since ProbABEL v0.1-9e. Thanks to the Erasmus Medical

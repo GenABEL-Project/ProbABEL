@@ -755,8 +755,20 @@ int main(int argc, char * argv[])
                 {
                     // We can't use the LRT here, because mmscore is a
                     // REML method. Therefore go for the Wald test
-                    double Z = rd.beta[start_pos] / rd.sebeta[start_pos];
-                    *chi2[model] << Z * Z;
+                    if (input_var.getNgpreds() == 2 && model == 0)
+                    {
+                        /* For the 2df model we can't simply use the
+                         * Wald statistic. This can be fixed using the
+                         * equation just below Eq.(4) in the ProbABEL
+                         * paper. TODO LCK
+                         */
+                        *chi2[model] << "nan";
+                    }
+                    else
+                    {
+                        double Z = rd.beta[start_pos] / rd.sebeta[start_pos];
+                        *chi2[model] << Z * Z;
+                    }
                 }
             } // END first part of if(poly); allele not too rare
             else

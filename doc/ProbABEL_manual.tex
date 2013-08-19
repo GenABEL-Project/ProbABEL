@@ -33,6 +33,9 @@
 % get the links to the figures and tables right:
 \usepackage[all]{hypcap} % to be loaded after hyperref package
 
+% lowercase letters as footnote numerals (to avoid confusion with powers).
+\renewcommand{\thefootnote}{\alph{footnote}}
+
 \DeclareMathOperator{\var}{\mathbf{var}}
 
 \makeindex
@@ -488,9 +491,13 @@ regression of the phenotype onto the genotype ($\beta$), corresponding
 standard errors ($\text{SE}_\beta$), and the $\chi^2$ test value based
 on the likelihood ratio test. Note that for the additive, recessive,
 dominant and overdominant genetic models this is a $\chi^2$ of 1
-degree of freedom, whereas for the genotypic model this is a $\chi^2$
-of 2df.
-
+degree of freedom (df), whereas for the genotypic model this is a
+$\chi^2$ of 2df. If the \texttt{--mmscore} option is used, the
+$\chi^2$ values are calculated from the Wald statistic
+(1df)\footnote{For the genotypic (2df) model the $\chi^2$ values can't
+  be simply calculated using the Wald statistic, consequently the
+  $\chi^2$ values are set to \texttt{nan}. A fix for this needs to be
+  implemented still.}.
 
 \section{Preparing input files}
 After installing \PA{} you can find the \texttt{prepare\_data.R} file
