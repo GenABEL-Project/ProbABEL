@@ -1,93 +1,61 @@
-## Set tolerance for comparing various outputs
-tol <- 1e-5
+cat("Checking linear regression...\n")
 
-####
-## load the data
-####
+args <- commandArgs(TRUE)
+srcdir <- args[1]
 
-## load phenotypic data
-pheno <- read.table("../../examples/height.txt", head=TRUE, string=FALSE)
-
-## load genetic DOSE data
-dose <- read.table("../../examples/test.mldose", head=FALSE, string=FALSE)
-## remove "1->" from the names of dose-IDs
-idNames <- dose[, 1]
-idNames <- sub("[0-9]+->", "", idNames)
-dose[, 1] <- idNames
-cat("Dose: check consistency of names\t\t")
-stopifnot( all.equal(dose[, 1], pheno[, 1], tol) )
-cat("OK\n")
-
-## load genetic PROB data
-prob <- read.table("../../examples/test.mlprob", head=FALSE, string=FALSE)
-## remove "1->" from the names of prob-IDs
-idNames <- prob[, 1]
-idNames <- sub("[0-9]+->", "", idNames)
-prob[, 1] <- idNames
-cat("Prob: check consistency of names\t\t")
-stopifnot( all.equal(prob[, 1], pheno[, 1], tol) )
-cat("OK\n")
-
-## check consistency DOSE <-> PROB
-doseFromProb <- matrix(NA, ncol=dim(dose)[2], nrow=dim(dose)[1])
-for (i in 3:dim(dose)[2]) {
-        indexHom <- 3 + ( i - 3 ) * 2
-        indexHet <- indexHom + 1
-        doseFromProb[, i] <- prob[, indexHom] * 2 + prob[, indexHet]
+if (is.na(srcdir)) {
+    srcdir <- "./"
 }
-cat("Check consistency dose <-> prob\t\t\t")
-stopifnot( all.equal(dose[, 3:ncol(dose)],
-                     as.data.frame(doseFromProb)[,3:ncol(doseFromProb)],
-                     tol=tol )
-          )
-cat("OK\n")
+
+pheno.file <- "height.txt"
+
+source(paste0(srcdir, "initial_checks.R"))
 
 ####
 ## Run ProbABEL to get the output data we want to compare/verify
 ####
 cat("Running ProbABEL...\t\t\t\t")
-tmp <- system("cd ../../examples/; sh example_qt.sh; cd -",
+tmp <- system(paste0("cd ", example.path, "; bash example_qt.sh; cd -"),
               intern=TRUE)
 cat("OK\n")
 
-resPaAddDose <-
-    read.table("../../examples/height_base_add.out.txt",
-               head=TRUE)[,
-                   c("beta_SNP_add",
-                     "sebeta_SNP_add",
-                     "chi2_SNP")]
-resPaAddProb <-
-    read.table("../../examples/height_ngp2_add.out.txt",
-               head=TRUE)[,
-                   c("beta_SNP_addA1",
-                     "sebeta_SNP_addA1",
-                     "chi2_SNP_A1")]
-resPaDom <-
-    read.table("../../examples/height_ngp2_domin.out.txt",
-               head=TRUE)[,
-                   c("beta_SNP_domA1",
-                     "sebeta_SNP_domA1",
-                     "chi2_SNP_domA1")]
-resPaRec <-
-    read.table("../../examples/height_ngp2_recess.out.txt",
-               head=TRUE)[,
-                   c("beta_SNP_recA1",
-                     "sebeta_SNP_recA1",
-                     "chi2_SNP_recA1")]
-resPaOdom <-
-    read.table("../../examples/height_ngp2_over_domin.out.txt",
-               head=TRUE)[,
-                   c("beta_SNP_odomA1",
-                     "sebeta_SNP_odomA1",
-                     "chi2_SNP_odomA1")]
-resPa2df <-
-    read.table("../../examples/height_ngp2_2df.out.txt",
-               head=TRUE)[,
-                   c("beta_SNP_A1A2",
-                     "sebeta_SNP_A1A2",
-                     "beta_SNP_A1A1",
-                     "sebeta_SNP_A1A1",
-                     "chi2_SNP_2df")]
+resPaAddDose <- read.table(
+    paste0(example.path, "height_base_add.out.txt"),
+    head=TRUE)[,
+        c("beta_SNP_add",
+          "sebeta_SNP_add",
+          "chi2_SNP")]
+resPaAddProb <- read.table(
+    paste0(example.path, "height_ngp2_add.out.txt"),
+    head=TRUE)[, c("beta_SNP_addA1",
+        "sebeta_SNP_addA1",
+        "chi2_SNP_A1")]
+resPaDom <- read.table(
+    paste0(example.path, "height_ngp2_domin.out.txt"),
+    head=TRUE)[,
+        c("beta_SNP_domA1",
+          "sebeta_SNP_domA1",
+          "chi2_SNP_domA1")]
+resPaRec <- read.table(
+    paste0(example.path, "height_ngp2_recess.out.txt"),
+    head=TRUE)[,
+        c("beta_SNP_recA1",
+          "sebeta_SNP_recA1",
+          "chi2_SNP_recA1")]
+resPaOdom <- read.table(
+    paste0(example.path, "height_ngp2_over_domin.out.txt"),
+    head=TRUE)[,
+        c("beta_SNP_odomA1",
+          "sebeta_SNP_odomA1",
+          "chi2_SNP_odomA1")]
+resPa2df <- read.table(
+    paste0(example.path, "height_ngp2_2df.out.txt"),
+    head=TRUE)[,
+        c("beta_SNP_A1A2",
+          "sebeta_SNP_A1A2",
+          "beta_SNP_A1A1",
+          "sebeta_SNP_A1A1",
+          "chi2_SNP_2df")]
 
 ####
 ## run analysis in R
