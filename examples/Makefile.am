@@ -41,9 +41,6 @@ examplefiles = height_ngp2_robust_int1_over_domin.out.txt.save		\
  impute_with_missing_add.out.txt.save					\
  height_ngp2_robust_domin.out.txt.save height.txt
 
-exampledir = $(pkgdatadir)/examples
-dist_example_DATA = $(examplefiles)
-
 TESTS_ENVIRONMENT = bash
 check_SCRIPTS =
 if BUILD_palinear
@@ -55,6 +52,10 @@ endif
 if BUILD_pacoxph
 check_SCRIPTS +=  example_cox.sh
 endif
+
+exampledir = $(pkgdatadir)/examples
+dist_example_DATA = $(examplefiles)
+dist_example_SCRIPTS = $(check_SCRIPTS) example_all.sh
 
 TESTS = $(check_SCRIPTS)
 

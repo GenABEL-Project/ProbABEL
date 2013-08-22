@@ -35,15 +35,17 @@ other_files = probabel.pl probabel_config.cfg height.PHE test.mldose
 check_SCRIPTS =
 
 
-testsdir = $(pkgdatadir)/tests
-dist_tests_DATA = $(tests_files) $(verified_results)
-
 TESTS_ENVIRONMENT = bash
 if BUILD_palinear
 check_SCRIPTS += $(tests_files)
 endif
 
 TESTS = $(check_SCRIPTS)
+
+testsdir = $(pkgdatadir)/tests
+dist_tests_DATA = $(tests_files) $(verified_results)
+dist_tests_SCRIPTS = $(check_SCRIPTS)
+
 
 CLEANFILES = $(dose_files) $(prob_files) $(map_files) ${info_files} \
  ${output_files} ${other_files}

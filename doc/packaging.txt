@@ -21,20 +21,19 @@ distributions.
    builds correctly for various settings of the ./configure
    options. Run the following:
     DISTCHECK_CONFIGURE_FLAGS="--disable-eigen" make distcheck
-    DISTCHECK_CONFIGURE_FLAGS="--enable-pacoxph" make distcheck
+    DISTCHECK_CONFIGURE_FLAGS="--disable-palinear" make distcheck
+    DISTCHECK_CONFIGURE_FLAGS="--disable-palogist" make distcheck
+    DISTCHECK_CONFIGURE_FLAGS="--disable-pacoxph" make distcheck
 ** Building the package for the first time
    Now that we verified that the source code builds without problems,
    let's create the package.
     mkdir /tmp/PA-deb
     cp probabel-0.3.0.tar.gz /tmp/PA-deb
     cd /tmp/PA-deb
-   Debian packages must have lowercase letters, so we'll have to rename
-   the directory after untar-ing it.
     tar -xzf probabel-0.3.0.tar.gz
     cd probabel-0.3.0
     dh_make --single --email youremail@example.com \
      --file ../probabel-0.3.0.tar.gz --copyright gpl2 \
-     --packagename probabel
 
    Hit the enter key to confirm the settings. Several files need to be
    edited.
@@ -43,7 +42,7 @@ distributions.
    - debian/copyright
    - debian/README.Debian
    dh_make also creates several example scripts in the debian/
-   directory. We don't need them, so they can be delete:
+   directory. We don't need them, so they can be deleted:
     rm debian/*.ex debian/*.EX debian/README.source
    Now the package can be built (NOTE that dpkg-buildpackage replaces
    our default CXXFLAGS with "-g -O2"):
