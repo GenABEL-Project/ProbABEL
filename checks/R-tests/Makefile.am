@@ -2,10 +2,7 @@
 
 AUTOMAKE_OPTIONS = foreign color-tests
 
-R_test_files = run_R_test_palinear.sh		\
- run_R_test_palogist.sh				\
- run_R_test_pacox.sh				\
- run_models_in_R_palinear.R			\
+R_test_files =  run_models_in_R_palinear.R	\
  run_models_in_R_palogist.R			\
  run_models_in_R_pacox.R			\
  initial_checks.R
@@ -25,9 +22,9 @@ endif
 endif
 
 
-testsdir = $(pkgdatadir)/tests/R-tests
-dist_tests_DATA = $(R_test_files)
-
+testsdir = $(pkgdatadir)/checks/R-tests
+dist_tests_DATA = $(R_test_files) $(check_SCRIPTS)
+#dist_tests_SCRIPTS = $(check_SCRIPTS)
 
 TESTS_ENVIRONMENT = bash
 

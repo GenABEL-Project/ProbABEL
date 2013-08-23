@@ -8,6 +8,8 @@ fi
 
 . ${srcdir}/run_diff.sh
 
+inputdir=${srcdir}/inputfiles
+
 # Redirect all output to file descriptor 3 to /dev/null except if
 # the first argument is "verbose" then redirect handle 3 to stdout
 exec 3>/dev/null
@@ -17,19 +19,19 @@ if [ "$1" = "verbose" ]; then
 fi
 
 ../src/pacoxph \
-    -p ${srcdir}/coxph_data.txt \
-    -d ${srcdir}/test.mldose \
-    -i ${srcdir}/test.mlinfo \
-    -m ${srcdir}/test.map \
+    -p ${inputdir}/coxph_data.txt \
+    -d ${inputdir}/test.mldose \
+    -i ${inputdir}/test.mlinfo \
+    -m ${inputdir}/test.map \
     -c 19 \
     -o coxph_dose \
     >& 3
 
 ../src/pacoxph \
-    -p ${srcdir}/coxph_data.txt \
-    -d ${srcdir}/test.dose.fvi \
-    -i ${srcdir}/test.mlinfo \
-    -m ${srcdir}/test.map \
+    -p ${inputdir}/coxph_data.txt \
+    -d ${inputdir}/test.dose.fvi \
+    -i ${inputdir}/test.mlinfo \
+    -m ${inputdir}/test.map \
     -c 19 \
     -o coxph_dose_fv \
     >& 3
@@ -39,10 +41,10 @@ run_diff coxph_dose_add.out.txt coxph_dose_fv_add.out.txt \
 
 
 ../src/pacoxph \
-    -p ${srcdir}/coxph_data.txt \
-    -d ${srcdir}/test.mlprob \
-    -i ${srcdir}/test.mlinfo \
-    -m ${srcdir}/test.map \
+    -p ${inputdir}/coxph_data.txt \
+    -d ${inputdir}/test.mlprob \
+    -i ${inputdir}/test.mlinfo \
+    -m ${inputdir}/test.map \
     --ngpreds=2 \
     -c 19 \
     -o coxph_prob \
@@ -53,10 +55,10 @@ run_diff coxph_dose_add.out.txt coxph_prob_add.out.txt \
 
 
 ../src/pacoxph \
-    -p ${srcdir}/coxph_data.txt \
-    -d ${srcdir}/test.prob.fvi \
-    -i ${srcdir}/test.mlinfo \
-    -m ${srcdir}/test.map \
+    -p ${inputdir}/coxph_data.txt \
+    -d ${inputdir}/test.prob.fvi \
+    -i ${inputdir}/test.mlinfo \
+    -m ${inputdir}/test.map \
     --ngpreds=2 \
     -c 19 \
     -o coxph_prob_fv \

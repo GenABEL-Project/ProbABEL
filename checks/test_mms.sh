@@ -9,6 +9,8 @@ fi
 
 . ${srcdir}/run_diff.sh
 
+inputdir=${srcdir}/inputfiles
+
 # Redirect all output to file descriptor 3 to /dev/null except if
 # the first argument is "verbose" then redirect handle 3 to stdout
 exec 3>/dev/null
@@ -17,21 +19,21 @@ if [ "$1" = "verbose" ]; then
 fi
 
 ../src/palinear \
-    -p ${srcdir}/mmscore_pheno.PHE \
-    -i ${srcdir}/mmscore_gen.mlinfo \
-    -d ${srcdir}/mmscore_gen.mldose \
+    -p ${inputdir}/mmscore_pheno.PHE \
+    -i ${inputdir}/mmscore_gen.mlinfo \
+    -d ${inputdir}/mmscore_gen.mldose \
     --sep="," \
     -o mmscore_dose \
-    --mmscore ${srcdir}/mmscore_InvSigma_aj.sex.age.dat \
+    --mmscore ${inputdir}/mmscore_InvSigma_aj.sex.age.dat \
     >& 3
 
 ../src/palinear \
-    -p ${srcdir}/mmscore_pheno.PHE \
-    -i ${srcdir}/mmscore_gen.mlinfo \
-    -d ${srcdir}/mmscore_gen.dose.fvi \
+    -p ${inputdir}/mmscore_pheno.PHE \
+    -i ${inputdir}/mmscore_gen.mlinfo \
+    -d ${inputdir}/mmscore_gen.dose.fvi \
     --sep="," \
     -o mmscore_dose_fv \
-    --mmscore ${srcdir}/mmscore_InvSigma_aj.sex.age.dat \
+    --mmscore ${inputdir}/mmscore_InvSigma_aj.sex.age.dat \
     >& 3
 
 
@@ -41,21 +43,21 @@ run_diff mmscore_dose_add.out.txt \
 
 
 ../src/palinear \
-    -p ${srcdir}/mmscore_pheno.PHE \
-    -i ${srcdir}/mmscore_gen.mlinfo \
-    -d ${srcdir}/mmscore_gen.mlprob \
+    -p ${inputdir}/mmscore_pheno.PHE \
+    -i ${inputdir}/mmscore_gen.mlinfo \
+    -d ${inputdir}/mmscore_gen.mlprob \
     --ngpreds=2 --sep="," \
     -o mmscore_prob \
-    --mmscore ${srcdir}/mmscore_InvSigma_aj.sex.age.dat \
+    --mmscore ${inputdir}/mmscore_InvSigma_aj.sex.age.dat \
     >& 3
 
 ../src/palinear \
-    -p ${srcdir}/mmscore_pheno.PHE \
-    -i ${srcdir}/mmscore_gen.mlinfo \
-    -d ${srcdir}/mmscore_gen.prob.fvi \
+    -p ${inputdir}/mmscore_pheno.PHE \
+    -i ${inputdir}/mmscore_gen.mlinfo \
+    -d ${inputdir}/mmscore_gen.prob.fvi \
     --ngpreds=2 --sep="," \
     -o mmscore_prob_fv \
-    --mmscore ${srcdir}/mmscore_InvSigma_aj.sex.age.dat \
+    --mmscore ${inputdir}/mmscore_InvSigma_aj.sex.age.dat \
     >& 3
 
 for model in add domin over_domin recess 2df; do

@@ -1,4 +1,4 @@
 ## Process this file with automake to produce Makefile.in
 
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = src doc examples tests
+SUBDIRS = src doc checks examples

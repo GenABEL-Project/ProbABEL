@@ -5,22 +5,24 @@
 # genetic data is done using the same code).
 
 echo "Checking palinear with dose data without '->'"
+# Exit with error when one of the steps in the script fails
+set -e
+
 if [ -z ${srcdir} ]; then
     srcdir="."
 fi
-
-exampledir="${srcdir}/../examples/"
+inputdir="${srcdir}/inputfiles/"
 results="${srcdir}/verified_results/"
 outfile="height_base_add.out.txt"
 
-sed 's/^[[:digit:]]*->//' $exampledir/test.mldose > test.mldose
+sed 's/^[[:digit:]]*->//' $inputdir/test.mldose > test.mldose
 
 
 ../src/palinear \
-    -p ${exampledir}/height.txt \
+    -p ${inputdir}/height.txt \
     -d test.mldose \
-    -i ${exampledir}/test.mlinfo \
-    -m ${exampledir}/test.map \
+    -i ${inputdir}/test.mlinfo \
+    -m ${inputdir}/test.map \
     -c 19 \
     -o height_base > /dev/null
 

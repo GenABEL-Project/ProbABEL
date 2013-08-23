@@ -9,14 +9,15 @@ tol <- 1e-5
 ####
 ## load the data
 ####
-example.path <- paste0(srcdir, "../../examples/")
+inputfiles.path <- paste0(srcdir, "../inputfiles/")
+tests.path      <- paste0(srcdir, "../")
 
 ## load phenotypic data
-pheno <- read.table(paste0(example.path, pheno.file),
+pheno <- read.table(paste0(inputfiles.path, pheno.file),
                     head=TRUE, string=FALSE)
 
 ## load genetic DOSE data
-dose <- read.table(paste0(example.path, "test.mldose"),
+dose <- read.table(paste0(inputfiles.path, "test.mldose"),
                    head=FALSE, string=FALSE)
 ## remove "1->" from the names of dose-IDs
 idNames   <- dose[, 1]
@@ -27,7 +28,7 @@ stopifnot( all.equal(dose[, 1], pheno[, 1], tol) )
 cat("OK\n")
 
 ## load genetic PROB data
-prob <- read.table(paste0(example.path, "test.mlprob"),
+prob <- read.table(paste0(inputfiles.path, "test.mlprob"),
                    head=FALSE, string=FALSE)
 ## remove "1->" from the names of prob-IDs
 idNames   <- prob[, 1]

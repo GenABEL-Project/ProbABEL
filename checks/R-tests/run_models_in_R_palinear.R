@@ -15,41 +15,41 @@ source(paste0(srcdir, "initial_checks.R"))
 ## Run ProbABEL to get the output data we want to compare/verify
 ####
 cat("Running ProbABEL...\t\t\t\t")
-tmp <- system(paste0("cd ", example.path, "; bash example_qt.sh; cd -"),
+tmp <- system(paste0("cd ", tests.path, "; bash test_qt.sh; cd -"),
               intern=TRUE)
 cat("OK\n")
 
 resPaAddDose <- read.table(
-    paste0(example.path, "height_base_add.out.txt"),
+    paste0(tests.path, "height_base_add.out.txt"),
     head=TRUE)[,
         c("beta_SNP_add",
           "sebeta_SNP_add",
           "chi2_SNP")]
 resPaAddProb <- read.table(
-    paste0(example.path, "height_ngp2_add.out.txt"),
+    paste0(tests.path, "height_ngp2_add.out.txt"),
     head=TRUE)[, c("beta_SNP_addA1",
         "sebeta_SNP_addA1",
         "chi2_SNP_A1")]
 resPaDom <- read.table(
-    paste0(example.path, "height_ngp2_domin.out.txt"),
+    paste0(tests.path, "height_ngp2_domin.out.txt"),
     head=TRUE)[,
         c("beta_SNP_domA1",
           "sebeta_SNP_domA1",
           "chi2_SNP_domA1")]
 resPaRec <- read.table(
-    paste0(example.path, "height_ngp2_recess.out.txt"),
+    paste0(tests.path, "height_ngp2_recess.out.txt"),
     head=TRUE)[,
         c("beta_SNP_recA1",
           "sebeta_SNP_recA1",
           "chi2_SNP_recA1")]
 resPaOdom <- read.table(
-    paste0(example.path, "height_ngp2_over_domin.out.txt"),
+    paste0(tests.path, "height_ngp2_over_domin.out.txt"),
     head=TRUE)[,
         c("beta_SNP_odomA1",
           "sebeta_SNP_odomA1",
           "chi2_SNP_odomA1")]
 resPa2df <- read.table(
-    paste0(example.path, "height_ngp2_2df.out.txt"),
+    paste0(tests.path, "height_ngp2_2df.out.txt"),
     head=TRUE)[,
         c("beta_SNP_A1A2",
           "sebeta_SNP_A1A2",

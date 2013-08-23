@@ -5,19 +5,22 @@
 
 echo "Testing probabel.pl..."
 
+# Exit with error when one of the steps in the script fails
+set -e
+
 # -------- Set some default paths and file names -------
 if [ -z ${srcdir} ]; then
     srcdir="."
 fi
-exampledir="${srcdir}/../examples/"
+inputdir="${srcdir}/inputfiles/"
 padir="${srcdir}/../src/"
 results="${srcdir}/verified_results/"
 
-dosefile="$exampledir/test.mldose"
-probfile="$exampledir/test.mlprob"
-infofile="$exampledir/test.mlinfo"
-mapfile="$exampledir/test.map"
-phenofile="$exampledir/height.txt"
+dosefile="$inputdir/test.mldose"
+probfile="$inputdir/test.mlprob"
+infofile="$inputdir/test.mlinfo"
+mapfile="$inputdir/test.map"
+phenofile="$inputdir/height.txt"
 
 probabel="${padir}/probabel.pl"
 probabelcfg="${padir}/probabel_config.cfg.example"
