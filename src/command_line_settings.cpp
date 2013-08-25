@@ -131,7 +131,7 @@ char* cmdvars::getPhefilename() const
 void cmdvars::set_variables(int argc, char * argv[])
 {
     int next_option;
-    const char * const short_options = "p:i:d:m:n:c:o:s:t:g:a:erlh:b:vu";
+    const char * const short_options = "p:i:d:m:n:c:o:s:t:g:a:erlhb:vu";
     //b - interaction parameter
     // ADD --fv FLAG (FILEVECTOR), IN WHICH CASE USE ALTERNATIVE
     // CONSTRUCTOR FOR GENDATA
@@ -168,6 +168,7 @@ void cmdvars::set_variables(int argc, char * argv[])
         {
         case 'h':
             print_help(program_name, 0);
+            break;
         case 'p':
             phefilename = optarg;
             neco[0] = 1;
