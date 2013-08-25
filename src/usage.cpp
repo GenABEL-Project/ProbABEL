@@ -46,9 +46,7 @@ void print_usage(char * program_name, int exit_code)
     cout << "\t --separat : [optional] character to separate fields "
          << "(default is space)"
          << endl;
-#if !COXPH
     cout << "\t --score   : use score test" << endl;
-#endif
     cout << "\t --no-head : do not report header line" << endl;
     cout << "\t --allcov  : report estimates for all covariates (large outputs!)"
          << endl;
