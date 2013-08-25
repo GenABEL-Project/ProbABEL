@@ -29,13 +29,14 @@ additional_files = mmscore.R			\
  mmscore_InvSigma_aj.sex.age.dat		\
  README
 
-example_SCRIPTS = example_qt.sh			\
+example_scripts = example_qt.sh			\
  example_bt.sh					\
  example_cox.sh					\
  example_mmscore.sh
 
 exampledir = $(pkgdatadir)/examples
 dist_example_DATA = $(phenofiles) $(additional_files)
+dist_example_SCRIPTS = $(example_scripts)
 
 gdatadir = $(pkgdatadir)/examples/gtdata
 dist_gdata_DATA = $(genofiles)
