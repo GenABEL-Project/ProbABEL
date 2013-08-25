@@ -208,9 +208,11 @@ void cmdvars::set_variables(int argc, char * argv[])
         case 'e':
             nohead = 1;
             break;
+#if !COXPH
         case 'r':
             score = 1;
             break;
+#endif
         case 'l':
             allcov = 1;
             break;
@@ -220,12 +222,14 @@ void cmdvars::set_variables(int argc, char * argv[])
         case 'k':
             interaction_excluded = atoi(optarg);
             break;
+#if !COXPH
         case 'v':
             inverse_filename = optarg;
             break;
         case 'u':
             robust = 1;
             break;
+#endif
 
         case '?':
             print_usage(program_name, 2);
