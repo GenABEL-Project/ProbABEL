@@ -1,18 +1,9 @@
-Read INSTALL file and compile the program
-
-Go to "example" directory
-
-Run binary trait analysis by 
-
-sh example_bt.sh
-
-Run quantitative trait analysis with
-
-sh example_qt.sh
-
-Run complete analysis including preparing the files with
-
-sh example_all.sh
-
-Inspect sh files to understand how to run the programs.
-
+- Read the doc/INSTALL file for instructions on how to compile the program.
+- Go to the "example" directory
+- Run a binary trait analysis by typing:
+   sh example_bt.sh
+- Run a quantitative trait analysis with
+   sh example_qt.sh
+- Run complete analysis including preparing the files with
+   sh example_all.sh
+- Inspect the .sh files to understand how to run the programs.

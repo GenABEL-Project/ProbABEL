@@ -20,7 +20,7 @@ distributions.
    package is built. But first we need to check whether the source
    builds correctly for various settings of the ./configure
    options. Run the following:
-    DISTCHECK_CONFIGURE_FLAGS="--disable-eigen" make distcheck
+    DISTCHECK_CONFIGURE_FLAGS="--without-eigen" make distcheck
     DISTCHECK_CONFIGURE_FLAGS="--disable-palinear" make distcheck
     DISTCHECK_CONFIGURE_FLAGS="--disable-palogist" make distcheck
     DISTCHECK_CONFIGURE_FLAGS="--disable-pacoxph" make distcheck
@@ -28,13 +28,12 @@ distributions.
    Now that we verified that the source code builds without problems,
    let's create the package.
     mkdir /tmp/PA-deb
-    cp probabel-0.3.0.tar.gz /tmp/PA-deb
+    cp probabel-0.4.0.tar.gz /tmp/PA-deb
     cd /tmp/PA-deb
-    tar -xzf probabel-0.3.0.tar.gz
-    cd probabel-0.3.0
+    tar -xzf probabel-0.4.0.tar.gz
+    cd probabel-0.4.0
     dh_make --single --email youremail@example.com \
-     --file ../probabel-0.3.0.tar.gz --copyright gpl2 \
-
+     --file ../probabel-0.4.0.tar.gz --copyright gpl2
    Hit the enter key to confirm the settings. Several files need to be
    edited.
    - debian/control
@@ -58,9 +57,14 @@ distributions.
    is part of the devscripts package):
     debuild -i -us -uc -b
 ** Uploading to an Ubuntu PPA (Personal Package Archive)
+   First, make sure you've set the correct version of the
+   distribution you are packaging for in the debian/changelog file
+   (use the dch command). E.g. for Ubuntu 12.04 (Precise) this should
+   be
+     probabel (0.4.0-0ubuntu1~precise1) precise; urgency=low
    Building a package for upload to a PPA is almost the same as shown above:
     debuild -i -S -kYOURKEYID
    where YOURKEYID is the ID of the gpg key you use for signing your
    package (this key should be known by launchpad).
    To upload the package created above to the GenABEL PPA simply type:
-    dput ppa:l.c.karssen/genabel-ppa ../probabel_0.3.0-1_source.changes
+    dput ppa:l.c.karssen/genabel-ppa ../probabel_0.4.0-0ubuntu1~precise1_source.changes
