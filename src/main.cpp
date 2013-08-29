@@ -798,8 +798,6 @@ int main(int argc, char * argv[])
                     end_pos = rgd.X.ncol - 1;
                 }
 
-                cout << "ENDPOS: " << end_pos << "\n";
-
                 if (input_var.getInteraction() != 0)
                 {
                     end_pos++;
