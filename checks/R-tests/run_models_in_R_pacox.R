@@ -22,41 +22,22 @@ cat("OK\n")
 
 resPaAddDose <- read.table(
     paste0(tests.path, "coxph_dose_add.out.txt"),
-    head=TRUE)[,
-        c("beta_SNP_add",
-          "sebeta_SNP_add",
-          "chi2_SNP")]
+    head=TRUE)[, colsAddDose]
 resPaAddProb <- read.table(
     paste0(tests.path, "coxph_prob_add.out.txt"),
-    head=TRUE)[, c("beta_SNP_addA1",
-        "sebeta_SNP_addA1",
-        "chi2_SNP_A1")]
+    head=TRUE)[, colsAddProb]
 resPaDom <- read.table(
     paste0(tests.path, "coxph_prob_domin.out.txt"),
-    head=TRUE)[,
-        c("beta_SNP_domA1",
-          "sebeta_SNP_domA1",
-          "chi2_SNP_domA1")]
+    head=TRUE)[, colsDom]
 resPaRec <- read.table(
     paste0(tests.path, "coxph_prob_recess.out.txt"),
-    head=TRUE)[,
-        c("beta_SNP_recA1",
-          "sebeta_SNP_recA1",
-          "chi2_SNP_recA1")]
+    head=TRUE)[, colsRec]
 resPaOdom <- read.table(
     paste0(tests.path, "coxph_prob_over_domin.out.txt"),
-    head=TRUE)[,
-        c("beta_SNP_odomA1",
-          "sebeta_SNP_odomA1",
-          "chi2_SNP_odomA1")]
+    head=TRUE)[, colsOdom]
 resPa2df <- read.table(
     paste0(tests.path, "coxph_prob_2df.out.txt"),
-    head=TRUE)[,
-        c("beta_SNP_A1A2",
-          "sebeta_SNP_A1A2",
-          "beta_SNP_A1A1",
-          "sebeta_SNP_A1A1",
-          "chi2_SNP_2df")]
+    head=TRUE)[, cols2df]
 
 ####
 ## run analysis in R
@@ -64,137 +45,79 @@ resPa2df <- read.table(
 attach(pheno)
 
 cat("Comparing R output with ProbABEL output\t\t")
-# run analysis on dose
-## emptyRes <- resPaAddDose
-## emptyRes[] <- NA
-## resRAddDose <- resRAddProb <- resRDom <- resRRec <- resROdom <- emptyRes
 
-dose.add.R <- data.frame(beta_SNP_add   = numeric(),
-                         sebeta_SNP_add = numeric(),
-                         chi2_SNP       = numeric())
-prob.add.R <- data.frame(beta_SNP_addA1   = numeric(),
-                         sebeta_SNP_addA1 = numeric(),
-                         chi2_SNP_A1      = numeric())
-for (i in 3:dim(dose)[2]) {
-        noNA <- which( !is.na(dose[, i]) )
-        model.0 <- coxph(
-            Surv(fupt_chd, chd)[noNA] ~ sex[noNA] + age[noNA] + othercov[noNA] )
-
-        model.dose <- coxph(Surv(fupt_chd, chd) ~ sex + age +
-                            othercov + dose[,i] )
-        sm.dose <- summary(model.dose)$coef[4, c(1,3)]
-
-        model.prob <- coxph(Surv(fupt_chd, chd) ~ sex + age +
-                            othercov + doseFromProb[,i] )
-        sm.prob <- summary(model.prob)$coef[4, c(1,3)]
-
-        lrt.dose <- 2 * ( model.dose$loglik[2] - model.0$loglik[2] )
-        lrt.prob <- 2 * ( model.prob$loglik[2] - model.0$loglik[2] )
-
-        row <- data.frame(
-            beta_SNP_add = sm.dose[1],
-            sebeta_SNP_add = sm.dose[2],
-            chi2_SNP = lrt.dose)
-        dose.add.R <- rbind(dose.add.R, row)
-
-        row <- data.frame(
-            beta_SNP_addA1 = sm.prob[1],
-            sebeta_SNP_addA1 = sm.prob[2],
-            chi2_SNP_A1 = lrt.prob)
-        prob.add.R <- rbind(prob.add.R, row)
-}
-rownames(dose.add.R) <- NULL
-rownames(prob.add.R) <- NULL
-stopifnot( all.equal(resPaAddDose, dose.add.R, tol=tol) )
-
-stopifnot( all.equal(resPaAddProb, prob.add.R, tol=tol) )
-
-
-## dominant model
-prob.dom.R <- data.frame(beta_SNP_domA1   = numeric(),
-                         sebeta_SNP_domA1 = numeric(),
-                         chi2_SNP_domA1   = numeric())
-for (i in 3:dim(dose)[2]) {
+run.model <- function(model0.txt, model.txt, snpdata) {
+    resultR <- data.frame()
+    for (i in 3:dim(dose)[2]) {
         indexHom <- 3 + ( i - 3 ) * 2
         indexHet <- indexHom + 1
-        regProb <- prob[,indexHom] + prob[,indexHet]
+        snp      <- eval(parse(text=snpdata))
 
-        noNA    <- which( !is.na(regProb) )
-        model.0 <- coxph( Surv(fupt_chd, chd)[noNA] ~ sex[noNA] +
-                         age[noNA] + othercov[noNA])
-        model   <- coxph( Surv(fupt_chd, chd) ~ sex + age +
-                         othercov + regProb )
+        noNA    <- which( !is.na(snp) )
+        model.0 <- eval(parse(text=model0.txt))
+        model   <- eval(parse(text=model.txt))
         sm      <- summary(model)$coef[4, c(1,3)]
         lrt     <- 2 * ( model$loglik[2] - model.0$loglik[2] )
 
-        row <- data.frame(
-            beta_SNP_domA1   = sm[1],
-            sebeta_SNP_domA1 = sm[2],
-            chi2_SNP_domA1   = lrt)
-        prob.dom.R <- rbind(prob.dom.R, row)
+        rsq <- Rsq[i-2]
+        if( rsq < rsq.thresh) {
+            row <- c(rsq, NaN, NaN, NaN)
+        } else {
+            row <- c(rsq, sm[1], sm[2], lrt)
+        }
+        resultR <- rbind(resultR, row)
+    }
+    return(resultR)
 }
+
+
+model.fn.0 <-
+    "coxph( Surv(fupt_chd, chd)[noNA] ~ sex[noNA] + age[noNA] + othercov[noNA] )"
+model.fn <- "coxph( Surv(fupt_chd, chd) ~ sex + age + othercov + snp )"
+
+## Additive model, dosages
+snpdose <- "dose[, i]"
+dose.add.R <- run.model(model.fn.0, model.fn, snpdose)
+colnames(dose.add.R) <- colsAddDose
+rownames(dose.add.R) <- NULL
+stopifnot( all.equal(resPaAddDose, dose.add.R, tol=tol) )
+cat("additive ")
+
+## Additive model, probabilities
+snpprob <- "doseFromProb[, i]"
+prob.add.R <- run.model(model.fn.0, model.fn, snpprob)
+colnames(prob.add.R) <- colsAddProb
+rownames(prob.add.R) <- NULL
+stopifnot( all.equal(resPaAddProb, prob.add.R, tol=tol) )
+cat("additive ")
+
+## dominant model
+snpprob <- "prob[, indexHom] + prob[, indexHet]"
+prob.dom.R <- run.model(model.fn.0, model.fn, snpprob)
+colnames(prob.dom.R) <- colsDom
 rownames(prob.dom.R) <- NULL
 stopifnot( all.equal(resPaDom, prob.dom.R, tol=tol) )
+cat("dominant ")
 
 ## recessive model
-prob.rec.R <- data.frame(beta_SNP_recA1   = numeric(),
-                         sebeta_SNP_recA1 = numeric(),
-                         chi2_SNP_recA1   = numeric())
-for (i in 3:dim(dose)[2]) {
-        indexHom <- 3 + ( i - 3 ) * 2
-        indexHet <- indexHom + 1
-        regProb <- prob[,indexHom]
-
-        noNA    <- which( !is.na(regProb) )
-        model.0 <- coxph( Surv(fupt_chd, chd)[noNA] ~ sex[noNA] +
-                         age[noNA] + othercov[noNA])
-        model   <- coxph( Surv(fupt_chd, chd) ~ sex + age +
-                         othercov + regProb )
-        sm      <- summary(model)$coef[4, c(1,3)]
-        lrt     <- 2 * (  model$loglik[2] - model.0$loglik[2] )
-
-        row <- data.frame(
-            beta_SNP_recA1   = sm[1],
-            sebeta_SNP_recA1 = sm[2],
-            chi2_SNP_recA1   = lrt)
-        prob.rec.R <- rbind(prob.rec.R, row)
-}
+snpprob <- "prob[, indexHom]"
+prob.rec.R <- run.model(model.fn.0, model.fn, snpprob)
+colnames(prob.rec.R) <- colsRec
 rownames(prob.rec.R) <- NULL
 stopifnot( all.equal(resPaRec, prob.rec.R, tol=tol) )
-
+cat("recessive ")
 
 ## over-dominant model
-prob.odom.R <- data.frame(beta_SNP_odomA1   = numeric(),
-                         sebeta_SNP_odomA1 = numeric(),
-                         chi2_SNP_odomA1   = numeric())
-for (i in 3:dim(dose)[2]) {
-        indexHom <- 3 + ( i - 3 ) * 2
-        indexHet <- indexHom + 1
-        regProb <- prob[, indexHet]
-
-        noNA    <- which( !is.na(regProb) )
-        model.0 <- coxph( Surv(fupt_chd, chd)[noNA] ~ sex[noNA] +
-                         age[noNA] + othercov[noNA])
-        model   <- coxph( Surv(fupt_chd, chd) ~ sex + age +
-                         othercov + regProb )
-        sm      <- summary(model)$coef[4, c(1,3)]
-        lrt     <- 2 * (  model$loglik[2] - model.0$loglik[2] )
-
-        row <- data.frame(
-            beta_SNP_odomA1   = sm[1],
-            sebeta_SNP_odomA1 = sm[2],
-            chi2_SNP_odomA1   = lrt)
-        prob.odom.R <- rbind(prob.odom.R, row)
-}
+snpprob <- "prob[, indexHet]"
+prob.odom.R <- run.model(model.fn.0, model.fn, snpprob)
+colnames(prob.odom.R) <- colsOdom
 rownames(prob.odom.R) <- NULL
 stopifnot( all.equal(resPaOdom, prob.odom.R, tol=tol) )
+cat("overdominant ")
+
 
 ## 2df model
-prob.2df.R <- data.frame(beta_SNP_A1A2   = numeric(),
-                          sebeta_SNP_A1A2 = numeric(),
-                          beta_SNP_A1A1   = numeric(),
-                          sebeta_SNP_A1A1 = numeric(),
-                         chi2_SNP_2df     = numeric())
+prob.2df.R <- data.frame()
 for (i in 3:dim(dose)[2]) {
         indexHom <- 3 + ( i - 3 ) * 2
         indexHet <- indexHom + 1
@@ -209,15 +132,18 @@ for (i in 3:dim(dose)[2]) {
         smA1A1  <- summary(model)$coef[5, c(1,3)]
         lrt     <- 2 * (  model$loglik[2] - model.0$loglik[2] )
 
-        row <- data.frame(
-            beta_SNP_A1A2   = smA1A2[1],
-            sebeta_SNP_A1A2 = smA1A2[2],
-            beta_SNP_A1A1   = smA1A1[1],
-            sebeta_SNP_A1A1 = smA1A1[2],
-            chi2_SNP_2df   = lrt)
+        rsq <- resPa2df[i-2, "Rsq"]
+        if( rsq < rsq.thresh) {
+            row <- c(rsq, NaN, NaN, NaN, NaN, NaN)
+        } else {
+            row <- c(rsq, smA1A2[1], smA1A2[2], smA1A1[1], smA1A1[2], lrt)
+
+        }
         prob.2df.R <- rbind(prob.2df.R, row)
 }
+colnames(prob.2df.R) <- cols2df
 rownames(prob.2df.R) <- NULL
 stopifnot( all.equal(resPa2df, prob.2df.R, tol=tol) )
+cat("2df\n")
 
-cat("OK\n")
+cat("\t\t\t\t\t\tOK\n")

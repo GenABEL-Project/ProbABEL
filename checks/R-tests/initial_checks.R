@@ -5,6 +5,11 @@
 ## Set tolerance for comparing various outputs
 tol <- 1e-5
 
+## R^2 threshold from the mlinfo file. If R^2 smaller than this
+## threshold, beta, se_beta and chi^2 are set to NaN.
+## Check this value against the one in the ProbABEL code (main.cpp),
+## look for the variables freq and poly.
+rsq.thresh <- 1e-16
 
 ####
 ## load the data
@@ -29,7 +34,7 @@ cat("OK\n")
 
 ## load genetic PROB data
 prob <- read.table(paste0(inputfiles.path, "test.mlprob"),
-                   head=FALSE, string=FALSE)
+                   header=FALSE, stringsAsFactors=FALSE)
 ## remove "1->" from the names of prob-IDs
 idNames   <- prob[, 1]
 idNames   <- sub("[0-9]+->", "", idNames)
@@ -51,3 +56,38 @@ stopifnot( all.equal(dose[, 3:ncol(dose)],
                      tol=tol )
           )
 cat("OK\n")
+
+
+## Read the imputed Rsq from the info file
+Rsq <- read.table(paste0(inputfiles.path, "test.mlinfo"),
+                  header=TRUE,
+                  stringsAsFactors=FALSE)[, c("Rsq")]
+
+
+## Define column names of the various ProbABEL output file headers
+colsAddDose <- c("Rsq",
+                 "beta_SNP_add",
+                 "sebeta_SNP_add",
+                 "chi2_SNP")
+colsAddProb <- c("Rsq",
+                 "beta_SNP_addA1",
+                 "sebeta_SNP_addA1",
+                 "chi2_SNP_A1")
+colsDom <- c("Rsq",
+             "beta_SNP_domA1",
+             "sebeta_SNP_domA1",
+             "chi2_SNP_domA1")
+colsRec <- c("Rsq",
+             "beta_SNP_recA1",
+             "sebeta_SNP_recA1",
+             "chi2_SNP_recA1")
+colsOdom <-c("Rsq",
+             "beta_SNP_odomA1",
+             "sebeta_SNP_odomA1",
+             "chi2_SNP_odomA1")
+cols2df <- c("Rsq",
+             "beta_SNP_A1A2",
+             "sebeta_SNP_A1A2",
+             "beta_SNP_A1A1",
+             "sebeta_SNP_A1A1",
+             "chi2_SNP_2df")

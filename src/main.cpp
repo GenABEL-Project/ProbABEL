@@ -495,7 +495,13 @@ int main(int argc, char * argv[])
     } // END else: we have dosage data => only one file
 
 
-    int maxmod = 5;
+    int maxmod = 5;             // Total number of models (in random
+                                // order: additive, recessive,
+                                // dominant, over_dominant, 2df). Only
+                                // with dosage data can we run all of
+                                // them. For dosage data we can only
+                                // run the additive model.
+
     int start_pos, end_pos;
 
     std::vector<std::ostringstream *> beta_sebeta;
@@ -772,7 +778,7 @@ int main(int argc, char * argv[])
                 }
             } // END first part of if(poly); allele not too rare
             else
-            {   // SNP is rare: beta, sebeta = nan
+            {   // SNP is rare: beta, sebeta, chi2 = nan
 
                 int number_of_rows_or_columns = rgd.X.ncol;
                 start_pos = get_start_position(input_var, model,
@@ -784,7 +790,7 @@ int main(int argc, char * argv[])
                     start_pos++;
                 }
 
-                if (model == 0)
+                if (input_var.getNgpreds() == 0)
                 {
                     end_pos = rgd.X.ncol;
                 } else
@@ -792,12 +798,14 @@ int main(int argc, char * argv[])
                     end_pos = rgd.X.ncol - 1;
                 }
 
+                cout << "ENDPOS: " << end_pos << "\n";
+
                 if (input_var.getInteraction() != 0)
                 {
                     end_pos++;
                 }
 
-                for (int pos = start_pos; pos < end_pos; pos++)
+                for (int pos = start_pos; pos <= end_pos; pos++)
                 {
                     *beta_sebeta[model] << input_var.getSep()
                             << "nan"
@@ -838,8 +846,8 @@ int main(int argc, char * argv[])
                         }
 #endif
                         //Oct 26, 2009
-                        *chi2[model] << "nan";
                     } // END if getInverseFilename == NULL
+                    *chi2[model] << "nan";
                 } // END ngpreds == 1 (and SNP is rare)
             } // END else: SNP is rare
         } // END of model cycle
@@ -848,52 +856,20 @@ int main(int argc, char * argv[])
         // Start writing beta's, se_beta's etc. to file
         if (input_var.getNgpreds() == 2)
         {
-            //Han Chen
-            *outfile[0] << beta_sebeta[0]->str() << input_var.getSep();
-#if !COXPH
-            if (!input_var.getAllcov() && input_var.getInteraction() != 0)
+            for(int model=0; model < maxmod; model++)
             {
-                *outfile[0] << covvalue[0]->str() << input_var.getSep();
-            }
-#endif
-            *outfile[0] << chi2[0]->str() << "\n";
-
-            *outfile[1] << beta_sebeta[1]->str() << input_var.getSep();
+                *outfile[model] << beta_sebeta[model]->str()
+                                << input_var.getSep();
 #if !COXPH
-            if (!input_var.getAllcov() && input_var.getInteraction() != 0)
-            {
-                *outfile[1] << covvalue[1]->str() << input_var.getSep();
-            }
+                if (!input_var.getAllcov() && input_var.getInteraction() != 0)
+                {
+                    *outfile[model] << covvalue[model]->str()
+                                    << input_var.getSep();
+                }
 #endif
-            *outfile[1] << chi2[1]->str() << "\n";
-
-            *outfile[2] << beta_sebeta[2]->str() << input_var.getSep();
-#if !COXPH
-            if (!input_var.getAllcov() && input_var.getInteraction() != 0)
-            {
-                *outfile[2] << covvalue[2]->str() << input_var.getSep();
-            }
-#endif
-            *outfile[2] << chi2[2]->str() << "\n";
-
-            *outfile[3] << beta_sebeta[3]->str() << input_var.getSep();
-#if !COXPH
-            if (!input_var.getAllcov() && input_var.getInteraction() != 0)
-            {
-                *outfile[3] << covvalue[3]->str() << input_var.getSep();
-            }
-#endif
-            *outfile[3] << chi2[3]->str() << "\n";
-
-            *outfile[4] << beta_sebeta[4]->str() << input_var.getSep();
-#if !COXPH
-            if (!input_var.getAllcov() && input_var.getInteraction() != 0)
-            {
-                *outfile[4] << covvalue[4]->str() << input_var.getSep();
-            }
-#endif
-            *outfile[4] << chi2[4]->str() << "\n";
-            //Oct 26, 2009
+                *outfile[model] << chi2[model]->str()
+                                << "\n";
+            } // END for loop over all models
         }
         else // Dose data: only additive model. Only one output file
         {

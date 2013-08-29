@@ -1,3 +1,8 @@
+***** v.0.4.1 (2013.08.29)
+* Fix bug #4854: When using mmscore, there is one (nan) column missing in
+  the output for low-frequency SNPs. Also includes a simplification of the
+  R-based test scripts.
+
 ***** v.0.4.0 (2013.08.25)
 * The output files now contain a chi^2 column with the chi^2 value based
   on the LRT when not using --mmscore. When using --mmscore, the chi^2
