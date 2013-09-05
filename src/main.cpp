@@ -637,10 +637,10 @@ int main(int argc, char * argv[])
                                 input_var.getRobust());
                 }
 #elif COXPH
-                    coxph_reg rd(rgd);
-                    rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
-                                input_var.getInteraction(),
-                                input_var.getNgpreds(), true, 0);
+                coxph_reg rd(rgd);
+                rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
+                            input_var.getInteraction(),
+                            input_var.getNgpreds(), true, 0);
 #endif
 
                 int number_of_rows_or_columns = rd.beta.nrow;
