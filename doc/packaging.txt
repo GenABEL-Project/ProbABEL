@@ -58,6 +58,9 @@ distributions.
    These last two commands can be run in one go using debuild (which
    is part of the devscripts package):
     debuild -i -us -uc -b
+   To run a parallel build using 4 processors change the previous
+   command to
+    debuild -eDEB_BUILD_OPTIONS="parallel=4" -i -us -uc -b
 ** Uploading to an Ubuntu PPA (Personal Package Archive)
    First, make sure you've set the correct version of the
    distribution you are packaging for in the debian/changelog file
