@@ -15,9 +15,9 @@ padir="../src/"
 # Using text-based dosage genotype files as input
 ${padir}palogist \
     -p logist_data.txt \
-    -d ${inputdir}/test.mldose \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.mldose \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     -c 19 \
     -o logist
 
@@ -25,9 +25,9 @@ ${padir}palogist \
 # Using filevector (DatABEL) files as dosage genotype input
 ${padir}palogist \
     -p logist_data.txt \
-    -d ${inputdir}/test.dose.fvi \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.dose.fvi \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     -c 19 \
     -o logist_fv
 
@@ -35,9 +35,9 @@ ${padir}palogist \
 # Using text-based probability files as genotype input
 ${padir}palogist \
     -p logist_data.txt \
-    -d ${inputdir}/test.mlprob \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.mlprob \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     --ngpreds=2 \
     -c 19 \
     -o logist_prob
@@ -46,9 +46,9 @@ ${padir}palogist \
 # Using filevector (DatABEL) probability files as genotype input
 ${padir}palogist \
     -p logist_data.txt \
-    -d ${inputdir}/test.prob.fvi \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.prob.fvi \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     --ngpreds=2 \
     -c 19 \
     -o logist_prob_fv

@@ -16,9 +16,9 @@ padir="${padir}"
 echo "basic analysis"
 ${padir}palinear \
     -p height.txt \
-    -d ${inputdir}/test.mldose \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.mldose \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     -c 19 \
     -o height_base
 
@@ -26,9 +26,9 @@ ${padir}palinear \
 # Using filevector (DatABEL) files as dosage genotype input
 ${padir}palinear \
     -p height.txt \
-    -d ${inputdir}/test.dose.fvi \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.dose.fvi \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     -c 19 \
     -o height_base_fv
 
@@ -36,9 +36,9 @@ ${padir}palinear \
 echo "Option --allcov"
 ${padir}palinear \
     -p height.txt \
-    -d ${inputdir}/test.dose.fvi \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.dose.fvi \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     -c 19 --allcov \
     -o height_allcov_fv
 
@@ -46,9 +46,9 @@ ${padir}palinear \
 echo "Option --interaction=1"
 ${padir}palinear \
     -p height.txt \
-    -d ${inputdir}/test.dose.fvi \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.dose.fvi \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     -c 19 --interaction=1 \
     -o height_int1_fv
 
@@ -56,9 +56,9 @@ ${padir}palinear \
 echo "Option --robust"
 ${padir}palinear \
     -p height.txt \
-    -d ${inputdir}/test.dose.fvi \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.dose.fvi \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     -c 19 --robust \
     -o height_robust_fv
 
@@ -66,9 +66,9 @@ ${padir}palinear \
 echo "Option --robust --interaction=1"
 ${padir}palinear \
     -p height.txt \
-    -d ${inputdir}/test.dose.fvi \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.dose.fvi \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     -c 19 --robust --interaction=1 \
     -o height_robust_int1_fv
 
@@ -77,9 +77,9 @@ ${padir}palinear \
 echo "Option --ngp=2, mlprob file"
 ${padir}palinear \
     -p height.txt \
-    -d ${inputdir}/test.mlprob \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.mlprob \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     -c 19 --ngp=2 \
     -o height_ngp2
 
@@ -87,9 +87,9 @@ ${padir}palinear \
 # Using filevector (DatABEL) probability files as genotype input
 ${padir}palinear \
     -p height.txt \
-    -d ${inputdir}/test.prob.fvi \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.prob.fvi \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     -c 19 --ngp=2 \
     -o height_ngp2_fv
 
@@ -97,9 +97,9 @@ ${padir}palinear \
 echo "Option --ngp=2 --allcov"
 ${padir}palinear \
     -p height.txt \
-    -d ${inputdir}/test.prob.fvi \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.prob.fvi \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     -c 19 --ngp=2 --allcov \
     -o height_ngp2_allcov_fv
 
@@ -107,9 +107,9 @@ ${padir}palinear \
 echo "Option --ngp=2 --interaction=1"
 ${padir}palinear \
     -p height.txt \
-    -d ${inputdir}/test.prob.fvi \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.prob.fvi \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     -c 19 --ngp=2 --interaction=1 \
     -o height_ngp2_int1_fv
 
@@ -117,9 +117,9 @@ ${padir}palinear \
 echo "Option --ngp=2 --robust"
 ${padir}palinear \
     -p height.txt \
-    -d ${inputdir}/test.prob.fvi \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.prob.fvi \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     -c 19 --ngp=2 --robust \
     -o height_ngp2_robust_fv
 
@@ -127,8 +127,8 @@ ${padir}palinear \
 echo "Option --ngp=2 --robust --interaction=1"
 ${padir}palinear \
     -p height.txt \
-    -d ${inputdir}/test.prob.fvi \
-    -i ${inputdir}/test.mlinfo \
-    -m ${inputdir}/test.map \
+    -d ${gtdatadir}/test.prob.fvi \
+    -i ${gtdatadir}/test.mlinfo \
+    -m ${gtdatadir}/test.map \
     -c 19 --ngp=2 --robust --interaction=1 \
     -o height_ngp2_robust_int1_fv
