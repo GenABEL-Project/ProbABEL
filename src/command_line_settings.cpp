@@ -375,4 +375,5 @@ void cmdvars::printinfo()
         exit(1);
     }
 #endif
+    cout << endl;
 }

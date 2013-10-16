@@ -133,12 +133,12 @@ int create_phenotype(phedata& phd, cmdvars& input_var)
 
 void loadInvSigma(cmdvars& input_var, phedata& phd, masked_matrix& invvarmatrix)
 {
-    std::cout << "you are running mmscore...\n";
+    std::cout << "You are running mmscore...\n";
     InvSigma inv(input_var.getInverseFilename(), &phd);
     // invvarmatrix = inv.get_matrix();
     //double par = 1.; //var(phd.Y)*phd.nids/(phd.nids-phd.ncov-1);
     invvarmatrix.set_matrix(inv.get_matrix());    // = invvarmatrix * par;
-    std::cout << " loaded InvSigma ..." << std::flush;
+    std::cout << " loaded InvSigma...\n" << std::flush;
 }
 
 void create_start_of_header(std::vector<std::ofstream*>& outfile,
@@ -387,20 +387,22 @@ int main(int argc, char * argv[])
 
     input_var.printinfo();
 
+    cout << "Reading info data...\n" << flush;
     mlinfo mli(input_var.getMlinfofilename(), input_var.getMapfilename());
     int nsnps = mli.nsnps;
     phedata phd;
+    cout << "Reading phenotype data...\n" << flush;
     int interaction_cox = create_phenotype(phd, input_var);
 
     masked_matrix invvarmatrix;
 
-    std::cout << "Reading data..." << std::flush;
     if (input_var.getInverseFilename() != NULL)
     {
         loadInvSigma(input_var, phd, invvarmatrix);
     }
 
     gendata gtd;
+    cout << "Reading genotype data... " << flush;
     if (!input_var.getIsFvf())
     {
         // use the non-filevector input format
@@ -416,8 +418,8 @@ int main(int argc, char * argv[])
                        input_var.getNgpreds(), phd.nids_all, phd.nids,
                        phd.allmeasured, phd.idnames);
     }
+    cout << "done.\n" << flush;
 
-    std::cout << " loaded genotypic data..." << std::flush;
 
     // estimate null model
 #if COXPH
