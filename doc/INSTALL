@@ -61,10 +61,6 @@ make install
   adding a --disable- option to configure, for example:
 ./configure --disable-palinear
 
-  Another commonly used option is --enable-silent-rules, this reduces
-  the output (sometimes considered to be noise) of the make step:
-./configure --enable-silent-rules
-
 
 * Options for developers
   To generate a .tar.gz package for distribution run:
