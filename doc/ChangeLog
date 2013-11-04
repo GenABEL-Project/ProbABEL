@@ -1,7 +1,18 @@
+***** v.0.4.2
+* Fix bug #4919: Too small reading buffers for long alleles in mach info
+  and legend files. Thanks to Daniel Taliun for reporting the bug and
+  providing the patch. Thanks to Xia Shen for testing.
+* A minor change in the screen output of ProbABEL. Some of the status
+  messages ("Reading phenotype data" etc.) have been added or move to a
+  slightly different place in the code to help debugging problems with the
+  input data.
+* Fix a bug in the example scripts: an incorrect shell variable was used.
+
 ***** v.0.4.1 (2013.08.29)
 * Fix bug #4854: When using mmscore, there is one (nan) column missing in
   the output for low-frequency SNPs. Also includes a simplification of the
   R-based test scripts.
+
 
 ***** v.0.4.0 (2013.08.25)
 * The output files now contain a chi^2 column with the chi^2 value based

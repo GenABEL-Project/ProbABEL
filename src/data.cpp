@@ -69,7 +69,7 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
 
 mlinfo::mlinfo(char * filename, char * mapname)
 {
-    char tmp[100];
+    char tmp[1048576];
     unsigned int nlin = 0;
     std::ifstream infile(filename);
     if (infile.is_open())
@@ -136,7 +136,7 @@ mlinfo::mlinfo(char * filename, char * mapname)
     if (mapname != NULL)
     {
         std::ifstream instr(mapname);
-        int BFS = 1000;
+        int BFS = 1048576;
         char line[BFS], tmp[BFS];
         if (!instr.is_open())
         {
