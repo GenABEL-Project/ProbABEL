@@ -548,7 +548,7 @@ int main(int argc, char * argv[])
             gtd.get_var(csnp * 2 + 1, snpdata2);
             for (unsigned int ii = 0; ii < gtd.nids; ii++)
             {
-                if (!isnan(snpdata1[ii]) && !isnan(snpdata2[ii]))
+                if (!std::isnan(snpdata1[ii]) && !std::isnan(snpdata2[ii]))
                 {
                     gcount++;
                     freq += snpdata1[ii] + snpdata2[ii] * 0.5;
@@ -561,7 +561,7 @@ int main(int argc, char * argv[])
             gtd.get_var(csnp, snpdata1);
             for (unsigned int ii = 0; ii < gtd.nids; ii++)
             {
-                if (!isnan(snpdata1[ii]))
+                if (!std::isnan(snpdata1[ii]))
                 {
                     gcount++;
                     freq += snpdata1[ii] * 0.5;

@@ -208,7 +208,7 @@ void coxph_data::update_snp(gendata &gend, const int snpnum)
         for (int i = 0; i < nids; i++)
         {
             X.put(snpdata[i], (ncov - j - 1), order[i]);
-            if (isnan(snpdata[i]))
+            if (std::isnan(snpdata[i]))
                 masked_data[order[i]] = 1;
         }
     }

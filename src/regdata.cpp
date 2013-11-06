@@ -111,7 +111,7 @@ void regdata::update_snp(gendata &gend, int snpnum)
         for (int i = 0; i < nids; i++)
         {
             X.put(snpdata[i], i, (ncov - j));
-            if (isnan(snpdata[i]))
+            if (std::isnan(snpdata[i]))
             {
                 masked_data[i] = 1;
             }
