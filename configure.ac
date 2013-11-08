@@ -86,7 +86,8 @@ AC_TYPE_SIZE_T
 
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
-AC_FUNC_MALLOC
+# Disabled the next line to make cross compiling for Windows work.
+#AC_FUNC_MALLOC
 AC_CHECK_FUNCS([pow putenv sqrt strdup strncasecmp floor])
 
 # Check if we can use large (>2GB) files on 32 bit platforms
