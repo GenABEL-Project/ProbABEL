@@ -6,7 +6,14 @@ srcdir <- args[1]
 
 if (is.na(srcdir)) {
     srcdir <- "./"
+} else {
+    ## Apparently we are running R from the command line. Disable
+    ## warnings so that they don't clutter the screen when running
+    ## this script.
+    old.warn <- options()$warn
+    options(warn=-1)
 }
+
 
 pheno.file <- "coxph_data.txt"
 
@@ -16,7 +23,8 @@ source(paste0(srcdir, "initial_checks.R"))
 ## Run ProbABEL to get the output data we want to compare/verify
 ####
 cat("Running ProbABEL...\t\t\t\t")
-tmp <- system(paste0("cd ", tests.path, "; bash test_cox.sh; cd -"),
+tmp <- system(paste0("cd ", tests.path,
+                     "; bash test_cox.sh 2> /dev/null; cd -"),
               intern=TRUE)
 cat("OK\n")
 
@@ -46,34 +54,11 @@ attach(pheno)
 
 cat("Comparing R output with ProbABEL output\t\t")
 
-run.model <- function(model0.txt, model.txt, snpdata) {
-    resultR <- data.frame()
-    for (i in 3:dim(dose)[2]) {
-        indexHom <- 3 + ( i - 3 ) * 2
-        indexHet <- indexHom + 1
-        snp      <- eval(parse(text=snpdata))
-
-        noNA    <- which( !is.na(snp) )
-        model.0 <- eval(parse(text=model0.txt))
-        model   <- eval(parse(text=model.txt))
-        sm      <- summary(model)$coef[4, c(1,3)]
-        lrt     <- 2 * ( model$loglik[2] - model.0$loglik[2] )
-
-        rsq <- Rsq[i-2]
-        if( rsq < rsq.thresh) {
-            row <- c(rsq, NaN, NaN, NaN)
-        } else {
-            row <- c(rsq, sm[1], sm[2], lrt)
-        }
-        resultR <- rbind(resultR, row)
-    }
-    return(resultR)
-}
-
+source("run_model_coxph.R")
 
 model.fn.0 <-
     "coxph( Surv(fupt_chd, chd)[noNA] ~ sex[noNA] + age[noNA] + othercov[noNA] )"
-model.fn <- "coxph( Surv(fupt_chd, chd) ~ sex + age + othercov + snp )"
+model.fn <- "coxph( Surv(fupt_chd, chd) ~ sex + age + othercov + snp1 )"
 
 ## Additive model, dosages
 snpdose <- "dose[, i]"
@@ -82,6 +67,7 @@ colnames(dose.add.R) <- colsAddDose
 rownames(dose.add.R) <- NULL
 stopifnot( all.equal(resPaAddDose, dose.add.R, tol=tol) )
 cat("additive ")
+
 
 ## Additive model, probabilities
 snpprob <- "doseFromProb[, i]"
@@ -117,30 +103,11 @@ cat("overdominant ")
 
 
 ## 2df model
-prob.2df.R <- data.frame()
-for (i in 3:dim(dose)[2]) {
-        indexHom <- 3 + ( i - 3 ) * 2
-        indexHet <- indexHom + 1
-        regProb <- prob[, indexHet]
-
-        noNA    <- which( !is.na(regProb) )
-        model.0 <- coxph( Surv(fupt_chd, chd)[noNA] ~ sex[noNA] +
-                         age[noNA] + othercov[noNA])
-        model   <- coxph( Surv(fupt_chd, chd) ~ sex + age +
-                         othercov + prob[, indexHet] + prob[, indexHom] )
-        smA1A2  <- summary(model)$coef[4, c(1,3)]
-        smA1A1  <- summary(model)$coef[5, c(1,3)]
-        lrt     <- 2 * (  model$loglik[2] - model.0$loglik[2] )
-
-        rsq <- resPa2df[i-2, "Rsq"]
-        if( rsq < rsq.thresh) {
-            row <- c(rsq, NaN, NaN, NaN, NaN, NaN)
-        } else {
-            row <- c(rsq, smA1A2[1], smA1A2[2], smA1A1[1], smA1A1[2], lrt)
-
-        }
-        prob.2df.R <- rbind(prob.2df.R, row)
-}
+model.fn <-
+    "coxph( Surv(fupt_chd, chd) ~ sex + age + othercov + snp1 + snp2 )"
+snpd1 <- "prob[, indexHet]"
+snpd2 <- "prob[, indexHom]"
+prob.2df.R <- run.model(model.fn.0, model.fn, snpd1, snpd2)
 colnames(prob.2df.R) <- cols2df
 rownames(prob.2df.R) <- NULL
 stopifnot( all.equal(resPa2df, prob.2df.R, tol=tol) )

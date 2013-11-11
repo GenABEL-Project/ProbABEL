@@ -16,6 +16,7 @@
 #include "mematri1.h"
 #endif
 
+#include "data.h"
 #include "reg1.h"
 #include "gendata.h"
 #include "phedata.h"
@@ -62,9 +63,10 @@ public:
     int niter;
 
     coxph_reg(coxph_data &cdatain);
-    void estimate(coxph_data &cdatain, int verbose, int maxiter, double eps,
-                  double tol_chol, int model, int interaction, int ngpreds,
-                  bool iscox, int nullmodel);
+    void estimate(coxph_data &cdatain, const int verbose, int maxiter,
+                  double eps, double tol_chol, const int model,
+                  const int interaction, const int ngpreds, const bool iscox,
+                  const int nullmodel, const mlinfo &snpinfo, const int cursnp);
 };
 
 #endif /* COXPH_DATA_H_ */

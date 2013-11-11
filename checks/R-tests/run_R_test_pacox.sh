@@ -2,7 +2,7 @@
 #
 # This script runs the R-based tests for Cox PH regression
 
-Rcommand="R --vanilla --slave"
+Rcommand="R --vanilla --slave --quiet"
 
 if [ -z ${srcdir} ]; then
     srcdir="."

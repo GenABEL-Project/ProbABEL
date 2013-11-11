@@ -315,10 +315,12 @@ coxph_reg::coxph_reg(coxph_data &cdatain)
     niter = 0;
 }
 
-void coxph_reg::estimate(coxph_data &cdatain, int verbose, int maxiter,
-                         double eps, double tol_chol, int model,
-                         int interaction, int ngpreds, bool iscox,
-                         int nullmodel)
+void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
+                        int maxiter, double eps,
+                        double tol_chol, const int model,
+                        const int interaction, const int ngpreds,
+                        const bool iscox, const int nullmodel,
+                        const mlinfo &snpinfo, const int cursnp)
 {
     coxph_data cdata = cdatain.get_unmasked_data();
 
@@ -332,6 +334,8 @@ void coxph_reg::estimate(coxph_data &cdatain, int verbose, int maxiter,
         (cdata.offset).column_mean(0);
     mematrix<double> means(X.nrow, 1);
 
+    int maxiterinput = maxiter;
+
     for (int i = 0; i < X.nrow; i++)
     {
         beta[i] = 0.;
@@ -343,6 +347,9 @@ void coxph_reg::estimate(coxph_data &cdatain, int verbose, int maxiter,
     double work[X.ncol * 2 + 2 * (X.nrow) * (X.nrow) + 3 * (X.nrow)];
     double loglik_int[2];
     int flag;
+
+    // Use Efron method of handling ties (for Breslow: 0.0), like in
+    // R's coxph()
     double sctest = 1.0;
 
     // When using Eigen coxfit2 needs to be called in a slightly
@@ -363,16 +370,69 @@ void coxph_reg::estimate(coxph_data &cdatain, int verbose, int maxiter,
             &sctest);
 #endif
 
+    niter = maxiter;
+
+    // Check the results of the Cox fit; mirrored from the same checks
+    // in coxph_fit.S from the R survival package
+
+    bool setToZero = false;
+
+    if (flag < X.nrow && maxiter > 0) {
+        cerr << "Warning for " << snpinfo.name[cursnp]
+             << ": X matrix deemed to be singular,"
+             << " setting beta and se to 'nan'\n";
+        setToZero = true;
+    }
+
+    if (niter >= maxiterinput)
+    {
+        cerr << "Warning for " << snpinfo.name[cursnp]
+             << ": nr of iterations > MAXITER (" << maxiterinput << "): "
+             << niter << endl;
+    }
+
     if (flag == 1000)
     {
-        cerr << "Error: Cox regression did not converge\n";
+        cerr << "Warning for " << snpinfo.name[cursnp]
+             << ": Cox regression ran out of iterations and did not converge,"
+             << " setting beta and se to 'nan'\n";
+        setToZero = true;
+    } else {
+#if EIGEN
+        VectorXd ueigen = u.data;
+        MatrixXd imateigen = imat.data;
+        VectorXd infs = ueigen.transpose() * imateigen;
+        VectorXd betaeigen = beta.data;
+        if( infs.norm() > eps ||
+            infs.norm() > sqrt(eps) * betaeigen.norm() )
+        {
+            cerr << "Warning for " << snpinfo.name[cursnp]
+                 << ": beta may be infinite,"
+                 << " setting beta and se to 'nan'\n";
+
+            setToZero = true;
+        }
+#else
+        cerr << "Warning for " << snpinfo.name[cursnp]
+             << ": can't check for infinite betas."
+             << " Please compile ProbABEL with Eigen support to fix this."
+             << endl;
+#endif
     }
 
     for (int i = 0; i < X.nrow; i++)
     {
-        sebeta[i] = sqrt(imat.get(i, i));
+        if (setToZero)
+        {
+            // Cox regression failed
+            sebeta[i] = NAN;
+            beta[i]   = NAN;
+            loglik    = NAN;
+        }
+        else
+        {
+            sebeta[i] = sqrt(imat.get(i, i));
+            loglik = loglik_int[1];
+        }
     }
-
-    loglik = loglik_int[1];
-    niter = maxiter;
 }

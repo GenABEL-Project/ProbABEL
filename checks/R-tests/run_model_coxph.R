@@ -1,0 +1,98 @@
+##' This function runs the actual models for Cox regression. It is
+##' called by run_models_in_R_pacox.R
+##'
+##'
+##' @title run.model
+##' @param model0.txt String containing the null model (without SNP term)
+##' @param model.txt String containing the alternative model (with SNP
+##' term)
+##' @param snpcomponent1 String telling how the SNP term is defined
+##' @param snpcomponent2 String telling how the second SNP term is
+##' defined (only used in the 2 df model). By default this term is
+##' constant ("1")
+##' @return A data frame containing the coefficients from the
+##' regression analysis and some other variables, such that this
+##' output can be compared to the ProbABEL output.
+##' @author L.C. Larsen
+run.model <- function(model0.txt, model.txt,
+                      snpcomponent1, snpcomponent2="1") {
+
+    if (snpcomponent2 != "1") {
+        ## SNP component 2 is not constant: assume we run the 2df
+        ## model.
+        twoDF = TRUE
+    } else {
+        twoDF = FALSE
+    }
+
+    resultR <- data.frame()
+
+    for (i in 3:dim(dose)[2]) {
+        indexHom <- 3 + ( i - 3 ) * 2
+        indexHet <- indexHom + 1
+        snp1     <- eval(parse(text=snpcomponent1))
+        snp2     <- eval(parse(text=snpcomponent2))
+        snp      <- snp1 + snp2
+
+        noNA    <- which( !is.na(snp) )
+        model.0 <- eval(parse(text=model0.txt))
+
+        ## Evaluate the model. The whole tryCatch is needed to catch
+        ## problems with non-converging regression.
+        model = tryCatch({
+            list(
+                eval(parse(text=model.txt)),
+                list(message="no warnings")
+                )
+        }, warning = function(war) {
+            return(list(
+                eval(parse(text=model.txt)),
+                war)
+                   )
+        })
+
+        if ( grepl("infinite", model[[2]]$message) |
+             grepl("singular", model[[2]]$message) ) {
+            ## The model did not converge, fill the coefficients with
+            ## NaNs
+            if (twoDF) {
+                smA1A2  <- c(NaN, NaN)
+                smA1A1  <- c(NaN, NaN)
+            } else {
+                sm      <- c(NaN, NaN)
+            }
+            lrt <- NaN
+        } else {
+            ## No convergence problems, we can trust the
+            ## coefficients.
+            coeff <- summary(model[[1]])$coefficients
+            if (twoDF) {
+                smA1A2 <- coeff[4, c("coef", "se(coef)")]
+                smA1A1 <- coeff[5, c("coef", "se(coef)")]
+            } else {
+                sm     <- coeff[4, c("coef", "se(coef)")]
+            }
+            lrt   <- 2 * ( model[[1]]$loglik[2] - model.0$loglik[2] )
+        }
+
+        ## Check the imputation R^2, if below threshold ProbABEL will
+        ## set the coefficients to NaN.
+        rsq <- Rsq[i-2]
+        if (twoDF) {
+            if( rsq < rsq.thresh ) {
+                row <- c(rsq, NaN, NaN, NaN, NaN, NaN)
+            } else {
+                row <- c(rsq, smA1A2[1], smA1A2[2], smA1A1[1], smA1A1[2], lrt)
+            }
+        } else {
+            if( rsq < rsq.thresh ) {
+                row <- c(rsq, NaN, NaN, NaN)
+            } else {
+                row <- c(rsq, sm[1], sm[2], lrt)
+            }
+        }
+
+        resultR <- rbind(resultR, row)
+    }
+    return(resultR)
+}

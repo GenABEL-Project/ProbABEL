@@ -37,16 +37,14 @@
 #include "mematrix.h"
 #include "mematri1.h"
 #endif
+
 #include "maskedmatrix.h"
 #include "data.h"
 #include "reg1.h"
 #include "command_line_settings.h"
-
 #include "coxph_data.h"
-//#include "coxph_reg.cpp"
 
-#define MAXITER 10
-
+#define MAXITER 20
 #define EPS 1.e-8
 #define CHOLTOL 1.5e-12
 
@@ -449,7 +447,7 @@ int main(int argc, char * argv[])
 #elif COXPH
     coxph_reg nrd = coxph_reg(nrgd);
     nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0,
-                 input_var.getInteraction(), input_var.getNgpreds(), true, 1);
+                 input_var.getInteraction(), input_var.getNgpreds(), true, 1, mli, 0);
 #endif
     double null_loglik = nrd.loglik;
 
@@ -642,7 +640,7 @@ int main(int argc, char * argv[])
                 coxph_reg rd(rgd);
                 rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
                             input_var.getInteraction(),
-                            input_var.getNgpreds(), true, 0);
+                            input_var.getNgpreds(), true, 0, mli, csnp);
 #endif
 
                 int number_of_rows_or_columns = rd.beta.nrow;
@@ -740,11 +738,11 @@ int main(int argc, char * argv[])
                             coxph_data new_rgd = rgd;
                             new_rgd.remove_snp_from_X();
                             coxph_reg new_null_rd(new_rgd);
-                            new_null_rd.estimate(new_rgd, 0, MAXITER, EPS,
-                                                 CHOLTOL, model,
+                            new_null_rd.estimate(new_rgd, 0, MAXITER,
+                                                 EPS, CHOLTOL, model,
                                                  input_var.getInteraction(),
                                                  input_var.getNgpreds(),
-                                                 true, 1);
+                                                 true, 1, mli, csnp);
 #endif
                             *chi2[model] << 2. * (loglik - new_null_rd.loglik);
                         }
