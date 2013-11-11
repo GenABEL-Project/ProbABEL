@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # This script tests whether dose data without a MaCH/minimac-style
 # arrow is read correctly by palinear (and by palogist, since reading
