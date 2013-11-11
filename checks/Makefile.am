@@ -41,7 +41,6 @@ input_files = $(phenofiles) $(genofiles) run_diff.sh test_all.sh
 check_SCRIPTS =
 
 
-TESTS_ENVIRONMENT = bash
 if BUILD_palinear
 check_SCRIPTS += check_probabel.pl_chunk.sh check_dose_input.sh
 check_SCRIPTS += test_qt.sh test_mms.sh
