@@ -40,7 +40,8 @@ AC_LANG_PUSH([C++])
 # Checks for header files.
 AC_FUNC_ALLOCA
 AC_CHECK_HEADERS([float.h inttypes.h libintl.h limits.h stddef.h \
-                          stdint.h stdlib.h string.h sys/param.h wchar.h wctype.h])
+                          stdint.h stdlib.h string.h sys/param.h \
+                          wchar.h wctype.h])
 
 
 # See if we want use of the Eigen library enabled (yes by default) and if so,
