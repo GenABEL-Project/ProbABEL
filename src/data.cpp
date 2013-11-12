@@ -211,7 +211,6 @@ InvSigma::InvSigma(const char * filename_, phedata * phe) : filename(filename_)
                 myfile.close();
                 exit(1);
             }
-            col = 0;
             row++;
         }
         myfile.close();

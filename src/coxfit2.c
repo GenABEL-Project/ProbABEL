@@ -439,7 +439,6 @@ void coxfit2(int *maxiter, int *nusedx, int *nvarx, double *time, int *status,
             loglik[1] = newlk;
             chsolve2(imat, nvar, u);
 
-            j = 0;
             for (i = 0; i < nvar; i++)
             {
                 beta[i] = newbeta[i];
