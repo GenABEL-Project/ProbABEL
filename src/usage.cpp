@@ -13,7 +13,9 @@
 #endif
 
 
-using namespace std;
+using std::cout;
+using std::endl;
+
 
 void print_usage(char * program_name, int exit_code)
 {

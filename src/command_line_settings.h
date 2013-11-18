@@ -9,7 +9,7 @@
 #define COMMAND_LINE_SETTINGS_H_
 #include <string>
 
-using namespace std;
+using std::string;
 
 class cmdvars
 {

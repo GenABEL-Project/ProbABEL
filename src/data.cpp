@@ -24,7 +24,6 @@
 #endif
 #include "utilities.h"
 
-using namespace std;
 
 unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
 {

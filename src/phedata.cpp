@@ -5,6 +5,11 @@
 #include <cstdlib>
 #include <phedata.h>
 
+using std::cout;
+using std::cerr;
+using std::endl;
+
+
 phedata::phedata(char * fname, int noutc, int npeople, int interaction,
                  bool iscox)
 {

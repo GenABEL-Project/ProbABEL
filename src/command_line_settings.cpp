@@ -20,7 +20,9 @@
 #endif
 #include "fvlib/FileVector.h"
 
-using namespace std;
+using std::cout;
+using std::cerr;
+using std::endl;
 
 string cmdvars::getStrGenfilename() const
 {

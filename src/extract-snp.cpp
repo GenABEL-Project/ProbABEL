@@ -27,7 +27,9 @@
 #include <fstream>
 #include <map>
 
-using namespace std;
+using std::cout;
+using std::cerr;
+using std::endl;
 
 #include "fvlib/Logger.h"
 #include "fvlib/FileVector.h"

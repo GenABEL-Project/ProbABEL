@@ -5,7 +5,9 @@
 #include <iostream>
 
 using namespace Eigen;
-using namespace std;
+using std::cout;
+using std::cerr;
+
 
 template<class DT> class mematrix {
 public:
