@@ -19,7 +19,7 @@
 #include "phedata.h"
 
 class regdata {
-public:
+ public:
     int nids;
     int ncov;
     int ngpreds;
@@ -38,7 +38,7 @@ public:
     regdata get_unmasked_data();
     ~regdata();
 
-private:
+ private:
 };
 
 #endif /* REGDATA_H_ */

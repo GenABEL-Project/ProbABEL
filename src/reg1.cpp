@@ -70,15 +70,17 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
                             {
                                 col_new++;
                                 nX_without_interact_phe[row
-                                        * nX_without_interact_phe.ncol + col_new] =
-                                        nX[row * nX.ncol + col];
+                                        * nX_without_interact_phe.ncol
+                                        + col_new] =
+                                    nX[row * nX.ncol + col];
                             }
                             if (col != interaction - 1 && iscox)
                             {
                                 col_new++;
                                 nX_without_interact_phe[row
-                                        * nX_without_interact_phe.ncol + col_new] =
-                                        nX[row * nX.ncol + col];
+                                        * nX_without_interact_phe.ncol
+                                        + col_new] =
+                                    nX[row * nX.ncol + col];
                             }
                         } //interaction_only, model==0, ngpreds==2
                           //Oct 26, 2009
@@ -97,17 +99,20 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
                 for (int i = 0; i < X.nrow; i++)
                     for (int j = 0; j < (X.ncol); j++)
                         nX[i * nX.ncol + j] = X[i * X.ncol + j];
+
                 for (int i = 0; i < nX.nrow; i++)
                 {
                     if (iscox)
                     {
+                        //Maksim: interaction with SNP;;
                         nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
-                                * X[i * X.ncol + interaction - 1]; //Maksim: interaction with SNP;;
+                                * X[i * X.ncol + interaction - 1];
                     }
                     else
                     {
+                         //Maksim: interaction with SNP;;
                         nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
-                                * X[i * X.ncol + interaction]; //Maksim: interaction with SNP;;
+                                * X[i * X.ncol + interaction];
                     }
                 }
                 //________________________
@@ -161,8 +166,11 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
         nX.reinit(X.nrow, (X.ncol - 1));
     }
 
-    int c1 = X.ncol - 2; // column with Prob(A1A2)
-    int c2 = X.ncol - 1; // column with Prob(A1A1). Note the order is swapped cf the file!
+    // column with Prob(A1A2)
+    int c1 = X.ncol - 2;
+    // column with Prob(A1A1). Note the order is swapped cf the file!
+    int c2 = X.ncol - 1;
+
     for (int i = 0; i < X.nrow; i++)
         for (int j = 0; j < (X.ncol - 2); j++)
             nX[i * nX.ncol + j] = X[i * X.ncol + j];
@@ -374,7 +382,8 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         printf("beta[0] = %e\n", betaeigen.data()[0]);
         printf("----\n");
 //        (beta).print();
-        double relative_error = (tXXeigen * betaeigen - tXYeigen).norm() / tXYeigen.norm(); // norm() is L2 norm
+        double relative_error = (tXXeigen * betaeigen - tXYeigen).norm() /
+            tXYeigen.norm(); // norm() is L2 norm
         cout << "The relative error is:\n" << relative_error << endl;
 
     }

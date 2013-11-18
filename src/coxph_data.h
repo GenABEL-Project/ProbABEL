@@ -22,7 +22,7 @@
 #include "phedata.h"
 
 class coxph_data {
-public:
+ public:
     coxph_data get_unmasked_data();
 
     coxph_data()
@@ -52,8 +52,9 @@ public:
     unsigned short int * masked_data;
 };
 
+
 class coxph_reg {
-public:
+ public:
     mematrix<double> beta;
     mematrix<double> sebeta;
     mematrix<double> residuals;

@@ -17,7 +17,7 @@
 #endif
 
 class masked_matrix {
-public:
+ public:
     masked_matrix();
     masked_matrix(mematrix<double> M);
     void set_matrix(const mematrix<double> &M);
@@ -27,8 +27,8 @@ public:
     mematrix<double> matrix_original;
     mematrix<double> *masked_data;
     int length_of_mask;
-private:
-    //char type;
+
+ private:
     mematrix<double> matrix_masked_data;
     unsigned short int *mask_of_old;
     void mask_symmetric(int nmeasured);

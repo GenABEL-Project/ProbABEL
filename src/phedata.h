@@ -17,7 +17,7 @@
 #endif
 
 class phedata {
-public:
+ public:
     phedata()
     {
         is_interaction_excluded = 0;

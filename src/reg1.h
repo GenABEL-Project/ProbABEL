@@ -38,7 +38,7 @@ mematrix<double> t_apply_model(mematrix<double>& X, int model, int interaction,
         int ngpreds, bool iscox, int nullmodel = 0);
 
 class base_reg {
-public:
+ public:
     mematrix<double> beta;
     mematrix<double> sebeta;
     //Han Chen
@@ -55,7 +55,7 @@ public:
 };
 
 class linear_reg: public base_reg {
-public:
+ public:
     linear_reg(regdata& rdatain);
     ~linear_reg()
     {
@@ -75,7 +75,7 @@ public:
 };
 
 class logistic_reg: public base_reg {
-public:
+ public:
     int niter;
 
     logistic_reg(regdata& rdatain);

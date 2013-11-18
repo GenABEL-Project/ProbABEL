@@ -18,7 +18,7 @@
 #endif
 
 class gendata {
-public:
+ public:
     unsigned int nsnps;
     unsigned int nids;
     unsigned int ngpreds;
@@ -39,7 +39,7 @@ public:
     // MAKE THAT PRIVATE, ACCESS THROUGH GET_SNP
     // ANOTHER PRIVATE OBJECT IS A POINTER TO DATABELBASECPP
     // UPDATE SNP, ALL REGRESSION METHODS: ACCOUNT FOR MISSING
-private:
+ private:
     mematrix<double> G;
     AbstractMatrix * DAG;
     unsigned short int * DAGmask;

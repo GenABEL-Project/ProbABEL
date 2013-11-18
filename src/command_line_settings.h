@@ -13,7 +13,7 @@ using std::string;
 
 class cmdvars
 {
-private:
+ private:
     char * program_name;
 
     char *phefilename;
@@ -42,7 +42,7 @@ private:
     int skipd;
     int allcov;
 
-public:
+ public:
     cmdvars()
     {
         program_name = NULL;

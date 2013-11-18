@@ -5,7 +5,7 @@ using namespace std;
 
 template<class DT> class mematrix
 {
-public:
+ public:
     int nrow;
     int ncol;
     int nelements;

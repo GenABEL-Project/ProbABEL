@@ -20,7 +20,7 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople);
  *
  */
 class mlinfo {
-public:
+ public:
     int nsnps;                  /**< Number of SNPs */
     std::string * name;         /**< Array of SNP names */
     std::string * A1;           /**< Array with the first allele */
@@ -47,13 +47,13 @@ public:
 };
 
 class InvSigma {
-private:
+ private:
     static const unsigned MAXIMUM_PEOPLE_AMOUNT = 1000000;
     unsigned int npeople;       /* number of people */
     std::string filename;
     mematrix<double> matrix;    /* file is stored here */
 
-public:
+ public:
     InvSigma(const char * filename_, phedata * phe);
     mematrix<double> & get_matrix();
     ~InvSigma();
