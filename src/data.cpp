@@ -88,8 +88,7 @@ mlinfo::mlinfo(char * filename, char * mapname)
             nlin++;
         }
         nlin--; // Subtract one, the previous loop added 1 too much
-    } else
-    {
+    } else {
         std::cerr << "mlinfo: cannot open info file " << filename << endl;
         exit(1);
     }
@@ -100,7 +99,7 @@ mlinfo::mlinfo(char * filename, char * mapname)
         std::cerr << "mlinfo: number of columns != 7 in " << filename << endl;
         exit(1);
     }
-    nsnps = int(nlin / 7) - 1;
+    nsnps = static_cast<int>((nlin / 7) - 1);
     std::cout << "Number of SNPs = " << nsnps << endl;
     name    = new std::string[nsnps];
     A1      = new std::string[nsnps];
@@ -145,20 +144,28 @@ mlinfo::mlinfo(char * filename, char * mapname)
     {
         std::ifstream instr(mapname);
         int BFS = 1048576;
-        char line[BFS], tmp[BFS];
+        char *line = new char[BFS];
+        char *tmp  = new char[BFS];
+
         if (!instr.is_open())
         {
             std::cerr << "mlinfo: cannot open map file " << mapname << endl;
             exit(1);
         }
+
         instr.getline(line, BFS);
+
         for (int i = 0; i < nsnps; i++)
         {
             instr.getline(line, BFS);
             std::stringstream line_stream(line);
             line_stream >> tmp >> map[i];
         }
+
         instr.close();
+
+        delete[] line;
+        delete[] tmp;
     }
 }
 
@@ -223,8 +230,7 @@ InvSigma::InvSigma(const char * filename_, phedata * phe) : filename(filename_)
             row++;
         }
         myfile.close();
-    } else
-    {
+    } else {
         std::cerr << "error: inv file: cannot open file '"
                   << filename_ << "'\n";
     }
