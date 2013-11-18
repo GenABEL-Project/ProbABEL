@@ -1,3 +1,14 @@
+/**
+ * \file   main.cpp
+ * \author Yurii S. Aulchenko (cox, log, lin regressions)
+ * \author M. Kooyman
+ * \author L.C. Karssen
+ * \author Maksim V. Struchalin
+ *
+ * \brief ProbABEL main file
+ *
+ *
+ */
 //=============================================================================
 //           Filename:  src/main.cpp
 //
@@ -44,10 +55,23 @@
 #include "command_line_settings.h"
 #include "coxph_data.h"
 
+/// Maximum number of iterations we allow the regression to run
 #define MAXITER 20
+/// Tolerance for convergence
 #define EPS 1.e-8
+/// Precision for the Cholesky decomposition
 #define CHOLTOL 1.5e-12
 
+
+
+/**
+ * Send a progress update (a percentage) to stdout so that the user
+ * has a rough indication of the percentage of SNPs that has already
+ * been completed.
+ *
+ * @param csnp Number of the SNP that is currently being analysed.
+ * @param nsnps Total number of SNPs
+ */
 void update_progress_to_cmd_line(int csnp, int nsnps)
 {
     std::cout << setprecision(2) << fixed;
@@ -75,6 +99,13 @@ void update_progress_to_cmd_line(int csnp, int nsnps)
     std::cout << setprecision(6);
 }
 
+/**
+ * Open an output file for each model when using probability data
+ * (npgreds == 2). This function creates the _2df.out.txt etc. files.
+ *
+ * @param outfile Vector of output streams
+ * @param outfilename_str Basename of the outputfiles.
+ */
 void open_files_for_output(std::vector<std::ofstream*>& outfile,
                            std::string& outfilename_str)
 {
@@ -129,6 +160,16 @@ int create_phenotype(phedata& phd, cmdvars& input_var)
     return interaction_cox;
 }
 
+
+/**
+ * Load the inverse variance-covariance matrix into an InvSigma object.
+ *
+ * @param input_var Object containing the values of the various
+ * command line options.
+ * @param phd Object with phenotype data
+ * @param invvarmatrix The object of type masked_matrix in which the
+ * inverse variance-covariance matrix is returned.
+ */
 void loadInvSigma(cmdvars& input_var, phedata& phd, masked_matrix& invvarmatrix)
 {
     std::cout << "You are running mmscore...\n";
@@ -139,6 +180,18 @@ void loadInvSigma(cmdvars& input_var, phedata& phd, masked_matrix& invvarmatrix)
     std::cout << " loaded InvSigma...\n" << std::flush;
 }
 
+
+/**
+ * Create the first part of the output file header.
+ *
+ * \param outfile Vector of output file streams. Contains the streams
+ * of the output file(s). One file when using dosage data (ngpreds==1)
+ * and one for each genetic model in case probabilities are used
+ * (ngpreds==2).
+ * \param input_var Object containing the values of the various
+ * command line options.
+ * \param phd Object with phenotype data
+ */
 void create_start_of_header(std::vector<std::ofstream*>& outfile,
         cmdvars& input_var, phedata& phd)
 {
@@ -181,6 +234,18 @@ void create_start_of_header(std::vector<std::ofstream*>& outfile,
 }
 
 
+/**
+ * Create the header of the output file(s).
+ *
+ * \param outfile vector of output file streams. Contains the streams
+ * of the output file(s). One file when using dosage data (ngpreds==1)
+ * and one for each genetic model in case probabilities are used
+ * (ngpreds==2).
+ * \param input_var object containing the values of the various
+ * command line options.
+ * \param phd object with phenotype data
+ * \param interaction_cox are we using the Cox model with interaction?
+ */
 void create_header(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
                    phedata& phd, int& interaction_cox)
 {
@@ -305,6 +370,18 @@ void create_header(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
 }
 
 
+/**
+ * Write the information from the mlinfo file to the output file(s).
+ *
+ * \param outfile Vector of output file(s)
+ * \param file index number identifying the file in the vector of files
+ * \param mli mlinfo object
+ * \param csnp number of the SNP that is currently being analysed
+ * \param input_var object containing the information of the options
+ * specified on the command line
+ * \param gcount The number of non-NaN genotypes
+ * \param freq The allele frequency based on the non-NaN genotypes
+ */
 void write_mlinfo(const std::vector<std::ofstream*>& outfile, unsigned int file,
                   const mlinfo& mli, int csnp, const cmdvars& input_var,
                   int gcount, double freq)
@@ -337,7 +414,19 @@ void write_mlinfo(const std::vector<std::ofstream*>& outfile, unsigned int file,
 }
 
 
-int get_start_position(const cmdvars& input_var, int model,
+/**
+ * Get the position within a (row or column) vector (the index) where
+ * a \f$ \beta \f$ (or \f$ se_{\beta} \f$) starts. This is basically a
+ * matter of counting backwards from the end of the vector/list.
+ *
+ * @param input_var Object containing the values of the various
+ * command line options.
+ * @param model Number of the genetic model (additive, etc)
+ * @param number_of_rows_or_columns Total number of rows or columns in
+ * the vector.
+ *
+ * @return Start position of beta for this model
+ */int get_start_position(const cmdvars& input_var, int model,
         int number_of_rows_or_columns)
 {
     int start_pos;
@@ -378,6 +467,16 @@ int get_start_position(const cmdvars& input_var, int model,
     return start_pos;
 }
 
+
+/**
+ * Main routine. The main logic of ProbABEL can be found here
+ *
+ * \param argc Number of command line arguments
+ * \param argv Vector containing the command line arguments
+ *
+ * \return 0 if all went well. Other integer numbers if an error
+ * occurred
+ */
 int main(int argc, char * argv[])
 {
     cmdvars input_var;

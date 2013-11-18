@@ -1,0 +1,15 @@
+/**
+
+\mainpage ProbABEL
+
+\author Yurii S. Aulchenko (cox, log, lin regressions)
+\author L.C. Karssen
+\author M. Kooyman
+\author Maksim V. Struchalin
+
+The ProbABEL package is part of the GenABEL project for analysis of genome-wide
+data. ProbABEL is used to run GWAS. Using files in filevector/DatABEL format
+even allows for running GWAS on computers with only a few GB of RAM.
+Homepage: http://www.genabel.org
+
+*/

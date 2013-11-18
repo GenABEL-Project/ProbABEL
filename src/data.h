@@ -1,8 +1,8 @@
-/*
- * data.h
+/**
+ * \file   data.h
+ * \author mkooyman
  *
- *  Created on: Mar 8, 2012
- *      Author: mkooyman
+ * \brief Contains several classes we didn't put somewhere else yet
  */
 
 #ifndef DATA_H_
@@ -15,17 +15,21 @@ unsigned int Nmeasured(char * fname, int nphenocols, int npeople);
 #include "phedata.h"
 #include "gendata.h"
 
+/**
+ * \brief Data from the mlinfo file.
+ *
+ */
 class mlinfo {
 public:
-    int nsnps;
-    std::string * name;
-    std::string * A1;
-    std::string * A2;
+    int nsnps;                  /**< Number of SNPs */
+    std::string * name;         /**< Array of SNP names */
+    std::string * A1;           /**< Array with the first allele */
+    std::string * A2;           /**< Array with the second allele */
     double * Freq1;
-    double * MAF;
-    double * Quality;
-    double * Rsq;
-    std::string * map;
+    double * MAF;               /**< The minor allele frequency */
+    double * Quality;           /**< The imputation quality metric */
+    double * Rsq;               /**< The imputation \f$R^2\f$ */
+    std::string * map;          /**< Array with the SNP positions */
     mlinfo()
     {
         Freq1 = NULL;
