@@ -30,7 +30,7 @@ void gendata::get_var(int var, double * data)
     }
     else if (DAG != NULL)       // Read from fv file
     {
-        double tmpdata[DAG->getNumObservations()];
+        double *tmpdata = new double[DAG->getNumObservations()];
         DAG->readVariableAs((unsigned long int) var, tmpdata);
 
         unsigned int j = 0;
@@ -67,6 +67,7 @@ void gendata::get_var(int var, double * data)
                 data[j++] = val;
             }
         }
+        delete[] tmpdata;
     }
     else
     {

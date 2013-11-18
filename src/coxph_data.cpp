@@ -114,10 +114,13 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
     {
         for (int j = 0; j < ngpreds; j++)
         {
-            double snpdata[nids];
+            double *snpdata = new double[nids];
             gend.get_var(snpnum * ngpreds + j, snpdata);
             for (int i = 0; i < nids; i++)
+            {
                 X.put(snpdata[i], i, (ncov - ngpreds + j));
+            }
+            delete[] snpdata;
         }
     }
 
@@ -129,8 +132,8 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
     }
 
     // sort by time
-    double tmptime[nids];
-    int passed_sorted[nids];
+    double *tmptime = new double[nids];
+    int *passed_sorted = new int[nids];
 
     for (int i = 0; i < nids; i++)
     {
@@ -177,6 +180,9 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
     // weights.print();
     // stime.print();
     // sstat.print();
+
+    delete[] tmptime;
+    delete[] passed_sorted;
 }
 
 void coxph_data::update_snp(gendata &gend, const int snpnum)
@@ -197,7 +203,7 @@ void coxph_data::update_snp(gendata &gend, const int snpnum)
 
     for (int j = 0; j < ngpreds; j++)
     {
-        double snpdata[nids];
+        double *snpdata = new double[nids];
         for (int i = 0; i < nids; i++)
         {
             masked_data[i] = 0;
@@ -211,6 +217,7 @@ void coxph_data::update_snp(gendata &gend, const int snpnum)
             if (std::isnan(snpdata[i]))
                 masked_data[order[i]] = 1;
         }
+        delete[] snpdata;
     }
 }
 
@@ -344,7 +351,9 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
     mematrix<double> u(X.nrow, 1);
     mematrix<double> imat(X.nrow, X.nrow);
 
-    double work[X.ncol * 2 + 2 * (X.nrow) * (X.nrow) + 3 * (X.nrow)];
+    double *work = new double[X.ncol * 2 +
+                              2 * (X.nrow) * (X.nrow) +
+                              3 * (X.nrow)];
     double loglik_int[2];
     int flag;
 
@@ -435,4 +444,6 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
             loglik = loglik_int[1];
         }
     }
+
+    delete[] work;
 }

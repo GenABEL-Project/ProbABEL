@@ -634,8 +634,8 @@ int main(int argc, char * argv[])
         rgd.update_snp(gtd, csnp);
         double freq = 0.;
         unsigned int gcount = 0;
-        double snpdata1[gtd.nids];
-        double snpdata2[gtd.nids];
+        double *snpdata1 = new double[gtd.nids];
+        double *snpdata2 = new double[gtd.nids];
 
         if (input_var.getNgpreds() == 2) // Two predictors (probs)
         {
@@ -992,6 +992,8 @@ int main(int argc, char * argv[])
         }
 
         update_progress_to_cmd_line(csnp, nsnps);
+        delete[] snpdata1;
+        delete[] snpdata2;
     } // END for loop over all SNPs
 
 

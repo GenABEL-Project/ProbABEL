@@ -82,10 +82,13 @@ regdata::regdata(phedata &phed, gendata &gend, int snpnum,
     if (snpnum > 0)
         for (int j = 0; j < ngpreds; j++)
         {
-            double snpdata[nids];
+            double *snpdata = new double[nids];
             gend.get_var(snpnum * ngpreds + j, snpdata);
             for (int i = 0; i < nids; i++)
+            {
                 X.put(snpdata[i], i, (ncov - ngpreds + 1 + j));
+            }
+            delete[] snpdata;
         }
         // for (int i=0;i<nids;i++)
         //     for (int j=0;j<ngpreds;j++)
@@ -100,7 +103,7 @@ void regdata::update_snp(gendata &gend, int snpnum)
 
     for (int j = 0; j < ngpreds; j++)
     {
-        double snpdata[nids];
+        double *snpdata = new double[nids];
         for (int i = 0; i < nids; i++)
         {
             masked_data[i] = 0;
@@ -116,6 +119,7 @@ void regdata::update_snp(gendata &gend, int snpnum)
                 masked_data[i] = 1;
             }
         }
+        delete[] snpdata;
     }
 }
 
