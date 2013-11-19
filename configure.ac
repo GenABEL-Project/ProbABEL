@@ -31,6 +31,11 @@ fi
 # with its own defaults
 AC_PROG_CXX
 
+
+#Tell compiler to build not R version of filevector
+CXXFLAGS+=" -D_NOT_R_FILEVECTOR"
+
+
 # Since most of our code is in C++, set that language as the default
 # for the subsequent checks
 AC_LANG_PUSH([C++])
