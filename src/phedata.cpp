@@ -1,9 +1,9 @@
+#include <phedata.h>
 #include <string>
 #include <sstream>
 #include <fstream>
 #include <cstdarg>
 #include <cstdlib>
-#include <phedata.h>
 
 using std::cout;
 using std::cerr;
@@ -21,13 +21,24 @@ void phedata::set_is_interaction_excluded(bool int_exl)
     is_interaction_excluded = int_exl;
 }
 
+
+/**
+ * Read phenotype data from file.
+ *
+ * @param fname Name of the file containing phenotype data
+ * @param noutc Number of outcomes/phenotypes
+ * @param npeople Number of people
+ * @param interaction Column specifying which phenotype is selected to
+ * interact with the SNP (default: 0, i.e. no interaction)
+ * @param iscox Are we running a Cox PH regression?
+ */
 void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
                          bool iscox)
 {
-    static const unsigned int BFS = 1000;
+    static const unsigned int BFS = 1048576;
     std::ifstream myfile(fname);
-    char line[BFS];
-    char tmp[100];
+    char *line = new char[BFS];
+    char *tmp  = new char[BFS];
     noutcomes = noutc;
     is_interaction_excluded = false;
 
@@ -204,8 +215,6 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
         infile >> tmp;
     }
 
-    //TODO: remove this unused variable if there is not a reason to keep it
-    //int k = 0;
     int m = 0;
     for (int i = 0; i < npeople; i++)
         if (allmeasured[i] == 1)
@@ -230,7 +239,11 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
                 infile >> tmp;
         }
     infile.close();
+
+    delete[] line;
+    delete[] tmp;
 }
+
 
 phedata::~phedata()
 {
