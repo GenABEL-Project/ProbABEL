@@ -25,6 +25,8 @@ regdata::regdata()
     noutcomes               = 0;
     is_interaction_excluded = false;
     masked_data             = NULL;
+    gcount					=0;
+    freq					=0;
 }
 
 
@@ -98,9 +100,11 @@ regdata::regdata(phedata &phed, gendata &gend, int snpnum,
 
 void regdata::update_snp(gendata &gend, int snpnum)
 {
+	//reset counter for frequency since it is a new snp
+	gcount=0;
+	freq=0.0;
     // Add genotypic data (dosage or probabilities) to the design
-    // matrix X.
-
+    // matrix X
     for (int j = 0; j < ngpreds; j++)
     {
         double *snpdata = new double[nids];
@@ -111,18 +115,34 @@ void regdata::update_snp(gendata &gend, int snpnum)
 
         gend.get_var(snpnum * ngpreds + j, snpdata);
 
-        for (int i = 0; i < nids; i++)
-        {
-            X.put(snpdata[i], i, (ncov - j));
-            if (std::isnan(snpdata[i]))
-            {
-                masked_data[i] = 1;
-            }
-        }
-        delete[] snpdata;
-    }
-}
+		for (int i = 0; i < nids; i++) {
+			X.put(snpdata[i], i, (ncov - j));
+			if (std::isnan(snpdata[i])) {
+				masked_data[i] = 1;
+				//snp not masked
+			} else {
+				// checck for first predicor
+				if (j == 0) {
+					gcount++;
+					if (ngpreds == 1) {
+						freq += snpdata[i] * 0.5;
+					} else if (ngpreds == 2) {
+						freq += snpdata[i];
+					}
+				} else if (j == 1) {
+					// add second genotype in two predicor data form
+					freq += snpdata[i] * 0.5;
+				}
+			}//end std::isnan(snpdata[i]) snp
 
+		}//end i for loop
+
+
+		  delete[] snpdata;
+}//end ngpreds loop
+	freq /= static_cast<double>(gcount); // Allele frequency
+
+}
 void regdata::remove_snp_from_X()
 {
     // update_snp() adds SNP information to the design matrix. This

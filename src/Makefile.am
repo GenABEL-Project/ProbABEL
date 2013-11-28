@@ -7,7 +7,7 @@ REGFILES = data.h data.cpp gendata.h gendata.cpp mematrix.h mematri1.h	\
  command_line_settings.h command_line_settings.cpp reg1.h usage.h		\
  usage.cpp main.cpp utilities.h utilities.cpp phedata.h phedata.cpp	\
  cholesky.h cholesky.cpp regdata.h regdata.cpp  \
- maskedmatrix.cpp maskedmatrix.h reg1.cpp
+ maskedmatrix.cpp maskedmatrix.h reg1.cpp main_functions_dump.h main_functions_dump.cpp
 
 EIGENFILES = eigen_mematrix.h eigen_mematrix.cpp
 

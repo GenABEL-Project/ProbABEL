@@ -42,6 +42,8 @@ class coxph_data {
     int nids;
     int ncov;
     int ngpreds;
+    unsigned int gcount;
+    double freq;
     mematrix<double> weights;
     mematrix<double> stime;
     mematrix<int>    sstat;

@@ -26,6 +26,8 @@ class regdata {
     int noutcomes;
     bool is_interaction_excluded;
     unsigned short int * masked_data;
+    unsigned int gcount;
+    double freq;
     mematrix<double> X;
     mematrix<double> Y;
     regdata();

@@ -55,6 +55,8 @@ coxph_data::coxph_data(const coxph_data &obj) : sstat(obj.sstat)
     strata      = obj.strata;
     X           = obj.X;
     order       = obj.order;
+    gcount		=0;
+    freq		=0;
     masked_data = new unsigned short int[nids];
 
     for (int i = 0; i < nids; i++)
@@ -185,41 +187,59 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
     delete[] passed_sorted;
 }
 
-void coxph_data::update_snp(gendata &gend, const int snpnum)
-{
-  /**
-   * This is the main part of the fix of bug #1846
-   * (C) of the fix:
-   *   UMC St Radboud Nijmegen,
-   *   Dept of Epidemiology & Biostatistics,
-   *   led by Prof. B. Kiemeney
-   *
-   * Note this sorts by "order"!!!
-   * Here we deal with transposed X, hence last two arguments are swapped
-   * compared to the other 'update_snp'
-   * Also, the starting column-1 is not necessary for cox X therefore
-   * 'ncov-j' changes to 'ncov-j-1'
-   **/
+void coxph_data::update_snp(gendata &gend, const int snpnum) {
+	/**
+	 * This is the main part of the fix of bug #1846
+	 * (C) of the fix:
+	 *   UMC St Radboud Nijmegen,
+	 *   Dept of Epidemiology & Biostatistics,
+	 *   led by Prof. B. Kiemeney
+	 *
+	 * Note this sorts by "order"!!!
+	 * Here we deal with transposed X, hence last two arguments are swapped
+	 * compared to the other 'update_snp'
+	 * Also, the starting column-1 is not necessary for cox X therefore
+	 * 'ncov-j' changes to 'ncov-j-1'
+	 **/
+	//reset counter for frequency since it is a new snp
+	gcount=0;
+	freq=0.0;
+	for (int j = 0; j < ngpreds; j++) {
+		double *snpdata = new double[nids];
+		for (int i = 0; i < nids; i++) {
+			masked_data[i] = 0;
+		}
 
-    for (int j = 0; j < ngpreds; j++)
-    {
-        double *snpdata = new double[nids];
-        for (int i = 0; i < nids; i++)
-        {
-            masked_data[i] = 0;
-        }
+		gend.get_var(snpnum * ngpreds + j, snpdata);
 
-        gend.get_var(snpnum * ngpreds + j, snpdata);
+		for (int i = 0; i < nids; i++) {
+			X.put(snpdata[i], (ncov - j - 1), order[i]);
+			if (std::isnan(snpdata[i])) {
+				masked_data[order[i]] = 1;
+				//snp not masked
+			} else {
+				// checck for first predicor
+				if (j == 0) {
+					gcount++;
+					if (ngpreds == 1) {
+						freq += snpdata[i] * 0.5;
+					} else if (ngpreds == 2) {
+						freq += snpdata[i];
+					}
+				} else if (j == 1) {
+					// add second genotype in two predicor data form
+					freq += snpdata[i] * 0.5;
+				}
+			}    //end std::isnan(snpdata[i]) snp
 
-        for (int i = 0; i < nids; i++)
-        {
-            X.put(snpdata[i], (ncov - j - 1), order[i]);
-            if (std::isnan(snpdata[i]))
-                masked_data[order[i]] = 1;
-        }
-        delete[] snpdata;
-    }
+		}    //end i for loop
+
+		delete[] snpdata;
+	}    //end ngpreds loop
+	freq /= static_cast<double>(gcount); // Allele frequency
+
 }
+
 
 
 void coxph_data::remove_snp_from_X()
