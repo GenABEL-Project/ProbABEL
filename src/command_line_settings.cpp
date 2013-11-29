@@ -205,7 +205,14 @@ void cmdvars::set_variables(int argc, char * argv[])
             ngpreds = atoi(optarg);
             break;
         case 'a':
-            sep = optarg;
+            if(std::string(optarg) == std::string("\\t")) 
+               {
+               sep = '\t';
+               }
+            else
+             {
+             sep = optarg;
+             }  
             break;
         case 'e':
             nohead = 1;
