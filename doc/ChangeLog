@@ -9,6 +9,11 @@
   slightly different place in the code to help debugging problems with the
   input data.
 * Fix a bug in the example scripts: an incorrect shell variable was used.
+* The extract-snp binary is no longer built by default (as it isn't
+  finished yet). Building can be enabled at compile time by giving the
+  --enable-extract-snp option to ./configure.
+* For developers: a start has been made on documenting the internal
+  functions using Doxygen.
 
 ***** v.0.4.1 (2013.08.29)
 * Fix bug #4854: When using mmscore, there is one (nan) column missing in

@@ -47,12 +47,10 @@ make install
   this file to probabel_config.cfg.
 
   To see options, run
-
 ./configure --help
 
   The most notable option is
 ./configure --prefix=/some/subdirectory
-
   to install ProbABEL in that subdirectory. Instead of using
   /usr/local/ as install root directory, it installs in /some/subdirectory.
 

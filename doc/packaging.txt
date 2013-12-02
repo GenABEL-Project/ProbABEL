@@ -26,6 +26,7 @@ distributions.
     DISTCHECK_CONFIGURE_FLAGS="--disable-palinear" make distcheck
     DISTCHECK_CONFIGURE_FLAGS="--disable-palogist" make distcheck
     DISTCHECK_CONFIGURE_FLAGS="--disable-pacoxph" make distcheck
+    DISTCHECK_CONFIGURE_FLAGS="--enable-extract-snp" make distcheck
 ** Building the package for the first time
    Now that we verified that the source code builds without problems,
    let's create the package.
