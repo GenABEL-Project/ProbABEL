@@ -130,11 +130,12 @@ char* cmdvars::getPhefilename() const
     return phefilename;
 }
 
+
 void cmdvars::set_variables(int argc, char * argv[])
 {
     int next_option;
     const char * const short_options = "p:i:d:m:n:c:o:s:t:g:a:erlhb:vu";
-    //b - interaction parameter
+    // b - interaction parameter
     // ADD --fv FLAG (FILEVECTOR), IN WHICH CASE USE ALTERNATIVE
     // CONSTRUCTOR FOR GENDATA
     const struct option long_options[] =
@@ -205,14 +206,14 @@ void cmdvars::set_variables(int argc, char * argv[])
             ngpreds = atoi(optarg);
             break;
         case 'a':
-            if(std::string(optarg) == std::string("\\t")) 
-               {
-               sep = '\t';
-               }
+            if (std::string(optarg) == std::string("\\t"))
+            {
+                sep = '\t';
+            }
             else
-             {
-             sep = optarg;
-             }  
+            {
+                sep = optarg;
+            }
             break;
         case 'e':
             nohead = 1;
@@ -242,14 +243,16 @@ void cmdvars::set_variables(int argc, char * argv[])
             break;
         default:
             abort();
-        } // end of switch
-    } while (next_option != -1);
-} // end of function
+        }  // end of switch
+    } while (next_option != -1);  // end of while
+}  // end of function
+
 
 bool cmdvars::isIsInteractionExcluded() const
 {
     return is_interaction_excluded;
 }
+
 
 void cmdvars::printinfo()
 {
@@ -274,7 +277,8 @@ void cmdvars::printinfo()
         }
         cerr << endl;
 
-        cout << "One or more required command line options appear to be missing."
+        cout << "One or more required command line options "
+             << "appear to be missing."
              << endl
              << "Run " << program_name
              << " --help for more information on the available options\n";
@@ -354,7 +358,7 @@ void cmdvars::printinfo()
 
     if (interaction_excluded != 0)
     {
-        interaction = interaction_excluded; //ups
+        interaction = interaction_excluded;  // ups
         is_interaction_excluded = true;
     }
     if (outfilename.compare("") == 0)
@@ -376,6 +380,7 @@ void cmdvars::printinfo()
              << endl;
         exit(1);
     }
+
     if (robust)
     {
         cerr << "ERROR: robust standard errors not implemented "
