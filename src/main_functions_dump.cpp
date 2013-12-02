@@ -281,7 +281,8 @@ void create_header(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
                         << "sebeta_SNP_A1A1_"
                         << phd.model_terms[interaction_cox];
 #if !COXPH
-            if (input_var.getInverseFilename() == NULL && !input_var.getAllcov())
+            if (input_var.getInverseFilename() == NULL &&
+                !input_var.getAllcov())
             {
                 *outfile[0] << input_var.getSep()
                             << "cov_SNP_A1A2_int_SNP_"
@@ -313,11 +314,11 @@ void create_header(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
                 //Oct 26, 2009
             }
         }
-        *outfile[0] << input_var.getSep() << "chi2_SNP_2df\n";  // "loglik\n";
-        *outfile[1] << input_var.getSep() << "chi2_SNP_A1\n";   // "loglik\n";
-        *outfile[2] << input_var.getSep() << "chi2_SNP_domA1\n";// "loglik\n";
-        *outfile[3] << input_var.getSep() << "chi2_SNP_recA1\n";// "loglik\n";
-        *outfile[4] << input_var.getSep() << "chi2_SNP_odomA1\n"; // "loglik\n";
+        *outfile[0] << input_var.getSep() << "chi2_SNP_2df\n";
+        *outfile[1] << input_var.getSep() << "chi2_SNP_A1\n";
+        *outfile[2] << input_var.getSep() << "chi2_SNP_domA1\n";
+        *outfile[3] << input_var.getSep() << "chi2_SNP_recA1\n";
+        *outfile[4] << input_var.getSep() << "chi2_SNP_odomA1\n";
     } // End: ngpreds == 2
     else
     {
@@ -423,9 +424,3 @@ int get_start_position(const cmdvars& input_var, int model,
 
     return start_pos;
 }
-
-
-
-
-
-

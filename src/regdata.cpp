@@ -25,8 +25,8 @@ regdata::regdata()
     noutcomes               = 0;
     is_interaction_excluded = false;
     masked_data             = NULL;
-    gcount					=0;
-    freq					=0;
+    gcount                  = 0;
+    freq                    = 0;
 }
 
 
@@ -44,6 +44,7 @@ regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
         masked_data[i] = obj.masked_data[i];
     }
 }
+
 
 regdata::regdata(phedata &phed, gendata &gend, int snpnum,
                  bool ext_is_interaction_excluded)
@@ -98,11 +99,13 @@ regdata::regdata(phedata &phed, gendata &gend, int snpnum,
     is_interaction_excluded = ext_is_interaction_excluded;
 }
 
+
 void regdata::update_snp(gendata &gend, int snpnum)
 {
-	//reset counter for frequency since it is a new snp
-	gcount=0;
-	freq=0.0;
+    // Reset counter for frequency since it is a new SNP
+    gcount = 0;
+    freq = 0.0;
+
     // Add genotypic data (dosage or probabilities) to the design
     // matrix X
     for (int j = 0; j < ngpreds; j++)
@@ -115,45 +118,46 @@ void regdata::update_snp(gendata &gend, int snpnum)
 
         gend.get_var(snpnum * ngpreds + j, snpdata);
 
-		for (int i = 0; i < nids; i++) {
-			X.put(snpdata[i], i, (ncov - j));
-			if (std::isnan(snpdata[i])) {
-				masked_data[i] = 1;
-				//snp not masked
-			} else {
-				// checck for first predicor
-				if (j == 0) {
-					gcount++;
-					if (ngpreds == 1) {
-						freq += snpdata[i] * 0.5;
-					} else if (ngpreds == 2) {
-						freq += snpdata[i];
-					}
-				} else if (j == 1) {
-					// add second genotype in two predicor data form
-					freq += snpdata[i] * 0.5;
-				}
-			}//end std::isnan(snpdata[i]) snp
+        for (int i = 0; i < nids; i++) {
+            X.put(snpdata[i], i, (ncov - j));
+            if (std::isnan(snpdata[i])) {
+                masked_data[i] = 1;
+                // SNP not masked
+            } else {
+                // check for first predictor
+                if (j == 0) {
+                    gcount++;
+                    if (ngpreds == 1) {
+                        freq += snpdata[i] * 0.5;
+                    } else if (ngpreds == 2) {
+                        freq += snpdata[i];
+                    }
+                } else if (j == 1) {
+                    // Add second genotype in two predicor data form
+                    freq += snpdata[i] * 0.5;
+                }
+            }  // End std::isnan(snpdata[i]) snp
+        }  // End i for loop
 
-		}//end i for loop
+        delete[] snpdata;
+    }  // End ngpreds loop
 
-
-		  delete[] snpdata;
-}//end ngpreds loop
-	freq /= static_cast<double>(gcount); // Allele frequency
-
+    freq /= static_cast<double>(gcount); // Allele frequency
 }
+
+
+/**
+ * update_snp() adds SNP information to the design matrix. This
+ * function allows you to strip that information from X again.
+ * This is used for example when calculating the null model.
+ */
 void regdata::remove_snp_from_X()
 {
-    // update_snp() adds SNP information to the design matrix. This
-    // function allows you to strip that information from X again.
-    // This is used for example when calculating the null model.
-
-    if(ngpreds == 1)
+    if (ngpreds == 1)
     {
         X.delete_column(X.ncol -1);
     }
-    else if(ngpreds == 2)
+    else if (ngpreds == 2)
     {
         X.delete_column(X.ncol -1);
         X.delete_column(X.ncol -1);
@@ -165,16 +169,18 @@ void regdata::remove_snp_from_X()
     }
 }
 
+
 regdata::~regdata()
 {
     delete[] regdata::masked_data;
-    //      delete X;
-    //      delete Y;
+    // delete X;
+    // delete Y;
 }
+
 
 regdata regdata::get_unmasked_data()
 {
-    regdata to; // = regdata(*this);
+    regdata to;  // = regdata(*this);
     int nmeasured = 0;
     for (int i = 0; i < nids; i++)
     {
@@ -210,7 +216,7 @@ regdata regdata::get_unmasked_data()
         }
     }
 
-    //delete [] to.masked_data;
+    // delete [] to.masked_data;
     to.masked_data = new unsigned short int[to.nids];
     for (int i = 0; i < to.nids; i++)
     {
@@ -220,6 +226,7 @@ regdata regdata::get_unmasked_data()
     //           << dim2X << " " << dim2Y << "\n";
     return (to);
 }
+
 
 mematrix<double> regdata::extract_genotypes(void)
 {

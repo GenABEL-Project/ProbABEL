@@ -144,7 +144,8 @@ int main(int argc, char * argv[])
 #elif COXPH
     coxph_reg nrd = coxph_reg(nrgd);
     nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0,
-                 input_var.getInteraction(), input_var.getNgpreds(), true, 1, mli, 0);
+                 input_var.getInteraction(), input_var.getNgpreds(),
+                 true, 1, mli, 0);
 #endif
     double null_loglik = nrd.loglik;
 
@@ -173,7 +174,7 @@ int main(int argc, char * argv[])
         {
             create_header(outfile, input_var, phd, interaction_cox);
         }
-    } else //Dosage data: Only additive model => only one output file
+    } else  // Dosage data: Only additive model => only one output file
     {
         outfile.push_back(
             new std::ofstream((outfilename_str + "_add.out.txt").c_str()));
@@ -189,7 +190,7 @@ int main(int argc, char * argv[])
         {
             create_header(outfile, input_var, phd, interaction_cox);
         }
-    } // END else: we have dosage data => only one file
+    }  // END else: we have dosage data => only one file
 
 
     int maxmod = 5;             // Total number of models (in random
@@ -202,9 +203,9 @@ int main(int argc, char * argv[])
     int start_pos, end_pos;
 
     std::vector<std::ostringstream *> beta_sebeta;
-    //Han Chen
+    // Han Chen
     std::vector<std::ostringstream *> covvalue;
-    //Oct 26, 2009
+    // Oct 26, 2009
     std::vector<std::ostringstream *> chi2;
 
     // Create string streams for betas, SEs, etc. These are used to
@@ -214,15 +215,15 @@ int main(int argc, char * argv[])
     {
         beta_sebeta.push_back(new std::ostringstream());
         beta_sebeta[i]->precision(6);
-        //*beta_sebeta[i] << scientific;
-        //Han Chen
+        // *beta_sebeta[i] << scientific;
+        // Han Chen
         covvalue.push_back(new std::ostringstream());
         covvalue[i]->precision(6);
-        //*covvalue[i] << scientific;
-        //Oct 26, 2009
+        // *covvalue[i] << scientific;
+        // Oct 26, 2009
         chi2.push_back(new std::ostringstream());
         chi2[i]->precision(6);
-        //*chi2[i] << scientific;
+        // *chi2[i] << scientific;
     }
 
 
@@ -256,7 +257,8 @@ int main(int argc, char * argv[])
         {
             // Dosage data: only additive model
             int file = 0;
-            write_mlinfo(outfile, file, mli, csnp, input_var, rgd.gcount, rgd.freq);
+            write_mlinfo(outfile, file, mli, csnp, input_var,
+                         rgd.gcount, rgd.freq);
             maxmod = 1;         // We can only calculate the additive
                                 // model with dosage data
         }
@@ -319,7 +321,7 @@ int main(int argc, char * argv[])
                                         << rd.beta[pos]
                                         << input_var.getSep()
                                         << rd.sebeta[pos];
-                    //Han Chen
+                    // Han Chen
 #if !COXPH
                     if (input_var.getInverseFilename() == NULL
                             && !input_var.getAllcov()
@@ -338,28 +340,26 @@ int main(int argc, char * argv[])
                                             << input_var.getSep()
                                             << rd.covariance[pos - 2];
                                     }
-
-                                } // END ngpreds=2
+                                }  // END ngpreds=2
                                 else
                                 {
                                     *covvalue[model] << rd.covariance[pos - 1];
                                 }
-
-                            } //END model == 0
+                            }  // END model == 0
                             else
                             {
                                 *covvalue[model] << rd.covariance[pos - 1];
-                            } // END model != 0
-                        } // END if pos > start_pos
+                            }  // END model != 0
+                        }  // END if pos > start_pos
                     }
 #endif
-                    //Oct 26, 2009
-                } // END for(pos = start_pos; pos < rd.beta.nrow; pos++)
+                    // Oct 26, 2009
+                }  // END for(pos = start_pos; pos < rd.beta.nrow; pos++)
 
 
-                //calculate chi^2
-                //________________________________
-                //cout <<  rd.loglik<<" "<<input_var.getNgpreds() << "\n";
+                // calculate chi^2
+                // ________________________________
+                // cout <<  rd.loglik<<" "<<input_var.getNgpreds() << "\n";
 
                 if (input_var.getInverseFilename() == NULL)
                 { // Only if we don't have an inv.sigma file can we use LRT
@@ -420,7 +420,7 @@ int main(int argc, char * argv[])
                         // We want score test output
                         *chi2[model] << rd.chi2_score;
                     }
-                } // END if( inv.sigma == NULL )
+                }  // END if( inv.sigma == NULL )
                 else if (input_var.getInverseFilename() != NULL)
                 {
                     // We can't use the LRT here, because mmscore is a
@@ -440,10 +440,9 @@ int main(int argc, char * argv[])
                         *chi2[model] << Z * Z;
                     }
                 }
-            } // END first part of if(poly); allele not too rare
+            }  // END first part of if(poly); allele not too rare
             else
             {   // SNP is rare: beta, sebeta, chi2 = nan
-
                 int number_of_rows_or_columns = rgd.X.ncol;
                 start_pos = get_start_position(input_var, model,
                         number_of_rows_or_columns);
@@ -477,7 +476,7 @@ int main(int argc, char * argv[])
 
                 if (input_var.getNgpreds() == 2)
                 {
-                    //Han Chen
+                    // Han Chen
 #if !COXPH
                     if (!input_var.getAllcov()
                             && input_var.getInteraction() != 0)
@@ -493,10 +492,10 @@ int main(int argc, char * argv[])
                         }
                     }
 #endif
-                    //Oct 26, 2009
+                    // Oct 26, 2009
                     *chi2[model] << "nan";
                 } else
-                { //ngpreds==1 (and SNP is rare)
+                { // ngpreds==1 (and SNP is rare)
                     if (input_var.getInverseFilename() == NULL)
                     {
                         //                     Han Chen
@@ -507,18 +506,18 @@ int main(int argc, char * argv[])
                             *covvalue[model] << "nan";
                         }
 #endif
-                        //Oct 26, 2009
-                    } // END if getInverseFilename == NULL
+                        // Oct 26, 2009
+                    }  // END if getInverseFilename == NULL
                     *chi2[model] << "nan";
-                } // END ngpreds == 1 (and SNP is rare)
-            } // END else: SNP is rare
-        } // END of model cycle
+                }  // END ngpreds == 1 (and SNP is rare)
+            }  // END else: SNP is rare
+        }  // END of model cycle
 
 
         // Start writing beta's, se_beta's etc. to file
         if (input_var.getNgpreds() == 2)
         {
-            for(int model=0; model < maxmod; model++)
+            for (int model = 0; model < maxmod; model++)
             {
                 *outfile[model] << beta_sebeta[model]->str()
                                 << input_var.getSep();
@@ -531,9 +530,9 @@ int main(int argc, char * argv[])
 #endif
                 *outfile[model] << chi2[model]->str()
                                 << "\n";
-            } // END for loop over all models
+            }  // END for loop over all models
         }
-        else // Dose data: only additive model. Only one output file
+        else  // Dose data: only additive model. Only one output file
         {
             *outfile[0] << beta_sebeta[0]->str() << input_var.getSep();
 #if !COXPH
@@ -550,14 +549,14 @@ int main(int argc, char * argv[])
         for (int model = 0; model < maxmod; model++)
         {
             beta_sebeta[model]->str("");
-            //Han Chen
+            // Han Chen
             covvalue[model]->str("");
-            //Oct 26, 2009
+            // Oct 26, 2009
             chi2[model]->str("");
         }
 
         update_progress_to_cmd_line(csnp, nsnps);
-    } // END for loop over all SNPs
+    }  // END for loop over all SNPs
 
 
     // We're almost done. All computations have finished, time to

@@ -80,7 +80,8 @@ int main(int argc, char* argv[])
     string snpname = "";
     do
     {
-        next_option = getopt_long(argc, argv, short_options, long_options, NULL);
+        next_option = getopt_long(argc, argv,
+                                  short_options, long_options, NULL);
         switch (next_option)
         {
         case 'h':
@@ -101,8 +102,7 @@ int main(int argc, char* argv[])
         case '?': break;
         case -1 : break;
         }
-    }
-    while (next_option != -1);
+    } while (next_option != -1);
 
     if (snpname.compare("") == 0)
     {

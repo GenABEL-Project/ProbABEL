@@ -55,8 +55,8 @@ coxph_data::coxph_data(const coxph_data &obj) : sstat(obj.sstat)
     strata      = obj.strata;
     X           = obj.X;
     order       = obj.order;
-    gcount		=0;
-    freq		=0;
+    gcount      = 0;
+    freq        = 0;
     masked_data = new unsigned short int[nids];
 
     for (int i = 0; i < nids; i++)
@@ -96,7 +96,7 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
     {
         //          X.put(1.,i,0);
         stime[i] = (phed.Y).get(i, 0);
-        sstat[i] = int((phed.Y).get(i, 1));
+        sstat[i] = static_cast<int>((phed.Y).get(i, 1));
         if (sstat[i] != 1 && sstat[i] != 0)
         {
             std::cerr << "coxph_data: status not 0/1 "
@@ -188,65 +188,68 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
 }
 
 void coxph_data::update_snp(gendata &gend, const int snpnum) {
-	/**
-	 * This is the main part of the fix of bug #1846
-	 * (C) of the fix:
-	 *   UMC St Radboud Nijmegen,
-	 *   Dept of Epidemiology & Biostatistics,
-	 *   led by Prof. B. Kiemeney
-	 *
-	 * Note this sorts by "order"!!!
-	 * Here we deal with transposed X, hence last two arguments are swapped
-	 * compared to the other 'update_snp'
-	 * Also, the starting column-1 is not necessary for cox X therefore
-	 * 'ncov-j' changes to 'ncov-j-1'
-	 **/
-	//reset counter for frequency since it is a new snp
-	gcount=0;
-	freq=0.0;
-	for (int j = 0; j < ngpreds; j++) {
-		double *snpdata = new double[nids];
-		for (int i = 0; i < nids; i++) {
-			masked_data[i] = 0;
-		}
+    /**
+     * This is the main part of the fix of bug #1846
+     * (C) of the fix:
+     *   UMC St Radboud Nijmegen,
+     *   Dept of Epidemiology & Biostatistics,
+     *   led by Prof. B. Kiemeney
+     *
+     * Note this sorts by "order"!!!
+     * Here we deal with transposed X, hence last two arguments are swapped
+     * compared to the other 'update_snp'
+     * Also, the starting column-1 is not necessary for cox X therefore
+     * 'ncov-j' changes to 'ncov-j-1'
+     **/
 
-		gend.get_var(snpnum * ngpreds + j, snpdata);
+    // reset counter for frequency since it is a new snp
+    gcount = 0;
+    freq   = 0.0;
 
-		for (int i = 0; i < nids; i++) {
-			X.put(snpdata[i], (ncov - j - 1), order[i]);
-			if (std::isnan(snpdata[i])) {
-				masked_data[order[i]] = 1;
-				//snp not masked
-			} else {
-				// checck for first predicor
-				if (j == 0) {
-					gcount++;
-					if (ngpreds == 1) {
-						freq += snpdata[i] * 0.5;
-					} else if (ngpreds == 2) {
-						freq += snpdata[i];
-					}
-				} else if (j == 1) {
-					// add second genotype in two predicor data form
-					freq += snpdata[i] * 0.5;
-				}
-			}    //end std::isnan(snpdata[i]) snp
+    for (int j = 0; j < ngpreds; j++) {
+        double *snpdata = new double[nids];
+        for (int i = 0; i < nids; i++) {
+            masked_data[i] = 0;
+        }
 
-		}    //end i for loop
+        gend.get_var(snpnum * ngpreds + j, snpdata);
 
-		delete[] snpdata;
-	}    //end ngpreds loop
-	freq /= static_cast<double>(gcount); // Allele frequency
+        for (int i = 0; i < nids; i++) {
+            X.put(snpdata[i], (ncov - j - 1), order[i]);
+            if (std::isnan(snpdata[i])) {
+                masked_data[order[i]] = 1;
+                // snp not masked
+            } else {
+                // check for first predictor
+                if (j == 0) {
+                    gcount++;
+                    if (ngpreds == 1) {
+                        freq += snpdata[i] * 0.5;
+                    } else if (ngpreds == 2) {
+                        freq += snpdata[i];
+                    }
+                } else if (j == 1) {
+                    // add second genotype in two predicor data form
+                    freq += snpdata[i] * 0.5;
+                }
+            }    // end std::isnan(snpdata[i]) snp
+        }    // end i for loop
 
+        delete[] snpdata;
+    }    // end ngpreds loop
+
+    freq /= static_cast<double>(gcount);  // Allele frequency
 }
 
 
-
+/**
+ * update_snp() adds SNP information to the design matrix. This
+ * function allows you to strip that information from X again. This
+ * is used for example when calculating the null model.
+ *
+ */
 void coxph_data::remove_snp_from_X()
 {
-    // update_snp() adds SNP information to the design matrix. This
-    // function allows you to strip that information from X again.
-    // This is used for example when calculating the null model.
 
     if (ngpreds == 1)
     {
@@ -277,9 +280,10 @@ coxph_data::~coxph_data()
     //      delete order;
 }
 
+
 coxph_data coxph_data::get_unmasked_data()
 {
-    coxph_data to; // = coxph_data(*this);
+    coxph_data to;  // = coxph_data(*this);
 
     // filter missing data
     int nmeasured = 0;
@@ -290,6 +294,7 @@ coxph_data coxph_data::get_unmasked_data()
             nmeasured++;
         }
     }
+
     to.nids = nmeasured;
     to.ncov = ncov;
     to.ngpreds = ngpreds;
@@ -331,6 +336,7 @@ coxph_data coxph_data::get_unmasked_data()
     return (to);
 }
 
+
 coxph_reg::coxph_reg(coxph_data &cdatain)
 {
     coxph_data cdata = cdatain.get_unmasked_data();
@@ -341,6 +347,7 @@ coxph_reg::coxph_reg(coxph_data &cdatain)
     chi2_score = -1.;
     niter = 0;
 }
+
 
 void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
                         int maxiter, double eps,
@@ -432,7 +439,7 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
         MatrixXd imateigen = imat.data;
         VectorXd infs = ueigen.transpose() * imateigen;
         VectorXd betaeigen = beta.data;
-        if( infs.norm() > eps ||
+        if ( infs.norm() > eps ||
             infs.norm() > sqrt(eps) * betaeigen.norm() )
         {
             cerr << "Warning for " << snpinfo.name[cursnp]
@@ -457,9 +464,7 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
             sebeta[i] = NAN;
             beta[i]   = NAN;
             loglik    = NAN;
-        }
-        else
-        {
+        } else {
             sebeta[i] = sqrt(imat.get(i, i));
             loglik = loglik_int[1];
         }

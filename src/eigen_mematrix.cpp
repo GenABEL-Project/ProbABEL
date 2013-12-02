@@ -66,19 +66,19 @@ DT & mematrix<DT>::operator[](const int i)
         exit(1);
     }
     int column = i % ncol;
-    int row = (int) floor((double) i / ncol);
+    int row = static_cast<int>( floor(static_cast<double>(i / ncol)) );
 
     return data(row, column);
 }
 
-//template<class DT>
-//mematrix<DT> mematrix<DT>::operator+(DT toadd)
-//{
-//    mematrix<DT> temp(nrow, ncol);
-//    for (int i = 0; i < nelements; i++)
-//        temp.data[i] = data[i] + toadd;
-//    return temp;
-//}
+// template<class DT>
+// mematrix<DT> mematrix<DT>::operator+(DT toadd)
+// {
+//     mematrix<DT> temp(nrow, ncol);
+//     for (int i = 0; i < nelements; i++)
+//         temp.data[i] = data[i] + toadd;
+//     return temp;
+// }
 
 template<class DT>
 mematrix<DT> mematrix<DT>::operator+(const mematrix<DT> &M)
@@ -318,14 +318,14 @@ mematrix<DT> reorder(const mematrix<DT> &M, const mematrix<int> order)
     return temp;
 }
 
-//template<class DT>
-//mematrix<double> todouble(mematrix<DT> &M)
-//{
-//    mematrix<double> temp(M.nrow, M.ncol);
-//    for (int i = 0; i < temp.nelements; i++)
-//        temp.data[i] = double(M.data[i]);
-//    return temp;
-//}
+// template<class DT>
+// mematrix<double> todouble(mematrix<DT> &M)
+// {
+//     mematrix<double> temp(M.nrow, M.ncol);
+//     for (int i = 0; i < temp.nelements; i++)
+//         temp.data[i] = double(M.data[i]);
+//     return temp;
+// }
 
 template<class DT>
 mematrix<DT> invert(const mematrix<DT> &M)
@@ -345,14 +345,15 @@ mematrix<DT> invert(const mematrix<DT> &M)
 template<class DT>
 mematrix<DT> productMatrDiag(const mematrix<DT> &M, const mematrix<DT> &D)
 {
-    //multiply all rows of M by value of first row of D
+    // multiply all rows of M by value of first row of D
     if (M.ncol != D.nrow)
     {
         std::cerr << "productMatrDiag: wrong dimensions";
         exit(1);
     }
     mematrix<DT> temp = M;
-    //make a array of the first row of D in the same way orientation as M.data.row(i).array()
+    // make an array of the first row of D in the same way orientation as
+    // M.data.row(i).array()
     Array<DT, Dynamic, Dynamic> row = D.data.block(0, 0, M.ncol, 1).transpose();
 
     for (int i = 0; i < temp.nrow; i++)

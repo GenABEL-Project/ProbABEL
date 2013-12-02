@@ -13,7 +13,7 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
 // model 3 = recessive 1 df
 // model 4 = over-dominant 1 df
 {
-    if(nullmodel)
+    if (nullmodel)
     {
         // No need to apply any genotypic model when calculating the
         // null model
@@ -385,7 +385,6 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         double relative_error = (tXXeigen * betaeigen - tXYeigen).norm() /
             tXYeigen.norm(); // norm() is L2 norm
         cout << "The relative error is:\n" << relative_error << endl;
-
     }
 
     // This one is needed later on in this function

@@ -32,8 +32,9 @@ void print_usage(char * program_name, int exit_code)
     cout << "\t --out     : [optional] output file name "
          << "(default is regression.out.txt)"
          << endl;
-    cout << "\t --skipd   : [optional] how many columns to skip in the predictor"
-         << "\n\t             (dose/prob) file (default 2)"
+    cout << "\t --skipd   : [optional] how many columns to skip in the "
+         << "predictor\n"
+         << "\t             (dose/prob) file (default 2)"
          << endl;
 #if COXPH
     cout << "\t --ntraits : [optional] how many traits are analysed (default 2)"
@@ -42,15 +43,16 @@ void print_usage(char * program_name, int exit_code)
     cout << "\t --ntraits : [optional] how many traits are analysed (default 1)"
          << endl;
 #endif
-    cout << "\t --ngpreds : [optional] how many predictor columns per marker"
-         <<"\n\t              (default 1 = MLDOSE; else use 2 for MLPROB)"
+    cout << "\t --ngpreds : [optional] how many predictor columns per marker\n"
+         <<"\t              (default 1 = MLDOSE; else use 2 for MLPROB)"
          << endl;
     cout << "\t --separat : [optional] character to separate fields "
          << "(default is space)"
          << endl;
     cout << "\t --score   : use score test" << endl;
     cout << "\t --no-head : do not report header line" << endl;
-    cout << "\t --allcov  : report estimates for all covariates (large outputs!)"
+    cout << "\t --allcov  : report estimates for all covariates "
+         << "(large outputs!)"
          << endl;
     cout << "\t --interaction: Which covariate to use for interaction with "
          << "SNP analysis (default is no interaction, 0)"
@@ -72,7 +74,7 @@ void print_usage(char * program_name, int exit_code)
 }
 
 
-void print_version(void){
+void print_version(void) {
     cout << PACKAGE
          << " v. " << PACKAGE_VERSION
          << "\n(C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, "
