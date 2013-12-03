@@ -36,6 +36,8 @@ regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
     ncov = obj.ncov;
     ngpreds = obj.ngpreds;
     noutcomes = obj.noutcomes;
+    gcount = obj.gcount;
+    freq = obj.freq;
     is_interaction_excluded = obj.is_interaction_excluded;
     masked_data = new unsigned short int[nids];
 

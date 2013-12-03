@@ -27,10 +27,12 @@ class coxph_data {
 
     coxph_data()
     {
-        nids = 0;
-        ncov = 0;
-        ngpreds = 0;
+        nids        = 0;
+        ncov        = 0;
+        ngpreds     = 0;
         masked_data = NULL;
+        gcount      = 0;
+        freq        = 0;
     }
 
     coxph_data(const coxph_data &obj);
