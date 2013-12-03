@@ -51,8 +51,11 @@ regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
 regdata::regdata(phedata &phed, gendata &gend, int snpnum,
                  bool ext_is_interaction_excluded)
 {
-    nids = gend.nids;
+    freq        = 0;
+    gcount      = 0;
+    nids        = gend.nids;
     masked_data = new unsigned short int[nids];
+
     for (int i = 0; i < nids; i++)
     {
         masked_data[i] = 0;

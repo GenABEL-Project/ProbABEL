@@ -67,16 +67,25 @@ coxph_data::coxph_data(const coxph_data &obj) : sstat(obj.sstat)
 
 coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
 {
-    nids = gend.nids;
+    freq        = 0;
+    gcount      = 0;
+    nids        = gend.nids;
     masked_data = new unsigned short int[nids];
+
     for (int i = 0; i < nids; i++)
+    {
         masked_data[i] = 0;
+    }
 
     ngpreds = gend.ngpreds;
     if (snpnum >= 0)
+    {
         ncov = phed.ncov + ngpreds;
+    }
     else
+    {
         ncov = phed.ncov;
+    }
 
     if (phed.noutcomes != 2)
     {
