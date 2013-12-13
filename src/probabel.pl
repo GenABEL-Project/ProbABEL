@@ -103,7 +103,8 @@ if(@ARGV<6 || $ARGV[0] eq "--help" || $ARGV[0] eq "-h") {
           probabel.pl 1 22 \"method\" \"cohort\" --model name_of_file
         Change \"method\", \"cohort\" and --model to appropriate values\n";
         print "\n	Version: $version";
-        print "\n\n	Authors: Lennart Karssen   - l.karssen\@erasmusmc.nl,
+        print "\n\n	Authors: Lennart Karssen   - lennart\@karssen.org,
+                 Maarten Kooyman - m.kooijman\@erasmusmc.nl,
                  Maksim Struchalin - m.struchalin\@erasmusmc.nl,
                  Yurii Aulchenko   - yurii.aulchenko\@gmail.com.\n\n";
     }
