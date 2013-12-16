@@ -1,0 +1,73 @@
+.TH probabel.pl 1 "12 December 2013"
+.SH NAME
+probabel.pl \- Wrapper around the three ProbABEL binaries, simplifying their use
+.SH SYNOPSIS
+.B probabel.pl
+.BI "" "CHROM-START CHROM-STOP METHOD COHORT MODEL PHENOTYPE [OTHER_OPTIONS]"
+.SH DESCRIPTION
+.B probabel.pl
+is a wrapper around the three ProbABEL binaries: \fBpalinear\fR,
+\fBpalogist\fR, and \fBpacoxph\fR.
+.PP
+It is designed to simplify runnig of a Genome-Wide Association Study
+(GWAS) by saving the user's precious time in two ways:
+.PP
+1) it runs the regression analysis of all chromosomes from \fICHROM-START\fR to
+\fICHROM-STOP\fR.
+.PP
+2) In contrast to the three binaries mentioned above,
+with \fBprobabel.pl\fR the user doesn't need to specify the locations
+of the required genetic data files. Their location is centrally
+managed in a configuration file (\fI/etc/probabel_config.cfg\fR by default).
+
+.SH OPTIONS
+.SS Required command line options
+.TP
+.I CHROM-START
+Number of the chromosome to start the analysis at.
+.TP
+.I CHROM-END
+Number of the chromosome to end the analysis at.
+.PP
+Note that analysis of a single chromosome can be run by specifying the
+same number for \fICHROM-START\fR and \fICHROM-STOP\fR. In fact, this
+is the way to run analysis for the X or Y chromosome
+.TP
+.I METHOD
+Which regression method to use, can be one of \fIlinear\fR,
+\fIlogistic,\fR or \fIcoxph\fR.
+
+.TP
+.I COHORT
+The name of the cohort as defined in the
+\fI/etc/probabel_config.cfg\fR file. Using the cohort identifier from
+the config file the three actual ProbABEL binaries know where to find
+the genotypic information files (dosage files and/or probability
+files).
+.TP
+.I MODEL
+The genetic model to be used. Can be either \fB--additive\fR for the
+additive model (requires genotype data in dosage form), or
+\fB--allmodels\fR to run all genetic models: additive, recessive,
+dominant, over-dominant and 2df.
+.TP
+.I PHENOTYPE
+The name of the phenotype file, without its extension (which should be
+\fI.PHE\fR!).
+
+.SS Other options
+Any options listed after the (mandatory) previous ones will be passed
+on to the underlying binary: \fBpalinear\fR, \fBpalogist\fR or
+\fBpacoxph\fR, depending on the \fIMETHOD\fR.
+.PP
+The most commonly used option is the \fB\-o\fR option, followed by a
+file name, this specifies the beginning of the file name for the
+output files.
+
+.SS Additional options
+.B "\-h, \-\-help"
+Get additional help on how to run \fBprobabel.pl\fR. In this case none of
+the other options needs to be specified.
+
+.SH EXAMPLES
+probabel.pl 1 22 linear "My_Large_Cohort" \-\-additive my_phenotype

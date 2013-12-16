@@ -6,7 +6,7 @@ dist_doc_DATA = ProbABEL_manual.tex QuickStart.txt			\
  test.mlinfo test_regression.R COPYING LICENSE INSTALL ChangeLog	\
  TODO
 
-man_MANS =
+man_MANS = probabel.pl.1
 if BUILD_palinear
 man_MANS += palinear.1
 endif
