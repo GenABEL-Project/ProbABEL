@@ -432,9 +432,9 @@ variance should be fit as part of \GA{}'s
 %in which case the main effect should normally estimated in the polygenic
 %model and only the interaction term in the \PA{} analysis.
 
-\subsection{Running multiple analyses at once: \texttt{probabel.pl}}
-The Perl script \texttt{bin/probabel.pl} represents a handy wraper for
-\PA{} functions.  To start using it the configuration file
+\subsection{Running multiple analyses at once: \texttt{probabel}}
+The \texttt{bin/probabel} script is a handy wraper for the \PA{}
+functions. To start using it the configuration file
 \texttt{etc/probabel\_config.cfg.example} needs to be edited and
 renamed to \texttt{etc/probabel\_config.cfg}. The configuration file
 consists of five columns, separated by commas. Each column except the
@@ -446,14 +446,14 @@ where the chromosome number has been replaced by
 \texttt{\_.\_chr\_.\_}. In case the imputations were run on chunks of
 chromosomes, the pattern \texttt{\_.\_chunk\_.\_} will be replaced
 with the corresponding chunk number. Chunk numbers should start at 1
-for each chromosome. The columns ``dose\_path'', ``prob\_path''
-and ``legend\_path'' are paths and patterns for ``dose'', ``prob'' and
+for each chromosome. The columns ``dose\_path'', ``prob\_path'' and
+``legend\_path'' are paths and patterns for ``dose'', ``prob'' and
 ``legend'' files, respectively. These also need to include the pattern
 for the chromosome as used in the column for the ``info'' files.
 Empty lines and lines starting with a \texttt{\#} are ignored.
 
 The \texttt{make install} installation procedure should have set all
-paths in the \texttt{probabel.pl} script correctly. If that is not the
+paths in the \texttt{probabel} script correctly. If that is not the
 case you will have to change the variable \texttt{\$config} in the
 script to point to the full path of the configuration file and the
 variables \texttt{\$base\_path} and \texttt{@anprog} to point the full

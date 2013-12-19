@@ -1,11 +1,11 @@
-.TH probabel.pl 1 "12 December 2013"
+.TH probabel 1 "12 December 2013"
 .SH NAME
-probabel.pl \- Wrapper around the three ProbABEL binaries, simplifying their use
+probabel \- Wrapper around the three ProbABEL binaries, simplifying their use
 .SH SYNOPSIS
-.B probabel.pl
+.B probabel
 .BI "" "CHROM-START CHROM-STOP METHOD COHORT MODEL PHENOTYPE [OTHER_OPTIONS]"
 .SH DESCRIPTION
-.B probabel.pl
+.B probabel
 is a wrapper around the three ProbABEL binaries: \fBpalinear\fR,
 \fBpalogist\fR, and \fBpacoxph\fR.
 .PP
@@ -16,7 +16,7 @@ It is designed to simplify runnig of a Genome-Wide Association Study
 \fICHROM-STOP\fR.
 .PP
 2) In contrast to the three binaries mentioned above,
-with \fBprobabel.pl\fR the user doesn't need to specify the locations
+with \fBprobabel\fR the user doesn't need to specify the locations
 of the required genetic data files. Their location is centrally
 managed in a configuration file (\fI/etc/probabel_config.cfg\fR by default).
 
@@ -66,8 +66,8 @@ output files.
 
 .SS Additional options
 .B "\-h, \-\-help"
-Get additional help on how to run \fBprobabel.pl\fR. In this case none of
+Get additional help on how to run \fBprobabel\fR. In this case none of
 the other options needs to be specified.
 
 .SH EXAMPLES
-probabel.pl 1 22 linear "My_Large_Cohort" \-\-additive my_phenotype
+probabel 1 22 linear "My_Large_Cohort" \-\-additive my_phenotype

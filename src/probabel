@@ -1,12 +1,22 @@
 #! /usr/bin/perl -W
 #==========================================================================
 #
-#           Filename:  probabel.pl
+#           Filename:  probabel
 #
 #        Description: Handy perl wrapper for ProbABEL functions
 #
 #==========================================================================
 use strict;
+
+## Add warning message about future removal of the pl extension
+use File::Basename;
+my $name = basename($0);
+if ($name eq 'probabel.pl') {
+    print "WARNING: You are running this script as 'probabel.pl'. " .
+        "The correct name of this script is 'probabel', please update " .
+        "pipelines accordingly. In a future release the use of" .
+        "'probabel.pl' will be deprecated.\n\n";
+}
 
 #==========================================================================
 # Set variables
@@ -67,7 +77,7 @@ close(CFG);
 # Print usage info if arguments are not correct
 if(@ARGV<6 || $ARGV[0] eq "--help" || $ARGV[0] eq "-h") {
     print "Usage:
-        probabel.pl chrom-start chrom-end method cohort <--allmodels OR --additive> trait <other available options of ProbABEL functions>\n";
+        probabel chrom-start chrom-end method cohort <--allmodels OR --additive> trait <other available options of ProbABEL functions>\n";
     print "\n	* chrom-start - the first chromosome number, chrom-end - the last one; X or Y have to be run separately (specify them twice, once as chrom-start and once as chrom-end)";
     print "\n	* method can be ";
     foreach my $me(@method) {print "\"".$me."\", "};
@@ -78,12 +88,12 @@ if(@ARGV<6 || $ARGV[0] eq "--help" || $ARGV[0] eq "-h") {
         print "\"".$coh."\", "
     };
     print "\n	* example:
-          probabel.pl 1 22 linear \"ERF\" --additive filename
+          probabel 1 22 linear \"ERF\" --additive filename
           (filename has to be saved as filename.PHE)\n\n";
 
     if(@ARGV == 1 && ($ARGV[0] eq "--help" || $ARGV[0] eq "-h")) {
         print "\nDetails:\n";
-        print " The probabel.pl script is used for analysis of imputed data. First you have to create a file with the phenotype values that you are going to use. The first column contains ids in special order, the second one contains the trait which you are going	analyze, the others contain covariates.  For example:
+        print " The probabel script is used for analysis of imputed data. First you have to create a file with the phenotype values that you are going to use. The first column contains ids in special order, the second one contains the trait which you are going	analyze, the others contain covariates.  For example:
 
         id         phen1 covariate1  covariate2
         1_2094  0     334         0
@@ -100,7 +110,7 @@ if(@ARGV<6 || $ARGV[0] eq "--help" || $ARGV[0] eq "-h") {
         Then save it to folder where you are doing the analysis. The name of the file must be name_of_file.PHE, where name_of_file is any name.
 
         Then run the following on the command line:
-          probabel.pl 1 22 \"method\" \"cohort\" --model name_of_file
+          probabel 1 22 \"method\" \"cohort\" --model name_of_file
         Change \"method\", \"cohort\" and --model to appropriate values\n";
         print "\n	Version: $version";
         print "\n\n	Authors: Lennart Karssen   - lennart\@karssen.org,
@@ -109,7 +119,7 @@ if(@ARGV<6 || $ARGV[0] eq "--help" || $ARGV[0] eq "-h") {
                  Yurii Aulchenko   - yurii.aulchenko\@gmail.com.\n\n";
     }
     else {
-        print "Type probabel.pl --help for more details.\n";
+        print "Type probabel --help for more details.\n";
     }
     exit;
 }

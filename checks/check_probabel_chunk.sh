@@ -1,9 +1,9 @@
 #!/bin/bash
 # L.C. Karssen
-# This script is used to test whether probabel.pl works correctly when
-# input is cut up in chunks
+# This script is used to test whether the probabel script works
+# correctly when input is cut up in chunks
 
-echo "Testing probabel.pl..."
+echo "Testing probabel..."
 
 # Exit with error when one of the steps in the script fails
 set -e
@@ -22,14 +22,14 @@ infofile="$inputdir/test.mlinfo"
 mapfile="$inputdir/test.map"
 phenofile="$inputdir/height.txt"
 
-probabel="${padir}/probabel.pl"
+probabel="${padir}/probabel"
 probabelcfg="${padir}/probabel_config.cfg.example"
 chunksep="_._chunk_._"
 chrsep="_._chr_._"
 
-# ------ Prepare probabel.pl and the config file ------
-sed 's;"./";"../src/";g' $probabel > probabel.pl
-chmod a+x probabel.pl
+# ------ Prepare probabel and the config file ------
+sed 's;"./";"../src/";g' $probabel > probabel
+chmod a+x probabel
 cp $probabelcfg probabel_config.cfg
 chmod +w probabel_config.cfg # Need this for make distcheck to work
 cp $phenofile height.PHE
@@ -111,7 +111,7 @@ run_test ()
     outfile="height_add.out.txt"
 
     echo "Checking output using dosages $WithOrWithout chunks..."
-    ./probabel.pl 1 2 linear $1 --additive height > /dev/null
+    ./probabel 1 2 linear $1 --additive height > /dev/null
 
     blanks="                                                          "
     echo -n "  Verifying "
@@ -128,7 +128,7 @@ run_test ()
     height_ngp2_add.out.txt"
 
     echo "Checking output using probabilities $WithOrWithout chunks..."
-    ./probabel.pl 1 2 linear $1 --allmodels height -o height_ngp2 > /dev/null
+    ./probabel 1 2 linear $1 --allmodels height -o height_ngp2 > /dev/null
     for file in $outfilelist; do
         echo -n "  Verifying "
         if diff $file $results/$file; then

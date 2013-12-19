@@ -42,8 +42,8 @@ make install
   PDF version of the documentation will not be built.
 
   NOTE: make install will OVERWRITE any file with the same name if it
-  already exists. By default the name of the probabel.pl config file is
-  probabel_config.cfg.example. For probabel.pl to work please rename
+  already exists. By default the name of the probabel config file is
+  probabel_config.cfg.example. For probabel to work please rename
   this file to probabel_config.cfg.
 
   To see options, run

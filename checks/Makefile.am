@@ -42,7 +42,7 @@ check_SCRIPTS =
 
 
 if BUILD_palinear
-check_SCRIPTS += check_probabel.pl_chunk.sh check_dose_input.sh
+check_SCRIPTS += check_probabel_chunk.sh check_dose_input.sh
 check_SCRIPTS += test_qt.sh test_mms.sh
 endif
 if BUILD_palogist
@@ -139,7 +139,7 @@ output_files = height_add.out.txt height_2df.out.txt			\
  height_ngp2_over_domin.out.txt height_ngp2_2df.out.txt			\
  height_ngp2_add.out.txt height_base_add.out.txt
 
-other_files = probabel.pl probabel_config.cfg
+other_files = probabel probabel_config.cfg
 
 cleanfiles_probabel_check = height.PHE $(dose_files) $(prob_files)	\
  $(map_files) $(info_files) $(output_files) $(other_files)
