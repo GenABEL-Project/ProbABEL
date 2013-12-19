@@ -80,11 +80,11 @@ endif
 extract_snp_SOURCES = extract-snp.cpp $(FVSRC) $(FVHEADERS)
 
 ## Install these scripts in the bin directory as well:
-dist_bin_SCRIPTS = probabel.pl extIDS.pl
+dist_bin_SCRIPTS = probabel.pl
 
 ## Install this R script in the examples directory
 scriptdir = $(pkgdatadir)/scripts
-dist_script_DATA = prepare_data.R
+dist_script_DATA = prepare_data.R extIDS.pl
 
 ## Install the config file
 dist_sysconf_DATA = probabel_config.cfg.example
@@ -95,3 +95,7 @@ install-exec-hook:
 		$(DESTDIR)$(bindir)/probabel.pl
 	$(SED) -i "s;\./;@bindir@/;" $(DESTDIR)$(bindir)/probabel.pl
 	$(SED) -i "s;PROBABEL_VERSION;@VERSION@;" $(DESTDIR)$(bindir)/probabel.pl
+
+## Make the script executable
+install-data-hook:
+	chmod a+rx $(DESTDIR)/$(scriptdir)/extIDS.pl
