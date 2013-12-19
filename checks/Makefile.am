@@ -56,9 +56,7 @@ endif
 
 TESTS = $(check_SCRIPTS)
 
-testsdir = $(pkgdatadir)/tests
-dist_tests_DATA = $(verified_results) $(input_files)
-dist_tests_SCRIPTS = $(check_SCRIPTS)
+EXTRA_DIST = $(verified_results) $(input_files) $(check_SCRIPTS)
 
 
 ##################################################
