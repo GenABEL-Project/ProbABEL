@@ -230,7 +230,7 @@ int main(int argc, char * argv[])
     // Here we start the analysis for each SNP.
     for (int csnp = 0; csnp < nsnps; csnp++)
     {
-        rgd.update_snp(gtd, csnp);
+        rgd.update_snp(&gtd, csnp);
 
 
         int poly = 1;

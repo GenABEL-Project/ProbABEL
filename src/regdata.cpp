@@ -48,8 +48,8 @@ regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
 }
 
 
-regdata::regdata(phedata &phed, gendata &gend, int snpnum,
-                 bool ext_is_interaction_excluded)
+regdata::regdata(phedata &phed, gendata &gend, const int snpnum,
+                 const bool ext_is_interaction_excluded)
 {
     freq        = 0;
     gcount      = 0;
@@ -105,7 +105,7 @@ regdata::regdata(phedata &phed, gendata &gend, int snpnum,
 }
 
 
-void regdata::update_snp(gendata &gend, int snpnum)
+void regdata::update_snp(gendata *gend, const int snpnum)
 {
     // Reset counter for frequency since it is a new SNP
     gcount = 0;
@@ -121,7 +121,7 @@ void regdata::update_snp(gendata &gend, int snpnum)
             masked_data[i] = 0;
         }
 
-        gend.get_var(snpnum * ngpreds + j, snpdata);
+        gend->get_var(snpnum * ngpreds + j, snpdata);
 
         for (int i = 0; i < nids; i++) {
             X.put(snpdata[i], i, (ncov - j));

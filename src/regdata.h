@@ -32,10 +32,10 @@ class regdata {
     mematrix<double> Y;
     regdata();
     regdata(const regdata &obj);
-    regdata(phedata &phed, gendata &gend, int snpnum,
-            bool ext_is_interaction_excluded);
+    regdata(phedata &phed, gendata &gend, const int snpnum,
+            const bool ext_is_interaction_excluded);
     mematrix<double> extract_genotypes();
-    void update_snp(gendata &gend, int snpnum);
+    void update_snp(gendata *gend, const int snpnum);
     void remove_snp_from_X();
     regdata get_unmasked_data();
     ~regdata();
