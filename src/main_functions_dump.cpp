@@ -28,7 +28,7 @@
  * @param csnp Number of the SNP that is currently being analysed.
  * @param nsnps Total number of SNPs
  */
-void update_progress_to_cmd_line(int csnp, int nsnps)
+void update_progress_to_cmd_line(const int csnp, const int nsnps)
 {
     std::cout << std::setprecision(2) << std::fixed;
 
@@ -63,7 +63,7 @@ void update_progress_to_cmd_line(int csnp, int nsnps)
  * @param outfilename_str Basename of the outputfiles.
  */
 void open_files_for_output(std::vector<std::ofstream*>& outfile,
-                           std::string& outfilename_str)
+                           const std::string& outfilename_str)
 {
     //create a list of filenames
     const int amount_of_files = 5;
@@ -88,7 +88,7 @@ void open_files_for_output(std::vector<std::ofstream*>& outfile,
     }
 }
 
-int create_phenotype(phedata& phd, cmdvars& input_var)
+int create_phenotype(phedata& phd, const cmdvars& input_var)
 {
     phd.set_is_interaction_excluded(input_var.isIsInteractionExcluded());
     phd.setphedata(input_var.getPhefilename(),
@@ -126,7 +126,8 @@ int create_phenotype(phedata& phd, cmdvars& input_var)
  * @param invvarmatrix The object of type masked_matrix in which the
  * inverse variance-covariance matrix is returned.
  */
-void loadInvSigma(cmdvars& input_var, phedata& phd, masked_matrix& invvarmatrix)
+void loadInvSigma(const cmdvars& input_var, phedata& phd,
+                  masked_matrix& invvarmatrix)
 {
     std::cout << "You are running mmscore...\n";
     InvSigma inv(input_var.getInverseFilename(), &phd);
@@ -202,8 +203,8 @@ void create_start_of_header(std::vector<std::ofstream*>& outfile,
  * \param phd object with phenotype data
  * \param interaction_cox are we using the Cox model with interaction?
  */
-void create_header(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
-                   phedata& phd, int& interaction_cox)
+void create_header(std::vector<std::ofstream*>& outfile,
+                   cmdvars& input_var, phedata& phd, int& interaction_cox)
 {
     create_start_of_header(outfile, input_var, phd);
 
@@ -339,9 +340,10 @@ void create_header(std::vector<std::ofstream*>& outfile, cmdvars& input_var,
  * \param gcount The number of non-NaN genotypes
  * \param freq The allele frequency based on the non-NaN genotypes
  */
-void write_mlinfo(const std::vector<std::ofstream*>& outfile, unsigned int file,
-                  const mlinfo& mli, int csnp, const cmdvars& input_var,
-                  int gcount, double freq)
+void write_mlinfo(const std::vector<std::ofstream*>& outfile,
+                  const unsigned int file, const mlinfo& mli,
+                  const int csnp, const cmdvars& input_var,
+                  const int gcount, const double freq)
 {
     *outfile[file] << mli.name[csnp]
                    << input_var.getSep()
@@ -384,8 +386,8 @@ void write_mlinfo(const std::vector<std::ofstream*>& outfile, unsigned int file,
  *
  * @return Start position of beta for this model
  */
-int get_start_position(const cmdvars& input_var, int model,
-        int number_of_rows_or_columns)
+int get_start_position(const cmdvars& input_var, const int model,
+        const int number_of_rows_or_columns)
 {
     int start_pos;
     if (!input_var.getAllcov() &&
