@@ -259,7 +259,6 @@ void coxph_data::update_snp(gendata *gend, const int snpnum) {
  */
 void coxph_data::remove_snp_from_X()
 {
-
     if (ngpreds == 1)
     {
         X.delete_row(X.nrow -1);
