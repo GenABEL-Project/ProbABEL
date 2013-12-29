@@ -44,17 +44,17 @@ int cmpfun(const void *a, const void *b)
     return -9;
 }
 
-coxph_data::coxph_data(const coxph_data &obj) : sstat(obj.sstat)
+coxph_data::coxph_data(const coxph_data &obj) : sstat(obj.sstat),
+                                                offset(obj.offset),
+                                                strata(obj.strata),
+                                                X(obj.X),
+                                                order(obj.order)
 {
     nids        = obj.nids;
     ncov        = obj.ncov;
     ngpreds     = obj.ngpreds;
     weights     = obj.weights;
     stime       = obj.stime;
-    offset      = obj.offset;
-    strata      = obj.strata;
-    X           = obj.X;
-    order       = obj.order;
     gcount      = 0;
     freq        = 0;
     masked_data = new unsigned short int[nids];

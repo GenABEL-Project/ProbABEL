@@ -309,10 +309,10 @@ mematrix<DT> reorder(const mematrix<DT> &M, const mematrix<int> order)
         exit(1);
     }
     mematrix<DT> temp(M.nrow, M.ncol);
-    int source;
+
     for (int i = 0; i < temp.nrow; i++)
     {
-        source = order.data(i, 0);
+        int source = order.data(i, 0);
         temp.data.row(source) = M.data.row(i);
     }
     return temp;

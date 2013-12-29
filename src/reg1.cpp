@@ -59,11 +59,11 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
                 {
                     mematrix<double> nX_without_interact_phe;
                     nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
-                    int col_new;
+
                     for (int row = 0; row < nX.nrow; row++)
                     {
                         //Han Chen
-                        col_new = -1;
+                        int col_new = -1;
                         for (int col = 0; col < nX.ncol; col++)
                         {
                             if (col != interaction && !iscox)
@@ -118,12 +118,11 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
                 //________________________
                 if (is_interaction_excluded)
                 {
-                    int col_new;
                     mematrix<double> nX_without_interact_phe;
                     nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
                     for (int row = 0; row < nX.nrow; row++)
                     {
-                        col_new = -1;
+                        int col_new = -1;
                         for (int col = 0; col < nX.ncol; col++)
                         {
                             if (col != interaction && !iscox)
@@ -196,10 +195,10 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
     {
         mematrix<double> nX_without_interact_phe;
         nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
-        int col_new;
+
         for (int row = 0; row < nX.nrow; row++)
         {
-            col_new = -1;
+            int col_new = -1;
             for (int col = 0; col < nX.ncol; col++)
             {
                 if (col != interaction && !iscox)
@@ -431,14 +430,14 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     sigma2_matrix = sigma2_matrix - sigma2_matrix1;
     //        std::cout << "sigma2_matrix\n";
     //        sigma2_matrix.print();
-    static double val;
+
     //  std::cout << "sigma2_matrix.nrow=" << sigma2_matrix.nrow
     //            << "sigma2_matrix.ncol" << sigma2_matrix.ncol
     //            <<"\n";
 
     for (int i = 0; i < sigma2_matrix.nrow; i++)
     {
-        val = sigma2_matrix.get(i, 0);
+        double val = sigma2_matrix.get(i, 0);
         //            std::cout << "val = " << val << "\n";
         sigma2 += val * val;
         //            std::cout << "sigma2+= " << sigma2 << "\n";
@@ -689,7 +688,7 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
         {
             double emu = eMu.get(i, 0);
             double value = emu;
-            double zval = 0.;
+            double zval;
             value = exp(value) / (1. + exp(value));
             residuals[i] = (rdata.Y).get(i, 0) - value;
             eMu.put(value, i, 0);
@@ -757,9 +756,11 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
 
         delta = fabs(1. - (prevlik / loglik));
         niter++;
-    }
+    }  // END while (niter < maxiter && delta > eps)
+
     sigma2 = 0.;
     mematrix<double> robust_sigma2(X.ncol, X.ncol);
+
     if (robust)
     {
         mematrix<double> XbyR = X;
