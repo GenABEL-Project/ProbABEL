@@ -20,22 +20,22 @@ tmp <- system(paste0("cd ", tests.path, "; bash test_qt.sh; cd -"),
 cat("OK\n")
 
 resPaAddDose <- read.table(
-    paste0(tests.path, "height_base_add.out.txt"),
+    paste0(tests.path, "linear_base_add.out.txt"),
     head=TRUE)[, colsAddDose]
 resPaAddProb <- read.table(
-    paste0(tests.path, "height_ngp2_add.out.txt"),
+    paste0(tests.path, "linear_ngp2_add.out.txt"),
     head=TRUE)[, colsAddProb]
 resPaDom <- read.table(
-    paste0(tests.path, "height_ngp2_domin.out.txt"),
+    paste0(tests.path, "linear_ngp2_domin.out.txt"),
     head=TRUE)[, colsDom]
 resPaRec <- read.table(
-    paste0(tests.path, "height_ngp2_recess.out.txt"),
+    paste0(tests.path, "linear_ngp2_recess.out.txt"),
     head=TRUE)[, colsRec]
 resPaOdom <- read.table(
-    paste0(tests.path, "height_ngp2_over_domin.out.txt"),
+    paste0(tests.path, "linear_ngp2_over_domin.out.txt"),
     head=TRUE)[, colsOdom]
 resPa2df <- read.table(
-    paste0(tests.path, "height_ngp2_2df.out.txt"),
+    paste0(tests.path, "linear_ngp2_2df.out.txt"),
     head=TRUE)[, cols2df]
 
 ####
