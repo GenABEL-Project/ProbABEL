@@ -39,7 +39,7 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
                 {
                     if (iscox)
                     {
-                        //Maksim: interaction with SNP;;
+                        // Maksim: interaction with SNP;;
                         nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
                                 * X[i * X.ncol + interaction - 1];
                         nX[i * nX.ncol + c2] = X[i * X.ncol + csnp_p2]
@@ -47,7 +47,7 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
                     }
                     else
                     {
-                        //Maksim: interaction with SNP;;
+                        // Maksim: interaction with SNP;;
                         nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
                                 * X[i * X.ncol + interaction];
                         nX[i * nX.ncol + c2] = X[i * X.ncol + csnp_p2]
@@ -62,7 +62,7 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
 
                     for (int row = 0; row < nX.nrow; row++)
                     {
-                        //Han Chen
+                        // Han Chen
                         int col_new = -1;
                         for (int col = 0; col < nX.ncol; col++)
                         {
@@ -82,12 +82,12 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
                                         + col_new] =
                                     nX[row * nX.ncol + col];
                             }
-                        } //interaction_only, model==0, ngpreds==2
-                          //Oct 26, 2009
+                        } // interaction_only, model==0, ngpreds==2
+                          // Oct 26, 2009
                     }
                     return nX_without_interact_phe;
-                } //end of is_interaction_excluded
-                  //________________________
+                }  // end of is_interaction_excluded
+                   //________________________
                 return (nX);
             }
             if (ngpreds == 1)
@@ -104,13 +104,13 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
                 {
                     if (iscox)
                     {
-                        //Maksim: interaction with SNP;;
+                        // Maksim: interaction with SNP;;
                         nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
                                 * X[i * X.ncol + interaction - 1];
                     }
                     else
                     {
-                         //Maksim: interaction with SNP;;
+                         // Maksim: interaction with SNP;;
                         nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
                                 * X[i * X.ncol + interaction];
                     }
@@ -144,7 +144,7 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
                         }
                     }
                     return nX_without_interact_phe;
-                } //end of is_interaction_excluded
+                }  // end of is_interaction_excluded
                   //________________________
                 return (nX);
             }
@@ -176,18 +176,18 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
 
     for (int i = 0; i < nX.nrow; i++)
     {
-        if (model == 1) // additive
+        if (model == 1)  // additive
             nX[i * nX.ncol + c1] = X[i * X.ncol + c1] + 2. * X[i * X.ncol + c2];
-        else if (model == 2) //dominant
+        else if (model == 2)  //dominant
             nX[i * nX.ncol + c1] = X[i * X.ncol + c1] + X[i * X.ncol + c2];
-        else if (model == 3) // recessive
+        else if (model == 3)  // recessive
             nX[i * nX.ncol + c1] = X[i * X.ncol + c2];
-        else if (model == 4) // over-dominant
+        else if (model == 4)  // over-dominant
             nX[i * nX.ncol + c1] = X[i * X.ncol + c1];
 
         if (interaction != 0)
             nX[i * nX.ncol + c2] = X[i * nX.ncol + interaction]
-                    * nX[i * nX.ncol + c1]; //Maksim: interaction with SNP
+                    * nX[i * nX.ncol + c1];  // Maksim: interaction with SNP
     }
 
     //Han Chen
@@ -216,9 +216,10 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
             }
         }
         return nX_without_interact_phe;
-    } //interaction_only, model!=0, ngpreds==2
+    }  // interaction_only, model!=0, ngpreds==2
     return nX;
 }
+
 
 mematrix<double> t_apply_model(mematrix<double>& X, int model, int interaction,
                                int ngpreds, bool iscox, int nullmodel)
@@ -229,6 +230,7 @@ mematrix<double> t_apply_model(mematrix<double>& X, int model, int interaction,
     mematrix<double> out = transpose(nX);
     return out;
 }
+
 
 linear_reg::linear_reg(regdata& rdatain)
 {
@@ -249,6 +251,7 @@ linear_reg::linear_reg(regdata& rdatain)
     loglik = -9.999e+32;
     chi2_score = -1.;
 }
+
 
 void base_reg::base_score(mematrix<double>& resid, regdata& rdata, int verbose,
                           double tol_chol, int model, int interaction,
@@ -295,6 +298,7 @@ void base_reg::base_score(mematrix<double>& resid, regdata& rdata, int verbose,
     chi2 = chi2 * (1. / sigma2_internal);
     chi2_score = chi2[0];
 }
+
 
 void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
                           int model, int interaction, int ngpreds,
@@ -576,6 +580,7 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     }
 }
 
+
 void linear_reg::score(mematrix<double>& resid, regdata& rdatain, int verbose,
                        double tol_chol, int model, int interaction, int ngpreds,
                        const masked_matrix& invvarmatrix, int nullmodel)
@@ -584,6 +589,7 @@ void linear_reg::score(mematrix<double>& resid, regdata& rdatain, int verbose,
     base_score(resid, rdata, verbose, tol_chol, model, interaction, ngpreds,
                invvarmatrix, nullmodel = 0);
 }
+
 
 logistic_reg::logistic_reg(regdata& rdatain)
 {
@@ -603,6 +609,7 @@ logistic_reg::logistic_reg(regdata& rdatain)
     niter = -1;
     chi2_score = -1.;
 }
+
 
 void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
                             double eps, double tol_chol, int model,
@@ -834,6 +841,7 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
     // std::cout << "sebeta (" << sebeta.nrow << "):\n"; sebeta.print();
     // exit(1);
 }
+
 
 void logistic_reg::score(mematrix<double>& resid, regdata& rdata, int verbose,
                          double tol_chol, int model, int interaction,
