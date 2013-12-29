@@ -19,22 +19,22 @@ tmp <- system(paste0("cd ", tests.path, "; bash test_bt.sh; cd -"),
               intern=TRUE)
 cat("OK\n")
 
-resPaAddDose <- read.table(
+dose.add.PA <- read.table(
     paste0(tests.path, "logist_add.out.txt"),
     head=TRUE)[, colsAddDose]
-resPaAddProb <- read.table(
+prob.add.PA <- read.table(
     paste0(tests.path, "logist_prob_add.out.txt"),
     head=TRUE)[, colsAddProb]
-resPaDom <- read.table(
+prob.dom.PA <- read.table(
     paste0(tests.path, "logist_prob_domin.out.txt"),
     head=TRUE)[, colsDom]
-resPaRec <- read.table(
+prob.rec.PA <- read.table(
     paste0(tests.path, "logist_prob_recess.out.txt"),
     head=TRUE)[, colsRec]
-resPaOdom <- read.table(
+prob.odom.PA <- read.table(
     paste0(tests.path, "logist_prob_over_domin.out.txt"),
     head=TRUE)[, colsOdom]
-resPa2df <- read.table(
+prob.2df.PA <- read.table(
     paste0(tests.path, "logist_prob_2df.out.txt"),
     head=TRUE)[, cols2df]
 
@@ -56,7 +56,7 @@ snpdose <- "dose[, i]"
 dose.add.R <- run.model(model.fn.0, model.fn, snpdose)
 colnames(dose.add.R) <- colsAddDose
 rownames(dose.add.R) <- NULL
-stopifnot( all.equal(resPaAddDose, dose.add.R, tol=tol) )
+stopifnot( all.equal(dose.add.PA, dose.add.R, tol=tol) )
 cat("additive ")
 
 ## Additive model, probabilities
@@ -64,7 +64,7 @@ snpprob <- "doseFromProb[, i]"
 prob.add.R <- run.model(model.fn.0, model.fn, snpprob)
 colnames(prob.add.R) <- colsAddProb
 rownames(prob.add.R) <- NULL
-stopifnot( all.equal(resPaAddProb, prob.add.R, tol=tol) )
+stopifnot( all.equal(prob.add.PA, prob.add.R, tol=tol) )
 cat("additive ")
 
 ## dominant model
@@ -72,7 +72,7 @@ snpprob <- "prob[, indexHom] + prob[, indexHet]"
 prob.dom.R <- run.model(model.fn.0, model.fn, snpprob)
 colnames(prob.dom.R) <- colsDom
 rownames(prob.dom.R) <- NULL
-stopifnot( all.equal(resPaDom, prob.dom.R, tol=tol) )
+stopifnot( all.equal(prob.dom.PA, prob.dom.R, tol=tol) )
 cat("dominant ")
 
 ## recessive model
@@ -80,7 +80,7 @@ snpprob <- "prob[, indexHom]"
 prob.rec.R <- run.model(model.fn.0, model.fn, snpprob)
 colnames(prob.rec.R) <- colsRec
 rownames(prob.rec.R) <- NULL
-stopifnot( all.equal(resPaRec, prob.rec.R, tol=tol) )
+stopifnot( all.equal(prob.rec.PA, prob.rec.R, tol=tol) )
 cat("recessive ")
 
 ## over-dominant model
@@ -88,7 +88,7 @@ snpprob <- "prob[, indexHet]"
 prob.odom.R <- run.model(model.fn.0, model.fn, snpprob)
 colnames(prob.odom.R) <- colsOdom
 rownames(prob.odom.R) <- NULL
-stopifnot( all.equal(resPaOdom, prob.odom.R, tol=tol) )
+stopifnot( all.equal(prob.odom.PA, prob.odom.R, tol=tol) )
 cat("overdominant ")
 
 
@@ -119,7 +119,7 @@ for (i in 3:dim(dose)[2]) {
 }
 colnames(prob.2df.R) <- cols2df
 rownames(prob.2df.R) <- NULL
-stopifnot( all.equal(resPa2df, prob.2df.R, tol=tol) )
+stopifnot( all.equal(prob.2df.PA, prob.2df.R, tol=tol) )
 cat("2df\n")
 
 cat("\t\t\t\t\t\tOK\n")
