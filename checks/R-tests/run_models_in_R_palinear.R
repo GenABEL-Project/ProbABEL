@@ -38,6 +38,12 @@ prob.2df.PA <- read.table(
     paste0(tests.path, "linear_ngp2_2df.out.txt"),
     head=TRUE)[, cols2df]
 
+## Fix betas, sebetas, chi^2 for the case that there is no variation
+## (SNP 6 in the info file). ProbABEL lists them all as 0.0, R lists
+## them as:
+prob.dom.PA[6, 2:4] <- c(NaN, NaN, 0.0)
+prob.2df.PA[6, 4:5] <- c(NA, NA)
+
 ####
 ## run analysis in R
 ####
@@ -102,10 +108,17 @@ for (i in 3:dim(dose)[2]) {
         model.0 <- lm( height[noNA] ~ sex[noNA] + age[noNA] )
         model   <- lm( height ~ sex + age + prob[, indexHet] + prob[, indexHom] )
         smA1A2  <- summary(model)$coef[4, 1:2]
-        smA1A1  <- summary(model)$coef[5, 1:2]
+
+        ## When all coefficients are NA, they don't show up in $coeff
+        if ( nrow(summary(model)$coeff) > 4 ) {
+            smA1A1 <- summary(model)$coef[5, 1:2]
+        } else {
+            smA1A1 <- c(NA, NA)
+        }
+
         lrt     <- 2 * ( logLik( model ) - logLik( model.0 ) )
 
-        rsq <- resPa2df[i-2, "Rsq"]
+        rsq <- prob.2df.PA[i-2, "Rsq"]
         if( rsq < rsq.thresh) {
             row <- c(rsq, NaN, NaN, NaN, NaN, NaN)
         } else {
