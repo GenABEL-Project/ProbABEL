@@ -15,28 +15,22 @@ source(paste0(srcdir, "initial_checks.R"))
 ## Run ProbABEL to get the output data we want to compare/verify
 ####
 cat("Running ProbABEL...\t\t\t\t")
-tmp <- system(paste0("cd ", tests.path, "; bash test_qt.sh; cd -"),
+tmp <- system(paste0("bash ", tests.path, "test_qt.sh"),
               intern=TRUE)
 cat("OK\n")
 
-dose.add.PA <- read.table(
-    paste0(tests.path, "linear_base_add.out.txt"),
-    head=TRUE)[, colsAddDose]
-prob.add.PA <- read.table(
-    paste0(tests.path, "linear_ngp2_add.out.txt"),
-    head=TRUE)[, colsAddProb]
-prob.dom.PA <- read.table(
-    paste0(tests.path, "linear_ngp2_domin.out.txt"),
-    head=TRUE)[, colsDom]
-prob.rec.PA <- read.table(
-    paste0(tests.path, "linear_ngp2_recess.out.txt"),
-    head=TRUE)[, colsRec]
-prob.odom.PA <- read.table(
-    paste0(tests.path, "linear_ngp2_over_domin.out.txt"),
-    head=TRUE)[, colsOdom]
-prob.2df.PA <- read.table(
-    paste0(tests.path, "linear_ngp2_2df.out.txt"),
-    head=TRUE)[, cols2df]
+dose.add.PA <- read.table("linear_base_add.out.txt",
+                          head=TRUE)[, colsAddDose]
+prob.add.PA <- read.table("linear_ngp2_add.out.txt",
+                          head=TRUE)[, colsAddProb]
+prob.dom.PA <- read.table("linear_ngp2_domin.out.txt",
+                          head=TRUE)[, colsDom]
+prob.rec.PA <- read.table("linear_ngp2_recess.out.txt",
+                          head=TRUE)[, colsRec]
+prob.odom.PA <- read.table("linear_ngp2_over_domin.out.txt",
+                           head=TRUE)[, colsOdom]
+prob.2df.PA <- read.table("linear_ngp2_2df.out.txt",
+                          head=TRUE)[, cols2df]
 
 ## Fix betas, sebetas, chi^2 for the case that there is no variation
 ## (SNP 6 in the info file). ProbABEL lists them all as 0.0, R lists
@@ -51,7 +45,7 @@ attach(pheno)
 
 cat("Comparing R output with ProbABEL output\t\t")
 
-source("run_model_linear.R")
+source(paste0(srcdir, "run_model_linear.R"))
 
 model.fn.0 <- "lm( height[noNA] ~ sex[noNA] + age[noNA] )"
 model.fn   <- "lm( height ~ sex + age + snp )"

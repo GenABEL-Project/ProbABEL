@@ -6,17 +6,18 @@ echo "Analysing BT..."
 
 scriptdir=$(dirname $0)
 
+if [ -z ${PA_BINDIR} ]; then
+    PA_BINDIR="${scriptdir}/../src/"
+fi
 if [ -z ${srcdir} ]; then
     srcdir="."
-    bindir=${scriptdir}/../src/
-else
-    bindir="../src/"
+    PA_BINDIR=${scriptdir}/../src/
 fi
 
 . ${scriptdir}/run_diff.sh
 
 inputdir=${scriptdir}/inputfiles
-palogist=${bindir}/palogist
+palogist=${PA_BINDIR}/palogist
 
 # Redirect all output to file descriptor 3 to /dev/null except if
 # the first argument is "verbose" then redirect handle 3 to stdout

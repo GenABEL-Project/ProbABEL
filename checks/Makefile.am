@@ -52,8 +52,8 @@ if BUILD_pacoxph
 check_SCRIPTS +=  test_cox.sh
 endif
 
-
-
+AM_TESTS_ENVIRONMENT= \
+	PA_BINDIR=$(top_builddir)/src
 TESTS = $(check_SCRIPTS)
 
 EXTRA_DIST = $(verified_results) $(input_files) $(check_SCRIPTS)

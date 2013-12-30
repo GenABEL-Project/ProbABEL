@@ -179,6 +179,7 @@ AC_CONFIG_FILES([
         doc/Makefile
         examples/Makefile
         checks/Makefile
+        checks/R-tests/Makefile
 ])
 
 # Create output files

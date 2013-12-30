@@ -23,29 +23,22 @@ source(paste0(srcdir, "initial_checks.R"))
 ## Run ProbABEL to get the output data we want to compare/verify
 ####
 cat("Running ProbABEL...\t\t\t\t")
-tmp <- system(paste0("cd ", tests.path,
-                     "; bash test_cox.sh 2> /dev/null; cd -"),
+tmp <- system(paste0("bash ", tests.path, "test_cox.sh 2> /dev/null"),
               intern=TRUE)
 cat("OK\n")
 
-dose.add.PA <- read.table(
-    paste0(tests.path, "coxph_dose_add.out.txt"),
-    head=TRUE)[, colsAddDose]
-prob.add.PA <- read.table(
-    paste0(tests.path, "coxph_prob_add.out.txt"),
-    head=TRUE)[, colsAddProb]
-prob.dom.PA <- read.table(
-    paste0(tests.path, "coxph_prob_domin.out.txt"),
-    head=TRUE)[, colsDom]
-prob.rec.PA <- read.table(
-    paste0(tests.path, "coxph_prob_recess.out.txt"),
-    head=TRUE)[, colsRec]
-prob.odom.PA <- read.table(
-    paste0(tests.path, "coxph_prob_over_domin.out.txt"),
-    head=TRUE)[, colsOdom]
-prob.2df.PA <- read.table(
-    paste0(tests.path, "coxph_prob_2df.out.txt"),
-    head=TRUE)[, cols2df]
+dose.add.PA <- read.table("coxph_dose_add.out.txt",
+                          head=TRUE)[, colsAddDose]
+prob.add.PA <- read.table("coxph_prob_add.out.txt",
+                          head=TRUE)[, colsAddProb]
+prob.dom.PA <- read.table("coxph_prob_domin.out.txt",
+                          head=TRUE)[, colsDom]
+prob.rec.PA <- read.table("coxph_prob_recess.out.txt",
+                          head=TRUE)[, colsRec]
+prob.odom.PA <- read.table("coxph_prob_over_domin.out.txt",
+                           head=TRUE)[, colsOdom]
+prob.2df.PA <- read.table("coxph_prob_2df.out.txt",
+                          head=TRUE)[, cols2df]
 
 ####
 ## run analysis in R
@@ -54,7 +47,7 @@ attach(pheno)
 
 cat("Comparing R output with ProbABEL output\t\t")
 
-source("run_model_coxph.R")
+source(paste0(srcdir, "run_model_coxph.R"))
 
 model.fn.0 <-
     "coxph( Surv(fupt_chd, chd)[noNA] ~ sex[noNA] + age[noNA] + othercov[noNA] )"
