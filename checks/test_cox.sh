@@ -2,11 +2,14 @@
 # This script runs checks on ProbABEL's pacoxph module
 
 echo "Analysing Cox model..."
+
+scriptdir=$(dirname $0)
+
 if [ -z ${srcdir} ]; then
     srcdir="."
 fi
 
-. ${srcdir}/run_diff.sh
+. ${scriptdir}/run_diff.sh
 
 inputdir=${srcdir}/inputfiles
 
@@ -18,7 +21,9 @@ if [ "$1" = "verbose" ]; then
     exec 3>&1
 fi
 
-../src/pacoxph \
+pacoxph=../src/pacoxph
+
+$pacoxph \
     -p ${inputdir}/coxph_data.txt \
     -d ${inputdir}/test.mldose \
     -i ${inputdir}/test.mlinfo \
@@ -27,7 +32,7 @@ fi
     -o coxph_dose \
     >& 3
 
-../src/pacoxph \
+$pacoxph \
     -p ${inputdir}/coxph_data.txt \
     -d ${inputdir}/test.dose.fvi \
     -i ${inputdir}/test.mlinfo \
@@ -40,7 +45,7 @@ run_diff coxph_dose_add.out.txt coxph_dose_fv_add.out.txt \
     "pacoxph check: dose vs. dose_fv"
 
 
-../src/pacoxph \
+$pacoxph \
     -p ${inputdir}/coxph_data.txt \
     -d ${inputdir}/test.mlprob \
     -i ${inputdir}/test.mlinfo \
@@ -54,7 +59,7 @@ run_diff coxph_dose_add.out.txt coxph_prob_add.out.txt \
     "pacoxph check: dose vs. prob" -I SNP
 
 
-../src/pacoxph \
+$pacoxph \
     -p ${inputdir}/coxph_data.txt \
     -d ${inputdir}/test.prob.fvi \
     -i ${inputdir}/test.mlinfo \

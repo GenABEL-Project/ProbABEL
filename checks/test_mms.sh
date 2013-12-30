@@ -18,7 +18,9 @@ if [ "$1" = "verbose" ]; then
     exec 3>&1
 fi
 
-../src/palinear \
+palinear=../src/palinear
+
+$palinear \
     -p ${inputdir}/mmscore_pheno.PHE \
     -i ${inputdir}/mmscore_gen.mlinfo \
     -d ${inputdir}/mmscore_gen.mldose \
@@ -27,7 +29,7 @@ fi
     --mmscore ${inputdir}/mmscore_InvSigma_aj.sex.age.dat \
     >& 3
 
-../src/palinear \
+$palinear \
     -p ${inputdir}/mmscore_pheno.PHE \
     -i ${inputdir}/mmscore_gen.mlinfo \
     -d ${inputdir}/mmscore_gen.dose.fvi \
@@ -42,7 +44,7 @@ run_diff mmscore_dose_add.out.txt \
     "mmscore check: dose vs. dose_fv"
 
 
-../src/palinear \
+$palinear \
     -p ${inputdir}/mmscore_pheno.PHE \
     -i ${inputdir}/mmscore_gen.mlinfo \
     -d ${inputdir}/mmscore_gen.mlprob \
@@ -51,7 +53,7 @@ run_diff mmscore_dose_add.out.txt \
     --mmscore ${inputdir}/mmscore_InvSigma_aj.sex.age.dat \
     >& 3
 
-../src/palinear \
+$palinear \
     -p ${inputdir}/mmscore_pheno.PHE \
     -i ${inputdir}/mmscore_gen.mlinfo \
     -d ${inputdir}/mmscore_gen.prob.fvi \

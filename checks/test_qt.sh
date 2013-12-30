@@ -1,13 +1,16 @@
-#!/bin/bash -x
+#!/bin/bash
 # This script runs checks on ProbABEL's palinear module for
 # quantitative traits.
 
 echo "analysing QT"
+
+scriptdir=$(dirname $0)
+
 if [ -z ${srcdir} ]; then
     srcdir="."
 fi
 
-. ${srcdir}/run_diff.sh
+. ${scriptdir}/run_diff.sh
 
 inputdir=${srcdir}/inputfiles
 
@@ -18,8 +21,10 @@ if [ "$1" = "verbose" ]; then
     exec 3>&1
 fi
 
+palinear="../src/palinear"
+
 echo "base analysis"
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.mldose \
     -i ${inputdir}/test.mlinfo \
@@ -27,7 +32,7 @@ echo "base analysis"
     -c 19 \
     -o linear_base \
     >& 3
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.dose.fvi \
     -i ${inputdir}/test.mlinfo \
@@ -43,14 +48,14 @@ run_diff linear_base_add.out.txt \
 
 
 echo "Option --allcov"
-../src/palinear -p ${inputdir}/height.txt \
+$palinear -p ${inputdir}/height.txt \
     -d ${inputdir}/test.mldose \
     -i ${inputdir}/test.mlinfo \
     -m ${inputdir}/test.map \
     -c 19 --allcov \
     -o linear_allcov \
     >& 3
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.dose.fvi \
     -i ${inputdir}/test.mlinfo \
@@ -65,7 +70,7 @@ run_diff linear_allcov_add.out.txt \
 
 
 echo "Option --interaction=1"
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.mldose \
     -i ${inputdir}/test.mlinfo \
@@ -73,7 +78,7 @@ echo "Option --interaction=1"
     -c 19 --interaction=1 \
     -o linear_int1 \
     >& 3
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.dose.fvi \
     -i ${inputdir}/test.mlinfo \
@@ -88,7 +93,7 @@ run_diff linear_int1_add.out.txt \
 
 
 echo "Option --robust"
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.mldose \
     -i ${inputdir}/test.mlinfo \
@@ -96,7 +101,7 @@ echo "Option --robust"
     -c 19 --robust \
     -o linear_robust \
     >& 3
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.dose.fvi \
     -i ${inputdir}/test.mlinfo \
@@ -111,7 +116,7 @@ run_diff linear_robust_add.out.txt \
 
 
 echo "Option --robust --interaction=1"
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.mldose \
     -i ${inputdir}/test.mlinfo \
@@ -119,7 +124,7 @@ echo "Option --robust --interaction=1"
     -c 19 --robust --interaction=1 \
     -o linear_robust_int1 \
     >& 3
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.dose.fvi \
     -i ${inputdir}/test.mlinfo \
@@ -134,7 +139,7 @@ run_diff linear_robust_int1_add.out.txt \
 
 
 echo "Option --ngp=2, mlprob file"
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.mlprob \
     -i ${inputdir}/test.mlinfo \
@@ -142,7 +147,7 @@ echo "Option --ngp=2, mlprob file"
     -c 19 --ngp=2 \
     -o linear_ngp2 \
     >& 3
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.prob.fvi \
     -i ${inputdir}/test.mlinfo \
@@ -165,7 +170,7 @@ done
 
 
 echo "Option --ngp=2 --allcov"
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.mlprob \
     -i ${inputdir}/test.mlinfo \
@@ -173,7 +178,7 @@ echo "Option --ngp=2 --allcov"
     -c 19 --ngp=2 --allcov \
     -o linear_ngp2_allcov \
     >& 3
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.prob.fvi \
     -i ${inputdir}/test.mlinfo \
@@ -190,7 +195,7 @@ done
 
 
 echo "Option --ngp=2 --interaction=1"
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.mlprob \
     -i ${inputdir}/test.mlinfo \
@@ -198,7 +203,7 @@ echo "Option --ngp=2 --interaction=1"
     -c 19 --ngp=2 --interaction=1 \
     -o linear_ngp2_int1 \
     >& 3
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.prob.fvi \
     -i ${inputdir}/test.mlinfo \
@@ -215,7 +220,7 @@ done
 
 
 echo "Option --ngp=2 --robust"
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.mlprob \
     -i ${inputdir}/test.mlinfo \
@@ -223,7 +228,7 @@ echo "Option --ngp=2 --robust"
     -c 19 --ngp=2 --robust \
     -o linear_ngp2_robust \
     >& 3
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.prob.fvi \
     -i ${inputdir}/test.mlinfo \
@@ -240,7 +245,7 @@ done
 
 
 echo "Option --ngp=2 --robust --interaction=1"
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.mlprob \
     -i ${inputdir}/test.mlinfo \
@@ -248,7 +253,7 @@ echo "Option --ngp=2 --robust --interaction=1"
     -c 19 --ngp=2 --robust --interaction=1 \
     -o linear_ngp2_robust_int1 \
     >& 3
-../src/palinear \
+$palinear \
     -p ${inputdir}/height.txt \
     -d ${inputdir}/test.prob.fvi \
     -i ${inputdir}/test.mlinfo \

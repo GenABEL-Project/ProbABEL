@@ -3,11 +3,14 @@
 # binary traits.
 
 echo "analysing BT"
+
+scriptdir=$(dirname $0)
+
 if [ -z ${srcdir} ]; then
     srcdir="."
 fi
 
-. ${srcdir}/run_diff.sh
+. ${scriptdir}/run_diff.sh
 
 inputdir=${srcdir}/inputfiles
 
@@ -18,7 +21,9 @@ if [ "$1" = "verbose" ]; then
     exec 3>&1
 fi
 
-../src/palogist \
+palogist=../src/palogist
+
+$palogist \
     -p ${inputdir}/logist_data.txt \
     -d ${inputdir}/test.mldose \
     -i ${inputdir}/test.mlinfo \
@@ -27,7 +32,7 @@ fi
     -o logist \
     >& 3
 
-../src/palogist \
+$palogist \
     -p ${inputdir}/logist_data.txt \
     -d ${inputdir}/test.dose.fvi \
     -i ${inputdir}/test.mlinfo \
@@ -41,7 +46,7 @@ run_diff logist_add.out.txt \
     logist_fv_add.out.txt \
     "BT check: dose vs. dose_fv"
 
-../src/palogist \
+$palogist \
     -p ${inputdir}/logist_data.txt \
     -d ${inputdir}/test.mlprob \
     -i ${inputdir}/test.mlinfo \
@@ -51,7 +56,7 @@ run_diff logist_add.out.txt \
     -o logist_prob \
     >& 3
 
-../src/palogist \
+$palogist \
     -p ${inputdir}/logist_data.txt \
     -d ${inputdir}/test.prob.fvi \
     -i ${inputdir}/test.mlinfo \
