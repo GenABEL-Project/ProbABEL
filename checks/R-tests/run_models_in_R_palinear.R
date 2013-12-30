@@ -10,9 +10,6 @@ if (is.na(srcdir)) {
 pheno.file <- "height.txt"
 
 source(paste0(srcdir, "initial_checks.R"))
-cat("IN R SRCDIR=", srcdir, "\n")
-cat("IN R tests.path=", tests.path, "\n")
-cat("In R inputfiles.path=", inputfiles.path, "\n")
 
 ####
 ## Run ProbABEL to get the output data we want to compare/verify
@@ -54,7 +51,7 @@ attach(pheno)
 
 cat("Comparing R output with ProbABEL output\t\t")
 
-source(paste0(srcdir, "run_model_linear.R"))
+source("run_model_linear.R")
 
 model.fn.0 <- "lm( height[noNA] ~ sex[noNA] + age[noNA] )"
 model.fn   <- "lm( height ~ sex + age + snp )"

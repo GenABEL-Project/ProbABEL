@@ -2,9 +2,9 @@
 
 AUTOMAKE_OPTIONS = foreign color-tests
 
-R_test_files = run_models_in_R_palinear.R run_model_linear.R	\
- run_models_in_R_palogist.R run_model_logist.R			\
- run_models_in_R_pacox.R run_model_coxph.R			\
+R_test_files =  run_models_in_R_palinear.R	\
+ run_models_in_R_palogist.R			\
+ run_models_in_R_pacox.R			\
  initial_checks.R
 
 check_SCRIPTS =
@@ -23,10 +23,11 @@ endif
 
 
 testsdir = $(pkgdatadir)/checks/R-tests
+dist_tests_DATA = $(R_test_files) $(check_SCRIPTS)
+#dist_tests_SCRIPTS = $(check_SCRIPTS)
+
+TESTS_ENVIRONMENT = bash
+
+
 
 TESTS = $(check_SCRIPTS)
-
-## The palogist R test still doesn't run correctly.
-XFAIL_TESTS = run_R_test_palogist.sh
-
-EXTRA_DIST = $(check_SCRIPTS) $(R_test_files)
