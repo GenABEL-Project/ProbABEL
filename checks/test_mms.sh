@@ -2,23 +2,29 @@
 # This script runs checks on ProbABEL's palinear module for
 # quantitative traits combined with the mmscore option.
 
-echo "analysis using MMScore"
+echo "Analysis using MMScore..."
+
+scriptdir=$(dirname $0)
+
 if [ -z ${srcdir} ]; then
     srcdir="."
+    bindir=${scriptdir}/../src/
+else
+    bindir="../src/"
 fi
 
-. ${srcdir}/run_diff.sh
+. ${scriptdir}/run_diff.sh
 
-inputdir=${srcdir}/inputfiles
+inputdir=${scriptdir}/inputfiles
+palinear=${bindir}/palinear
 
 # Redirect all output to file descriptor 3 to /dev/null except if
 # the first argument is "verbose" then redirect handle 3 to stdout
 exec 3>/dev/null
 if [ "$1" = "verbose" ]; then
+    echo "Verbose mode ON"
     exec 3>&1
 fi
-
-palinear=../src/palinear
 
 $palinear \
     -p ${inputdir}/mmscore_pheno.PHE \

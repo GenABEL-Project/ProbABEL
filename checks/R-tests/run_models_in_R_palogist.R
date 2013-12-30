@@ -38,6 +38,10 @@ prob.2df.PA <- read.table(
     paste0(tests.path, "logist_prob_2df.out.txt"),
     head=TRUE)[, cols2df]
 
+## Fix chi^2 for the case that there is no variation (SNP 6 in the
+## info file). ProbABEL lists it as NaN, R lists it as:
+prob.dom.PA[6, 4] <- 0.0
+
 ####
 ## run analysis in R
 ####
@@ -45,7 +49,7 @@ attach(pheno)
 
 cat("Comparing R output with ProbABEL output\t\t")
 
-source("run_model_logist.R")
+source(paste0(srcdir, "run_model_logist.R"))
 
 model.fn.0 <-
     "glm( chd[noNA] ~ sex[noNA] + age[noNA] + othercov[noNA], family=binomial)"
@@ -105,10 +109,16 @@ for (i in 3:dim(dose)[2]) {
         model   <- glm( chd ~ sex + age + othercov + prob[, indexHet] +
                        prob[, indexHom], family=binomial )
         smA1A2  <- summary(model)$coef[5, 1:2]
-        smA1A1  <- summary(model)$coef[6, 1:2]
+
+        if ( nrow(summary(model)$coeff) > 5 ) {
+            smA1A1 <- summary(model)$coef[6, 1:2]
+        } else {
+            smA1A1 <- c(NaN, NaN)
+        }
+
         lrt     <- 2 * ( logLik( model ) - logLik( model.0 ) )
 
-        rsq <- resPa2df[i-2, "Rsq"]
+        rsq <- prob.2df.PA[i-2, "Rsq"]
         if( rsq < rsq.thresh) {
             row <- c(rsq, NaN, NaN, NaN, NaN, NaN)
         } else {

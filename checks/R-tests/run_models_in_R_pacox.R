@@ -24,7 +24,7 @@ source(paste0(srcdir, "initial_checks.R"))
 ####
 cat("Running ProbABEL...\t\t\t\t")
 tmp <- system(paste0("cd ", tests.path,
-                     "; bash test_cox.sh 2> /dev/null; cd -"),
+                     "; bash srcdir=", srcdir, " test_cox.sh 2> /dev/null; cd -"),
               intern=TRUE)
 cat("OK\n")
 
@@ -54,7 +54,7 @@ attach(pheno)
 
 cat("Comparing R output with ProbABEL output\t\t")
 
-source("run_model_coxph.R")
+source(paste0(srcdir, "run_model_coxph.R"))
 
 model.fn.0 <-
     "coxph( Surv(fupt_chd, chd)[noNA] ~ sex[noNA] + age[noNA] + othercov[noNA] )"

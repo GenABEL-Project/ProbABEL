@@ -38,6 +38,12 @@ genofiles = $(input_files_dir)/test.mldose		\
 
 input_files = $(phenofiles) $(genofiles) run_diff.sh test_all.sh
 
+# R_test_files = R-tests/run_models_in_R_palinear.R R-tests/run_model_linear.R	\
+#  R-tests/run_models_in_R_palogist.R R-tests/run_model_logist.R			\
+#  R-tests/run_models_in_R_pacox.R R-tests/run_model_coxph.R			\
+#  R-tests/initial_checks.R
+
+
 check_SCRIPTS =
 
 
@@ -52,6 +58,17 @@ if BUILD_pacoxph
 check_SCRIPTS +=  test_cox.sh
 endif
 
+# if HAVE_R
+# if BUILD_palinear
+# check_SCRIPTS += R-tests/run_R_test_palinear.sh
+# endif
+# if BUILD_palogist
+# #check_SCRIPTS += R-tests/run_R_test_palogist.sh
+# endif
+# if BUILD_pacoxph
+# check_SCRIPTS += R-tests/run_R_test_pacox.sh
+# endif
+# endif
 
 
 TESTS = $(check_SCRIPTS)
