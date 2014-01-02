@@ -1,4 +1,4 @@
-.TH probabel 1 "12 December 2013"
+.TH ProbABEL 1 "2 January 2014" "ProbABEL 0.4.2"
 .SH NAME
 probabel \- Wrapper around the three ProbABEL binaries, simplifying their use
 .SH SYNOPSIS
@@ -70,4 +70,22 @@ Get additional help on how to run \fBprobabel\fR. In this case none of
 the other options needs to be specified.
 
 .SH EXAMPLES
+This runs a genome-wide association scan using linear regression and
+the additive genetic model on cohort \fIMy_Large_Cohort\fR for
+phenotype \fImy_phenotype\fR:
+.PP
+.nf
+.RS
 probabel 1 22 linear "My_Large_Cohort" \-\-additive my_phenotype
+.RE
+.fi
+.PP
+
+.SH "SEE ALSO"
+palinear(1), palogist(1), pacoxph(1)
+.SH BUGS
+The bugtracker is located at
+.br
+https://r-forge.r-project.org/tracker/?group_id=505
+.SH AUTHORS
+Lennart C. Karssen
