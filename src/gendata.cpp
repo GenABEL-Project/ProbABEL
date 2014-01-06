@@ -17,7 +17,7 @@
 #endif
 #include "utilities.h"
 
-void gendata::get_var(int var, double * data)
+void gendata::get_var(int var, float * data)
 {
     // Read the genetic data for SNP 'var' and store in the array 'data'
 
@@ -30,7 +30,7 @@ void gendata::get_var(int var, double * data)
     }
     else if (DAG != NULL)       // Read from fv file
     {
-        double *tmpdata = new double[DAG->getNumObservations()];
+        float *tmpdata = new float[DAG->getNumObservations()];
         DAG->readVariableAs((unsigned long int) var, tmpdata);
 
         unsigned int j = 0;
@@ -38,33 +38,7 @@ void gendata::get_var(int var, double * data)
         {
             if (!DAGmask[i])
             {
-                // A dirty trick to get rid of conversion
-                // errors. Instead of casting float data to double we
-                // convert the data to string and then do strtod()
-                std::ostringstream strs;
-                strs << tmpdata[i];
-                std::string str = strs.str();
-                double val;
-                char *endptr;
-                errno = 0;      // To distinguish success/failure
-                                // after strtod()
-                val = strtod(str.c_str(), &endptr);
-
-                if ((errno == ERANGE && (val == HUGE_VALF || val == HUGE_VALL))
-                    || (errno != 0 && val == 0)) {
-                    perror("Error while reading genetic data (strtod)");
-                    exit(EXIT_FAILURE);
-                }
-
-                if (endptr == str.c_str()) {
-                    cerr << "No digits were found while reading genetic data"
-                         << " (individual " << i + 1
-                         << ", position " << var + 1 << ")"
-                         << endl;
-                    exit(EXIT_FAILURE);
-                }
-                /* If we got here, strtod() successfully parsed a number */
-                data[j++] = val;
+                data[j++] = tmpdata[i];
             }
         }
         delete[] tmpdata;

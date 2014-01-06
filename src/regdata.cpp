@@ -90,7 +90,7 @@ regdata::regdata(phedata &phed, gendata &gend, const int snpnum,
     if (snpnum > 0)
         for (int j = 0; j < ngpreds; j++)
         {
-            double *snpdata = new double[nids];
+            float *snpdata = new float[nids];
             gend.get_var(snpnum * ngpreds + j, snpdata);
             for (int i = 0; i < nids; i++)
             {
@@ -115,7 +115,7 @@ void regdata::update_snp(gendata *gend, const int snpnum)
     // matrix X
     for (int j = 0; j < ngpreds; j++)
     {
-        double *snpdata = new double[nids];
+        float *snpdata = new float[nids];
         for (int i = 0; i < nids; i++)
         {
             masked_data[i] = 0;
