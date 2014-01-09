@@ -373,7 +373,7 @@ void mematrix<DT>::delete_column(const int delcol)
         exit(1);
     }
 
-    MatrixXd auxdata = data;
+    Matrix<DT, Dynamic, Dynamic, RowMajor> auxdata = data;
     data.resize(data.rows(), data.cols()-1);
 
     int rightColsSize = auxdata.cols() - delcol - 1;
@@ -394,8 +394,7 @@ void mematrix<DT>::delete_row(const int delrow)
         exit(1);
     }
 
-
-    MatrixXd auxdata = data;
+    Matrix<DT, Dynamic, Dynamic, RowMajor> auxdata = data;
     data.resize(data.rows()-1, data.cols());
 
     int bottomRowsSize = auxdata.rows() - delrow - 1;
