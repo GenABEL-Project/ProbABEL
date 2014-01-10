@@ -402,8 +402,15 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     // before was
     // mematrix<double> tXX_i = invert(tXX);
 
+#if EIGEN
+    beta.data=tXX.data*(X.data.transpose()*rdata.Y.data);
+    beta.nrow=beta.data.rows();
+    beta.ncol=beta.data.cols();
+    beta.nelements=beta.ncol*beta.nrow;
+#else
     mematrix<double> tXY = tX * (rdata.Y);
-    beta = tXX_i * tXY;
+    beta = tXX * tXY;
+#endif
 
     if (verbose)
     {
