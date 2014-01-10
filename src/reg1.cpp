@@ -445,9 +445,9 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     if (verbose)
     {
         std::cout << "tX:\n";
-        tX.print();
+        //tX.print();
         std::cout << "tXX:\n";
-        tXX.print();
+        //tXX.print();
         std::cout << "chole tXX:\n";
         tXX_i.print();
         std::cout << "tXX-1:\n";
