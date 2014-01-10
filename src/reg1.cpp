@@ -485,14 +485,26 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     //cout << endl;
     loglik = 0.;
     double halfrecsig2 = .5 / sigma2;
+#if EIGEN
+    double intercept = beta.get(0, 0);
+    residuals.data= rdata.Y.data.array()-intercept;
+    Eigen::ArrayXXd betacol = beta.data.block(1,0,beta.data.rows()-1,1).array().transpose();
+    Eigen::ArrayXXd resid_sub = (X.data.block(0,1,X.data.rows(),X.data.cols()-1)*betacol.matrix().asDiagonal()).rowwise().sum() ;
+    residuals.data-=resid_sub.matrix();
+    loglik-=(residuals.data.array().square()*halfrecsig2).sum();
+
+#else
     for (int i = 0; i < rdata.nids; i++)
-    {
-        double resid = rdata.Y[i] - beta.get(0, 0); // intercept
-        for (int j = 1; j < beta.nrow; j++)
-            resid -= beta.get(j, 0) * X.get(i, j);
-        residuals[i] = resid;
-        loglik -= halfrecsig2 * resid * resid;
-    }
+     {
+         double resid = rdata.Y[i] - beta.get(0, 0); // intercept
+         for (int j = 1; j < beta.nrow; j++){
+             resid -= beta.get(j, 0) * X.get(i, j);
+
+         }
+         residuals[i] = resid;
+         loglik -= halfrecsig2 * resid * resid;
+     }
+#endif
     loglik -= static_cast<double>(rdata.nids) * log(sqrt(sigma2));
     // cout << "estimate " << rdata.nids << "\n";
     //
