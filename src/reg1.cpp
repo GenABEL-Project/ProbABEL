@@ -453,7 +453,7 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         std::cout << "tXX-1:\n";
         tXX_i.print();
         std::cout << "tXY:\n";
-        tXY.print();
+        //tXY.print();
         std::cout << "beta:\n";
         (beta).print();
     }
