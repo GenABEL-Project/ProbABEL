@@ -423,6 +423,12 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
 #endif
     // now compute residual variance
     sigma2 = 0.;
+#if EIGEN
+//TODO: fix this part(residual variance) for mmscore this part: eigen part is not equel to non eigen code
+    mematrix<double>  sigma2_matrix;
+    sigma2_matrix.data=rdata.Y.data-(X.data*beta.data);
+    sigma2= sigma2_matrix.data.col(0).array().square().sum();
+#else
     mematrix<double> ttX = transpose(tX);
     mematrix<double> sigma2_matrix = rdata.Y;
     mematrix<double> sigma2_matrix1 = ttX * beta;
@@ -438,14 +444,15 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     //  std::cout << "sigma2_matrix.nrow=" << sigma2_matrix.nrow
     //            << "sigma2_matrix.ncol" << sigma2_matrix.ncol
     //            <<"\n";
-
+    static double val;
     for (int i = 0; i < sigma2_matrix.nrow; i++)
-    {
-        double val = sigma2_matrix.get(i, 0);
-        //            std::cout << "val = " << val << "\n";
-        sigma2 += val * val;
-        //            std::cout << "sigma2+= " << sigma2 << "\n";
-    }
+     {
+         val = sigma2_matrix.get(i, 0);
+         //            std::cout << "val = " << val << "\n";
+         sigma2 += val * val;
+         //            std::cout << "sigma2+= " << sigma2 << "\n";
+     }
+#endif
 
     double sigma2_internal = sigma2 / (N - static_cast<double>(length_beta));
     // now compute residual variance
