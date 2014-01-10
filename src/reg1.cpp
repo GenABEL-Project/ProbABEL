@@ -349,19 +349,49 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
             covariance.reinit(length_beta - 1, 1);
         }
     }
-
+#if !EIGEN
+    mematrix<double> tX;
+#endif
     //Oct 26, 2009
-    mematrix<double> tX = transpose(X);
     if (invvarmatrixin.length_of_mask != 0)
     {
-        tX = tX * invvarmatrixin.masked_data;
-        //!check if quicker
-        //tX = productXbySymM(tX,invvarmatrix);
-        // = invvarmatrix*X;
-        // std::cout<<"new tX.nrow="<<X.nrow<<" tX.ncol="<<X.ncol<<"\n";
+#if EIGEN
+//X.data=X.data.transpose()*invvarmatrixin.masked_data->data;
+
+        X.data =MatrixXd(X.data.cols(),X.data.cols()).setZero().selfadjointView<Lower>().rankUpdate(X.data.adjoint());
+                X.data =MatrixXd(X.data.cols(),X.data.cols()).setZero().selfadjointView<Lower>().rankUpdate(X.data.adjoint());
+                X.nrow=X.data.rows();
+                X.ncol=X.data.cols();
+                X.nelements=X.ncol*X.nrow;
+#else
+        tX = transpose(X) * invvarmatrixin.masked_data;
+#endif
     }
 
+#if EIGEN
+
+//    LLT<MatrixXd> X2(XtX().selfadjointView<Lower>());
+//    VectorXd m_coef = X2.solve(X.data.adjoint() * rdata.Y.data);
+//    VectorXd m_fitted = X.data * m_coef;
+//    VectorXd resid(rdata.Y.data - m_fitted);
+//    int degree_of_freedom(X.data.rows() - X.data.cols());
+//    double s(resid.norm() / sqrt(double(degree_of_freedom)));
+//    VectorXd m_se = s * X2.matrixL().solve(MatrixXd::Identity(X.ncol, X.ncol)).colwise().norm();
+//std::cout << "BETA\n" << m_coef(m_coef.size() - 1) << endl;
+//   std::cout << "m_se\n" << m_se(m_coef.size() - 1) << endl;
+
+    mematrix<double> tXX;
+    //tXX.data=X.data.transpose()*X.data;
+   tXX.data =MatrixXd(X.data.cols(),X.data.cols()).setZero().selfadjointView<Lower>().rankUpdate(X.data.adjoint());
+
+    tXX.nrow=tXX.data.rows();
+    tXX.ncol=tXX.data.cols();
+    tXX.nelements=tXX.ncol*tXX.nrow;
+
+#else
+   tX = transpose(X);
     mematrix<double> tXX = tX * X;
+#endif
     double N = X.nrow;
 
 #if EIGEN_COMMENTEDOUT
