@@ -234,7 +234,7 @@ mematrix<double> t_apply_model(mematrix<double>& X, int model, int interaction,
 
 linear_reg::linear_reg(regdata& rdatain)
 {
-    regdata rdata = rdatain.get_unmasked_data();
+     rdata = rdatain.get_unmasked_data();
     // std::cout << "linear_reg: " << rdata.nids << " " << (rdata.X).ncol
     //           << " " << (rdata.Y).ncol << "\n";
     int length_beta = (rdata.X).ncol;
@@ -307,7 +307,7 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
 {
     // suda interaction parameter
     // model should come here
-    regdata rdata = rdatain.get_unmasked_data();
+   // regdata rdata = rdatain.get_unmasked_data();
     if (invvarmatrixin.length_of_mask != 0)
     {
         invvarmatrixin.update_mask(rdatain.masked_data);
@@ -557,7 +557,7 @@ void linear_reg::score(mematrix<double>& resid, regdata& rdatain, int verbose,
                        double tol_chol, int model, int interaction, int ngpreds,
                        const masked_matrix& invvarmatrix, int nullmodel)
 {
-    regdata rdata = rdatain.get_unmasked_data();
+    //regdata rdata = rdatain.get_unmasked_data();
     base_score(resid, rdata, verbose, tol_chol, model, interaction, ngpreds,
                invvarmatrix, nullmodel = 0);
 }

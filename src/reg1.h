@@ -39,6 +39,7 @@ mematrix<double> t_apply_model(mematrix<double>& X, int model, int interaction,
 
 class base_reg {
  public:
+    regdata rdata;
     mematrix<double> beta;
     mematrix<double> sebeta;
     //Han Chen
