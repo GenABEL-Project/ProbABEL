@@ -32,7 +32,7 @@ class gendata {
             unsigned int npeople, unsigned int nmeasured,
             unsigned short int * allmeasured, std::string * idnames);
 
-    void get_var(int var, float * data);
+    void get_var(int var, double * data);
 
     ~gendata();
 

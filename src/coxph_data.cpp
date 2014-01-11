@@ -125,7 +125,7 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
     {
         for (int j = 0; j < ngpreds; j++)
         {
-            float *snpdata = new float[nids];
+            double *snpdata = new double[nids];
             gend.get_var(snpnum * ngpreds + j, snpdata);
             for (int i = 0; i < nids; i++)
             {
@@ -216,7 +216,7 @@ void coxph_data::update_snp(gendata *gend, const int snpnum) {
     freq   = 0.0;
 
     for (int j = 0; j < ngpreds; j++) {
-        float *snpdata = new float[nids];
+        double *snpdata = new double[nids];
         for (int i = 0; i < nids; i++) {
             masked_data[i] = 0;
         }

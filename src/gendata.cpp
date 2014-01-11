@@ -17,7 +17,7 @@
 #endif
 #include "utilities.h"
 
-void gendata::get_var(int var, float * data)
+void gendata::get_var(int var, double * data)
 {
     // Read the genetic data for SNP 'var' and store in the array 'data'
 
@@ -30,7 +30,9 @@ void gendata::get_var(int var, float * data)
     }
     else if (DAG != NULL)       // Read from fv file
     {
-        float *tmpdata = new float[DAG->getNumObservations()];
+        // cout << "Data Type: " << dataTypeToString(DAG->getElementType())
+        //      << endl;
+        double *tmpdata = new double[DAG->getNumObservations()];
         DAG->readVariableAs((unsigned long int) var, tmpdata);
 
         unsigned int j = 0;
@@ -38,7 +40,33 @@ void gendata::get_var(int var, float * data)
         {
             if (!DAGmask[i])
             {
-                data[j++] = tmpdata[i];
+                // A dirty trick to get rid of conversion
+                // errors. Instead of casting float data to double we
+                // convert the data to string and then do strtod()
+                char tmpstr[1048576];
+                snprintf (tmpstr, sizeof(tmpstr), "%f", tmpdata[i]);
+
+                double val;
+                char *endptr;
+                errno = 0;      // To distinguish success/failure
+                                // after strtod()
+                val = strtod(tmpstr, &endptr);
+
+                if ((errno == ERANGE && (val == HUGE_VALF || val == HUGE_VALL))
+                    || (errno != 0 && val == 0)) {
+                    perror("Error while reading genetic data (strtod)");
+                    exit(EXIT_FAILURE);
+                }
+
+                if (endptr == tmpstr) {
+                    cerr << "No digits were found while reading genetic data"
+                         << " (individual " << i + 1
+                         << ", position " << var + 1 << ")"
+                         << endl;
+                    exit(EXIT_FAILURE);
+                }
+                /* If we got here, strtod() successfully parsed a number */
+                data[j++] = val;
             }
         }
         delete[] tmpdata;
@@ -167,8 +195,9 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 if (infile.good())
                 {
                     infile >> tmpstr;
-                    // tmpstr contains the dosage in string form. Convert
-                    // it to double (if tmpstr is NaN it will be set to nan).
+                    // tmpstr contains the dosage/probability in
+                    // string form. Convert it to double (if tmpstr is
+                    // NaN it will be set to nan).
                     double dosage;
                     char *endptr;
                     errno = 0;      // To distinguish success/failure

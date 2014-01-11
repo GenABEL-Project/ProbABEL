@@ -90,7 +90,7 @@ regdata::regdata(phedata &phed, gendata &gend, const int snpnum,
     if (snpnum > 0)
         for (int j = 0; j < ngpreds; j++)
         {
-            float *snpdata = new float[nids];
+            double *snpdata = new double[nids];
             gend.get_var(snpnum * ngpreds + j, snpdata);
             for (int i = 0; i < nids; i++)
             {
@@ -115,7 +115,7 @@ void regdata::update_snp(gendata *gend, const int snpnum)
     // matrix X
     for (int j = 0; j < ngpreds; j++)
     {
-        float *snpdata = new float[nids];
+        double *snpdata = new double[nids];
         for (int i = 0; i < nids; i++)
         {
             masked_data[i] = 0;
@@ -125,6 +125,7 @@ void regdata::update_snp(gendata *gend, const int snpnum)
 
         for (int i = 0; i < nids; i++) {
             X.put(snpdata[i], i, (ncov - j));
+
             if (std::isnan(snpdata[i])) {
                 masked_data[i] = 1;
                 // SNP not masked
