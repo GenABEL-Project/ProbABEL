@@ -319,7 +319,6 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
                                      rdata.is_interaction_excluded, false,
                                      nullmodel);
 
-
     int length_beta = X.ncol;
     beta.reinit(length_beta, 1);
     sebeta.reinit(length_beta, 1);
@@ -335,23 +334,27 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
             covariance.reinit(length_beta - 1, 1);
         }
     }
-#if !EIGEN
+
     mematrix<double> tX;
-#endif
+    mematrix<double> tXX;
     //Oct 26, 2009
     if (invvarmatrixin.length_of_mask != 0)
     {
 #if EIGEN
-//X.data=X.data.transpose()*invvarmatrixin.masked_data->data;
-
-        X.data =MatrixXd(X.data.cols(),X.data.cols()).setZero().selfadjointView<Lower>().rankUpdate(X.data.adjoint());
-        X.nrow=X.data.rows();
-        X.ncol=X.data.cols();
-        X.nelements=X.ncol*X.nrow;
+        tX.data=X.data.transpose()*invvarmatrixin.masked_data->data;
+        tX.nrow=X.data.rows();
+        tX.ncol=X.data.cols();
+        tX.nelements=X.ncol*X.nrow;
+        //mematrix<double> tXX;
+        tXX.data = tX.data * X.data;
+        tXX.nrow=tXX.data.rows();
+        tXX.ncol=tXX.data.cols();
+        tXX.nelements=tXX.ncol*tXX.nrow;
 #else
         tX = transpose(X) * invvarmatrixin.masked_data;
+        tXX=tX * X;
 #endif
-    }
+    }else{//non mmscore
 
 #if EIGEN
 
@@ -365,7 +368,7 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
 //std::cout << "BETA\n" << m_coef(m_coef.size() - 1) << endl;
 //   std::cout << "m_se\n" << m_se(m_coef.size() - 1) << endl;
 
-    mematrix<double> tXX;
+
     //tXX.data=X.data.transpose()*X.data;
    tXX.data =MatrixXd(X.data.cols(),X.data.cols()).setZero().selfadjointView<Lower>().rankUpdate(X.data.adjoint());
 
@@ -375,10 +378,10 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
 
 #else
    tX = transpose(X);
-    mematrix<double> tXX = tX * X;
+   tXX = tX * X;
 #endif
+    }
     double N = X.nrow;
-
 
     //
     // use cholesky to invert
@@ -388,7 +391,7 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     chinv2_mm(tXX_i);
     // before was
     // mematrix<double> tXX_i = invert(tXX);
-
+    if (invvarmatrixin.length_of_mask == 0){//non-mmscore
 #if EIGEN
     beta.data=tXX.data*(X.data.transpose()*rdata.Y.data);
     beta.nrow=beta.data.rows();
@@ -398,13 +401,29 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     mematrix<double> tXY = tX * (rdata.Y);
     beta = tXX * tXY;
 #endif
+    }else{//mmscore
+
+#if EIGEN
+    beta.data = tXX.data * (tX.data * rdata.Y.data);
+    beta.nrow=beta.data.rows();
+    beta.ncol=beta.data.cols();
+    beta.nelements=beta.ncol*beta.nrow;
+#else
+    mematrix<double> tXY = tX * (rdata.Y);
+    beta = tXX * tXY;
+#endif
+    }
 
     // now compute residual variance
     sigma2 = 0.;
 #if EIGEN
-//TODO: fix this part(residual variance) for mmscore this part: eigen part is not equel to non eigen code
+//TODO: fix this part(residual variance) for mmscore this part: eigen part is not equal to non eigen code
     mematrix<double>  sigma2_matrix;
+    if (invvarmatrixin.length_of_mask == 0){//non-mmscore
     sigma2_matrix.data=rdata.Y.data-(X.data*beta.data);
+    }else{//mmscore
+        sigma2_matrix.data=rdata.Y.data-(tX.data.transpose()*beta.data);
+    }
     sigma2= sigma2_matrix.data.col(0).array().square().sum();
 #else
     mematrix<double> ttX = transpose(tX);
