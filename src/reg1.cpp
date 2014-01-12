@@ -234,7 +234,7 @@ mematrix<double> t_apply_model(mematrix<double>& X, int model, int interaction,
 
 linear_reg::linear_reg(regdata& rdatain)
 {
-     rdata = rdatain.get_unmasked_data();
+    regdata rdata = rdatain.get_unmasked_data();
     // std::cout << "linear_reg: " << rdata.nids << " " << (rdata.X).ncol
     //           << " " << (rdata.Y).ncol << "\n";
     int length_beta = (rdata.X).ncol;
@@ -307,17 +307,32 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
 {
     // suda interaction parameter
     // model should come here
-   // regdata rdata = rdatain.get_unmasked_data();
+    regdata rdata = rdatain.get_unmasked_data();
     if (invvarmatrixin.length_of_mask != 0)
     {
         invvarmatrixin.update_mask(rdatain.masked_data);
         //  invvarmatrixin.masked_data->print();
     }
-
+    if (verbose)
+    {
+        cout << rdata.is_interaction_excluded
+             << " <-rdata.is_interaction_excluded\n";
+        // std::cout << "invvarmatrix:\n";
+        // invvarmatrixin.masked_data->print();
+        std::cout << "rdata.X:\n";
+        rdata.X.print();
+    }
 
     mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,
                                      rdata.is_interaction_excluded, false,
                                      nullmodel);
+    if (verbose)
+    {
+        std::cout << "X:\n";
+        X.print();
+        std::cout << "Y:\n";
+        rdata.Y.print();
+    }
 
     int length_beta = X.ncol;
     beta.reinit(length_beta, 1);
@@ -335,54 +350,49 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         }
     }
 
-    mematrix<double> tX;
-    mematrix<double> tXX;
     //Oct 26, 2009
+    mematrix<double> tX = transpose(X);
     if (invvarmatrixin.length_of_mask != 0)
     {
-#if EIGEN
-        tX.data=X.data.transpose()*invvarmatrixin.masked_data->data;
-        tX.nrow=X.data.rows();
-        tX.ncol=X.data.cols();
-        tX.nelements=X.ncol*X.nrow;
-        //mematrix<double> tXX;
-        tXX.data = tX.data * X.data;
-        tXX.nrow=tXX.data.rows();
-        tXX.ncol=tXX.data.cols();
-        tXX.nelements=tXX.ncol*tXX.nrow;
-#else
-        tX = transpose(X) * invvarmatrixin.masked_data;
-        tXX=tX * X;
-#endif
-    }else{//non mmscore
-
-#if EIGEN
-
-//    LLT<MatrixXd> X2(XtX().selfadjointView<Lower>());
-//    VectorXd m_coef = X2.solve(X.data.adjoint() * rdata.Y.data);
-//    VectorXd m_fitted = X.data * m_coef;
-//    VectorXd resid(rdata.Y.data - m_fitted);
-//    int degree_of_freedom(X.data.rows() - X.data.cols());
-//    double s(resid.norm() / sqrt(double(degree_of_freedom)));
-//    VectorXd m_se = s * X2.matrixL().solve(MatrixXd::Identity(X.ncol, X.ncol)).colwise().norm();
-//std::cout << "BETA\n" << m_coef(m_coef.size() - 1) << endl;
-//   std::cout << "m_se\n" << m_se(m_coef.size() - 1) << endl;
-
-
-    //tXX.data=X.data.transpose()*X.data;
-   tXX.data =MatrixXd(X.data.cols(),X.data.cols()).setZero().selfadjointView<Lower>().rankUpdate(X.data.adjoint());
-
-    tXX.nrow=tXX.data.rows();
-    tXX.ncol=tXX.data.cols();
-    tXX.nelements=tXX.ncol*tXX.nrow;
-
-#else
-   tX = transpose(X);
-   tXX = tX * X;
-#endif
+        tX = tX * invvarmatrixin.masked_data;
+        //!check if quicker
+        //tX = productXbySymM(tX,invvarmatrix);
+        // = invvarmatrix*X;
+        // std::cout<<"new tX.nrow="<<X.nrow<<" tX.ncol="<<X.ncol<<"\n";
     }
+
+    mematrix<double> tXX = tX * X;
     double N = X.nrow;
 
+#if EIGEN_COMMENTEDOUT
+    MatrixXd Xeigen    = X.data;
+    MatrixXd tXeigen   = Xeigen.transpose();
+    MatrixXd tXXeigen  = tXeigen * Xeigen;
+    VectorXd Yeigen    = rdata.Y.data;
+    VectorXd tXYeigen  = tXeigen * Yeigen;
+    // Solve X^T * X * beta = X^T * Y for beta:
+    VectorXd betaeigen = tXXeigen.fullPivLu().solve(tXYeigen);
+    beta.data = betaeigen;
+
+    if (verbose)
+    {
+        std::cout << setprecision(9) << "Xeigen:\n"  << Xeigen  << endl;
+        std::cout << setprecision(9) << "tX:\n"  << tXeigen  << endl;
+        std::cout << setprecision(9) << "tXX:\n" << tXXeigen << endl;
+        std::cout << setprecision(9) << "tXY:\n" << tXYeigen << endl;
+        std::cout << setprecision(9) << "beta:\n"<< betaeigen << endl;
+        printf("----\n");
+        printf("beta[0] = %e\n", betaeigen.data()[0]);
+        printf("----\n");
+//        (beta).print();
+        double relative_error = (tXXeigen * betaeigen - tXYeigen).norm() /
+            tXYeigen.norm(); // norm() is L2 norm
+        cout << "The relative error is:\n" << relative_error << endl;
+    }
+
+    // This one is needed later on in this function
+    mematrix<double> tXX_i = invert(tXX);
+#else
     //
     // use cholesky to invert
     //
@@ -391,88 +401,106 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     chinv2_mm(tXX_i);
     // before was
     // mematrix<double> tXX_i = invert(tXX);
-    if (invvarmatrixin.length_of_mask == 0){//non-mmscore
-#if EIGEN
-    beta.data=tXX.data*(X.data.transpose()*rdata.Y.data);
-    beta.nrow=beta.data.rows();
-    beta.ncol=beta.data.cols();
-    beta.nelements=beta.ncol*beta.nrow;
-#else
-    mematrix<double> tXY = tX * (rdata.Y);
-    beta = tXX * tXY;
-#endif
-    }else{//mmscore
 
-#if EIGEN
-    beta.data = tXX.data * (tX.data * rdata.Y.data);
-    beta.nrow=beta.data.rows();
-    beta.ncol=beta.data.cols();
-    beta.nelements=beta.ncol*beta.nrow;
-#else
     mematrix<double> tXY = tX * (rdata.Y);
-    beta = tXX * tXY;
-#endif
+    beta = tXX_i * tXY;
+
+    if (verbose)
+    {
+        std::cout << "tX:\n";
+        tX.print();
+        std::cout << "tXX:\n";
+        tXX.print();
+        std::cout << "chole tXX:\n";
+        tXX_i.print();
+        std::cout << "tXX-1:\n";
+        tXX_i.print();
+        std::cout << "tXY:\n";
+        tXY.print();
+        std::cout << "beta:\n";
+        (beta).print();
     }
-
+#endif
     // now compute residual variance
     sigma2 = 0.;
-#if EIGEN
-//TODO: fix this part(residual variance) for mmscore this part: eigen part is not equal to non eigen code
-    mematrix<double>  sigma2_matrix;
-    if (invvarmatrixin.length_of_mask == 0){//non-mmscore
-    sigma2_matrix.data=rdata.Y.data-(X.data*beta.data);
-    }else{//mmscore
-        sigma2_matrix.data=rdata.Y.data-(tX.data.transpose()*beta.data);
-    }
-    sigma2= sigma2_matrix.data.col(0).array().square().sum();
-#else
     mematrix<double> ttX = transpose(tX);
     mematrix<double> sigma2_matrix = rdata.Y;
     mematrix<double> sigma2_matrix1 = ttX * beta;
+    //        std::cout << "sigma2_matrix\n";
+    //        sigma2_matrix.print();
+    //
+    //        std::cout << "sigma2_matrix1\n";
+    //        sigma2_matrix1.print();
     sigma2_matrix = sigma2_matrix - sigma2_matrix1;
+    //        std::cout << "sigma2_matrix\n";
+    //        sigma2_matrix.print();
 
-    static double val;
+    //  std::cout << "sigma2_matrix.nrow=" << sigma2_matrix.nrow
+    //            << "sigma2_matrix.ncol" << sigma2_matrix.ncol
+    //            <<"\n";
+
     for (int i = 0; i < sigma2_matrix.nrow; i++)
-     {
-         val = sigma2_matrix.get(i, 0);
-         sigma2 += val * val;
-
-     }
-#endif
+    {
+        double val = sigma2_matrix.get(i, 0);
+        //            std::cout << "val = " << val << "\n";
+        sigma2 += val * val;
+        //            std::cout << "sigma2+= " << sigma2 << "\n";
+    }
 
     double sigma2_internal = sigma2 / (N - static_cast<double>(length_beta));
     // now compute residual variance
-
+    //      sigma2 = 0.;
+    //      for (int i =0;i<(rdata.Y).nrow;i++)
+    //          sigma2 += ((rdata.Y).get(i,0))*((rdata.Y).get(i,0));
+    //      for (int i=0;i<length_beta;i++)
+    //          sigma2 -= 2. * (beta.get(i,0)) * tXY.get(i,0);
+    //      for (int i=0;i<(length_beta);i++)
+    //      for (int j=0;j<(length_beta);j++)
+    //          sigma2 += (beta.get(i,0)) * (beta.get(j,0)) * tXX.get(i,j);
+    //  std::cout<<"sigma2="<<sigma2<<"\n";
+    //  std::cout<<"sigma2_internal="<<sigma2_internal<<"\n";
+    //      replaced for ML
+    //      sigma2_internal = sigma2/(N - double(length_beta) - 1);
+    //        std::cout << "sigma2/=N = "<< sigma2 << "\n";
     sigma2 /= N;
-
+    //  std::cout<<"N="<<N<<", length_beta="<<length_beta<<"\n";
+    if (verbose)
+    {
+        std::cout << "sigma2 = " << sigma2 << "\n";
+    }
+    /*
+     loglik = 0.;
+     double ss=0;
+     for (int i=0;i<rdata.nids;i++) {
+     double resid = rdata.Y[i] - beta.get(0,0); // intercept
+     for (int j=1;j<beta.nrow;j++) resid -= beta.get(j,0)*X.get(i,j);
+     // residuals[i] = resid;
+     ss += resid*resid;
+     }
+     sigma2 = ss/N;
+     */
+    //cout << "estimate " << rdata.nids << "\n";
+    //(rdata.X).print();
+    //for (int i=0;i<rdata.nids;i++) cout << rdata.masked_data[i] << " ";
+    //cout << endl;
     loglik = 0.;
     double halfrecsig2 = .5 / sigma2;
-#if EIGEN
-    double intercept = beta.get(0, 0);
-    residuals.data= rdata.Y.data.array()-intercept;
-    Eigen::ArrayXXd betacol = beta.data.block(1,0,beta.data.rows()-1,1).array().transpose();
-    Eigen::ArrayXXd resid_sub = (X.data.block(0,1,X.data.rows(),X.data.cols()-1)*betacol.matrix().asDiagonal()).rowwise().sum() ;
-    residuals.data-=resid_sub.matrix();
-    loglik-=(residuals.data.array().square()*halfrecsig2).sum();
-
-#else
     for (int i = 0; i < rdata.nids; i++)
-     {
-         double resid = rdata.Y[i] - beta.get(0, 0); // intercept
-         for (int j = 1; j < beta.nrow; j++){
-             resid -= beta.get(j, 0) * X.get(i, j);
-
-         }
-         residuals[i] = resid;
-         loglik -= halfrecsig2 * resid * resid;
-     }
-#endif
+    {
+        double resid = rdata.Y[i] - beta.get(0, 0); // intercept
+        for (int j = 1; j < beta.nrow; j++)
+            resid -= beta.get(j, 0) * X.get(i, j);
+        residuals[i] = resid;
+        loglik -= halfrecsig2 * resid * resid;
+    }
     loglik -= static_cast<double>(rdata.nids) * log(sqrt(sigma2));
+    // cout << "estimate " << rdata.nids << "\n";
     //
     // Ugly fix to the fact that if we do mmscore, sigma2 is already
     //  in the matrix...
     //      YSA, 2009.07.20
     //
+    //cout << "estimate 0\n";
     if (invvarmatrixin.length_of_mask != 0)
         sigma2_internal = 1.0;
 
@@ -557,7 +585,7 @@ void linear_reg::score(mematrix<double>& resid, regdata& rdatain, int verbose,
                        double tol_chol, int model, int interaction, int ngpreds,
                        const masked_matrix& invvarmatrix, int nullmodel)
 {
-    //regdata rdata = rdatain.get_unmasked_data();
+    regdata rdata = rdatain.get_unmasked_data();
     base_score(resid, rdata, verbose, tol_chol, model, interaction, ngpreds,
                invvarmatrix, nullmodel = 0);
 }

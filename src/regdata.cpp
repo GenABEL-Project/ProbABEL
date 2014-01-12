@@ -178,7 +178,7 @@ void regdata::remove_snp_from_X()
 
 regdata::~regdata()
 {
-    //delete[] regdata::masked_data;
+    delete[] regdata::masked_data;
     // delete X;
     // delete Y;
 }
