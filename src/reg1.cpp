@@ -350,123 +350,75 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         }
     }
 
-    //Oct 26, 2009
-    mematrix<double> tX = transpose(X);
-    if (invvarmatrixin.length_of_mask != 0)
-    {
+    double sigma2_internal;
+    mematrix<double> tXX_i;
+    if (invvarmatrixin.length_of_mask != 0){
+        //Oct 26, 2009
+        mematrix<double> tX = transpose(X);
         tX = tX * invvarmatrixin.masked_data;
-        //!check if quicker
-        //tX = productXbySymM(tX,invvarmatrix);
-        // = invvarmatrix*X;
-        // std::cout<<"new tX.nrow="<<X.nrow<<" tX.ncol="<<X.ncol<<"\n";
-    }
+        mematrix<double> tXX = tX * X;
+        double N = X.nrow;
+        //
+        // use cholesky to invert
+        //
+        tXX_i = tXX;
+        cholesky2_mm(tXX_i, tol_chol);
+        chinv2_mm(tXX_i);
+        // before was
+        // mematrix<double> tXX_i = invert(tXX);
 
-    mematrix<double> tXX = tX * X;
-    double N = X.nrow;
+        mematrix<double> tXY = tX * (rdata.Y);
+        beta = tXX_i * tXY;
 
-#if EIGEN_COMMENTEDOUT
-    MatrixXd Xeigen    = X.data;
-    MatrixXd tXeigen   = Xeigen.transpose();
-    MatrixXd tXXeigen  = tXeigen * Xeigen;
-    VectorXd Yeigen    = rdata.Y.data;
-    VectorXd tXYeigen  = tXeigen * Yeigen;
-    // Solve X^T * X * beta = X^T * Y for beta:
-    VectorXd betaeigen = tXXeigen.fullPivLu().solve(tXYeigen);
-    beta.data = betaeigen;
+        // now compute residual variance
+        sigma2 = 0.;
+        mematrix<double> ttX = transpose(tX);
+        mematrix<double> sigma2_matrix = rdata.Y;
+        mematrix<double> sigma2_matrix1 = ttX * beta;
+        sigma2_matrix = sigma2_matrix - sigma2_matrix1;
+        for (int i = 0; i < sigma2_matrix.nrow; i++)
+        {
+            double val = sigma2_matrix.get(i, 0);
+            //            std::cout << "val = " << val << "\n";
+            sigma2 += val * val;
+            //            std::cout << "sigma2+= " << sigma2 << "\n";
+        }
 
-    if (verbose)
-    {
-        std::cout << setprecision(9) << "Xeigen:\n"  << Xeigen  << endl;
-        std::cout << setprecision(9) << "tX:\n"  << tXeigen  << endl;
-        std::cout << setprecision(9) << "tXX:\n" << tXXeigen << endl;
-        std::cout << setprecision(9) << "tXY:\n" << tXYeigen << endl;
-        std::cout << setprecision(9) << "beta:\n"<< betaeigen << endl;
-        printf("----\n");
-        printf("beta[0] = %e\n", betaeigen.data()[0]);
-        printf("----\n");
-//        (beta).print();
-        double relative_error = (tXXeigen * betaeigen - tXYeigen).norm() /
-            tXYeigen.norm(); // norm() is L2 norm
-        cout << "The relative error is:\n" << relative_error << endl;
-    }
+        sigma2_internal = sigma2 / (N - static_cast<double>(length_beta));
+        sigma2 /= N;
+        //NO mm-score regression
+    }else{
 
-    // This one is needed later on in this function
-    mematrix<double> tXX_i = invert(tXX);
-#else
-    //
-    // use cholesky to invert
-    //
-    mematrix<double> tXX_i = tXX;
-    cholesky2_mm(tXX_i, tol_chol);
-    chinv2_mm(tXX_i);
-    // before was
-    // mematrix<double> tXX_i = invert(tXX);
+        //Oct 26, 2009
+            mematrix<double> tX = transpose(X);
+            mematrix<double> tXX = tX * X;
+            double N = X.nrow;
 
-    mematrix<double> tXY = tX * (rdata.Y);
-    beta = tXX_i * tXY;
+            //
+            // use cholesky to invert
+            //
+             tXX_i = tXX;
+            cholesky2_mm(tXX_i, tol_chol);
+            chinv2_mm(tXX_i);
+            // before was
+            // mematrix<double> tXX_i = invert(tXX);
 
-    if (verbose)
-    {
-        std::cout << "tX:\n";
-        tX.print();
-        std::cout << "tXX:\n";
-        tXX.print();
-        std::cout << "chole tXX:\n";
-        tXX_i.print();
-        std::cout << "tXX-1:\n";
-        tXX_i.print();
-        std::cout << "tXY:\n";
-        tXY.print();
-        std::cout << "beta:\n";
-        (beta).print();
-    }
-#endif
-    // now compute residual variance
-    sigma2 = 0.;
-    mematrix<double> ttX = transpose(tX);
-    mematrix<double> sigma2_matrix = rdata.Y;
-    mematrix<double> sigma2_matrix1 = ttX * beta;
-    //        std::cout << "sigma2_matrix\n";
-    //        sigma2_matrix.print();
-    //
-    //        std::cout << "sigma2_matrix1\n";
-    //        sigma2_matrix1.print();
-    sigma2_matrix = sigma2_matrix - sigma2_matrix1;
-    //        std::cout << "sigma2_matrix\n";
-    //        sigma2_matrix.print();
+            mematrix<double> tXY = tX * (rdata.Y);
+            beta = tXX_i * tXY;
 
-    //  std::cout << "sigma2_matrix.nrow=" << sigma2_matrix.nrow
-    //            << "sigma2_matrix.ncol" << sigma2_matrix.ncol
-    //            <<"\n";
+            // now compute residual variance
+            sigma2 = 0.;
+            mematrix<double> sigma2_matrix = rdata.Y;
+            mematrix<double> sigma2_matrix1 = X * beta;
+            sigma2_matrix = sigma2_matrix - sigma2_matrix1;
+            for (int i = 0; i < sigma2_matrix.nrow; i++)
+            {
+                double val = sigma2_matrix.get(i, 0);
+                sigma2 += val * val;
+            }
 
-    for (int i = 0; i < sigma2_matrix.nrow; i++)
-    {
-        double val = sigma2_matrix.get(i, 0);
-        //            std::cout << "val = " << val << "\n";
-        sigma2 += val * val;
-        //            std::cout << "sigma2+= " << sigma2 << "\n";
-    }
-
-    double sigma2_internal = sigma2 / (N - static_cast<double>(length_beta));
-    // now compute residual variance
-    //      sigma2 = 0.;
-    //      for (int i =0;i<(rdata.Y).nrow;i++)
-    //          sigma2 += ((rdata.Y).get(i,0))*((rdata.Y).get(i,0));
-    //      for (int i=0;i<length_beta;i++)
-    //          sigma2 -= 2. * (beta.get(i,0)) * tXY.get(i,0);
-    //      for (int i=0;i<(length_beta);i++)
-    //      for (int j=0;j<(length_beta);j++)
-    //          sigma2 += (beta.get(i,0)) * (beta.get(j,0)) * tXX.get(i,j);
-    //  std::cout<<"sigma2="<<sigma2<<"\n";
-    //  std::cout<<"sigma2_internal="<<sigma2_internal<<"\n";
-    //      replaced for ML
-    //      sigma2_internal = sigma2/(N - double(length_beta) - 1);
-    //        std::cout << "sigma2/=N = "<< sigma2 << "\n";
-    sigma2 /= N;
-    //  std::cout<<"N="<<N<<", length_beta="<<length_beta<<"\n";
-    if (verbose)
-    {
-        std::cout << "sigma2 = " << sigma2 << "\n";
+            sigma2_internal = sigma2 / (N - static_cast<double>(length_beta));
+            sigma2 /= N;
     }
     /*
      loglik = 0.;
