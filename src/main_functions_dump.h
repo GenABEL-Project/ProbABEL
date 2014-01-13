@@ -35,4 +35,6 @@ void create_header(std::vector<std::ofstream*>& outfile,
 
 int get_start_position(const cmdvars& input_var, const int model,
         const int number_of_rows_or_columns);
+
+double pchisq(const double chi2, const int df);
 #endif /* MAIN_FUNCTIONS_DUMP_H_ */

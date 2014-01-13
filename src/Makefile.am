@@ -1,13 +1,14 @@
 ## Process this file with automake to produce Makefile.in
 
-## Using wildcards in these lists doesn't work. Also GNU make's ($wildcard,) doesn't
-## work. It gives warning message about portability, but in the end doesn't work,
-## I tried :-).
-REGFILES = data.h data.cpp gendata.h gendata.cpp mematrix.h mematri1.h	\
- command_line_settings.h command_line_settings.cpp reg1.h usage.h		\
- usage.cpp main.cpp utilities.h utilities.cpp phedata.h phedata.cpp	\
- cholesky.h cholesky.cpp regdata.h regdata.cpp  \
- maskedmatrix.cpp maskedmatrix.h reg1.cpp main_functions_dump.h main_functions_dump.cpp
+## Using wildcards in these lists doesn't work. Also GNU make's
+## ($wildcard,) doesn't work. It gives warning message about
+## portability, but in the end doesn't work, I tried :-).
+REGFILES = data.h data.cpp gendata.h gendata.cpp mematrix.h		\
+ mematri1.h command_line_settings.h command_line_settings.cpp reg1.h	\
+ usage.h usage.cpp main.cpp utilities.h utilities.cpp phedata.h		\
+ phedata.cpp cholesky.h cholesky.cpp regdata.h regdata.cpp		\
+ maskedmatrix.cpp maskedmatrix.h reg1.cpp main_functions_dump.h		\
+ main_functions_dump.cpp
 
 EIGENFILES = eigen_mematrix.h eigen_mematrix.cpp
 
@@ -75,6 +76,12 @@ pacoxph_CFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CFLAGS)
 if WITH_EIGEN
 pacoxph_SOURCES += $(EIGENFILES)
 pacoxph_CXXFLAGS += -DEIGEN
+endif
+
+if WITH_BOOST
+palinear_CXXFLAGS += -DWITH_BOOST
+palogist_CXXFLAGS += -DWITH_BOOST
+pacoxph_CXXFLAGS += -DWITH_BOOST
 endif
 
 extract_snp_SOURCES = extract-snp.cpp $(FVSRC) $(FVHEADERS)

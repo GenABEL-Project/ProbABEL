@@ -15,6 +15,10 @@
 #include <iomanip>
 #include <vector>
 
+#if WITH_BOOST
+#include <boost/math/distributions.hpp>
+#endif
+
 #include "maskedmatrix.h"
 #include "phedata.h"
 #include "data.h"
@@ -54,6 +58,7 @@ void update_progress_to_cmd_line(const int csnp, const int nsnps)
     }
     std::cout << std::setprecision(6);
 }
+
 
 /**
  * Open an output file for each model when using probability data
@@ -238,6 +243,9 @@ void create_header(std::vector<std::ofstream*>& outfile,
 #endif
         }
         *outfile[0] << input_var.getSep() << "chi2_SNP";
+#if WITH_BOOST
+        *outfile[0] << input_var.getSep() << "pval_SNP";
+#endif
         *outfile[0] << "\n";
     } // ngpreds == 1
     else if (input_var.getNgpreds() == 2) // prob data: all models
@@ -315,11 +323,25 @@ void create_header(std::vector<std::ofstream*>& outfile,
                 //Oct 26, 2009
             }
         }
-        *outfile[0] << input_var.getSep() << "chi2_SNP_2df\n";
-        *outfile[1] << input_var.getSep() << "chi2_SNP_A1\n";
-        *outfile[2] << input_var.getSep() << "chi2_SNP_domA1\n";
-        *outfile[3] << input_var.getSep() << "chi2_SNP_recA1\n";
-        *outfile[4] << input_var.getSep() << "chi2_SNP_odomA1\n";
+        *outfile[0] << input_var.getSep() << "chi2_SNP_2df";
+        *outfile[1] << input_var.getSep() << "chi2_SNP_A1";
+        *outfile[2] << input_var.getSep() << "chi2_SNP_domA1";
+        *outfile[3] << input_var.getSep() << "chi2_SNP_recA1";
+        *outfile[4] << input_var.getSep() << "chi2_SNP_odomA1";
+
+#ifdef WITH_BOOST
+        *outfile[0] << input_var.getSep() << "pval_SNP_2df";
+        *outfile[1] << input_var.getSep() << "pval_SNP_A1";
+        *outfile[2] << input_var.getSep() << "pval_SNP_domA1";
+        *outfile[3] << input_var.getSep() << "pval_SNP_recA1";
+        *outfile[4] << input_var.getSep() << "pval_SNP_odomA1";
+#endif
+
+        *outfile[0] << endl;
+        *outfile[1] << endl;
+        *outfile[2] << endl;
+        *outfile[3] << endl;
+        *outfile[4] << endl;
     } // End: ngpreds == 2
     else
     {
@@ -426,3 +448,34 @@ int get_start_position(const cmdvars& input_var, const int model,
 
     return start_pos;
 }
+
+
+#ifdef WITH_BOOST
+/**
+ * Calculate the p-value based on the chi^2 distribution.
+ *
+ * \param chi2 chi^2 value for which the p-value should be
+ * calculated.
+ * \param df degrees of freedom of the chi^2 distribution
+ */
+double pchisq(const double chi2, const int df)
+{
+    double pval;
+
+    if (!std::isnan(chi2))
+    {
+        // Initialise the distribution
+        boost::math::chi_squared chi2dist(df);
+
+        /* Use the complement here (in R we would also set
+         * lower.tail=FALSE)
+         */
+        pval = boost::math::cdf(complement(chi2dist, chi2));
+    }
+    else
+    {
+        pval = NAN;
+    }
+        return pval;
+}
+#endif
