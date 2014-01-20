@@ -371,11 +371,15 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         // now compute residual variance
         sigma2 = 0.;
         mematrix<double> sigma2_matrix = rdata.Y - (X * beta);
+#if EIGEN
+        sigma2 = sigma2_matrix.data.array().square().sum();
+#else
         for (int i = 0; i < sigma2_matrix.nrow; i++)
         {
             double val = sigma2_matrix.get(i, 0);
             sigma2 += val * val;
         }
+#endif
         double N = X.nrow;
         sigma2_internal = sigma2 / (N - static_cast<double>(length_beta));
         sigma2 /= N;
@@ -397,14 +401,36 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     //cout << endl;
     loglik = 0.;
     double halfrecsig2 = .5 / sigma2;
+
+
+#if EIGEN
+    double intercept = beta.get(0, 0);
+    residuals.data= rdata.Y.data.array()-intercept;
+    //matrix.
+    Eigen::ArrayXXd betacol = beta.data.block(1,0,beta.data.rows()-1,1).array().transpose();
+    Eigen::ArrayXXd resid_sub = (X.data.block(0,1,X.data.rows(),X.data.cols()-1)*betacol.matrix().asDiagonal()).rowwise().sum() ;
+    //std::cout << resid_sub << std::endl;
+    residuals.data-=resid_sub.matrix();
+    //residuals[i] -= resid_sub;
+    loglik-=(residuals.data.array().square()*halfrecsig2).sum();
+
+    //loglik -= halfrecsig2 * residuals[i] * residuals[i];
+
+#else
     for (int i = 0; i < rdata.nids; i++)
-    {
-        double resid = rdata.Y[i] - beta.get(0, 0); // intercept
-        for (int j = 1; j < beta.nrow; j++)
-            resid -= beta.get(j, 0) * X.get(i, j);
-        residuals[i] = resid;
-        loglik -= halfrecsig2 * resid * resid;
-    }
+     {
+         double resid = rdata.Y[i] - beta.get(0, 0); // intercept
+         for (int j = 1; j < beta.nrow; j++){
+             resid -= beta.get(j, 0) * X.get(i, j);
+
+         }
+         residuals[i] = resid;
+         loglik -= halfrecsig2 * resid * resid;
+     }
+#endif
+
+
+
     loglik -= static_cast<double>(rdata.nids) * log(sqrt(sigma2));
     // cout << "estimate " << rdata.nids << "\n";
     //
