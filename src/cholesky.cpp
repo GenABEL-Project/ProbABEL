@@ -100,8 +100,8 @@ void chinv2_mm(mematrix<double> &matrix)
     }
 
     int n = matrix.ncol;
-    register double temp;
-    register int i, j, k;
+    double temp;
+    int i, j, k;
 
     /*
      ** invert the cholesky in the lower triangle
