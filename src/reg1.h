@@ -30,6 +30,7 @@
 #include "regdata.h"
 #include "maskedmatrix.h"
 
+
 mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
         int ngpreds, bool is_interaction_excluded, bool iscox = false,
         int nullmodel = 0);

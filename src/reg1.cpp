@@ -285,17 +285,14 @@ void base_reg::base_score(mematrix<double>& resid, regdata& rdata, int verbose,
     chi2_score = chi2[0];
 }
 
+
 void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         int model, int interaction, int ngpreds, masked_matrix& invvarmatrixin,
         int robust, int nullmodel) {
     // suda interaction parameter
     // model should come here
     regdata rdata = rdatain.get_unmasked_data();
-    if (invvarmatrixin.length_of_mask != 0)
-    {
-        invvarmatrixin.update_mask(rdatain.masked_data);
-        //  invvarmatrixin.masked_data->print();
-    }
+
     if (verbose)
     {
         cout << rdata.is_interaction_excluded
@@ -334,8 +331,14 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
 
     double sigma2_internal;
     mematrix<double> tXX_i;
+#if EIGEN
+    LDLT <MatrixXd> Ch ;
+#endif
     if (invvarmatrixin.length_of_mask != 0)
     {
+        //retrieve masked data W
+        invvarmatrixin.update_mask(rdatain.masked_data);
+
         // This regression is Weighted Least Square: used for mmscore :
         // FLOPS count are calculated for 3*1000 matrix as follow:
         //C=AB (m X n matrix A and n x P matrix B)
@@ -343,6 +346,10 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         //Oct 26, 2009
         mematrix<double> tXW = transpose(X) * invvarmatrixin.masked_data; // flops 5997000
         tXX_i = tXW * X;        // 17991 flops
+#if EIGEN
+        Ch=LDLT <MatrixXd>(tXX_i.data.selfadjointView<Lower>());
+#endif
+
         // use cholesky to invert
         cholesky2_mm(tXX_i, tol_chol);
         chinv2_mm(tXX_i);
@@ -356,23 +363,41 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
             sigma2 += val * val; // flops: 3000
         }
         double N = X.nrow;
-        sigma2_internal = sigma2 / (N - static_cast<double>(length_beta));
+        //sigma2_internal = sigma2 / (N - static_cast<double>(length_beta));
+        // Ugly fix to the fact that if we do mmscore, sigma2 is already
+        //  in the matrix...
+        //      YSA, 2009.07.20
+        sigma2_internal = 1.0;
         sigma2 /= N;
-        //NO mm-score regression : normal least square regression
+
     }
-    else
+    else//NO mm-score regression : normal least square regression
     {
+#if EIGEN
+        int m = X.ncol;
+        MatrixXd txx = MatrixXd(m, m).setZero().selfadjointView<Lower>().rankUpdate(X.data.adjoint());
+        Ch=LDLT <MatrixXd>(txx.selfadjointView<Lower>());
+        beta.data= Ch.solve(X.data.adjoint() * rdata.Y.data);
+
+       tXX_i.data=Ch.solve(MatrixXd(m, m).Identity(m,m));
+       tXX_i.nrow=tXX_i.data.rows();
+       tXX_i.ncol=tXX_i.data.cols();
+       tXX_i.nelements=tXX_i.ncol*tXX_i.nrow;
+
+#else
         mematrix<double> tX = transpose(X);
         // use cholesky to invert
-        tXX_i = tX * X;
-        cholesky2_mm(tXX_i, tol_chol);
-        chinv2_mm(tXX_i);
-        beta = tXX_i * (tX * (rdata.Y));
+                tXX_i = tX * X;
+                cholesky2_mm(tXX_i, tol_chol);
+                chinv2_mm(tXX_i);
+                beta = tXX_i * (tX * (rdata.Y));
+#endif
+
         // now compute residual variance
         sigma2 = 0.;
         mematrix<double> sigma2_matrix = rdata.Y - (X * beta);
 #if EIGEN
-        sigma2 = sigma2_matrix.data.array().square().sum();
+        sigma2 = sigma2_matrix.data.squaredNorm() ;
 #else
         for (int i = 0; i < sigma2_matrix.nrow; i++)
         {
@@ -380,8 +405,9 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
             sigma2 += val * val;
         }
 #endif
-        double N = X.nrow;
-        sigma2_internal = sigma2 / (N - static_cast<double>(length_beta));
+        double N = static_cast<double>(X.nrow);
+        double P=static_cast<double>(length_beta);
+        sigma2_internal = sigma2 / (N - P);
         sigma2 /= N;
     }
     /*
@@ -407,8 +433,8 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     double intercept = beta.get(0, 0);
     residuals.data= rdata.Y.data.array()-intercept;
     //matrix.
-    Eigen::ArrayXXd betacol = beta.data.block(1,0,beta.data.rows()-1,1).array().transpose();
-    Eigen::ArrayXXd resid_sub = (X.data.block(0,1,X.data.rows(),X.data.cols()-1)*betacol.matrix().asDiagonal()).rowwise().sum() ;
+    ArrayXXd betacol = beta.data.block(1,0,beta.data.rows()-1,1).array().transpose();
+    ArrayXXd resid_sub = (X.data.block(0,1,X.data.rows(),X.data.cols()-1)*betacol.matrix().asDiagonal()).rowwise().sum() ;
     //std::cout << resid_sub << std::endl;
     residuals.data-=resid_sub.matrix();
     //residuals[i] -= resid_sub;
@@ -422,40 +448,76 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
          double resid = rdata.Y[i] - beta.get(0, 0); // intercept
          for (int j = 1; j < beta.nrow; j++){
              resid -= beta.get(j, 0) * X.get(i, j);
-
          }
          residuals[i] = resid;
          loglik -= halfrecsig2 * resid * resid;
      }
 #endif
 
-
-
     loglik -= static_cast<double>(rdata.nids) * log(sqrt(sigma2));
-    // cout << "estimate " << rdata.nids << "\n";
-    //
-    // Ugly fix to the fact that if we do mmscore, sigma2 is already
-    //  in the matrix...
-    //      YSA, 2009.07.20
-    //
-    //cout << "estimate 0\n";
-    if (invvarmatrixin.length_of_mask != 0)
-        sigma2_internal = 1.0;
+#if EIGEN
+    MatrixXd tXX_inv=Ch.solve(MatrixXd(length_beta, length_beta).Identity(length_beta,length_beta));
+#endif
 
     mematrix<double> robust_sigma2(X.ncol, X.ncol);
     if (robust)
     {
+#if EIGEN
+        MatrixXd Xresiduals = X.data.array().colwise()*residuals.data.col(0).array();
+        MatrixXd  XbyR = MatrixXd(X.ncol, X.ncol).setZero().selfadjointView<Lower>().rankUpdate(Xresiduals.adjoint());
+        robust_sigma2.data= tXX_inv*XbyR *tXX_inv;
+#else
+
         mematrix<double> XbyR = X;
-        for (int i = 0; i < X.nrow; i++)
+        for (int i = 0; i < X.nrow; i++){
             for (int j = 0; j < X.ncol; j++)
             {
                 double tmpval = XbyR.get(i, j) * residuals[i];
                 XbyR.put(tmpval, i, j);
             }
+        }
         XbyR = transpose(XbyR) * XbyR;
         robust_sigma2 = tXX_i * XbyR;
         robust_sigma2 = robust_sigma2 * tXX_i;
+
+#endif
+
+
     }
+    //cout << "estimate 0\n";
+#if EIGEN
+    if (robust)
+    {
+        sebeta.data = robust_sigma2.data.diagonal().array().sqrt();
+    }
+    else
+    {
+        sebeta.data =
+                (sigma2_internal
+                        * tXX_inv.diagonal().array()).sqrt();
+    }
+    int offset=X.ncol- 1;
+    //if additive and interaction and 2 predictors and more then 2 betas
+
+    if (model == 0 && interaction != 0 && ngpreds == 2 && length_beta > 2){
+          offset=X.ncol - 2;
+    }
+
+    if (robust)
+    {
+        covariance.data = robust_sigma2.data.bottomLeftCorner(
+                offset, offset).diagonal();
+
+    }
+    else
+    {
+            covariance.data = sigma2_internal
+                    * tXX_inv.bottomLeftCorner(offset,
+                            offset).diagonal().array();
+        }
+
+#else
+
     //cout << "estimate 0\n";
     for (int i = 0; i < (length_beta); i++)
     {
@@ -510,12 +572,8 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
             //Oct 26, 2009
         }
     }
-    //cout << "estimate E\n";
-    if (verbose)
-    {
-        std::cout << "sebeta (" << sebeta.nrow << "):\n";
-        sebeta.print();
-    }
+#endif
+
 }
 
 void linear_reg::score(mematrix<double>& resid, regdata& rdatain, int verbose,
