@@ -175,13 +175,13 @@ void regdata::remove_snp_from_X()
     }
 }
 
-
-regdata::~regdata()
-{
-    delete[] regdata::masked_data;
-    // delete X;
-    // delete Y;
-}
+//
+//regdata::~regdata()
+//{
+//    //delete[] regdata::masked_data;
+//    // delete X;
+//    // delete Y;
+//}
 
 
 regdata regdata::get_unmasked_data()

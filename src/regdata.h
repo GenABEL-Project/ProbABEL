@@ -38,7 +38,7 @@ class regdata {
     void update_snp(gendata *gend, const int snpnum);
     void remove_snp_from_X();
     regdata get_unmasked_data();
-    ~regdata();
+    //~regdata();
 
  private:
 };

@@ -224,10 +224,10 @@ mematrix<double> t_apply_model(mematrix<double>& X, int model, int interaction,
 }
 
 linear_reg::linear_reg(regdata& rdatain) {
-    regdata rdata = rdatain.get_unmasked_data();
+    reg_data = rdatain.get_unmasked_data();
     // std::cout << "linear_reg: " << rdata.nids << " " << (rdata.X).ncol
     //           << " " << (rdata.Y).ncol << "\n";
-    int length_beta = (rdata.X).ncol;
+    int length_beta = (reg_data.X).ncol;
     beta.reinit(length_beta, 1);
     sebeta.reinit(length_beta, 1);
     //Han Chen
@@ -236,18 +236,18 @@ linear_reg::linear_reg(regdata& rdatain) {
         covariance.reinit(length_beta - 1, 1);
     }
     //Oct 26, 2009
-    residuals.reinit(rdata.nids, 1);
+    residuals.reinit(reg_data.nids, 1);
     sigma2 = -1.;
     loglik = -9.999e+32;
     chi2_score = -1.;
 }
 
-void base_reg::base_score(mematrix<double>& resid, regdata& rdata, int verbose,
+void base_reg::base_score(mematrix<double>& resid, int verbose,
         double tol_chol, int model, int interaction, int ngpreds,
         const masked_matrix& invvarmatrix, int nullmodel) {
-    mematrix<double> oX = rdata.extract_genotypes();
+    mematrix<double> oX = reg_data.extract_genotypes();
     mematrix<double> X = apply_model(oX, model, interaction, ngpreds,
-            rdata.is_interaction_excluded, false, nullmodel);
+            reg_data.is_interaction_excluded, false, nullmodel);
     beta.reinit(X.ncol, 1);
     sebeta.reinit(X.ncol, 1);
     double N = static_cast<double>(resid.nrow);
@@ -286,31 +286,31 @@ void base_reg::base_score(mematrix<double>& resid, regdata& rdata, int verbose,
 }
 
 
-void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
+void linear_reg::estimate( int verbose, double tol_chol,
         int model, int interaction, int ngpreds, masked_matrix& invvarmatrixin,
         int robust, int nullmodel) {
     // suda interaction parameter
     // model should come here
-    regdata rdata = rdatain.get_unmasked_data();
+    //regdata rdata = rdatain.get_unmasked_data();
 
     if (verbose)
     {
-        cout << rdata.is_interaction_excluded
+        cout << reg_data.is_interaction_excluded
                 << " <-rdata.is_interaction_excluded\n";
         // std::cout << "invvarmatrix:\n";
         // invvarmatrixin.masked_data->print();
         std::cout << "rdata.X:\n";
-        rdata.X.print();
+        reg_data.X.print();
     }
 
-    mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,
-            rdata.is_interaction_excluded, false, nullmodel);
+    mematrix<double> X = apply_model(reg_data.X, model, interaction, ngpreds,
+            reg_data.is_interaction_excluded, false, nullmodel);
     if (verbose)
     {
         std::cout << "X:\n";
         X.print();
         std::cout << "Y:\n";
-        rdata.Y.print();
+        reg_data.Y.print();
     }
 
     int length_beta = X.ncol;
@@ -337,7 +337,7 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     if (invvarmatrixin.length_of_mask != 0)
     {
         //retrieve masked data W
-        invvarmatrixin.update_mask(rdatain.masked_data);
+        invvarmatrixin.update_mask(reg_data.masked_data);
 
         // This regression is Weighted Least Square: used for mmscore :
         // FLOPS count are calculated for 3*1000 matrix as follow:
@@ -353,10 +353,10 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         // use cholesky to invert
         cholesky2_mm(tXX_i, tol_chol);
         chinv2_mm(tXX_i);
-        beta = tXX_i * (tXW * rdata.Y);        // flops 15+5997
+        beta = tXX_i * (tXW * reg_data.Y);        // flops 15+5997
         // now compute residual variance
         sigma2 = 0.;
-        mematrix<double> sigma2_matrix = rdata.Y - (transpose(tXW) * beta); //flops: 1000+5000
+        mematrix<double> sigma2_matrix = reg_data.Y - (transpose(tXW) * beta); //flops: 1000+5000
         for (int i = 0; i < sigma2_matrix.nrow; i++)
         {
             double val = sigma2_matrix.get(i, 0);
@@ -377,7 +377,7 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
         int m = X.ncol;
         MatrixXd txx = MatrixXd(m, m).setZero().selfadjointView<Lower>().rankUpdate(X.data.adjoint());
         Ch=LDLT <MatrixXd>(txx.selfadjointView<Lower>());
-        beta.data= Ch.solve(X.data.adjoint() * rdata.Y.data);
+        beta.data= Ch.solve(X.data.adjoint() * reg_data.Y.data);
 
        tXX_i.data=Ch.solve(MatrixXd(m, m).Identity(m,m));
        tXX_i.nrow=tXX_i.data.rows();
@@ -390,12 +390,12 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
                 tXX_i = tX * X;
                 cholesky2_mm(tXX_i, tol_chol);
                 chinv2_mm(tXX_i);
-                beta = tXX_i * (tX * (rdata.Y));
+                beta = tXX_i * (tX * (reg_data.Y));
 #endif
 
         // now compute residual variance
         sigma2 = 0.;
-        mematrix<double> sigma2_matrix = rdata.Y - (X * beta);
+        mematrix<double> sigma2_matrix = reg_data.Y - (X * beta);
 #if EIGEN
         sigma2 = sigma2_matrix.data.squaredNorm() ;
 #else
@@ -431,7 +431,7 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
 
 #if EIGEN
     double intercept = beta.get(0, 0);
-    residuals.data= rdata.Y.data.array()-intercept;
+    residuals.data= reg_data.Y.data.array()-intercept;
     //matrix.
     ArrayXXd betacol = beta.data.block(1,0,beta.data.rows()-1,1).array().transpose();
     ArrayXXd resid_sub = (X.data.block(0,1,X.data.rows(),X.data.cols()-1)*betacol.matrix().asDiagonal()).rowwise().sum() ;
@@ -443,9 +443,9 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
     //loglik -= halfrecsig2 * residuals[i] * residuals[i];
 
 #else
-    for (int i = 0; i < rdata.nids; i++)
+    for (int i = 0; i < reg_data.nids; i++)
      {
-         double resid = rdata.Y[i] - beta.get(0, 0); // intercept
+         double resid = reg_data.Y[i] - beta.get(0, 0); // intercept
          for (int j = 1; j < beta.nrow; j++){
              resid -= beta.get(j, 0) * X.get(i, j);
          }
@@ -454,7 +454,7 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
      }
 #endif
 
-    loglik -= static_cast<double>(rdata.nids) * log(sqrt(sigma2));
+    loglik -= static_cast<double>(reg_data.nids) * log(sqrt(sigma2));
 #if EIGEN
     MatrixXd tXX_inv=Ch.solve(MatrixXd(length_beta, length_beta).Identity(length_beta,length_beta));
 #endif
@@ -576,17 +576,17 @@ void linear_reg::estimate(regdata& rdatain, int verbose, double tol_chol,
 
 }
 
-void linear_reg::score(mematrix<double>& resid, regdata& rdatain, int verbose,
+void linear_reg::score(mematrix<double>& resid, int verbose,
         double tol_chol, int model, int interaction, int ngpreds,
         const masked_matrix& invvarmatrix, int nullmodel) {
-    regdata rdata = rdatain.get_unmasked_data();
-    base_score(resid, rdata, verbose, tol_chol, model, interaction, ngpreds,
+   // regdata rdata = rdatain.get_unmasked_data();
+    base_score(resid, verbose, tol_chol, model, interaction, ngpreds,
             invvarmatrix, nullmodel = 0);
 }
 
 logistic_reg::logistic_reg(regdata& rdatain) {
-    regdata rdata = rdatain.get_unmasked_data();
-    int length_beta = (rdata.X).ncol;
+    reg_data = rdatain.get_unmasked_data();
+    int length_beta = reg_data.X.ncol;
     beta.reinit(length_beta, 1);
     sebeta.reinit(length_beta, 1);
     //Han Chen
@@ -595,37 +595,38 @@ logistic_reg::logistic_reg(regdata& rdatain) {
         covariance.reinit(length_beta - 1, 1);
     }
     //Oct 26, 2009
-    residuals.reinit((rdata.X).nrow, 1);
+    residuals.reinit(reg_data.X.nrow, 1);
     sigma2 = -1.;
     loglik = -9.999e+32; // should actually be MAX of the corresponding type
     niter = -1;
     chi2_score = -1.;
 }
 
-void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
+void logistic_reg::estimate( int verbose, int maxiter,
         double eps, double tol_chol, int model, int interaction, int ngpreds,
         masked_matrix& invvarmatrixin, int robust, int nullmodel) {
     // In contrast to the 'linear' case 'invvarmatrix' contains the
     // inverse of correlation matrix (not the inverse of var-cov matrix)
     // h2.object$InvSigma * h.object2$h2an$estimate[length(h2$h2an$estimate)]
     // the inverse of var-cov matrix scaled by total variance
-    regdata rdata = rdatain.get_unmasked_data();
+    //regdata rdata = rdatain.get_unmasked_data();
     // a lot of code duplicated between linear and logistic...
     // e.g. a piece below...
     mematrix<double> invvarmatrix;
     if (invvarmatrixin.length_of_mask != 0)
     {
-        invvarmatrixin.update_mask(rdatain.masked_data);
+        invvarmatrixin.update_mask(reg_data.masked_data);
     }
-
-    mematrix<double> X = apply_model(rdata.X, model, interaction, ngpreds,
-            rdata.is_interaction_excluded, false, nullmodel);
+    mematrix<double> X = apply_model(reg_data.X, model, interaction, ngpreds,
+            reg_data.is_interaction_excluded, false, nullmodel);
     int length_beta = X.ncol;
     beta.reinit(length_beta, 1);
     sebeta.reinit(length_beta, 1);
     //Han Chen
+
     if (length_beta > 1)
     {
+
         if (model == 0 && interaction != 0 && ngpreds == 2 && length_beta > 2)
         {
             covariance.reinit(length_beta - 2, 1);
@@ -635,13 +636,14 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
             covariance.reinit(length_beta - 1, 1);
         }
     }
+
     //Oct 26, 2009
     mematrix<double> W((X).nrow, 1);
     mematrix<double> z((X).nrow, 1);
     mematrix<double> tXWX(length_beta, length_beta);
     mematrix<double> tXWX_i(length_beta, length_beta);
     mematrix<double> tXWz(length_beta, 1);
-    double prev = (rdata.Y).column_mean(0);
+    double prev = (reg_data.Y).column_mean(0);
     if (prev >= 1. || prev <= 0.)
     {
         std::cerr << "prevalence not within (0,1)\n";
@@ -652,6 +654,7 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
 
     beta.put(log(prev / (1. - prev)), 0, 0);
     mematrix<double> tX = transpose(X);
+
     if (invvarmatrix.nrow != 0 && invvarmatrix.ncol != 0)
     {
         //TODO(maarten):invvarmatix is symmetric:is there an more effective way?
@@ -684,12 +687,12 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
             double value = emu;
             double zval;
             value = exp(value) / (1. + exp(value));
-            residuals[i] = (rdata.Y).get(i, 0) - value;
+            residuals[i] = (reg_data.Y).get(i, 0) - value;
             eMu.put(value, i, 0);
             W.put(value * (1. - value), i, 0);
             zval = emu
                     + (1. / (value * (1. - value)))
-                            * (((rdata.Y).get(i, 0)) - value);
+                            * (((reg_data.Y).get(i, 0)) - value);
             z.put(zval, i, 0);
         }
 
@@ -746,7 +749,7 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
         prevlik = loglik;
         loglik = 0.;
         for (int i = 0; i < eMu.nrow; i++)
-            loglik += rdata.Y[i] * eMu_us[i] - log(1. + exp(eMu_us[i]));
+            loglik += reg_data.Y[i] * eMu_us[i] - log(1. + exp(eMu_us[i]));
 
         delta = fabs(1. - (prevlik / loglik));
         niter++;
@@ -829,9 +832,9 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
     // exit(1);
 }
 
-void logistic_reg::score(mematrix<double>& resid, regdata& rdata, int verbose,
+void logistic_reg::score(mematrix<double>& resid, int verbose,
         double tol_chol, int model, int interaction, int ngpreds,
         masked_matrix& invvarmatrix, int nullmodel) {
-    base_score(resid, rdata, verbose, tol_chol, model, interaction, ngpreds,
+    base_score(resid,  verbose, tol_chol, model, interaction, ngpreds,
             invvarmatrix, nullmodel = 0);
 }

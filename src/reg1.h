@@ -49,8 +49,9 @@ class base_reg {
     double sigma2;
     double loglik;
     double chi2_score;
+    regdata reg_data;
 
-    void base_score(mematrix<double>& resid, regdata& rdata, int verbose,
+    void base_score(mematrix<double>& resid,  int verbose,
             double tol_chol, int model, int interaction, int ngpreds,
             const masked_matrix& invvarmatrix, int nullmodel);
 };
@@ -60,17 +61,18 @@ class linear_reg: public base_reg {
     linear_reg(regdata& rdatain);
     ~linear_reg()
     {
+        delete [] reg_data.masked_data ;
         //		delete beta;
         //		delete sebeta;
         //		delete residuals;
     }
 
-    void estimate(regdata& rdatain, int verbose, double tol_chol, int model,
+    void estimate( int verbose, double tol_chol, int model,
                   int interaction, int ngpreds,
                   masked_matrix& invvarmatrixin,
                   int robust, int nullmodel = 0);
 
-    void score(mematrix<double>& resid, regdata& rdatain, int verbose,
+    void score(mematrix<double>& resid,  int verbose,
                double tol_chol, int model, int interaction, int ngpreds,
                const masked_matrix& invvarmatrix, int nullmodel = 0);
 };
@@ -82,16 +84,17 @@ class logistic_reg: public base_reg {
     logistic_reg(regdata& rdatain);
     ~logistic_reg()
     {
+        delete [] reg_data.masked_data ;
         //		delete beta;
         //		delete sebeta;
     }
 
-    void estimate(regdata& rdatain, int verbose, int maxiter, double eps,
+    void estimate( int verbose, int maxiter, double eps,
                   double tol_chol, int model, int interaction, int ngpreds,
                   masked_matrix& invvarmatrixin, int robust,
                   int nullmodel = 0);
     // just a stupid copy from linear_reg
-    void score(mematrix<double>& resid, regdata& rdata, int verbose,
+    void score(mematrix<double>& resid,  int verbose,
                double tol_chol, int model, int interaction, int ngpreds,
                masked_matrix& invvarmatrix, int nullmodel = 0);
 };
