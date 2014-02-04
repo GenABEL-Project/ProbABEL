@@ -14,7 +14,7 @@
 #include "fvlib/frversion.h"
 #include "fvlib/Logger.h"
 #include "fvlib/Transposer.h"
-
+#include <algorithm> // STL algoritms
 #include "regdata.h"
 
 regdata::regdata()
@@ -203,7 +203,6 @@ regdata regdata::get_unmasked_data()
     int dim2X = X.ncol;
     (to.X).reinit(to.nids, dim2X);
     (to.Y).reinit(to.nids, dim2Y);
-
     int j = 0;
     for (int i = 0; i < nids; i++)
     {
@@ -223,13 +222,10 @@ regdata regdata::get_unmasked_data()
     }
 
     // delete [] to.masked_data;
-    to.masked_data = new unsigned short int[to.nids];
-    for (int i = 0; i < to.nids; i++)
-    {
-        to.masked_data[i] = 0;
-    }
-    // std::cout << "get_unmasked: " << to.nids << " "
-    //           << dim2X << " " << dim2Y << "\n";
+    const int arr_size = nids;
+    to.masked_data = new unsigned short int[arr_size];
+    std::copy(masked_data, masked_data+arr_size,to.masked_data);
+
     return (to);
 }
 

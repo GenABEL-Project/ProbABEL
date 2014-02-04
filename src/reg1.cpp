@@ -164,9 +164,11 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
     // column with Prob(A1A1). Note the order is swapped cf the file!
     int c2 = X.ncol - 1;
 
-    for (int i = 0; i < X.nrow; i++)
-        for (int j = 0; j < (X.ncol - 2); j++)
+    for (int i = 0; i < X.nrow; i++){
+        for (int j = 0; j < (X.ncol - 2); j++){
             nX[i * nX.ncol + j] = X[i * X.ncol + j];
+        }
+    }
 
     for (int i = 0; i < nX.nrow; i++)
     {

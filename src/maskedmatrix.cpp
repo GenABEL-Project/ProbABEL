@@ -67,7 +67,6 @@ void masked_matrix::update_mask(short unsigned int *newmask)
             nmeasured++;
         }
     }
-
     //Check update mask is the same as original matrix
     if (nmeasured == length_of_mask)
     {
