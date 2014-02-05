@@ -21,7 +21,7 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 if test -z "$CXXFLAGS"; then
    # User did not set CXXFLAGS, so we can put in our own defaults
-    CXXFLAGS="-g -O2 -DEIGEN_NO_DEBUG -Wextra"
+    CXXFLAGS="-g -O2 -DNDEBUG -Wextra"
 fi
 if test -z "$
 "; then
