@@ -23,8 +23,7 @@ if test -z "$CXXFLAGS"; then
    # User did not set CXXFLAGS, so we can put in our own defaults
     CXXFLAGS="-g -O2 -DNDEBUG -Wextra"
 fi
-if test -z "$
-"; then
+if test -z "$CPPFLAGS"; then
    # User did not set CPPFLAGS, so we can put in our own defaults
     CPPFLAGS="-Wall"
 fi
