@@ -244,7 +244,7 @@ linear_reg::linear_reg(regdata& rdatain) {
     chi2_score = -1.;
 }
 
-void base_reg::base_score(mematrix<double>& resid, int verbose,
+void base_reg::base_score(mematrix<double>& resid,
         double tol_chol, int model, int interaction, int ngpreds,
         const masked_matrix& invvarmatrix, int nullmodel) {
     mematrix<double> oX = reg_data.extract_genotypes();
@@ -578,11 +578,11 @@ void linear_reg::estimate( int verbose, double tol_chol,
 
 }
 
-void linear_reg::score(mematrix<double>& resid, int verbose,
+void linear_reg::score(mematrix<double>& resid,
         double tol_chol, int model, int interaction, int ngpreds,
         const masked_matrix& invvarmatrix, int nullmodel) {
    // regdata rdata = rdatain.get_unmasked_data();
-    base_score(resid, verbose, tol_chol, model, interaction, ngpreds,
+    base_score(resid,  tol_chol, model, interaction, ngpreds,
             invvarmatrix, nullmodel = 0);
 }
 
@@ -605,7 +605,7 @@ logistic_reg::logistic_reg(regdata& rdatain) {
 }
 
 void logistic_reg::estimate( int verbose, int maxiter,
-        double eps, double tol_chol, int model, int interaction, int ngpreds,
+        double eps, int model, int interaction, int ngpreds,
         masked_matrix& invvarmatrixin, int robust, int nullmodel) {
     // In contrast to the 'linear' case 'invvarmatrix' contains the
     // inverse of correlation matrix (not the inverse of var-cov matrix)
@@ -834,9 +834,9 @@ void logistic_reg::estimate( int verbose, int maxiter,
     // exit(1);
 }
 
-void logistic_reg::score(mematrix<double>& resid, int verbose,
+void logistic_reg::score(mematrix<double>& resid,
         double tol_chol, int model, int interaction, int ngpreds,
         masked_matrix& invvarmatrix, int nullmodel) {
-    base_score(resid,  verbose, tol_chol, model, interaction, ngpreds,
+    base_score(resid, tol_chol, model, interaction, ngpreds,
             invvarmatrix, nullmodel = 0);
 }

@@ -59,10 +59,7 @@ coxph_data::coxph_data(const coxph_data &obj) : sstat(obj.sstat),
     freq        = 0;
     masked_data = new unsigned short int[nids];
 
-    for (int i = 0; i < nids; i++)
-    {
-        masked_data[i] = obj.masked_data[i];
-    }
+    std::copy(obj.masked_data, obj.masked_data+nids,masked_data);
 }
 
 coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
@@ -72,10 +69,8 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
     nids        = gend.nids;
     masked_data = new unsigned short int[nids];
 
-    for (int i = 0; i < nids; i++)
-    {
-        masked_data[i] = 0;
-    }
+
+    std::fill(masked_data,masked_data+nids,0);
 
     ngpreds = gend.ngpreds;
     if (snpnum >= 0)
@@ -145,11 +140,12 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
     // sort by time
     double *tmptime = new double[nids];
     int *passed_sorted = new int[nids];
+    std::fill (passed_sorted,passed_sorted+nids,0);
+
 
     for (int i = 0; i < nids; i++)
     {
         tmptime[i] = stime[i];
-        passed_sorted[i] = 0;
     }
 
     qsort(tmptime, nids, sizeof(double), cmpfun);
@@ -217,9 +213,7 @@ void coxph_data::update_snp(gendata *gend, const int snpnum) {
 
     for (int j = 0; j < ngpreds; j++) {
         double *snpdata = new double[nids];
-        for (int i = 0; i < nids; i++) {
-            masked_data[i] = 0;
-        }
+       std::fill (masked_data,masked_data+nids,0);
 
         gend->get_var(snpnum * ngpreds + j, snpdata);
 
@@ -294,14 +288,8 @@ coxph_data coxph_data::get_unmasked_data()
     coxph_data to;  // = coxph_data(*this);
 
     // filter missing data
-    int nmeasured = 0;
-    for (int i = 0; i < nids; i++)
-    {
-        if (masked_data[i] == 0)
-        {
-            nmeasured++;
-        }
-    }
+
+    int nmeasured=std::count (masked_data, masked_data+nids, 0);
 
     to.nids = nmeasured;
     to.ncov = ncov;
@@ -336,11 +324,7 @@ coxph_data coxph_data::get_unmasked_data()
 
     //delete [] to.masked_data;
     to.masked_data = new unsigned short int[to.nids];
-    for (int i = 0; i < to.nids; i++)
-    {
-        to.masked_data[i] = 0;
-    }
-
+    std::fill(to.masked_data,to.masked_data+to.nids,0);
     return (to);
 }
 
@@ -357,7 +341,7 @@ coxph_reg::coxph_reg(coxph_data &cdatain)
 }
 
 
-void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
+void coxph_reg::estimate(coxph_data &cdatain,
                         int maxiter, double eps,
                         double tol_chol, const int model,
                         const int interaction, const int ngpreds,

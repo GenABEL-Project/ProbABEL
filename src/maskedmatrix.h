@@ -32,7 +32,6 @@ class masked_matrix {
     mematrix<double> matrix_masked_data;
     unsigned short int *mask_of_old;
     void mask_symmetric(int nmeasured);
-    bool is_equal_array(unsigned short int *a, unsigned short int *b, int size);
 };
 
 #endif /* MASKEDMATRIX_H_ */

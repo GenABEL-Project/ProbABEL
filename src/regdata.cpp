@@ -40,11 +40,7 @@ regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
     freq = obj.freq;
     is_interaction_excluded = obj.is_interaction_excluded;
     masked_data = new unsigned short int[nids];
-
-    for (int i = 0; i < nids; i++)
-    {
-        masked_data[i] = obj.masked_data[i];
-    }
+    std::copy(obj.masked_data, obj.masked_data+nids,masked_data);
 }
 
 
@@ -56,10 +52,7 @@ regdata::regdata(phedata &phed, gendata &gend, const int snpnum,
     nids        = gend.nids;
     masked_data = new unsigned short int[nids];
 
-    for (int i = 0; i < nids; i++)
-    {
-        masked_data[i] = 0;
-    }
+    std::fill (masked_data,masked_data+nids,0);
 
     ngpreds = gend.ngpreds;
     if (snpnum >= 0)
@@ -116,10 +109,8 @@ void regdata::update_snp(gendata *gend, const int snpnum)
     for (int j = 0; j < ngpreds; j++)
     {
         double *snpdata = new double[nids];
-        for (int i = 0; i < nids; i++)
-        {
-            masked_data[i] = 0;
-        }
+
+        std::fill (masked_data,masked_data+nids,0);
 
         gend->get_var(snpnum * ngpreds + j, snpdata);
 
@@ -187,12 +178,8 @@ void regdata::remove_snp_from_X()
 regdata regdata::get_unmasked_data()
 {
     regdata to;  // = regdata(*this);
-    int nmeasured = 0;
-    for (int i = 0; i < nids; i++)
-    {
-        if (masked_data[i] == 0)
-            nmeasured++;
-    }
+
+    int nmeasured=std::count (masked_data, masked_data+nids, 0);
 
     to.nids                    = nmeasured;
     to.ncov                    = ncov;
