@@ -100,8 +100,8 @@ void print_usage(char * program_name, int exit_code)
 void print_version(void) {
     cout << PACKAGE
          << " v. " << PACKAGE_VERSION
-         << "\n(C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, "
-         << "EMCR\n\n";
+         << "\n(C) Yurii Aulchenko, Lennart C. Karssen, Maarten Kooyman, "
+         << "Maksim Struchalin, The GenABEL team, EMC Rotterdam\n\n";
 #if EIGEN
     cout << "Using EIGEN version " << EIGEN_WORLD_VERSION
          << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION
