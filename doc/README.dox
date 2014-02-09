@@ -6,6 +6,8 @@
 \author L.C. Karssen
 \author M. Kooyman
 \author Maksim V. Struchalin
+\author Other members of the GenABEL team
+\author People who submitted patches to the mailing list or bug tracker
 
 The ProbABEL package is part of the GenABEL project for analysis of genome-wide
 data. ProbABEL is used to run GWAS. Using files in filevector/DatABEL format
