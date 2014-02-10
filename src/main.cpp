@@ -150,7 +150,8 @@ int main(int argc, char * argv[])
     std::cout << " loaded null data..." << std::flush;
 #if LOGISTIC
     logistic_reg nrd = logistic_reg(nrgd);
-    nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0,
+
+    nrd.estimate( 0, MAXITER, EPS, 0,
                  input_var.getInteraction(),
                  input_var.getNgpreds(),
                  invvarmatrix,
@@ -162,12 +163,12 @@ int main(int argc, char * argv[])
 #if DEBUG
     std::cout << "[DEBUG] linear_reg nrd = linear_reg(nrgd); DONE.";
 #endif
-    nrd.estimate(nrgd, 0, CHOLTOL, 0, input_var.getInteraction(),
+    nrd.estimate( 0, CHOLTOL, 0, input_var.getInteraction(),
                  input_var.getNgpreds(), invvarmatrix,
                  input_var.getRobust(), 1);
 #elif COXPH
     coxph_reg nrd = coxph_reg(nrgd);
-    nrd.estimate(nrgd, 0, MAXITER, EPS, CHOLTOL, 0,
+    nrd.estimate(nrgd,  MAXITER, EPS, CHOLTOL, 0,
                  input_var.getInteraction(), input_var.getNgpreds(),
                  true, 1, mli, 0);
 #endif
@@ -296,14 +297,14 @@ int main(int argc, char * argv[])
                 logistic_reg rd(rgd);
                 if (input_var.getScore())
                 {
-                    rd.score(nrd.residuals, rgd, 0, CHOLTOL, model,
+                    rd.score(nrd.residuals, CHOLTOL, model,
                              input_var.getInteraction(),
                              input_var.getNgpreds(),
                              invvarmatrix);
                 }
                 else
                 {
-                    rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
+                    rd.estimate( 0, MAXITER, EPS, model,
                                 input_var.getInteraction(),
                                 input_var.getNgpreds(),
                                 invvarmatrix,
@@ -313,14 +314,14 @@ int main(int argc, char * argv[])
                 linear_reg rd(rgd);
                 if (input_var.getScore())
                 {
-                    rd.score(nrd.residuals, rgd, 0, CHOLTOL, model,
+                    rd.score(nrd.residuals,  CHOLTOL, model,
                              input_var.getInteraction(),
                              input_var.getNgpreds(),
                              invvarmatrix);
                 }
                 else
                 {
-                    rd.estimate(rgd, 0, CHOLTOL, model,
+                    rd.estimate( 0, CHOLTOL, model,
                                 input_var.getInteraction(),
                                 input_var.getNgpreds(),
                                 invvarmatrix,
@@ -328,7 +329,7 @@ int main(int argc, char * argv[])
                 }
 #elif COXPH
                 coxph_reg rd(rgd);
-                rd.estimate(rgd, 0, MAXITER, EPS, CHOLTOL, model,
+                rd.estimate(rgd,  MAXITER, EPS, CHOLTOL, model,
                             input_var.getInteraction(),
                             input_var.getNgpreds(), true, 0, mli, csnp);
 #endif
@@ -404,7 +405,7 @@ int main(int argc, char * argv[])
                             regdata new_rgd = rgd;
                             new_rgd.remove_snp_from_X();
                             linear_reg new_null_rd(new_rgd);
-                            new_null_rd.estimate(new_rgd, 0,
+                            new_null_rd.estimate( 0,
                                                  CHOLTOL, model,
                                                  input_var.getInteraction(),
                                                  input_var.getNgpreds(),
@@ -415,8 +416,8 @@ int main(int argc, char * argv[])
                             regdata new_rgd = rgd;
                             new_rgd.remove_snp_from_X();
                             logistic_reg new_null_rd(new_rgd);
-                            new_null_rd.estimate(new_rgd, 0, MAXITER, EPS,
-                                                 CHOLTOL, model,
+                            new_null_rd.estimate( 0, MAXITER, EPS,
+                                                  model,
                                                  input_var.getInteraction(),
                                                  input_var.getNgpreds(),
                                                  invvarmatrix,
@@ -426,7 +427,7 @@ int main(int argc, char * argv[])
                             coxph_data new_rgd = rgd;
                             new_rgd.remove_snp_from_X();
                             coxph_reg new_null_rd(new_rgd);
-                            new_null_rd.estimate(new_rgd, 0, MAXITER,
+                            new_null_rd.estimate(new_rgd, MAXITER,
                                                  EPS, CHOLTOL, model,
                                                  input_var.getInteraction(),
                                                  input_var.getNgpreds(),
