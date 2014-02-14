@@ -355,9 +355,11 @@ void linear_reg::estimate( int verbose, double tol_chol,
     }
 
     double sigma2_internal;
-    mematrix<double> tXX_i;
+
 #if EIGEN
     LDLT <MatrixXd> Ch ;
+#else
+    mematrix<double> tXX_i;
 #endif
     if (invvarmatrixin.length_of_mask != 0)
     {
@@ -369,12 +371,16 @@ void linear_reg::estimate( int verbose, double tol_chol,
         //C=AB (m X n matrix A and n x P matrix B)
         //flops=mp(2n-1) (when n is big enough flops=mpn2)
         //Oct 26, 2009
+
+#if EIGEN
+        MatrixXd tXW = X.data.transpose() * invvarmatrixin.masked_data->data; // flops 5997000
+        Ch = LDLT <MatrixXd>(tXW * X.data); // 17991 flops
+        beta.data = Ch.solve(tXW * reg_data.Y.data);
+        sigma2 = (reg_data.Y.data - tXW.transpose() * beta.data).squaredNorm() ; //flops: 1000+5000+3000
+#else
+
         mematrix<double> tXW = transpose(X) * invvarmatrixin.masked_data; // flops 5997000
         tXX_i = tXW * X;        // 17991 flops
-#if EIGEN
-        Ch=LDLT <MatrixXd>(tXX_i.data.selfadjointView<Lower>());
-#endif
-
         // use cholesky to invert
         cholesky2_mm(tXX_i, tol_chol);
         chinv2_mm(tXX_i);
@@ -387,6 +393,7 @@ void linear_reg::estimate( int verbose, double tol_chol,
             double val = sigma2_matrix.get(i, 0);
             sigma2 += val * val; // flops: 3000
         }
+#endif
         double N = X.nrow;
         //sigma2_internal = sigma2 / (N - static_cast<double>(length_beta));
         // Ugly fix to the fact that if we do mmscore, sigma2 is already
@@ -400,14 +407,11 @@ void linear_reg::estimate( int verbose, double tol_chol,
     {
 #if EIGEN
         int m = X.ncol;
-        MatrixXd txx = MatrixXd(m, m).setZero().selfadjointView<Lower>().rankUpdate(X.data.adjoint());
+        MatrixXd txx = MatrixXd(m, m).setZero().selfadjointView<Lower>().\
+                rankUpdate(X.data.adjoint());
         Ch=LDLT <MatrixXd>(txx.selfadjointView<Lower>());
         beta.data= Ch.solve(X.data.adjoint() * reg_data.Y.data);
-
-       tXX_i.data=Ch.solve(MatrixXd(m, m).Identity(m,m));
-       tXX_i.nrow=tXX_i.data.rows();
-       tXX_i.ncol=tXX_i.data.cols();
-       tXX_i.nelements=tXX_i.ncol*tXX_i.nrow;
+        sigma2 = (reg_data.Y.data - (X.data * beta.data)).squaredNorm() ;
 
 #else
         mematrix<double> tX = transpose(X);
@@ -416,14 +420,10 @@ void linear_reg::estimate( int verbose, double tol_chol,
                 cholesky2_mm(tXX_i, tol_chol);
                 chinv2_mm(tXX_i);
                 beta = tXX_i * (tX * (reg_data.Y));
-#endif
 
         // now compute residual variance
         sigma2 = 0.;
         mematrix<double> sigma2_matrix = reg_data.Y - (X * beta);
-#if EIGEN
-        sigma2 = sigma2_matrix.data.squaredNorm() ;
-#else
         for (int i = 0; i < sigma2_matrix.nrow; i++)
         {
             double val = sigma2_matrix.get(i, 0);
@@ -458,8 +458,10 @@ void linear_reg::estimate( int verbose, double tol_chol,
     double intercept = beta.get(0, 0);
     residuals.data= reg_data.Y.data.array()-intercept;
     //matrix.
-    ArrayXXd betacol = beta.data.block(1,0,beta.data.rows()-1,1).array().transpose();
-    ArrayXXd resid_sub = (X.data.block(0,1,X.data.rows(),X.data.cols()-1)*betacol.matrix().asDiagonal()).rowwise().sum() ;
+    ArrayXXd betacol = beta.data.block(1,0,beta.data.rows()-1,1)\
+            .array().transpose();
+    ArrayXXd resid_sub = (X.data.block(0,1,X.data.rows(),X.data.cols()-1)\
+            *betacol.matrix().asDiagonal()).rowwise().sum() ;
     //std::cout << resid_sub << std::endl;
     residuals.data-=resid_sub.matrix();
     //residuals[i] -= resid_sub;
@@ -481,15 +483,18 @@ void linear_reg::estimate( int verbose, double tol_chol,
 
     loglik -= static_cast<double>(reg_data.nids) * log(sqrt(sigma2));
 #if EIGEN
-    MatrixXd tXX_inv=Ch.solve(MatrixXd(length_beta, length_beta).Identity(length_beta,length_beta));
+    MatrixXd tXX_inv=Ch.solve(MatrixXd(length_beta, length_beta).
+            Identity(length_beta,length_beta));
 #endif
 
     mematrix<double> robust_sigma2(X.ncol, X.ncol);
     if (robust)
     {
 #if EIGEN
-        MatrixXd Xresiduals = X.data.array().colwise()*residuals.data.col(0).array();
-        MatrixXd  XbyR = MatrixXd(X.ncol, X.ncol).setZero().selfadjointView<Lower>().rankUpdate(Xresiduals.adjoint());
+        MatrixXd Xresiduals = X.data.array().colwise()\
+                *residuals.data.col(0).array();
+        MatrixXd  XbyR = MatrixXd(X.ncol, X.ncol).setZero()\
+                .selfadjointView<Lower>().rankUpdate(Xresiduals.adjoint());
         robust_sigma2.data= tXX_inv*XbyR *tXX_inv;
 #else
 
