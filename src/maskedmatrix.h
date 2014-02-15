@@ -55,4 +55,4 @@ class masked_matrix {
     void mask_symmetric(int nmeasured);
 };
 
-#endif /* MASKEDMATRIX_H_ */
+#endif//MASKEDMATRIX_H_

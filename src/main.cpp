@@ -151,7 +151,7 @@ int main(int argc, char * argv[])
 #if LOGISTIC
     logistic_reg nrd = logistic_reg(nrgd);
 
-    nrd.estimate( 0, MAXITER, EPS, 0,
+    nrd.estimate(0, MAXITER, EPS, 0,
                  input_var.getInteraction(),
                  input_var.getNgpreds(),
                  invvarmatrix,
@@ -163,7 +163,7 @@ int main(int argc, char * argv[])
 #if DEBUG
     std::cout << "[DEBUG] linear_reg nrd = linear_reg(nrgd); DONE.";
 #endif
-    nrd.estimate( 0, CHOLTOL, 0, input_var.getInteraction(),
+    nrd.estimate(0, CHOLTOL, 0, input_var.getInteraction(),
                  input_var.getNgpreds(), invvarmatrix,
                  input_var.getRobust(), 1);
 #elif COXPH
@@ -199,7 +199,8 @@ int main(int argc, char * argv[])
         {
             create_header(outfile, input_var, phd, interaction_cox);
         }
-    } else  // Dosage data: Only additive model => only one output file
+    }
+    else  // Dosage data: Only additive model => only one output file
     {
         outfile.push_back(
             new std::ofstream((outfilename_str + "_add.out.txt").c_str()));
@@ -278,8 +279,7 @@ int main(int argc, char * argv[])
                 write_mlinfo(outfile, file, mli, csnp, input_var,
                              rgd.gcount, rgd.freq);
             }
-        } else
-        {
+        } else{
             // Dosage data: only additive model
             int file = 0;
             write_mlinfo(outfile, file, mli, csnp, input_var,
@@ -304,7 +304,7 @@ int main(int argc, char * argv[])
                 }
                 else
                 {
-                    rd.estimate( 0, MAXITER, EPS, model,
+                    rd.estimate(0, MAXITER, EPS, model,
                                 input_var.getInteraction(),
                                 input_var.getNgpreds(),
                                 invvarmatrix,
@@ -321,7 +321,7 @@ int main(int argc, char * argv[])
                 }
                 else
                 {
-                    rd.estimate( 0, CHOLTOL, model,
+                    rd.estimate(0, CHOLTOL, model,
                                 input_var.getInteraction(),
                                 input_var.getNgpreds(),
                                 invvarmatrix,
@@ -405,7 +405,7 @@ int main(int argc, char * argv[])
                             regdata new_rgd = rgd;
                             new_rgd.remove_snp_from_X();
                             linear_reg new_null_rd(new_rgd);
-                            new_null_rd.estimate( 0,
+                            new_null_rd.estimate(0,
                                                  CHOLTOL, model,
                                                  input_var.getInteraction(),
                                                  input_var.getNgpreds(),
@@ -416,7 +416,7 @@ int main(int argc, char * argv[])
                             regdata new_rgd = rgd;
                             new_rgd.remove_snp_from_X();
                             logistic_reg new_null_rd(new_rgd);
-                            new_null_rd.estimate( 0, MAXITER, EPS,
+                            new_null_rd.estimate(0, MAXITER, EPS,
                                                   model,
                                                  input_var.getInteraction(),
                                                  input_var.getNgpreds(),
@@ -440,8 +440,7 @@ int main(int argc, char * argv[])
                             // No missing SNP data, we can compute the LRT
                             *chi2[model] << 2. * (loglik - null_loglik);
                         }
-                    } else
-                    {
+                    } else{
                         // We want score test output
                         *chi2[model] << rd.chi2_score;
                     }
@@ -481,8 +480,7 @@ int main(int argc, char * argv[])
                 if (input_var.getNgpreds() == 0)
                 {
                     end_pos = rgd.X.ncol;
-                } else
-                {
+                } else{
                     end_pos = rgd.X.ncol - 1;
                 }
 
@@ -511,16 +509,15 @@ int main(int argc, char * argv[])
                             *covvalue[model] << "nan"
                                              << input_var.getSep()
                                              << "nan";
-                        } else
-                        {
+                        } else{
                             *covvalue[model] << "nan";
                         }
                     }
 #endif
                     // Oct 26, 2009
                     *chi2[model] << "nan";
-                } else
-                { // ngpreds==1 (and SNP is rare)
+                } else{
+                    // ngpreds==1 (and SNP is rare)
                     if (input_var.getInverseFilename() == NULL)
                     {
                         //                     Han Chen

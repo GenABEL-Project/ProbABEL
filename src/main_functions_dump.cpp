@@ -417,8 +417,7 @@ int get_start_position(const cmdvars& input_var, const int model,
         if (input_var.getNgpreds() == 2)
         {
             start_pos = number_of_rows_or_columns - 2;
-        } else
-        {
+        } else{
             start_pos = number_of_rows_or_columns - 1;
         }
     } else if (!input_var.getAllcov() && model == 0
@@ -427,8 +426,7 @@ int get_start_position(const cmdvars& input_var, const int model,
         if (input_var.getNgpreds() == 2)
         {
             start_pos = number_of_rows_or_columns - 4;
-        } else
-        {
+        } else{
             start_pos = number_of_rows_or_columns - 2;
         }
     } else if (!input_var.getAllcov() && model != 0
@@ -439,8 +437,7 @@ int get_start_position(const cmdvars& input_var, const int model,
             && input_var.getInteraction() != 0)
     {
         start_pos = number_of_rows_or_columns - 2;
-    } else
-    {
+    } else{
         start_pos = 0;
     }
 

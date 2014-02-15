@@ -120,11 +120,11 @@ string cmdvars::getOutfilename() const
 {
     return outfilename;
 }
-
-char* cmdvars::getProgramName() const
-{
-    return program_name;
-}
+//TODO(unknown) This function is not used. Remove in near future
+//char* cmdvars::getProgramName() const
+//{
+//    return program_name;
+//}
 
 int cmdvars::getRobust() const
 {

@@ -116,7 +116,8 @@ class cmdvars
     int getNoutcomes() const;
     int getNpeople() const;
     string getOutfilename() const;
-    char* getProgramName() const;
+//TODO(unknown) This function is not used. Remove in near future
+//    char* getProgramName() const;
     int getRobust() const;
     int getScore() const;
     string getSep() const;

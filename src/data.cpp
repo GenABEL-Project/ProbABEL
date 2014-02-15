@@ -47,47 +47,43 @@
 #endif
 #include "utilities.h"
 
-
-unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
-{
-//TODO: unused variables remove them for good if there is no reason to keep them
-//int ncov = nphenocols - 2;
-//int nids_all = npeople;
-
-// first pass -- find unmeasured people
-    std::ifstream infile(fname);
-    if (!infile)
-    {
-        std::cerr << "Nmeasured: cannot open file " << fname << endl;
-    }
-    char tmp[100];
-
-    for (int i = 0; i < nphenocols; i++)
-    {
-        infile >> tmp;
-    }
-
-    unsigned short int * allmeasured = new unsigned short int[npeople];
-    int nids = 0;
-    for (int i = 0; i < npeople; i++)
-    {
-        allmeasured[i] = 1;
-        infile >> tmp;
-        for (int j = 1; j < nphenocols; j++)
-        {
-            infile >> tmp;
-            if (tmp[0] == 'N' || tmp[0] == 'n')
-                allmeasured[i] = 0;
-        }
-        if (allmeasured[i] == 1)
-            nids++;
-    }
-    infile.close();
-
-    delete[] allmeasured;
-
-    return (nids);
-}
+//TODO(unknown) This function is not used. Remove in near future
+//unsigned int Nmeasured(char * fname, int nphenocols, int npeople)
+//{
+//// first pass -- find unmeasured people
+//    std::ifstream infile(fname);
+//    if (!infile)
+//    {
+//        std::cerr << "Nmeasured: cannot open file " << fname << endl;
+//    }
+//    char tmp[100];
+//
+//    for (int i = 0; i < nphenocols; i++)
+//    {
+//        infile >> tmp;
+//    }
+//
+//    unsigned short int * allmeasured = new unsigned short int[npeople];
+//    int nids = 0;
+//    for (int i = 0; i < npeople; i++)
+//    {
+//        allmeasured[i] = 1;
+//        infile >> tmp;
+//        for (int j = 1; j < nphenocols; j++)
+//        {
+//            infile >> tmp;
+//            if (tmp[0] == 'N' || tmp[0] == 'n')
+//                allmeasured[i] = 0;
+//        }
+//        if (allmeasured[i] == 1)
+//            nids++;
+//    }
+//    infile.close();
+//
+//    delete[] allmeasured;
+//
+//    return (nids);
+//}
 
 
 /**
@@ -269,5 +265,3 @@ mematrix<double> & InvSigma::get_matrix(void)
 {
     return matrix;
 }
-
-//________________________________________Maksim_end

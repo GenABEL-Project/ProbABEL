@@ -85,13 +85,13 @@ class linear_reg: public base_reg {
     linear_reg(regdata& rdatain);
     ~linear_reg()
     {
-        delete [] reg_data.masked_data ;
+        delete [] reg_data.masked_data;
         //		delete beta;
         //		delete sebeta;
         //		delete residuals;
     }
 
-    void estimate( int verbose, double tol_chol, int model,
+    void estimate(int verbose, double tol_chol, int model,
                   int interaction, int ngpreds,
                   masked_matrix& invvarmatrixin,
                   int robust, int nullmodel = 0);
@@ -108,12 +108,12 @@ class logistic_reg: public base_reg {
     logistic_reg(regdata& rdatain);
     ~logistic_reg()
     {
-        delete [] reg_data.masked_data ;
+        delete [] reg_data.masked_data;
         //		delete beta;
         //		delete sebeta;
     }
 
-    void estimate( int verbose, int maxiter, double eps,
+    void estimate(int verbose, int maxiter, double eps,
                   int model, int interaction, int ngpreds,
                   masked_matrix& invvarmatrixin, int robust,
                   int nullmodel = 0);
@@ -123,4 +123,4 @@ class logistic_reg: public base_reg {
                masked_matrix& invvarmatrix, int nullmodel = 0);
 };
 
-#endif
+#endif//REG1_H_

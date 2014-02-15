@@ -91,14 +91,14 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
                             {
                                 col_new++;
                                 nX_without_interact_phe[row
-                                        * nX_without_interact_phe.ncol + col_new] =
+                                    * nX_without_interact_phe.ncol + col_new] =
                                         nX[row * nX.ncol + col];
                             }
                             if (col != interaction - 1 && iscox)
                             {
                                 col_new++;
                                 nX_without_interact_phe[row
-                                        * nX_without_interact_phe.ncol + col_new] =
+                                    * nX_without_interact_phe.ncol + col_new] =
                                         nX[row * nX.ncol + col];
                             }
                         } // interaction_only, model==0, ngpreds==2
@@ -148,14 +148,14 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
                             {
                                 col_new++;
                                 nX_without_interact_phe[row
-                                        * nX_without_interact_phe.ncol + col_new] =
+                                    * nX_without_interact_phe.ncol + col_new] =
                                         nX[row * nX.ncol + col];
                             }
                             if (col != interaction - 1 && iscox)
                             {
                                 col_new++;
                                 nX_without_interact_phe[row
-                                        * nX_without_interact_phe.ncol + col_new] =
+                                     * nX_without_interact_phe.ncol + col_new] =
                                         nX[row * nX.ncol + col];
                             }
                         }
@@ -311,7 +311,7 @@ void base_reg::base_score(mematrix<double>& resid,
 }
 
 
-void linear_reg::estimate( int verbose, double tol_chol,
+void linear_reg::estimate(int verbose, double tol_chol,
         int model, int interaction, int ngpreds, masked_matrix& invvarmatrixin,
         int robust, int nullmodel) {
     // suda interaction parameter
@@ -357,7 +357,7 @@ void linear_reg::estimate( int verbose, double tol_chol,
     double sigma2_internal;
 
 #if EIGEN
-    LDLT <MatrixXd> Ch ;
+    LDLT <MatrixXd> Ch;
 #else
     mematrix<double> tXX_i;
 #endif
@@ -373,13 +373,15 @@ void linear_reg::estimate( int verbose, double tol_chol,
         //Oct 26, 2009
 
 #if EIGEN
-        MatrixXd tXW = X.data.transpose() * invvarmatrixin.masked_data->data; // flops 5997000
+        // next line is  5997000 flops
+        MatrixXd tXW = X.data.transpose() * invvarmatrixin.masked_data->data;
         Ch = LDLT <MatrixXd>(tXW * X.data); // 17991 flops
-        beta.data = Ch.solve(tXW * reg_data.Y.data);
-        sigma2 = (reg_data.Y.data - tXW.transpose() * beta.data).squaredNorm() ; //flops: 1000+5000+3000
+        beta.data = Ch.solve(tXW * reg_data.Y.data);//5997 flops
+        //next line is: 1000+5000+3000= 9000 flops
+        sigma2 = (reg_data.Y.data - tXW.transpose() * beta.data).squaredNorm();
 #else
-
-        mematrix<double> tXW = transpose(X) * invvarmatrixin.masked_data; // flops 5997000
+        // next line is  5997000 flops
+        mematrix<double> tXW = transpose(X) * invvarmatrixin.masked_data;
         tXX_i = tXW * X;        // 17991 flops
         // use cholesky to invert
         cholesky2_mm(tXX_i, tol_chol);
@@ -387,11 +389,12 @@ void linear_reg::estimate( int verbose, double tol_chol,
         beta = tXX_i * (tXW * reg_data.Y);        // flops 15+5997
         // now compute residual variance
         sigma2 = 0.;
+        //next line is: 1000+5000+= 6000 flops
         mematrix<double> sigma2_matrix = reg_data.Y - (transpose(tXW) * beta); //flops: 1000+5000
         for (int i = 0; i < sigma2_matrix.nrow; i++)
         {
             double val = sigma2_matrix.get(i, 0);
-            sigma2 += val * val; // flops: 3000
+            sigma2 += val * val; // flops: 3000 (iterations counted)
         }
 #endif
         double N = X.nrow;
@@ -409,9 +412,9 @@ void linear_reg::estimate( int verbose, double tol_chol,
         int m = X.ncol;
         MatrixXd txx = MatrixXd(m, m).setZero().selfadjointView<Lower>().\
                 rankUpdate(X.data.adjoint());
-        Ch=LDLT <MatrixXd>(txx.selfadjointView<Lower>());
-        beta.data= Ch.solve(X.data.adjoint() * reg_data.Y.data);
-        sigma2 = (reg_data.Y.data - (X.data * beta.data)).squaredNorm() ;
+        Ch = LDLT <MatrixXd>(txx.selfadjointView<Lower>());
+        beta.data = Ch.solve(X.data.adjoint() * reg_data.Y.data);
+        sigma2 = (reg_data.Y.data - (X.data * beta.data)).squaredNorm();
 
 #else
         mematrix<double> tX = transpose(X);
@@ -431,7 +434,7 @@ void linear_reg::estimate( int verbose, double tol_chol,
         }
 #endif
         double N = static_cast<double>(X.nrow);
-        double P=static_cast<double>(length_beta);
+        double P = static_cast<double>(length_beta);
         sigma2_internal = sigma2 / (N - P);
         sigma2 /= N;
     }
@@ -456,16 +459,16 @@ void linear_reg::estimate( int verbose, double tol_chol,
 
 #if EIGEN
     double intercept = beta.get(0, 0);
-    residuals.data= reg_data.Y.data.array()-intercept;
+    residuals.data = reg_data.Y.data.array()-intercept;
     //matrix.
-    ArrayXXd betacol = beta.data.block(1,0,beta.data.rows()-1,1)\
+    ArrayXXd betacol = beta.data.block(1, 0, beta.data.rows()-1, 1)\
             .array().transpose();
-    ArrayXXd resid_sub = (X.data.block(0,1,X.data.rows(),X.data.cols()-1)\
-            *betacol.matrix().asDiagonal()).rowwise().sum() ;
+    ArrayXXd resid_sub = (X.data.block(0, 1, X.data.rows(), X.data.cols()-1)\
+            *betacol.matrix().asDiagonal()).rowwise().sum();
     //std::cout << resid_sub << std::endl;
-    residuals.data-=resid_sub.matrix();
+    residuals.data -= resid_sub.matrix();
     //residuals[i] -= resid_sub;
-    loglik-=(residuals.data.array().square()*halfrecsig2).sum();
+    loglik -= (residuals.data.array().square()*halfrecsig2).sum();
 
     //loglik -= halfrecsig2 * residuals[i] * residuals[i];
 
@@ -483,7 +486,7 @@ void linear_reg::estimate( int verbose, double tol_chol,
 
     loglik -= static_cast<double>(reg_data.nids) * log(sqrt(sigma2));
 #if EIGEN
-    MatrixXd tXX_inv=Ch.solve(MatrixXd(length_beta, length_beta).
+    MatrixXd tXX_inv = Ch.solve(MatrixXd(length_beta, length_beta).
             Identity(length_beta,length_beta));
 #endif
 
@@ -512,7 +515,6 @@ void linear_reg::estimate( int verbose, double tol_chol,
 
 #endif
 
-
     }
     //cout << "estimate 0\n";
 #if EIGEN
@@ -526,18 +528,17 @@ void linear_reg::estimate( int verbose, double tol_chol,
                 (sigma2_internal
                         * tXX_inv.diagonal().array()).sqrt();
     }
-    int offset=X.ncol- 1;
+    int offset = X.ncol- 1;
     //if additive and interaction and 2 predictors and more then 2 betas
 
     if (model == 0 && interaction != 0 && ngpreds == 2 && length_beta > 2){
-          offset=X.ncol - 2;
+          offset = X.ncol - 2;
     }
 
     if (robust)
     {
         covariance.data = robust_sigma2.data.bottomLeftCorner(
                 offset, offset).diagonal();
-
     }
     else
     {
@@ -603,13 +604,12 @@ void linear_reg::estimate( int verbose, double tol_chol,
         }
     }
 #endif
-
 }
 
 void linear_reg::score(mematrix<double>& resid,
         double tol_chol, int model, int interaction, int ngpreds,
         const masked_matrix& invvarmatrix, int nullmodel) {
-   // regdata rdata = rdatain.get_unmasked_data();
+    //regdata rdata = rdatain.get_unmasked_data();
     base_score(resid,  tol_chol, model, interaction, ngpreds,
             invvarmatrix, nullmodel = 0);
 }
@@ -632,7 +632,7 @@ logistic_reg::logistic_reg(regdata& rdatain) {
     chi2_score = -1.;
 }
 
-void logistic_reg::estimate( int verbose, int maxiter,
+void logistic_reg::estimate(int verbose, int maxiter,
         double eps, int model, int interaction, int ngpreds,
         masked_matrix& invvarmatrixin, int robust, int nullmodel) {
     // In contrast to the 'linear' case 'invvarmatrix' contains the
@@ -656,7 +656,6 @@ void logistic_reg::estimate( int verbose, int maxiter,
 
     if (length_beta > 1)
     {
-
         if (model == 0 && interaction != 0 && ngpreds == 2 && length_beta > 2)
         {
             covariance.reinit(length_beta - 2, 1);
@@ -687,7 +686,7 @@ void logistic_reg::estimate( int verbose, int maxiter,
 
     if (invvarmatrix.nrow != 0 && invvarmatrix.ncol != 0)
     {
-        //TODO(maarten):invvarmatix is symmetric:is there an more effective way?
+        //TODO(maarten) invvarmatix is symmetric:is there an more effective way?
         tX = tX * invvarmatrix;
     }
     /*
@@ -706,7 +705,6 @@ void logistic_reg::estimate( int verbose, int maxiter,
      */
     niter = 0;
     double delta = 1.;
-    double prevlik = 0.;
     while (niter < maxiter && delta > eps)
     {
         mematrix<double> eMu = (X) * beta;
@@ -776,7 +774,7 @@ void logistic_reg::estimate( int verbose, int maxiter,
         }
         // std::cout << "beta:\n"; beta.print();
         // compute likelihood
-        prevlik = loglik;
+        double prevlik = loglik;
         loglik = 0.;
         for (int i = 0; i < eMu.nrow; i++)
             loglik += reg_data.Y[i] * eMu_us[i] - log(1. + exp(eMu_us[i]));

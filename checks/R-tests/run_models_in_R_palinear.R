@@ -123,7 +123,7 @@ for (i in 3:dim(dose)[2]) {
 }
 colnames(prob.2df.R) <- cols2df
 rownames(prob.2df.R) <- NULL
-#stopifnot( all.equal(prob.2df.PA1[1:5,], prob.2df.R[1:5,], tol=tol) )
+stopifnot( all.equal(prob.2df.PA[1:5,], prob.2df.R[1:5,], tol=tol) )
 cat("2df\n")
 
 cat("\t\t\t\t\t\tOK\n")
