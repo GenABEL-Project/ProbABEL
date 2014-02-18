@@ -84,6 +84,39 @@ fi
 AM_CONDITIONAL([WITH_EIGEN], test "x$with_eigen" != "xno")
 
 
+# See if we can use the Boost libraries for calculating p-values
+AC_ARG_WITH([boost],
+ AS_HELP_STRING([--with-boost], [Use the Boost Math library for
+ calculating p-values. This is enabled by default]
+               )
+)
+
+if test "x$with_boost" != "xno"; then
+    AC_MSG_NOTICE([building using the Boost Math library enabled])
+
+    AC_ARG_WITH([boost-include-path],
+        [AS_HELP_STRING([--with-boost-include-path],
+          [location of the Boost Math headers, defaults to /usr/include/boost])],
+        [CXXFLAGS+=" -I${withval}"
+        CPPFLAGS+=" -I${withval}"],
+        [CXXFLAGS+=' -I/usr/include/boost'
+        CPPFLAGS+=' -I/usr/include/boost'])
+
+    # Check for the Boost Math header files
+    AC_CHECK_HEADERS([boost/math/distributions.hpp])
+
+    if test x$ac_cv_header_boost_math_distributions_hpp = xno; then
+      AC_MSG_ERROR([Could not find the Boost Math header files. Did \
+you specify --with-boost-include-path correctly? Or use --without-boost \
+to disable the calculation of p-values.])
+    fi
+else
+   AC_MSG_NOTICE([not using the Boost libraries, so no p-values in the \
+output])
+fi
+AM_CONDITIONAL([WITH_BOOST], test "x$with_boost" != "xno")
+
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 AC_C_INLINE

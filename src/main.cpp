@@ -226,11 +226,16 @@ int main(int argc, char * argv[])
 
     int start_pos, end_pos;
 
+
+    // Output streams for the regression results we want to print in
+    // the outpute file(s).
     std::vector<std::ostringstream *> beta_sebeta;
-    // Han Chen
     std::vector<std::ostringstream *> covvalue;
-    // Oct 26, 2009
+    std::vector<double*> chi2val; // vector that contains the chi2 values
     std::vector<std::ostringstream *> chi2;
+#if WITH_BOOST
+    std::vector<std::ostringstream *> pval;
+#endif
 
     // Create string streams for betas, SEs, etc. These are used to
     // later store the various output values that will be written to
@@ -248,6 +253,11 @@ int main(int argc, char * argv[])
         chi2.push_back(new std::ostringstream());
         chi2[i]->precision(6);
         // *chi2[i] << scientific;
+        chi2val.push_back(new double);
+#if WITH_BOOST
+        pval.push_back(new std::ostringstream());
+        pval[i]->precision(6);
+#endif
     }
 
 
@@ -432,17 +442,21 @@ int main(int argc, char * argv[])
                                                  input_var.getNgpreds(),
                                                  true, 1, mli, csnp);
 #endif
-                            *chi2[model] << 2. * (loglik - new_null_rd.loglik);
+                            *chi2val[model] = 2. *
+                                (loglik - new_null_rd.loglik);
+                            *chi2[model] << *chi2val[model];
                         }
                         else
                         {
                             // No missing SNP data, we can compute the LRT
-                            *chi2[model] << 2. * (loglik - null_loglik);
+                            *chi2val[model] = 2. * (loglik - null_loglik);
+                            *chi2[model] << *chi2val[model];
                         }
                     } else
                     {
                         // We want score test output
-                        *chi2[model] << rd.chi2_score;
+                        *chi2val[model] = rd.chi2_score;
+                        *chi2[model] << *chi2val[model];
                     }
                 }  // END if( inv.sigma == NULL )
                 else if (input_var.getInverseFilename() != NULL)
@@ -456,12 +470,14 @@ int main(int argc, char * argv[])
                          * equation just below Eq.(4) in the ProbABEL
                          * paper. TODO LCK
                          */
+                        *chi2val[model] = NAN;
                         *chi2[model] << "nan";
                     }
                     else
                     {
                         double Z = rd.beta[start_pos] / rd.sebeta[start_pos];
-                        *chi2[model] << Z * Z;
+                        *chi2val[model] = Z * Z;
+                        *chi2[model] << *chi2val[model];
                     }
                 }
             }  // END first part of if(poly); allele not too rare
@@ -517,6 +533,7 @@ int main(int argc, char * argv[])
                     }
 #endif
                     // Oct 26, 2009
+                    *chi2val[model] = NAN;
                     *chi2[model] << "nan";
                 } else
                 { // ngpreds==1 (and SNP is rare)
@@ -532,9 +549,16 @@ int main(int argc, char * argv[])
 #endif
                         // Oct 26, 2009
                     }  // END if getInverseFilename == NULL
+                    *chi2val[model] = NAN;
                     *chi2[model] << "nan";
                 }  // END ngpreds == 1 (and SNP is rare)
             }  // END else: SNP is rare
+
+#if WITH_BOOST
+            // Calulate p-values based on the chi^2 values
+            int chi2df = 1;
+            *pval[model] << pchisq(*chi2val[model], chi2df);
+#endif
         }  // END of model cycle
 
 
@@ -552,8 +576,13 @@ int main(int argc, char * argv[])
                                     << input_var.getSep();
                 }
 #endif
-                *outfile[model] << chi2[model]->str()
-                                << "\n";
+                *outfile[model] << chi2[model]->str();
+
+#if WITH_BOOST
+                *outfile[model] << input_var.getSep() << pval[model]->str();
+#endif
+
+                *outfile[model] << endl;
             }  // END for loop over all models
         }
         else  // Dose data: only additive model. Only one output file
@@ -565,9 +594,14 @@ int main(int argc, char * argv[])
                 *outfile[0] << covvalue[0]->str() << input_var.getSep();
             }
 #endif
-            *outfile[0] << chi2[0]->str() << "\n";
-        }  // End ngpreds == 1 when writing output files
+            *outfile[0] << chi2[0]->str();
 
+#if WITH_BOOST
+            *outfile[0] << input_var.getSep() << pval[0]->str();
+#endif
+
+            *outfile[0] << endl;
+        }  // End ngpreds == 1 when writing output files
 
         // Clean chi2 and other streams
         for (int model = 0; model < maxmod; model++)
@@ -577,6 +611,9 @@ int main(int argc, char * argv[])
             covvalue[model]->str("");
             // Oct 26, 2009
             chi2[model]->str("");
+#if WITH_BOOST
+            pval[model]->str("");
+#endif
         }
 
         update_progress_to_cmd_line(csnp, nsnps);
@@ -606,18 +643,29 @@ int main(int argc, char * argv[])
         delete *it;
         ++it;
     }
+
     it = covvalue.begin();
     while (it != covvalue.end())
     {
         delete *it;
         ++it;
     }
+
     it = chi2.begin();
     while (it != chi2.end())
     {
         delete *it;
         ++it;
     }
+
+#if WITH_BOOST
+    it = pval.begin();
+    while (it != pval.end())
+    {
+        delete *it;
+        ++it;
+    }
+#endif
 
     return (0);
 }
