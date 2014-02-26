@@ -337,33 +337,29 @@ user@server$ man palinear
 However, for a simple run only three options are mandatory, which
 specify the necessary files needed to run the regression analysis.
 
-These options are
-\texttt{--dose} (or \texttt{-d}),
-specifying the genomic predictor/MLDOSE file described in section \ref{ssec:dosein};
-\texttt{--pheno} (or \texttt{-p}),
-specifying the phenotypic data file described in section \ref{ssec:phenoin}; and
-\texttt{--info} (or \texttt{-i}),
-specifying the SNP information file described in section \ref{ssec:infoin}.
+These options are \texttt{--dose} (or \texttt{-d}), specifying the
+genomic predictor/MLDOSE file described in section \ref{ssec:dosein};
+\texttt{--pheno} (or \texttt{-p}), specifying the phenotypic data file
+described in section \ref{ssec:phenoin}; and \texttt{--info} (or
+\texttt{-i}), specifying the SNP information file described in section
+\ref{ssec:infoin}.
 
 If you change to the \texttt{examples} directory you can run
 an analysis of height by running
 \begin{verbatim}
-user@server:~/ProbABEL/examples/$ ../bin/palinear -p height.txt \
-                                 -d test.mldose -i test.mlinfo
+palinear -p height.txt -d gtdata/test.mldose -i gtdata/test.mlinfo
 \end{verbatim}
-Output from the analysis will be directed to the
+Output from the analysis will be stored in the
 \texttt{regression.out.csv} file.
-
 The analysis of a binary trait (e.g.~chd) can be run with
 \begin{verbatim}
-user@server:~/ProbABEL/examples/$ ../bin/palogist -p logist_data.txt \
-                                 -d test.mldose -i test.mlinfo
+palogist -p logist_data.txt -d gtdata/test.mldose \
+    -i gtdata/test.mlinfo
 \end{verbatim}
-
 To run a Cox proportional hazards model, try
 \begin{verbatim}
-user@server:~/ProbABEL/examples/$ ../bin/pacoxph -p coxph_data.txt \
-                                 -d test.mldose -i test.mlinfo
+pacoxph -p coxph_data.txt -d gtdata/test.mldose \
+    -i gtdata/test.mlinfo
 \end{verbatim}
 
 Please have a look at the shell script files \texttt{example\_qt.sh},
@@ -372,11 +368,20 @@ a better overview of the analysis options.
 
 To run an analysis with MLPROB files, you need specify the MLPROB file
 with the \texttt{-d} option and also specify that there are two
-genetic predictors per SNP, e.g.~you can run linear model with
+genetic predictors per SNP, e.g.~you can run a linear model with
 \begin{verbatim}
-user@server:~/ProbABEL/examples/$ ../bin/palinear -p height.txt \
-                                 -d test.mlprob -i test.mlinfo \
-                                 --ngpreds=2
+palinear -p height.txt -d gtdata/test.mlprob -i gtdata/test.mlinfo \
+    --ngpreds=2
+\end{verbatim}
+
+When using genomic predictor files (dosages or probabilities) stored
+in filevector (a.k.a.~DatABEL) format (i.e.~a combination of
+\texttt{.fvi} and \texttt{.fvd} files) you can specify these like you
+would with ordinary text files. This is how the previous example would
+change:
+\begin{verbatim}
+palinear -p height.txt -d gtdata/test.mlprob.fvi -i gtdata/test.mlinfo \
+    --ngpreds=2
 \end{verbatim}
 
 \subsection{Advanced analysis options}
