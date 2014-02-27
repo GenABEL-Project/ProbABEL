@@ -357,6 +357,7 @@ void linear_reg::estimate(int verbose, double tol_chol,
     double sigma2_internal;
 
 #if EIGEN
+
     LDLT <MatrixXd> Ch;
 #else
     mematrix<double> tXX_i;
@@ -373,12 +374,30 @@ void linear_reg::estimate(int verbose, double tol_chol,
         //Oct 26, 2009
 
 #if EIGEN
-        // next line is  5997000 flops
-        MatrixXd tXW = X.data.transpose() * invvarmatrixin.masked_data->data;
-        Ch = LDLT <MatrixXd>(tXW * X.data); // 17991 flops
-        beta.data = Ch.solve(tXW * reg_data.Y.data);//5997 flops
-        //next line is: 1000+5000+3000= 9000 flops
-        sigma2 = (reg_data.Y.data - tXW.transpose() * beta.data).squaredNorm();
+        cout << "BB"<<X.data.cols()<<"AAAAAAa"<<endl;
+        if (X.data.cols()== 3){
+            Matrix<double,3,Dynamic> tXW = X.data.transpose()*invvarmatrixin.masked_data->data;
+            Matrix3d xWx = tXW * X.data;
+            Ch = LDLT <MatrixXd>  (xWx );
+            Vector3d beta_3f = Ch.solve(tXW * reg_data.Y.data);
+            sigma2 = (reg_data.Y.data - tXW.transpose() * beta_3f).squaredNorm();
+            beta.data = beta_3f;
+        }
+       else if(X.data.cols()== 2){
+            Matrix<double,2,Dynamic> tXW = X.data.transpose()*invvarmatrixin.masked_data->data;
+            Matrix2d xWx = tXW * X.data;
+            Ch = LDLT <MatrixXd>  (xWx );
+            Vector2d beta_2f = Ch.solve(tXW * reg_data.Y.data);
+            sigma2 = (reg_data.Y.data - tXW.transpose() * beta_2f).squaredNorm();
+            beta.data = beta_2f;
+        }else{
+            // next line is  5997000 flops
+            MatrixXd tXW = X.data.transpose() * invvarmatrixin.masked_data->data;
+            Ch = LDLT <MatrixXd>(tXW * X.data); // 17991 flops
+            beta.data = Ch.solve(tXW * reg_data.Y.data);//5997 flops
+            //next line is: 1000+5000+3000= 9000 flops
+            sigma2 = (reg_data.Y.data - tXW.transpose() * beta.data).squaredNorm();
+        }
 #else
         // next line is  5997000 flops
         mematrix<double> tXW = transpose(X) * invvarmatrixin.masked_data;
