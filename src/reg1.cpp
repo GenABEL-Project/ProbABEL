@@ -374,7 +374,6 @@ void linear_reg::estimate(int verbose, double tol_chol,
         //Oct 26, 2009
 
 #if EIGEN
-        cout << "BB"<<X.data.cols()<<"AAAAAAa"<<endl;
         if (X.data.cols()== 3){
             Matrix<double,3,Dynamic> tXW = X.data.transpose()*invvarmatrixin.masked_data->data;
             Matrix3d xWx = tXW * X.data;
