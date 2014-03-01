@@ -99,6 +99,10 @@ class linear_reg: public base_reg {
     void score(mematrix<double>& resid,
                double tol_chol, int model, int interaction, int ngpreds,
                const masked_matrix& invvarmatrix, int nullmodel = 0);
+
+private:
+    void mmscore_regression(const MatrixXd& X,
+            const MatrixXd& W, LDLT<MatrixXd>& Ch);
 };
 
 class logistic_reg: public base_reg {
