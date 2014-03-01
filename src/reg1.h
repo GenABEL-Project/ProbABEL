@@ -101,8 +101,8 @@ class linear_reg: public base_reg {
                const masked_matrix& invvarmatrix, int nullmodel = 0);
 
 private:
-    void mmscore_regression(const MatrixXd& X,
-            const MatrixXd& W, LDLT<MatrixXd>& Ch);
+    void mmscore_regression(const mematrix<double>& X,
+            const masked_matrix& W_masked, LDLT<MatrixXd>& Ch);
 };
 
 class logistic_reg: public base_reg {

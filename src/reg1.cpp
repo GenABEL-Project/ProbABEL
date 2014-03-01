@@ -310,22 +310,24 @@ void base_reg::base_score(mematrix<double>& resid,
     chi2_score = chi2[0];
 }
 
-void linear_reg::mmscore_regression(const MatrixXd& X,
-        const MatrixXd& W, LDLT<MatrixXd>& Ch) {
+void linear_reg::mmscore_regression(const mematrix<double>& X,
+        const masked_matrix& W_masked, LDLT<MatrixXd>& Ch) {
+
+
     VectorXd Y = reg_data.Y.data.col(0);
-    if (X.cols() == 3)
+    if (X.data.cols() == 3)
     {
-        Matrix<double, 3, Dynamic> tXW = X.transpose()* W;
-        Matrix3d xWx = tXW * X;
+        Matrix<double, 3, Dynamic> tXW = X.data.transpose()* W_masked.masked_data->data;
+        Matrix3d xWx = tXW * X.data;
         Ch = LDLT<MatrixXd>(xWx);
         Vector3d beta_3f = Ch.solve(tXW * Y);
         sigma2 = (Y - tXW.transpose() * beta_3f).squaredNorm();
         beta.data = beta_3f;
     }
-    else if (X.cols() == 2)
+    else if (X.data.cols() == 2)
     {
-        Matrix<double, 2, Dynamic> tXW = X.transpose()* W;
-        Matrix2d xWx = tXW * X;
+        Matrix<double, 2, Dynamic> tXW = X.data.transpose()* W_masked.masked_data->data;
+        Matrix2d xWx = tXW * X.data;
         Ch = LDLT<MatrixXd>(xWx);
         Vector2d beta_2f = Ch.solve(tXW * Y);
         sigma2 = (Y - tXW.transpose() * beta_2f).squaredNorm();
@@ -334,8 +336,8 @@ void linear_reg::mmscore_regression(const MatrixXd& X,
     else
     {
         // next line is  5997000 flops
-        MatrixXd tXW = X.transpose() * W;
-        Ch = LDLT<MatrixXd>(tXW * X); // 17991 flops
+        MatrixXd tXW = X.data.transpose() * W_masked.masked_data->data;
+        Ch = LDLT<MatrixXd>(tXW * X.data); // 17991 flops
         beta.data = Ch.solve(tXW * Y); //5997 flops
         //next line is: 1000+5000+3000= 9000 flops
         sigma2 = (Y - tXW.transpose() * beta.data).squaredNorm();
@@ -405,7 +407,7 @@ void linear_reg::estimate(int verbose, double tol_chol,
         //Oct 26, 2009
 
 #if EIGEN
-        mmscore_regression(X.data, invvarmatrixin.masked_data->data, Ch);
+        mmscore_regression(X, invvarmatrixin, Ch);
 #else
         // next line is  5997000 flops
         mematrix<double> tXW = transpose(X) * invvarmatrixin.masked_data;
