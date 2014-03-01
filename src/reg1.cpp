@@ -312,8 +312,7 @@ void base_reg::base_score(mematrix<double>& resid,
 
 void linear_reg::mmscore_regression(const MatrixXd& X,
         const MatrixXd& W, LDLT<MatrixXd>& Ch) {
-    MatrixXd::ConstColXpr Y(reg_data.Y.data.col(0));
-    //VectorXd Y = reg_data.Y.data.col(0);
+    VectorXd Y = reg_data.Y.data.col(0);
     if (X.cols() == 3)
     {
         Matrix<double, 3, Dynamic> tXW = X.transpose()* W;
