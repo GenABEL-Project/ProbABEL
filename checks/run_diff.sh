@@ -20,7 +20,7 @@ run_diff()
 
     blanks="                                                                      "
 
-    if diff "$file1" "$file2" $args; then
+    if diff $args "$file1" "$file2"; then
         echo -e "${name}${blanks:${#name}} OK"
     else
         echo -e "${name}${blanks:${#name}} FAILED"
