@@ -326,12 +326,11 @@ void linear_reg::mmscore_regression(const mematrix<double>& X,
     }
     else if (X.data.cols() == 2)
     {
-        Matrix<double,  Dynamic,2> X2=X.data;
-        Matrix<double, 2, Dynamic> tXW = X2.transpose()* W_masked.masked_data->data;
-        Matrix2d xWx = tXW * X2;
-        Ch = LDLT<MatrixXd>(xWx);
-        Vector2d beta_2f = Ch.solve(tXW * Y);
-        sigma2 = (Y - tXW.transpose() * beta_2f).squaredNorm();
+        Matrix<double, 2, Dynamic> tXW =  W_masked.masked_data->data*X.data;
+        Matrix2d xWx = tXW.transpose() * X.data;
+        Ch = LDLT<MatrixXd> (xWx);
+        Vector2d beta_2f = Ch.solve(tXW.transpose() * Y);
+        sigma2 = (Y - tXW * beta_2f).squaredNorm();
         beta.data = beta_2f;
     }
     else
@@ -343,6 +342,54 @@ void linear_reg::mmscore_regression(const mematrix<double>& X,
         //next line is: 1000+5000+3000= 9000 flops
         sigma2 = (Y - tXW.transpose() * beta.data).squaredNorm();
     }
+}
+
+void linear_reg::logLikelihood(const mematrix<double>& X) {
+    /*
+     loglik = 0.;
+     double ss=0;
+     for (int i=0;i<rdata.nids;i++) {
+     double resid = rdata.Y[i] - beta.get(0,0); // intercept
+     for (int j=1;j<beta.nrow;j++) resid -= beta.get(j,0)*X.get(i,j);
+     // residuals[i] = resid;
+     ss += resid*resid;
+     }
+     sigma2 = ss/N;
+     */
+    //cout << "estimate " << rdata.nids << "\n";
+    //(rdata.X).print();
+    //for (int i=0;i<rdata.nids;i++) cout << rdata.masked_data[i] << " ";
+    //cout << endl;
+    loglik = 0.;
+    double halfrecsig2 = .5 / sigma2;
+#if EIGEN
+    //loglik -= halfrecsig2 * residuals[i] * residuals[i];
+
+
+    double intercept = beta.get(0, 0);
+    residuals.data = reg_data.Y.data.array() - intercept;
+    //matrix.
+    ArrayXXd betacol =
+            beta.data.block(1, 0, beta.data.rows() - 1, 1).array().transpose();
+    ArrayXXd resid_sub = (X.data.block(0, 1, X.data.rows(), X.data.cols() - 1)
+            * betacol.matrix().asDiagonal()).rowwise().sum();
+    //std::cout << resid_sub << std::endl;
+    residuals.data -= resid_sub.matrix();
+    //residuals[i] -= resid_sub;
+    loglik -= (residuals.data.array().square() * halfrecsig2).sum();
+    loglik -= static_cast<double>(reg_data.nids) * log(sqrt(sigma2));
+
+#else
+    for (int i = 0; i < reg_data.nids; i++)
+     {
+         double resid = reg_data.Y[i] - beta.get(0, 0); // intercept
+         for (int j = 1; j < beta.nrow; j++){
+             resid -= beta.get(j, 0) * X.get(i, j);
+         }
+         residuals[i] = resid;
+         loglik -= halfrecsig2 * resid * resid;
+     }
+#endif
 }
 
 void linear_reg::estimate(int verbose, double tol_chol,
@@ -483,38 +530,8 @@ void linear_reg::estimate(int verbose, double tol_chol,
     //(rdata.X).print();
     //for (int i=0;i<rdata.nids;i++) cout << rdata.masked_data[i] << " ";
     //cout << endl;
-    loglik = 0.;
-    double halfrecsig2 = .5 / sigma2;
+    logLikelihood(X);
 
-
-#if EIGEN
-    double intercept = beta.get(0, 0);
-    residuals.data = reg_data.Y.data.array()-intercept;
-    //matrix.
-    ArrayXXd betacol = beta.data.block(1, 0, beta.data.rows()-1, 1)\
-            .array().transpose();
-    ArrayXXd resid_sub = (X.data.block(0, 1, X.data.rows(), X.data.cols()-1)\
-            *betacol.matrix().asDiagonal()).rowwise().sum();
-    //std::cout << resid_sub << std::endl;
-    residuals.data -= resid_sub.matrix();
-    //residuals[i] -= resid_sub;
-    loglik -= (residuals.data.array().square()*halfrecsig2).sum();
-
-    //loglik -= halfrecsig2 * residuals[i] * residuals[i];
-
-#else
-    for (int i = 0; i < reg_data.nids; i++)
-     {
-         double resid = reg_data.Y[i] - beta.get(0, 0); // intercept
-         for (int j = 1; j < beta.nrow; j++){
-             resid -= beta.get(j, 0) * X.get(i, j);
-         }
-         residuals[i] = resid;
-         loglik -= halfrecsig2 * resid * resid;
-     }
-#endif
-
-    loglik -= static_cast<double>(reg_data.nids) * log(sqrt(sigma2));
 #if EIGEN
     MatrixXd tXX_inv = Ch.solve(MatrixXd(length_beta, length_beta).
             Identity(length_beta,length_beta));

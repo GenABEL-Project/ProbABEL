@@ -103,6 +103,7 @@ class linear_reg: public base_reg {
 private:
     void mmscore_regression(const mematrix<double>& X,
             const masked_matrix& W_masked, LDLT<MatrixXd>& Ch);
+    void logLikelihood(const mematrix<double>& X);
 };
 
 class logistic_reg: public base_reg {
