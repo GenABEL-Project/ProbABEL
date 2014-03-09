@@ -326,7 +326,7 @@ void linear_reg::mmscore_regression(const mematrix<double>& X,
     }
     else if (X.data.cols() == 2)
     {
-        Matrix<double, 2, Dynamic> tXW =  W_masked.masked_data->data*X.data;
+        Matrix<double,  Dynamic,2> tXW =  W_masked.masked_data->data*X.data;
         Matrix2d xWx = tXW.transpose() * X.data;
         Ch = LDLT<MatrixXd> (xWx);
         Vector2d beta_2f = Ch.solve(tXW.transpose() * Y);
