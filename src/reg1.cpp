@@ -317,11 +317,11 @@ void linear_reg::mmscore_regression(const mematrix<double>& X,
     VectorXd Y = reg_data.Y.data.col(0);
     if (X.data.cols() == 3)
     {
-        Matrix<double, 3, Dynamic> tXW = X.data.transpose()* W_masked.masked_data->data;
-        Matrix3d xWx = tXW * X.data;
+        Matrix<double, Dynamic, 3> tXW = W_masked.masked_data->data * X.data;
+        Matrix2d xWx = tXW.transpose() * X.data;
         Ch = LDLT<MatrixXd>(xWx);
-        Vector3d beta_3f = Ch.solve(tXW * Y);
-        sigma2 = (Y - tXW.transpose() * beta_3f).squaredNorm();
+        Vector3d beta_3f = Ch.solve(tXW.transpose() * Y);
+        sigma2 = (Y - tXW * beta_3f).squaredNorm();
         beta.data = beta_3f;
     }
     else if (X.data.cols() == 2)
