@@ -208,12 +208,12 @@ void mematrix<DT>::reinit(int nr, int nc)
 //        delete[] data;
     if (nr <= 0)
     {
-        std::cerr << "mematrix(): number of rows smaller then 1\n";
+        std::cerr << "mematrix(): number of rows less than 1\n";
         exit(1);
     }
     if (nc <= 0)
     {
-        std::cerr << "mematrix(): number of columns smaller then 1\n";
+        std::cerr << "mematrix(): number of columns less than 1\n";
         exit(1);
     }
     nrow = nr;
