@@ -11,13 +11,47 @@
   $^{2}${\small Erasmus MC, Rotterdam}\\
   $^{3}${\small Institute of Cytology and Genetics SD RAS, Novosibirsk}
 }
-\date{January 30, 2014}
+\date{March 19, 2014}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage{eurosym}        % Makes the Euro symbol available.
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+
+\usepackage[svgnames]{xcolor}
+\definecolor{webgreen}{rgb}{0,.5,0}
 
 \usepackage{verbatim}
+
+\usepackage{listings}
+\lstloadlanguages{Bash}
+\definecolor{lstbgcolor}{rgb}{0.9,0.9,0.9}
+\lstset{
+  tabsize=4,
+  rulecolor=,
+  basicstyle=\ttfamily,
+  upquote=true,
+  columns=fixed,
+  showstringspaces=false,
+  extendedchars=true,
+  breaklines=true,
+  breakatwhitespace,
+  prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+  frame=single,
+  showtabs=false,
+  showspaces=false,
+  showstringspaces=false,
+  keywordstyle=\color[rgb]{0,0,1},
+  commentstyle=\color[rgb]{0,0.4,0},
+  stringstyle=\color[rgb]{0.5,0,1},
+  basicstyle=\footnotesize\ttfamily,
+  backgroundcolor=\color{lstbgcolor},
+}
+
 \usepackage{titleref}
 \usepackage{amsmath}
 \usepackage{makeidx}
-\usepackage[dvipsnames]{xcolor}
 \usepackage[pdftex,hyperfootnotes=false,pdfpagelabels]{hyperref}
 \hypersetup{%
   linktocpage=false, % If true the page numbers in the toc are links
@@ -29,7 +63,7 @@
   pdfhighlight=/O, %hyperfootnotes=true,%nesting=true,%frenchlinks,%
   pdfauthor={\textcopyright\ Y.~Aulchenko, M.~Struchalin, L.C.~Karssen},
   pdfsubject={ProbABEL manual},
-  colorlinks=true, urlcolor=MidnightBlue, linkcolor=blue %
+  colorlinks=true, urlcolor=blue, linkcolor=blue, citecolor=webgreen %
 }
 % get the links to the figures and tables right:
 \usepackage[all]{hypcap} % to be loaded after hyperref package
@@ -108,6 +142,141 @@ questions, please turn to our forum at
 \url{http://forum.genabel.org}. Bugs in \PA{} can be reported in the
 GenABEL project bug tracker at
 \url{https://r-forge.r-project.org/tracker/index.php?group_id=505&atid=2058}.
+
+\section{Obtaining and installing \PA}
+\label{sec:obtaininstall}
+\PA{} is a tool that is mostly used on computers running the Linux
+operating system. We try to publish binary packages for Windows as
+well, but these aren't tested. We strongly suggest using \PA{} on
+Linux.
+
+\subsection{Precompiled packages}
+\PA{} can be obtained in several ways:
+\begin{itemize}
+\item If you are using Ubuntu Linux and have administrative rights on
+  the machine you can add the GenABEL PPA to your APT configuration
+  and install it from there. The PPA can be found at
+  \url{https://launchpad.net/~l.c.karssen/+archive/genabel-ppa}. Instructions
+  on how to add the PPA can also be found there.
+\item If your computer runs Debian Linux\footnote{At the moment \PA{}
+    is only available in Debian testing and unstable.} (and you have
+  administrative rights on it), you can install ProbABEL like this:
+  \begin{lstlisting}
+user@server:~$ apt-get install probabel
+  \end{lstlisting}
+\item Zip files with pre-compiled binaries (if available) can be found
+  on the ProbABEL web page
+  (\url{http://www.genabel.org/packages/ProbABEL}).
+\item If you don't fall in any of the aforementioned
+  categories\footnote{We know that many people have use Red Hat Linux,
+    CentOS, Scientific Linux or any other Red Hat
+    derivative. Unfortunately we haven't got \texttt{rpm} files
+    yet. Any help in creating those will be highly appreciated}, you
+  can install \PA{} manually by downloading the source code of the
+  latest version from the website and compiling it yourself. This will
+  be explained in section~\ref{sec:obtain}.
+\end{itemize}
+
+
+\subsection{Obtaining the source code and compiling it yourself}
+\label{sec:obtain}
+If you can't use any of the aforementioned pre-compiled packages, you
+can download the source code of \PA{} yourself, compile it and run it
+from your own home directory. This section details the steps you need
+to take. More information can be found in the \texttt{doc/INSTALL}.
+
+On the \href{http://www.genabel.org/packages/probabel}{\PA{}} website
+you can find the link to the latest version of the source code of \PA{}
+in a \texttt{tar.gz} file\footnote{The \texttt{tar.gz} file archive
+  format is the most commonly used format for distributing source code
+  on Linux/UNIX systems. These are compressed files, similar to
+  \texttt{zip} files.}. A \texttt{.asc} file with the same base name
+as the source code archive is also provided. This file contains a
+so-called GPG signature of the \texttt{tar.gz} file. Using this file
+and the \texttt{gpg} tool you can verify the authenticity of the
+source code by typing this command on the command line of a Linux
+shell\footnote{The \$ sign indicates the end of the command line
+  prompt. You don't need to type it.}:
+\begin{lstlisting}[]
+user@server:~$ gpg --verify probabel-0.4.3.tar.gz.asc
+gpg: Signature made Thu Jan  2 02:38:25 2014 CET using DSA key ID DA9CD509
+gpg: Good signature from "L.C. Karssen (GPG key for personal stuff) <lennart@karssen.org>"
+gpg:                 aka "L.C. Karssen (My GMail address) <l.c.karssen@gmail.com>"
+\end{lstlisting}
+Notice the ``Good signature'' message and the fact that the package was
+signed by Lennart Karssen, the ProbABEL maintainer. If a malicious
+hacker would have replaced the source code file (for example with one
+including a virus), he won't be able to sign the package using the
+same key (with key ID DA9CD509). If, for some reason, the
+\texttt{tar.gz} file has changed (e.g.~by such a hacker or because
+the file didn't get downloaded correctly) you will see output like
+this (notice the ``BAD signature'' message):
+\begin{lstlisting}[]
+user@server:~$ gpg --verify probabel-0.4.2.tar.gz.asc
+gpg: Signature made Thu Jan  2 02:38:25 2014 CET using DSA key ID DA9CD509
+gpg: BAD signature from "L.C. Karssen (GPG key for personal stuff) <lennart@karssen.org>"
+user@server:~$
+\end{lstlisting}
+
+Before continuing, it is important to mention that \PA{} can make use
+of the EIGEN library\footnote{EIGEN is a library for fast matrix
+  multiplication.}. We strongly recommend compiling \PA with EIGEN as
+it will speed up your analyses considerably. Moreover, we plan to
+remove the non-EIGEN part of the code in a future release. So, go to
+\url{http://eigen.tuxfamily.org} and download the \texttt{tar.gz} file
+of the latest version of EIGEN (3.2.1 at the time of writing). Extract
+the files:
+\begin{lstlisting}
+user@server:~$ tar -xzf 3.2.1.tar.gz
+\end{lstlisting}
+This will create a directory called \texttt{eigen-eigen} followed by a
+series of letters and digits. For simplicity we rename it to EIGEN
+\begin{lstlisting}
+user@server:~$ mv eigen-eigen-6b38706d90a9 EIGEN
+\end{lstlisting}
+
+Now it's time to extract the \PA{} source code and move into the
+directory that is created:
+\begin{lstlisting}
+user@server:~$ tar -xzf probabel-0.4.3.tar.gz
+user@server:~$ cd probabel-0.4.3
+\end{lstlisting}
+With the following command we will indicate where the EIGEN files can
+be found and where we want to install \PA{}. Let's install in a
+subdirectory of your home directory,
+e.g.~\texttt{/home/yourusername/ProbABEL}:
+\begin{lstlisting}
+user@server:~$ ./configure \
+   --prefix=/home/yourusername/ProbABEL/ \
+   --with-eigen-include-path=/home/yourusername/EIGEN
+\end{lstlisting}
+This will be followed by a series of checks to see if all tools
+required for compilation and installation are present on your
+system. If you don't see any warnings you can continue to
+compile\footnote{Compilation is the process of converting the source
+  files containing human readable program code to a files with machine
+  readable instructions.} the code using the \texttt{make}
+command\footnote{If you work on a machine with multiple processors (or
+  processor cores), which should be the case on modern servers, but
+  also on most PCs, you can speed up the process by adding this number
+  to the \texttt{-j} option. For example for four cores run
+  \texttt{make -j4}.} The next step will check the compiled code,
+after wich you install the program, documentation and examples to the
+directory you specified previously with the \texttt{--prefix} argument
+to the \texttt{./configure} command.
+\begin{lstlisting}
+user@server:~$ make
+user@server:~$ make check
+user@server:~$ make install
+\end{lstlisting}
+Note that each of these steps will scroll a lot of output on the
+screen. Please watch it for any warnings or errors. Please ask any
+questions on \href{http://forum.genabel.org/}{our support forum}.
+
+If all went well you will find the executable programs
+(\texttt{palinear}, \texttt{palogist}, and \texttt{pacoxph}) in the
+directory \texttt{/home/yourusername/ProbABEL/bin/}. You are now ready
+to analyse your data!
 
 \section{Input files}
 \PA{} takes three files as input: a file containing SNP
