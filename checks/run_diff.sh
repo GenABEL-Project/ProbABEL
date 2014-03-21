@@ -11,15 +11,10 @@ run_diff()
     file1=$1
     file2=$2
     name=$3
-    # if [  ${#} -ge 3 ]; then
-    #     name=$3
-    #     shift 3
-    #     args=$@
-    # fi
 
     blanks="                                                                      "
 
-    if diff $args "$file1" "$file2"; then
+    if diff "$file1" "$file2"; then
         echo -e "${name}${blanks:${#name}} OK"
     else
         echo -e "${name}${blanks:${#name}} FAILED"
