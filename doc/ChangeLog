@@ -1,15 +1,12 @@
-***** v.0.5.0 ()
-* Fixed bug #5409: "The header for dosage-based output is not equal to
-  that of prob-based ProbABEL output.". As a result the headers of the
-  output files are now slightly different. This may break user pipelines!
-
-
-***** v.0.4.3 ()
+***** v.0.4.3 (2014.03)
 * Speed up of a factor of X after simplifying the way filevector data is
   read in.
+* Fixed bug #5404: "ProbABEL's R check for Cox regression doesn't check if
+  the survival package is installed".
+* Fixed bug #5403: "The ProbABEL manual doesn't contain any information on
+  how to install ProbABEL"
 
-
-***** v.0.4.2
+***** v.0.4.2 (2014.01.02)
 * The 'probabel.pl' script is now simply renamed to 'probabel' (a user
   shouldn't care what scripting language we use). For at least several
   releases to come, the old script name will still exist (as a link to the

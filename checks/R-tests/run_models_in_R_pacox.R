@@ -1,5 +1,8 @@
 cat("Checking Cox PH regression...\n")
-library(survival)
+if (!require(survival)) {
+    cat("The R package 'survival' is not installed. Skipping Cox PH checks\n")
+    q()
+}
 
 args <- commandArgs(TRUE)
 srcdir <- args[1]

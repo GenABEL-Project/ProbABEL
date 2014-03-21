@@ -1,5 +1,8 @@
 These instructions show how to build ProbABEL.
 
+The ProbABEL manual (in .tex or .pdf format) also contains detailed
+(complementary) instructions on how to obtain and install ProbABEL.
+
 * Dependencies
   ProbABEL can be compiled without depending on other
   libraries. However, when the Eigen library is present
