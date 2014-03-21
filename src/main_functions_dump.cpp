@@ -231,9 +231,9 @@ void create_header(std::vector<std::ofstream*>& outfile,
     if (input_var.getNgpreds() == 1) // dose data: only additive model
     {
         *outfile[0] << input_var.getSep()
-                    << "beta_SNP_add"
+                    << "beta_SNP_addA1"
                     << input_var.getSep()
-                    << "sebeta_SNP_add";
+                    << "sebeta_SNP_addA1";
 
         if (input_var.getInteraction() != 0)
         {
@@ -257,7 +257,7 @@ void create_header(std::vector<std::ofstream*>& outfile,
             }
 #endif
         }
-        *outfile[0] << input_var.getSep() << "chi2_SNP";
+        *outfile[0] << input_var.getSep() << "chi2_SNP_add";
         *outfile[0] << "\n";
     } // ngpreds == 1
     else if (input_var.getNgpreds() == 2) // prob data: all models
@@ -336,10 +336,10 @@ void create_header(std::vector<std::ofstream*>& outfile,
             }
         }
         *outfile[0] << input_var.getSep() << "chi2_SNP_2df\n";
-        *outfile[1] << input_var.getSep() << "chi2_SNP_A1\n";
-        *outfile[2] << input_var.getSep() << "chi2_SNP_domA1\n";
-        *outfile[3] << input_var.getSep() << "chi2_SNP_recA1\n";
-        *outfile[4] << input_var.getSep() << "chi2_SNP_odomA1\n";
+        *outfile[1] << input_var.getSep() << "chi2_SNP_add\n";
+        *outfile[2] << input_var.getSep() << "chi2_SNP_dom\n";
+        *outfile[3] << input_var.getSep() << "chi2_SNP_rec\n";
+        *outfile[4] << input_var.getSep() << "chi2_SNP_odom\n";
     } // End: ngpreds == 2
     else
     {

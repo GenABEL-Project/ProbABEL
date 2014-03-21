@@ -20,9 +20,9 @@ tmp <- system(paste0("bash ", tests.path, "test_qt.sh"),
 cat("OK\n")
 
 dose.add.PA <- read.table("linear_base_add.out.txt",
-                          head=TRUE)[, colsAddDose]
+                          head=TRUE)[, colsAdd]
 prob.add.PA <- read.table("linear_ngp2_add.out.txt",
-                          head=TRUE)[, colsAddProb]
+                          head=TRUE)[, colsAdd]
 prob.dom.PA <- read.table("linear_ngp2_domin.out.txt",
                           head=TRUE)[, colsDom]
 prob.rec.PA <- read.table("linear_ngp2_recess.out.txt",
@@ -53,7 +53,7 @@ model.fn   <- "lm( height ~ sex + age + snp )"
 ## Additive model, dosages
 snpdose <- "dose[, i]"
 dose.add.R <- run.model(model.fn.0, model.fn, snpdose)
-colnames(dose.add.R) <- colsAddDose
+colnames(dose.add.R) <- colsAdd
 rownames(dose.add.R) <- NULL
 stopifnot( all.equal(dose.add.PA, dose.add.R, tol=tol) )
 cat("additive ")
@@ -62,7 +62,7 @@ cat("additive ")
 ## Additive model, probabilities
 snpprob <- "doseFromProb[, i]"
 prob.add.R <- run.model(model.fn.0, model.fn, snpprob)
-colnames(prob.add.R) <- colsAddProb
+colnames(prob.add.R) <- colsAdd
 rownames(prob.add.R) <- NULL
 stopifnot( all.equal(prob.add.PA, prob.add.R, tol=tol) )
 cat("additive ")

@@ -1,6 +1,13 @@
-***** v.0.4.3
+***** v.0.5.0 ()
+* Fixed bug #5409: "The header for dosage-based output is not equal to
+  that of prob-based ProbABEL output.". As a result the headers of the
+  output files are now slightly different. This may break user pipelines!
+
+
+***** v.0.4.3 ()
 * Speed up of a factor of X after simplifying the way filevector data is
   read in.
+
 
 ***** v.0.4.2
 * The 'probabel.pl' script is now simply renamed to 'probabel' (a user
