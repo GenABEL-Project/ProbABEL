@@ -164,7 +164,7 @@ $palinear \
 # Remove header from the outputs, because they differ
 run_diff linear_base_add.out.txt \
     linear_ngp2_add.out.txt \
-    "QT check: dose vs. prob (additive model)" -I SNP
+    "QT check: dose vs. prob (additive model)"
 
 for model in add domin over_domin recess 2df; do
     run_diff linear_ngp2_${model}.out.txt \
