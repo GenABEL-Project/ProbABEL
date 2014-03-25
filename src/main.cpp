@@ -65,6 +65,9 @@
 #include <iomanip>
 #include <vector>
 
+#include <ctime> //needed for timing loading non file vector format
+
+
 #if EIGEN
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
@@ -124,10 +127,18 @@ int main(int argc, char * argv[])
     cout << "Reading genotype data... " << flush;
     if (!input_var.getIsFvf())
     {
+        // make clock to time loading of the non filevector file
+        std::clock_t    start;
+        start = std::clock();
+
         // use the non-filevector input format
         gtd.re_gendata(input_var.getGenfilename(), nsnps,
                        input_var.getNgpreds(), phd.nids_all, phd.nids,
                        phd.allmeasured, input_var.getSkipd(), phd.idnames);
+
+        double milisec=((std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000))/1000;
+        cout << "done in "<< milisec<< " seconds.\n" << flush;
+
     }
     else
     {
@@ -136,8 +147,9 @@ int main(int argc, char * argv[])
         gtd.re_gendata(input_var.getStrGenfilename(), nsnps,
                        input_var.getNgpreds(), phd.nids_all, phd.nids,
                        phd.allmeasured, phd.idnames);
+        cout << "done.\n" << flush;
+
     }
-    cout << "done.\n" << flush;
 
 
     // estimate null model

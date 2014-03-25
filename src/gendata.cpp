@@ -28,6 +28,7 @@
 
 #include <string>
 #include <errno.h>
+#include <limits>
 #include "gendata.h"
 #include "fvlib/FileVector.h"
 #if EIGEN
@@ -38,6 +39,57 @@
 #include "mematri1.h"
 #endif
 #include "utilities.h"
+
+double mldose_strtod(const char *str_pointer) {
+    // This function is inspired on some answers found at stackoverflow :
+    // eg question 5678932
+    int sign = 0;
+    double result = 0;
+    //check if not a null pointer
+    if (!*str_pointer ){
+        return std::numeric_limits<double>::quiet_NaN();
+    }
+    //skip whitespace
+    while (*str_pointer == ' ')
+    {
+        str_pointer++;
+    }
+    //set sign to -1 if negative: multiply by sign just before return
+    if (*str_pointer == '-')
+    {
+        str_pointer++;
+        sign = -1;
+    }
+    //read digits before dot
+    while (*str_pointer <= '9' && *str_pointer >= '0'){
+        result = result * 10 + (*str_pointer++ - '0');
+    }
+    //read digit after dot
+    if (*str_pointer == '.')
+    {
+        double decimal_counter = 1.0;
+        str_pointer++;
+        while (*str_pointer <= '9' && *str_pointer >= '0')
+        {
+            decimal_counter *= 0.1;
+            result += (*str_pointer++ - '0') * decimal_counter;
+        }
+    }
+    //str_pointer should be null since all characters are read.
+    if (*str_pointer){
+        perror("Error while reading genetic data (mldose_strtod)");
+                          exit(EXIT_FAILURE);
+    }
+    //correct for negative number
+    if (sign == -1){
+        return sign * result;
+    }else{
+        return result;
+    }
+
+}
+
+
 
 void gendata::get_var(int var, double * data)
 {
@@ -165,8 +217,10 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
     DAG     = NULL;
     //	int nids_all = npeople;
 
+
     G.reinit(nids, (nsnps * ngpreds));
 
+    
     std::ifstream infile;
 
     infile.open(fname);
@@ -224,14 +278,15 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                     char *endptr;
                     errno = 0;      // To distinguish success/failure
                                     // after strtod()
-                    dosage = strtod(tmpstr.c_str(), &endptr);
 
-                    if ((errno == ERANGE &&
-                         (dosage == HUGE_VALF || dosage == HUGE_VALL))
-                        || (errno != 0 && dosage == 0)) {
-                        perror("Error while reading genetic data (strtod)");
-                        exit(EXIT_FAILURE);
-                    }
+                    dosage = mldose_strtod(tmpstr.c_str());
+                    //dosage = strtod(tmpstr.c_str(), &endptr);
+//                    if ((errno == ERANGE &&
+//                         (dosage == HUGE_VALF || dosage == HUGE_VALL))
+//                        || (errno != 0 && dosage == 0)) {
+//                        perror("Error while reading genetic data (strtod)");
+//                        exit(EXIT_FAILURE);
+//                    }
 
                     if (endptr == tmpstr.c_str()) {
                         cerr << "No digits were found while reading genetic data"
@@ -263,6 +318,7 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
         }
     }
     infile.close();
+
 }
 // HERE NEED A NEW CONSTRUCTOR BASED ON DATABELBASECPP OBJECT
 gendata::~gendata()
