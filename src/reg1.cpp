@@ -780,23 +780,12 @@ void logistic_reg::estimate(regdata& rdatain, int verbose, int maxiter,
         }
         // std::cout << "beta:\n"; beta.print();
 
-        // Compute the likelihood. The following commented code gives
-        // the 'easy to understand' algorithm. The code that's
-        // actually used is mathematically equivalent (remember:
-        // log(a*b) = log(a)+log(b)), but faster because log() is
-        // relatively expensive.
-        //    for (int i = 0; i < eMu.nrow; i++) {
-        //          loglik += rdata.Y[i] * eMu_us[i] - log(1. +
-        //                    exp(eMu_us[i]));
-        //    }
+        // Compute the likelihood.
         prevlik = loglik;
-        loglik = 0.;
-        double logterm = 1;
+        loglik = 0;
         for (int i = 0; i < eMu.nrow; i++) {
-            loglik  += rdata.Y[i] * eMu_us[i];
-            logterm *= 1. + exp(eMu_us[i]);
+            loglik += rdata.Y[i] * eMu_us[i] - log(1. + exp(eMu_us[i]));
         }
-        loglik += - log(logterm);
 
         delta = fabs(1. - (prevlik / loglik));
         niter++;
