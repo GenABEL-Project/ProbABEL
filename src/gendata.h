@@ -44,6 +44,7 @@ class gendata {
     unsigned int nids;
     unsigned int ngpreds;
     gendata();
+    double convert(   char* source,  char** endPtr );
 
     void re_gendata(char * fname, unsigned int insnps, unsigned int ingpreds,
             unsigned int npeople, unsigned int nmeasured,

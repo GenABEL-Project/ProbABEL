@@ -220,9 +220,7 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
 
     G.reinit(nids, (nsnps * ngpreds));
 
-    
     std::ifstream infile;
-
     infile.open(fname);
     if (!infile)
     {
@@ -230,6 +228,7 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
     }
 
     std::string tmpid, tmpstr;
+    char inStr[8];
 
     int k = 0;
     for (unsigned int i = 0; i < npeople; i++)
@@ -270,7 +269,7 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
             {
                 if (infile.good())
                 {
-                    infile >> tmpstr;
+                    infile >> inStr;
                     // tmpstr contains the dosage/probability in
                     // string form. Convert it to double (if tmpstr is
                     // NaN it will be set to nan).
@@ -279,7 +278,7 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                     errno = 0;      // To distinguish success/failure
                                     // after strtod()
 
-                    dosage = mldose_strtod(tmpstr.c_str());
+                    dosage = mldose_strtod(inStr);
                     //dosage = strtod(tmpstr.c_str(), &endptr);
 //                    if ((errno == ERANGE &&
 //                         (dosage == HUGE_VALF || dosage == HUGE_VALL))
