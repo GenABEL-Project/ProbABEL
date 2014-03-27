@@ -45,8 +45,9 @@ double mldose_strtod(const char *str_pointer) {
     // eg question 5678932
     int sign = 0;
     double result = 0;
-    //check if not a null pointer
-    if (!*str_pointer ){
+    //check if not a null pointer or NaN (right now checks only first character)
+//TODO: make catching of NaN more rigid
+    if (!*str_pointer | *str_pointer == 'N'){
         return std::numeric_limits<double>::quiet_NaN();
     }
     //skip whitespace
@@ -222,6 +223,7 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
 
     std::ifstream infile;
     infile.open(fname);
+
     if (!infile)
     {
         std::cerr << "gendata: cannot open file " << fname << endl;
@@ -316,6 +318,7 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 infile >> tmpstr;
         }
     }
+
     infile.close();
 
 }
