@@ -44,7 +44,7 @@ class gendata {
     unsigned int nids;
     unsigned int ngpreds;
     gendata();
-    double convert(   char* source,  char** endPtr );
+    void mldose_line_to_matrix(int k,const char *all_numbers,int amount_of_numbers);
 
     void re_gendata(char * fname, unsigned int insnps, unsigned int ingpreds,
             unsigned int npeople, unsigned int nmeasured,
