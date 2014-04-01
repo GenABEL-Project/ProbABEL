@@ -1,10 +1,11 @@
-***** v.0.4.3 (2014.03)
-* Speed up of a factor of X after simplifying the way filevector data is
-  read in.
+***** v.0.4.3 (2014.04.01)
+* Speed-up of a factor of ~ 2 for linear, logistic and Cox regression when
+  using filevector input files.
 * Fixed bug #5404: "ProbABEL's R check for Cox regression doesn't check if
   the survival package is installed".
 * Fixed bug #5403: "The ProbABEL manual doesn't contain any information on
   how to install ProbABEL"
+
 
 ***** v.0.4.2 (2014.01.02)
 * The 'probabel.pl' script is now simply renamed to 'probabel' (a user
@@ -33,6 +34,7 @@
   R.
 * For developers: a start has been made on documenting the internal
   functions using Doxygen.
+
 
 ***** v.0.4.1 (2013.08.29)
 * Fix bug #4854: When using mmscore, there is one (nan) column missing in
