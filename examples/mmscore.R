@@ -88,5 +88,5 @@ write.table(pheno_residuals,
 ## 2) residuals of the phenotype, which will be the new phenotype that
 ## ProbABEL will analyse.
 
-## Mow, go to ProbABEL and start analysis
+## Now, go to ProbABEL and start analysis
 

@@ -313,35 +313,21 @@ void base_reg::base_score(mematrix<double>& resid,
 void linear_reg::mmscore_regression(const mematrix<double>& X,
         const masked_matrix& W_masked, LDLT<MatrixXd>& Ch) {
 
-
     VectorXd Y = reg_data.Y.data.col(0);
-    if (X.data.cols() == 3)
-    {
-        Matrix<double, Dynamic, 3> tXW = W_masked.masked_data->data * X.data;
-        Matrix2d xWx = tXW.transpose() * X.data;
-        Ch = LDLT<MatrixXd>(xWx);
-        Vector3d beta_3f = Ch.solve(tXW.transpose() * Y);
-        sigma2 = (Y - tXW * beta_3f).squaredNorm();
-        beta.data = beta_3f;
-    }
-    else if (X.data.cols() == 2)
-    {
-        Matrix<double,  Dynamic,2> tXW =  W_masked.masked_data->data*X.data;
-        Matrix2d xWx = tXW.transpose() * X.data;
-        Ch = LDLT<MatrixXd> (xWx);
-        Vector2d beta_2f = Ch.solve(tXW.transpose() * Y);
-        sigma2 = (Y - tXW * beta_2f).squaredNorm();
-        beta.data = beta_2f;
-    }
-    else
-    {
-        // next line is  5997000 flops
-        MatrixXd tXW = X.data.transpose() * W_masked.masked_data->data;
-        Ch = LDLT<MatrixXd>(tXW * X.data); // 17991 flops
-        beta.data = Ch.solve(tXW * Y); //5997 flops
-        //next line is: 1000+5000+3000= 9000 flops
-        sigma2 = (Y - tXW.transpose() * beta.data).squaredNorm();
-    }
+    /*
+     in ProbABEL <0.50 this calculation was performed like t(X)*W
+     This changed to W*X since this is better vectorized since the left hand
+     side has more rows: this introduces an additional transpose, but can be
+     neglected compared to the speedup this brings(about a factor 2 for the
+     palinear with 1 predictor)
+     */
+    MatrixXd tXW = W_masked.masked_data->data * X.data;
+    MatrixXd xWx = tXW.transpose() * X.data;
+    Ch = LDLT<MatrixXd>(xWx);
+    VectorXd beta_vec = Ch.solve(tXW.transpose() * Y);
+    sigma2 = (Y - tXW * beta_vec).squaredNorm();
+    beta.data = beta_vec;
+
 }
 
 void linear_reg::logLikelihood(const mematrix<double>& X) {
