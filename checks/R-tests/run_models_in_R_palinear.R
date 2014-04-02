@@ -36,7 +36,11 @@ prob.2df.PA <- read.table("linear_ngp2_2df.out.txt",
 ## (SNP 6 in the info file). ProbABEL lists them all as 0.0, R lists
 ## them as:
 prob.dom.PA[6, 2:4] <- c(NaN, NaN, 0.0)
+#for 2df model the last SNP is interchangeable: EIGEN calculates the beta for the other SNP than R. This causes the beta to have the wrong sign. This part of change the position of the snp beta(and swaps sign) and SE if beta and other SE are 0
+if (sum(abs(prob.2df.PA[6, 2:3]))==0){
+prob.2df.PA[6, 2:3] <-c(prob.2df.PA[6, 4]*-1,prob.2df.PA[6, 5])
 prob.2df.PA[6, 4:5] <- c(NA, NA)
+}
 
 ####
 ## run analysis in R
@@ -123,7 +127,8 @@ for (i in 3:dim(dose)[2]) {
 }
 colnames(prob.2df.R) <- cols2df
 rownames(prob.2df.R) <- NULL
-stopifnot( all.equal(prob.2df.PA[1:5,], prob.2df.R[1:5,], tol=tol) )
+
+stopifnot( all.equal(prob.2df.PA, prob.2df.R, tol=tol) )
 cat("2df\n")
 
 cat("\t\t\t\t\t\tOK\n")
