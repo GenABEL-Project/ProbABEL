@@ -17,11 +17,12 @@ run.model <- function(model0.txt, model.txt, snpdata) {
         }
 
         lrt <- 2 * ( logLik( model ) - logLik( model.0 ) )
+        pval <- pchisq(lrt, 1, lower.tail=FALSE)
         rsq <- Rsq[i-2]
         if( rsq < rsq.thresh) {
-            row <- c(rsq, NaN, NaN, NaN)
+            row <- c(rsq, NaN, NaN, NaN, NaN)
         } else {
-            row <- c(rsq, sm[1], sm[2], lrt)
+            row <- c(rsq, sm[1], sm[2], lrt, pval)
         }
         resultR <- rbind(resultR, row)
     }
