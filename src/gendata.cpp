@@ -28,6 +28,7 @@
 
 #include <string>
 #include <errno.h>
+#include <limits>
 #include "gendata.h"
 #include "fvlib/FileVector.h"
 #if EIGEN
@@ -38,6 +39,69 @@
 #include "mematri1.h"
 #endif
 #include "utilities.h"
+
+
+void gendata::mldose_line_to_matrix(int k,const char *all_numbers,int amount_of_numbers){
+    int j = 0;
+    //check if not a null pointer
+    if (!*all_numbers){
+        perror("Error while reading genetic data (expected pointer to char but found a null pointer)");
+                       exit(EXIT_FAILURE);
+    }
+    while (j<amount_of_numbers)
+    {
+        double result = 0;
+        //skip whitespace
+        while (*all_numbers == ' ')
+        {
+            all_numbers++;
+        }
+        //check NaN (right now checks only first character)
+        //TODO: make catching of NaN more rigid
+        if (*all_numbers == 'N')
+        {
+            result = std::numeric_limits<double>::quiet_NaN();
+            //skip other characters of NaN
+            while ((*all_numbers == 'a') | (*all_numbers == 'N'))
+            {
+                all_numbers++;
+            }
+        }
+        else
+        {
+            int sign = 0;
+            //set sign to -1 if negative: multiply by sign just before return
+            if (*all_numbers == '-')
+            {
+                all_numbers++;
+                sign = -1;
+            }
+            //read digits before dot
+            while (*all_numbers <= '9' && *all_numbers >= '0')
+            {
+                result = result * 10 + (*all_numbers++ - '0');
+            }
+            //read digit after dot
+            if (*all_numbers == '.')
+            {
+                double decimal_counter = 1.0;
+                all_numbers++;
+                while (*all_numbers <= '9' && *all_numbers >= '0')
+                {
+                    decimal_counter *= 0.1;
+                    result += (*all_numbers++ - '0') * decimal_counter;
+                }
+            }
+            //correct for negative number
+            if (sign == -1)
+            {
+                result = sign * result;
+            }
+        }
+        G.put(result, k, j);
+        j++;
+    }
+}
 
 void gendata::get_var(int var, double * data)
 {
@@ -165,17 +229,19 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
     DAG     = NULL;
     //	int nids_all = npeople;
 
+
     G.reinit(nids, (nsnps * ngpreds));
 
     std::ifstream infile;
-
     infile.open(fname);
+
     if (!infile)
     {
         std::cerr << "gendata: cannot open file " << fname << endl;
     }
 
     std::string tmpid, tmpstr;
+    char inStr[8];
 
     int k = 0;
     for (unsigned int i = 0; i < npeople; i++)
@@ -191,7 +257,7 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 size_t strpos = tmpstr.find("->");
                 if (strpos != string::npos)
                 {
-                    tmpid = tmpstr.substr(strpos+2, string::npos);
+                    tmpid = tmpstr.substr(strpos + 2, string::npos);
                 }
                 else
                 {
@@ -200,8 +266,8 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 if (tmpid != idnames[k])
                 {
                     cerr << "phenotype file and dose or probability file "
-                         << "did not match at line " << i + 2 << " (" << tmpid
-                         << " != " << idnames[k] << ")" << endl;
+                            << "did not match at line " << i + 2 << " ("
+                            << tmpid << " != " << idnames[k] << ")" << endl;
                     infile.close();
                     exit(1);
                 }
@@ -212,45 +278,57 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 infile >> tmpstr;
             }
 
-            for (unsigned int j = 0; j < (nsnps * ngpreds); j++)
+            int oldstyle = 0;
+            if (oldstyle == 1)
             {
-                if (infile.good())
+                for (unsigned int j = 0; j < (nsnps * ngpreds); j++)
                 {
-                    infile >> tmpstr;
-                    // tmpstr contains the dosage/probability in
-                    // string form. Convert it to double (if tmpstr is
-                    // NaN it will be set to nan).
-                    double dosage;
-                    char *endptr;
-                    errno = 0;      // To distinguish success/failure
-                                    // after strtod()
-                    dosage = strtod(tmpstr.c_str(), &endptr);
+                    if (infile.good())
+                    {
+                        infile >> inStr;
+                        // tmpstr contains the dosage/probability in
+                        // string form. Convert it to double (if tmpstr is
+                        // NaN it will be set to nan).
+                        double dosage;
+                        char *endptr;
+                        errno = 0;      // To distinguish success/failure
+                                        // after strtod()
 
-                    if ((errno == ERANGE &&
-                         (dosage == HUGE_VALF || dosage == HUGE_VALL))
-                        || (errno != 0 && dosage == 0)) {
-                        perror("Error while reading genetic data (strtod)");
-                        exit(EXIT_FAILURE);
+                        dosage = strtod(inStr, &endptr);
+                        if ((errno == ERANGE
+                                && (dosage == HUGE_VALF || dosage == HUGE_VALL))
+                                || (errno != 0 && dosage == 0))
+                        {
+                            perror("Error while reading genetic data (strtod)");
+                            exit(EXIT_FAILURE);
+                        }
+
+                        if (endptr == tmpstr.c_str())
+                        {
+                            cerr
+                                    << "No digits were found while reading genetic data"
+                                    << " (individual " << i + 1 << ", position "
+                                    << j + 1 << ")" << endl;
+                            exit(EXIT_FAILURE);
+                        }
+                        /* If we got here, strtod() successfully parsed a number */
+                        G.put(dosage, k, j);
                     }
-
-                    if (endptr == tmpstr.c_str()) {
-                        cerr << "No digits were found while reading genetic data"
-                             << " (individual " << i + 1
-                             << ", position " << j + 1 << ")"
-                             << endl;
-                        exit(EXIT_FAILURE);
+                    else
+                    {
+                        std::cerr << "cannot read dose-file: " << fname
+                                << "check skipd and ngpreds parameters\n";
+                        infile.close();
+                        exit(1);
                     }
-
-                    /* If we got here, strtod() successfully parsed a number */
-                    G.put(dosage, k, j);
                 }
-                else
-                {
-                    std::cerr << "cannot read dose-file: " << fname
-                              << "check skipd and ngpreds parameters\n";
-                    infile.close();
-                    exit(1);
-                }
+            }
+            else
+            {
+                std::string all_numbers;
+                all_numbers.reserve(nsnps * ngpreds * 7);
+                std::getline(infile, all_numbers);
+                mldose_line_to_matrix(k, all_numbers.c_str(), nsnps * ngpreds);
             }
             k++;
         }
@@ -262,7 +340,9 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
                 infile >> tmpstr;
         }
     }
+
     infile.close();
+
 }
 // HERE NEED A NEW CONSTRUCTOR BASED ON DATABELBASECPP OBJECT
 gendata::~gendata()

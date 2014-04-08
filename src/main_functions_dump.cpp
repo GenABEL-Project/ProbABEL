@@ -236,9 +236,9 @@ void create_header(std::vector<std::ofstream*>& outfile,
     if (input_var.getNgpreds() == 1) // dose data: only additive model
     {
         *outfile[0] << input_var.getSep()
-                    << "beta_SNP_add"
+                    << "beta_SNP_addA1"
                     << input_var.getSep()
-                    << "sebeta_SNP_add";
+                    << "sebeta_SNP_addA1";
 
         if (input_var.getInteraction() != 0)
         {
@@ -262,7 +262,7 @@ void create_header(std::vector<std::ofstream*>& outfile,
             }
 #endif
         }
-        *outfile[0] << input_var.getSep() << "chi2_SNP";
+        *outfile[0] << input_var.getSep() << "chi2_SNP_add";
 #if WITH_BOOST
         *outfile[0] << input_var.getSep() << "pval_SNP";
 #endif
@@ -343,18 +343,19 @@ void create_header(std::vector<std::ofstream*>& outfile,
                 //Oct 26, 2009
             }
         }
+
         *outfile[0] << input_var.getSep() << "chi2_SNP_2df";
-        *outfile[1] << input_var.getSep() << "chi2_SNP_A1";
-        *outfile[2] << input_var.getSep() << "chi2_SNP_domA1";
-        *outfile[3] << input_var.getSep() << "chi2_SNP_recA1";
-        *outfile[4] << input_var.getSep() << "chi2_SNP_odomA1";
+        *outfile[1] << input_var.getSep() << "chi2_SNP_add";
+        *outfile[2] << input_var.getSep() << "chi2_SNP_dom";
+        *outfile[3] << input_var.getSep() << "chi2_SNP_rec";
+        *outfile[4] << input_var.getSep() << "chi2_SNP_odom";
 
 #ifdef WITH_BOOST
         *outfile[0] << input_var.getSep() << "pval_SNP_2df";
-        *outfile[1] << input_var.getSep() << "pval_SNP_A1";
-        *outfile[2] << input_var.getSep() << "pval_SNP_domA1";
-        *outfile[3] << input_var.getSep() << "pval_SNP_recA1";
-        *outfile[4] << input_var.getSep() << "pval_SNP_odomA1";
+        *outfile[1] << input_var.getSep() << "pval_SNP_add";
+        *outfile[2] << input_var.getSep() << "pval_SNP_dom";
+        *outfile[3] << input_var.getSep() << "pval_SNP_rec";
+        *outfile[4] << input_var.getSep() << "pval_SNP_odom";
 #endif
 
         *outfile[0] << endl;
@@ -439,8 +440,7 @@ int get_start_position(const cmdvars& input_var, const int model,
         if (input_var.getNgpreds() == 2)
         {
             start_pos = number_of_rows_or_columns - 2;
-        } else
-        {
+        } else{
             start_pos = number_of_rows_or_columns - 1;
         }
     } else if (!input_var.getAllcov() && model == 0
@@ -449,8 +449,7 @@ int get_start_position(const cmdvars& input_var, const int model,
         if (input_var.getNgpreds() == 2)
         {
             start_pos = number_of_rows_or_columns - 4;
-        } else
-        {
+        } else{
             start_pos = number_of_rows_or_columns - 2;
         }
     } else if (!input_var.getAllcov() && model != 0
@@ -461,8 +460,7 @@ int get_start_position(const cmdvars& input_var, const int model,
             && input_var.getInteraction() != 0)
     {
         start_pos = number_of_rows_or_columns - 2;
-    } else
-    {
+    } else{
         start_pos = 0;
     }
 

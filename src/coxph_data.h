@@ -89,7 +89,7 @@ class coxph_reg {
     int niter;
 
     coxph_reg(coxph_data &cdatain);
-    void estimate(coxph_data &cdatain, const int verbose, int maxiter,
+    void estimate(coxph_data &cdatain, int maxiter,
                   double eps, double tol_chol, const int model,
                   const int interaction, const int ngpreds, const bool iscox,
                   const int nullmodel, const mlinfo &snpinfo, const int cursnp);

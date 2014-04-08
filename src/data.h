@@ -31,8 +31,8 @@
 #include <string>
 
 extern bool is_interaction_excluded;
-
-unsigned int Nmeasured(char * fname, int nphenocols, int npeople);
+//TODO(unknown) This function is not used. Remove in near future
+//unsigned int Nmeasured(char * fname, int nphenocols, int npeople);
 #include "phedata.h"
 #include "gendata.h"
 
@@ -80,4 +80,4 @@ class InvSigma {
     ~InvSigma();
 };
 
-#endif /* DATA_H_ */
+#endif//DATA_H_

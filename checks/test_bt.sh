@@ -78,10 +78,8 @@ done
 
 run_diff logist_prob_add.out.txt \
     logist_add.out.txt \
-    "BT check: prob vs. dose" \
-    -I beta_SNP
+    "BT check: prob vs. dose"
 
 run_diff logist_prob_fv_add.out.txt \
     logist_fv_add.out.txt \
-    "BT check: prob_fv vs. dose_fv" \
-    -I beta_SNP
+    "BT check: prob_fv vs. dose_fv"

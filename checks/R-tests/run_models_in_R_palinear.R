@@ -20,9 +20,9 @@ tmp <- system(paste0("bash ", tests.path, "test_qt.sh"),
 cat("OK\n")
 
 dose.add.PA <- read.table("linear_base_add.out.txt",
-                          head=TRUE)[, colsAddDose]
+                          head=TRUE)[, colsAdd]
 prob.add.PA <- read.table("linear_ngp2_add.out.txt",
-                          head=TRUE)[, colsAddProb]
+                          head=TRUE)[, colsAdd]
 prob.dom.PA <- read.table("linear_ngp2_domin.out.txt",
                           head=TRUE)[, colsDom]
 prob.rec.PA <- read.table("linear_ngp2_recess.out.txt",
@@ -36,7 +36,11 @@ prob.2df.PA <- read.table("linear_ngp2_2df.out.txt",
 ## (SNP 6 in the info file). ProbABEL lists them all as 0.0, R lists
 ## them as:
 prob.dom.PA[6, 2:4] <- c(NaN, NaN, 0.0)
+#for 2df model the last SNP is interchangeable: EIGEN calculates the beta for the other SNP than R. This causes the beta to have the wrong sign. This part of change the position of the snp beta(and swaps sign) and SE if beta and other SE are 0
+if (sum(abs(prob.2df.PA[6, 2:3]))==0){
+prob.2df.PA[6, 2:3] <-c(prob.2df.PA[6, 4]*-1,prob.2df.PA[6, 5])
 prob.2df.PA[6, 4:5] <- c(NA, NA)
+}
 
 ####
 ## run analysis in R
@@ -53,7 +57,7 @@ model.fn   <- "lm( height ~ sex + age + snp )"
 ## Additive model, dosages
 snpdose <- "dose[, i]"
 dose.add.R <- run.model(model.fn.0, model.fn, snpdose)
-colnames(dose.add.R) <- colsAddDose
+colnames(dose.add.R) <- colsAdd
 rownames(dose.add.R) <- NULL
 stopifnot( all.equal(dose.add.PA, dose.add.R, tol=tol) )
 cat("additive ")
@@ -62,7 +66,7 @@ cat("additive ")
 ## Additive model, probabilities
 snpprob <- "doseFromProb[, i]"
 prob.add.R <- run.model(model.fn.0, model.fn, snpprob)
-colnames(prob.add.R) <- colsAddProb
+colnames(prob.add.R) <- colsAdd
 rownames(prob.add.R) <- NULL
 stopifnot( all.equal(prob.add.PA, prob.add.R, tol=tol) )
 cat("additive ")
@@ -123,6 +127,7 @@ for (i in 3:dim(dose)[2]) {
 }
 colnames(prob.2df.R) <- cols2df
 rownames(prob.2df.R) <- NULL
+
 stopifnot( all.equal(prob.2df.PA, prob.2df.R, tol=tol) )
 cat("2df\n")
 

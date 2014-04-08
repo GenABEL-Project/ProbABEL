@@ -1,7 +1,6 @@
 #!/bin/bash
 # This script runs checks on ProbABEL's palinear module for
 # quantitative traits combined with the mmscore option.
-
 echo "Analysis using MMScore..."
 
 scriptdir=$(dirname $0)
@@ -77,10 +76,8 @@ done
 
 run_diff mmscore_prob_add.out.txt \
     mmscore_dose_add.out.txt \
-    "mmscore check: prob vs. dose" \
-    -I SNP
+    "mmscore check: prob vs. dose"
 
 run_diff mmscore_prob_fv_add.out.txt \
     mmscore_dose_fv_add.out.txt \
-    "mmscore check: prob_fv vs. dose_fv" \
-    -I SNP
+    "mmscore check: prob_fv vs. dose_fv"

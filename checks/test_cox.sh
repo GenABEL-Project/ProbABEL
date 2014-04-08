@@ -59,7 +59,7 @@ $pacoxph \
     >& 3
 
 run_diff coxph_dose_add.out.txt coxph_prob_add.out.txt \
-    "pacoxph check: dose vs. prob" -I SNP
+    "pacoxph check: dose vs. prob"
 
 
 $pacoxph \

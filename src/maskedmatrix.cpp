@@ -26,6 +26,9 @@
  */
 
 
+
+
+#include <algorithm>
 #include "maskedmatrix.h"
 #if EIGEN
 #include "eigen_mematrix.h"
@@ -47,14 +50,8 @@ masked_matrix::masked_matrix(mematrix<double> M) : matrix_original(M)
 //    matrix_original = M;
     masked_data = &matrix_original;
     mask_of_old = new unsigned short int[M.nrow];
-    for (int i = 0; i < M.nrow; i++)
-    {
-        mask_of_old[i] = 0;
-    }
-    //TODO:set length of mask for all types
+    std::fill(mask_of_old, mask_of_old+M.nrow, 0);
     length_of_mask = M.nrow;
-    //TODO:set type (row,column,symmetric)
-    //type="symmetric";
 }
 
 void masked_matrix::set_matrix(const mematrix<double> &M)
@@ -62,14 +59,8 @@ void masked_matrix::set_matrix(const mematrix<double> &M)
     matrix_original = M;
     masked_data = &matrix_original;
     mask_of_old = new unsigned short int[M.nrow];
-    for (int i = 0; i < M.nrow; i++)
-    {
-        mask_of_old[i] = 0;
-    }
-    //TODO:set length of mask for all types
+    std::fill(mask_of_old, mask_of_old+M.nrow, 0);
     length_of_mask = M.nrow;
-    //TODO:set type (row,column,symmetric)
-    //type="symmetric";
 }
 
 masked_matrix::~masked_matrix()
@@ -80,14 +71,7 @@ masked_matrix::~masked_matrix()
 void masked_matrix::update_mask(short unsigned int *newmask)
 {
     //find length of masked matrix
-    int nmeasured = 0;
-    for (int i = 0; i < length_of_mask; i++)
-    {
-        if (newmask[i] == 0)
-        {
-            nmeasured++;
-        }
-    }
+    int nmeasured=std::count (newmask, newmask+length_of_mask, 0);
 
     //Check update mask is the same as original matrix
     if (nmeasured == length_of_mask)
@@ -98,7 +82,7 @@ void masked_matrix::update_mask(short unsigned int *newmask)
     else
     {
         //Check update mask is the same as old matrix
-        if (is_equal_array(newmask, mask_of_old, length_of_mask))
+        if (std::equal(newmask, newmask+length_of_mask, mask_of_old))
         {
             //new mask is the same as old matrix
             masked_data = &matrix_masked_data;
@@ -107,11 +91,7 @@ void masked_matrix::update_mask(short unsigned int *newmask)
         {
             // new mask differs from old matrix and create new.
             // mask_of_old = newmask;
-            //TODO(maarten): there must be a smarter way to copy these values
-            for (int i = 0; i < length_of_mask; i++)
-            {
-                mask_of_old[i] = newmask[i];
-            }
+            std::copy(newmask, newmask+length_of_mask, mask_of_old);
             mask_symmetric(nmeasured);
             masked_data = &matrix_masked_data;
         }
@@ -140,15 +120,3 @@ void masked_matrix::mask_symmetric(int nmeasured)
         }
 }
 
-bool masked_matrix::is_equal_array(unsigned short int *a, unsigned short int *b,
-                                   int size)
-{
-    for (int i = 0; i < size; i++)
-    {
-        if (a[i] != b[i])
-        {
-            return false;
-        }
-    }
-    return true;
-}

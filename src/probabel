@@ -169,6 +169,11 @@ die "error: Wrong method. method has to be one of: @method\n" if (!$passed);
 
 
 my $phename = $ARGV[5];
+if (! -e $phename.".PHE"){
+die "Phenotype file $phename.PHE does not exists. The phenotype file should be specified without the .PHE extension.\n";
+}
+
+
 # By default the output file prefix is the same as the name of the
 # phenotype file (minus the .PHE extension and any paths)
 use File::Basename;
