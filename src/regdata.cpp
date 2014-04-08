@@ -63,8 +63,7 @@ regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
     is_interaction_excluded = obj.is_interaction_excluded;
     masked_data = new unsigned short int[nids];
 
-    std::copy(obj.masked_data, obj.masked_data+nids,masked_data);
- 
+    std::copy(obj.masked_data, obj.masked_data + nids, masked_data);
 }
 
 
@@ -76,8 +75,9 @@ regdata::regdata(phedata &phed, gendata &gend, const int snpnum,
     nids        = gend.nids;
     masked_data = new unsigned short int[nids];
 
-    std::fill (masked_data,masked_data+nids,0);
+    std::fill(masked_data, masked_data + nids, 0);
     ngpreds = gend.ngpreds;
+
     if (snpnum >= 0)
     {
         ncov = phed.ncov + ngpreds;
@@ -86,9 +86,11 @@ regdata::regdata(phedata &phed, gendata &gend, const int snpnum,
     {
         ncov = phed.ncov;
     }
+
     noutcomes = phed.noutcomes;
     X.reinit(nids, (ncov + 1));
     Y.reinit(nids, noutcomes);
+
     for (int i = 0; i < nids; i++)
     {
         X.put(1., i, 0);
@@ -132,7 +134,7 @@ void regdata::update_snp(gendata *gend, const int snpnum)
     for (int j = 0; j < ngpreds; j++)
     {
         double *snpdata = new double[nids];
-        std::fill (masked_data,masked_data+nids,0);
+        std::fill(masked_data, masked_data + nids, 0);
         gend->get_var(snpnum * ngpreds + j, snpdata);
 
         for (int i = 0; i < nids; i++) {
@@ -198,7 +200,7 @@ void regdata::remove_snp_from_X()
 regdata regdata::get_unmasked_data()
 {
     regdata to;  // = regdata(*this);
-    int nmeasured=std::count (masked_data, masked_data+nids, 0);
+    int nmeasured = std::count(masked_data, masked_data + nids, 0);
     to.nids                    = nmeasured;
     to.ncov                    = ncov;
     to.ngpreds                 = ngpreds;
@@ -230,7 +232,7 @@ regdata regdata::get_unmasked_data()
     // delete [] to.masked_data;
     const int arr_size = nids;
     to.masked_data = new unsigned short int[arr_size];
-    std::copy(masked_data, masked_data+arr_size,to.masked_data);
+    std::copy(masked_data, masked_data + arr_size, to.masked_data);
 
     return (to);
 }

@@ -41,27 +41,30 @@
 #include "utilities.h"
 
 
-void gendata::mldose_line_to_matrix(int k,const char *all_numbers,int amount_of_numbers){
+void gendata::mldose_line_to_matrix(int k, const char *all_numbers,
+                                    int amount_of_numbers){
     int j = 0;
-    //check if not a null pointer
+    // Check if not a null pointer
     if (!*all_numbers){
         perror("Error while reading genetic data (expected pointer to char but found a null pointer)");
                        exit(EXIT_FAILURE);
     }
-    while (j<amount_of_numbers)
+
+    while (j < amount_of_numbers)
     {
         double result = 0;
-        //skip whitespace
+        // Skip whitespace
         while (*all_numbers == ' ')
         {
             all_numbers++;
         }
-        //check NaN (right now checks only first character)
-        //TODO: make catching of NaN more rigid
+
+        // check NaN (right now checks only first character)
+        // TODO: make catching of NaN more rigid
         if (*all_numbers == 'N')
         {
             result = std::numeric_limits<double>::quiet_NaN();
-            //skip other characters of NaN
+            // Skip other characters of NaN
             while ((*all_numbers == 'a') | (*all_numbers == 'N'))
             {
                 all_numbers++;
@@ -70,18 +73,18 @@ void gendata::mldose_line_to_matrix(int k,const char *all_numbers,int amount_of_
         else
         {
             int sign = 0;
-            //set sign to -1 if negative: multiply by sign just before return
+            // set sign to -1 if negative: multiply by sign just before return
             if (*all_numbers == '-')
             {
                 all_numbers++;
                 sign = -1;
             }
-            //read digits before dot
+            // Read digits before dot
             while (*all_numbers <= '9' && *all_numbers >= '0')
             {
                 result = result * 10 + (*all_numbers++ - '0');
             }
-            //read digit after dot
+            // Read digit after dot
             if (*all_numbers == '.')
             {
                 double decimal_counter = 1.0;
@@ -92,7 +95,7 @@ void gendata::mldose_line_to_matrix(int k,const char *all_numbers,int amount_of_
                     result += (*all_numbers++ - '0') * decimal_counter;
                 }
             }
-            //correct for negative number
+            // Correct for negative number
             if (sign == -1)
             {
                 result = sign * result;
@@ -102,6 +105,7 @@ void gendata::mldose_line_to_matrix(int k,const char *all_numbers,int amount_of_
         j++;
     }
 }
+
 
 void gendata::get_var(int var, double * data)
 {
@@ -163,9 +167,11 @@ void gendata::get_var(int var, double * data)
     }
 }
 
+
 gendata::gendata() : nsnps(0), nids(0), ngpreds(0), DAG(NULL), DAGmask(NULL)
 {
 }
+
 
 void gendata::re_gendata(string filename, unsigned int insnps,
                          unsigned int ingpreds, unsigned int npeople,
@@ -188,7 +194,9 @@ void gendata::re_gendata(string filename, unsigned int insnps,
     for (unsigned int i = 0; i < npeople; i++)
     {
         if (allmeasured[i] == 0)
+        {
             DAGmask[i] = 1;
+        }
         else
         {
             DAGmask[i] = 0;
@@ -197,7 +205,9 @@ void gendata::re_gendata(string filename, unsigned int insnps,
         string DAGobsname = DAG->readObservationName(i).name;
 
         if (DAGobsname.find("->") != string::npos)
+        {
             DAGobsname = DAGobsname.substr(DAGobsname.find("->") + 2);
+        }
 
         // if (allmeasured[i] && idnames[j] != DAGobsname)
         //  std::cerr << "names do not match for observation at phenofile "
@@ -206,16 +216,18 @@ void gendata::re_gendata(string filename, unsigned int insnps,
         //            << DAGobsname.c_str() << ")\n";
         // fix thanks to Vadym Pinchuk
         if (allmeasured[i] && idnames[j] != DAGobsname)
+        {
             report_error(
-                "names do not match for observation at phenofile line(phe/geno) %i/+1 (%s/%s)\n",
+                "names do not match for observation at phenofile line (phe/geno) %i/+1 (%s/%s)\n",
                 i + 1, idnames[j].c_str(), DAGobsname.c_str());
-
+        }
     }
     nids = j + 1;
     // std::cout << "in INI: " << nids << " " << npeople << "\n";
     if (nids != nmeasured)
         report_error("nids != mneasured (%i != %i)\n", nids, nmeasured);
 }
+
 
 void gendata::re_gendata(char * fname, unsigned int insnps,
                          unsigned int ingpreds, unsigned int npeople,
@@ -335,15 +347,21 @@ void gendata::re_gendata(char * fname, unsigned int insnps,
         else
         {
             for (int j = 0; j < skipd; j++)
+            {
                 infile >> tmpstr;
+            }
             for (unsigned int j = 0; j < (nsnps * ngpreds); j++)
+            {
                 infile >> tmpstr;
+            }
         }
     }
 
     infile.close();
 
 }
+
+
 // HERE NEED A NEW CONSTRUCTOR BASED ON DATABELBASECPP OBJECT
 gendata::~gendata()
 {

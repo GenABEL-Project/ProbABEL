@@ -310,9 +310,9 @@ void base_reg::base_score(mematrix<double>& resid,
     chi2_score = chi2[0];
 }
 
+
 void linear_reg::mmscore_regression(const mematrix<double>& X,
         const masked_matrix& W_masked, LDLT<MatrixXd>& Ch) {
-
     VectorXd Y = reg_data.Y.data.col(0);
     /*
      in ProbABEL <0.50 this calculation was performed like t(X)*W
@@ -327,8 +327,8 @@ void linear_reg::mmscore_regression(const mematrix<double>& X,
     VectorXd beta_vec = Ch.solve(tXW.transpose() * Y);
     sigma2 = (Y - tXW * beta_vec).squaredNorm();
     beta.data = beta_vec;
-
 }
+
 
 void linear_reg::logLikelihood(const mematrix<double>& X) {
     /*
@@ -364,7 +364,6 @@ void linear_reg::logLikelihood(const mematrix<double>& X) {
     //residuals[i] -= resid_sub;
     loglik -= (residuals.data.array().square() * halfrecsig2).sum();
     loglik -= static_cast<double>(reg_data.nids) * log(sqrt(sigma2));
-
 #else
     for (int i = 0; i < reg_data.nids; i++)
      {
@@ -377,6 +376,7 @@ void linear_reg::logLikelihood(const mematrix<double>& X) {
      }
 #endif
 }
+
 
 void linear_reg::estimate(int verbose, double tol_chol,
         int model, int interaction, int ngpreds, masked_matrix& invvarmatrixin,
@@ -453,7 +453,7 @@ void linear_reg::estimate(int verbose, double tol_chol,
         // now compute residual variance
         sigma2 = 0.;
         //next line is: 1000+5000+= 6000 flops
-        mematrix<double> sigma2_matrix = reg_data.Y - (transpose(tXW) * beta); //flops: 1000+5000
+        mematrix<double> sigma2_matrix = reg_data.Y - (transpose(tXW) * beta);
         for (int i = 0; i < sigma2_matrix.nrow; i++)
         {
             double val = sigma2_matrix.get(i, 0);
@@ -467,9 +467,8 @@ void linear_reg::estimate(int verbose, double tol_chol,
         //      YSA, 2009.07.20
         sigma2_internal = 1.0;
         sigma2 /= N;
-
     }
-    else//NO mm-score regression : normal least square regression
+    else  // NO mm-score regression : normal least square regression
     {
 #if EIGEN
         int m = X.ncol;
@@ -520,7 +519,7 @@ void linear_reg::estimate(int verbose, double tol_chol,
 
 #if EIGEN
     MatrixXd tXX_inv = Ch.solve(MatrixXd(length_beta, length_beta).
-            Identity(length_beta,length_beta));
+                                Identity(length_beta, length_beta));
 #endif
 
     mematrix<double> robust_sigma2(X.ncol, X.ncol);
@@ -528,10 +527,10 @@ void linear_reg::estimate(int verbose, double tol_chol,
     {
 #if EIGEN
         MatrixXd Xresiduals = X.data.array().colwise()\
-                *residuals.data.col(0).array();
+            *residuals.data.col(0).array();
         MatrixXd  XbyR = MatrixXd(X.ncol, X.ncol).setZero()\
-                .selfadjointView<Lower>().rankUpdate(Xresiduals.adjoint());
-        robust_sigma2.data= tXX_inv*XbyR *tXX_inv;
+            .selfadjointView<Lower>().rankUpdate(Xresiduals.adjoint());
+        robust_sigma2.data = tXX_inv * XbyR * tXX_inv;
 #else
 
         mematrix<double> XbyR = X;
@@ -547,7 +546,6 @@ void linear_reg::estimate(int verbose, double tol_chol,
         robust_sigma2 = robust_sigma2 * tXX_i;
 
 #endif
-
     }
     //cout << "estimate 0\n";
 #if EIGEN
@@ -565,7 +563,7 @@ void linear_reg::estimate(int verbose, double tol_chol,
     //if additive and interaction and 2 predictors and more then 2 betas
 
     if (model == 0 && interaction != 0 && ngpreds == 2 && length_beta > 2){
-          offset = X.ncol - 2;
+        offset = X.ncol - 2;
     }
 
     if (robust)
@@ -639,6 +637,7 @@ void linear_reg::estimate(int verbose, double tol_chol,
 #endif
 }
 
+
 void linear_reg::score(mematrix<double>& resid,
         double tol_chol, int model, int interaction, int ngpreds,
         const masked_matrix& invvarmatrix, int nullmodel) {
@@ -646,6 +645,7 @@ void linear_reg::score(mematrix<double>& resid,
     base_score(resid,  tol_chol, model, interaction, ngpreds,
             invvarmatrix, nullmodel = 0);
 }
+
 
 logistic_reg::logistic_reg(regdata& rdatain) {
     reg_data = rdatain.get_unmasked_data();
@@ -664,6 +664,7 @@ logistic_reg::logistic_reg(regdata& rdatain) {
     niter = -1;
     chi2_score = -1.;
 }
+
 
 void logistic_reg::estimate(int verbose, int maxiter,
         double eps, int model, int interaction, int ngpreds,
@@ -895,6 +896,7 @@ void logistic_reg::estimate(int verbose, int maxiter,
     // std::cout << "sebeta (" << sebeta.nrow << "):\n"; sebeta.print();
     // exit(1);
 }
+
 
 void logistic_reg::score(mematrix<double>& resid,
         double tol_chol, int model, int interaction, int ngpreds,
