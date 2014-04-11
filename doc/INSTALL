@@ -22,7 +22,9 @@ apt-get install libeigen3-dev
   If ./configure cannot find the Eigen library it will say so. To
   disable the use of Eigen (even if the library is present) use:
 ./configure --without-eigen
-
+  Note that we do not recommend building ProbABEL without EIGEN as
+  the non-EIGEN code is tested less well and we are preparing to
+  phase out the non-EIGEN code.
 
 * Compiling for Linux
   If you downloaded the source from SVN (this is not necessary when
@@ -49,7 +51,7 @@ make install
   probabel_config.cfg.example. For probabel to work please rename
   this file to probabel_config.cfg.
 
-  To see options, run
+  To see additional options, run
 ./configure --help
 
   The most notable option is
@@ -64,6 +66,16 @@ make install
 
 
 * Options for developers
+  Some default development compiler flags can be enabled by running
+  configure like this:
+./configure --enable-dev-options
+  The actual development values of CXXFLAGS and CPPFLAGS can be seen in
+  configure.ac or by adding --disable-silent-rules to ./configure. If
+  you want to specify your own flags run configure like this:
+CXXFLAGS="-O3 -Wextra" CPPFLAGS="-Wall" ./configure
+  or later, during the make process:
+make CXXFLAGS="-O3 -Wextra" CPPFLAGS="-Wall"
+
   To generate a .tar.gz package for distribution run:
 ./configure
 make dist

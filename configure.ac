@@ -19,20 +19,45 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_INSTALL
 AC_PROG_LN_S
-if test -z "$CXXFLAGS"; then
-   # User did not set CXXFLAGS, so we can put in our own defaults
-    CXXFLAGS="-g -O2 -DNDEBUG -Wextra"
+
+
+# Add an option to enable some default compiler options used during
+# development
+AC_ARG_ENABLE([dev-options],
+    [AS_HELP_STRING([--enable-dev-options], [enable compile options
+    for developers])],
+    [devoptions=yes],
+    [devoptions=no])
+
+if test "x$devoptions" = "xyes"; then
+   AC_MSG_NOTICE([Building with developer options enabled])
+   if test -z "$CXXFLAGS"; then
+      # User did not set CXXFLAGS, so we can put in our own defaults
+      CXXFLAGS="-O2"
+   fi
+   if test -z "$CPPFLAGS"; then
+      # User did not set CPPFLAGS, so we can put in our own defaults
+      CPPFLAGS="-Wall"
+   fi
+   CXXFLAGS+=" -g -Wextra"
 fi
-if test -z "$CPPFLAGS"; then
-   # User did not set CPPFLAGS, so we can put in our own defaults
-    CPPFLAGS="-Wall"
+
+if test "x$devoptions" = "xno"; then
+   if test -z "$CXXFLAGS"; then
+      # User did not set CXXFLAGS, so we can put in our own defaults
+      CXXFLAGS="-O2 -DNDEBUG"
+   fi
+   if test -z "$CPPFLAGS"; then
+      # User did not set CPPFLAGS, so we can put in our own defaults
+      CPPFLAGS+="-Wall"
+   fi
 fi
+
 # If CXXFLAGS/CPPFLAGS are already set AC_PROG_CXX will not overwrite them
 # with its own defaults
 AC_PROG_CXX
 
-
-#Tell compiler to build not R version of filevector
+# Tell the compiler to build not R version of filevector
 CXXFLAGS+=" -D_NOT_R_FILEVECTOR"
 
 
