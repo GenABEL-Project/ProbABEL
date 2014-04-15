@@ -28,6 +28,7 @@
 
 #include "coxph_data.h"
 #include <iostream>
+#include <algorithm>
 #include <cmath>
 extern "C" {
 #include "survproto.h"
