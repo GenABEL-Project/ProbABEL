@@ -1,5 +1,12 @@
-/*
- * regdata.cpp
+/**
+ * \file regdata.cpp
+ * \author Yurii S. Aulchenko
+ * \author M. Kooyman
+ * \author L.C. Karssen
+ * \author Maksim V. Struchalin
+ *
+ * \brief Describes functions of the regdata class containing a
+ * linear or logistic regression object.
  *
  *  Created on: Mar 29, 2012
  *      Author: mkooyman
@@ -39,6 +46,11 @@
 #include <algorithm> // STL algoritms
 #include "regdata.h"
 
+
+/**
+ * Constructor. Initialises all values to zero.
+ *
+ */
 regdata::regdata()
 {
     nids                    = 0;
@@ -52,6 +64,13 @@ regdata::regdata()
 }
 
 
+/**
+ * Copy constructor. Creates a regdata object by copying the values of
+ * another one.
+ *
+ * \param obj Reference to the regdata object to be copied to the new
+ * object
+ */
 regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
 {
     nids = obj.nids;
@@ -67,6 +86,19 @@ regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
 }
 
 
+/**
+ * Constructor that fills a regdata object with phenotype and genotype
+ * data.
+ *
+ * \param phed Reference to a phedata object with phenotype data
+ * \param gend Reference to a gendata object with genotype data
+ * \param snpnum The number of the SNP in the genotype data object to
+ * be added to the design matrix regdata::X. When set to a number < 0
+ * no SNP data is added to the design matrix (e.g. when calculating
+ * the null model).
+ * \param ext_is_interaction_excluded Boolean that shows whether
+ * interactions are excluded.
+ */
 regdata::regdata(phedata &phed, gendata &gend, const int snpnum,
                  const bool ext_is_interaction_excluded)
 {
@@ -123,6 +155,18 @@ regdata::regdata(phedata &phed, gendata &gend, const int snpnum,
 }
 
 
+/**
+ * Update the SNP dosages/probabilities in the design matrix
+ * regdata::X.
+ *
+ * Adds the genetic information for a new SNP to the design
+ * matrix.
+ *
+ * @param gend Object that contains the genetic data from which the
+ * dosages/probabilities will be added to the design matrix.
+ * @param snpnum Number of the SNP for which the dosage/probability
+ * data will be extracted from the gend object.
+ */
 void regdata::update_snp(gendata *gend, const int snpnum)
 {
     // Reset counter for frequency since it is a new SNP
@@ -141,8 +185,8 @@ void regdata::update_snp(gendata *gend, const int snpnum)
             X.put(snpdata[i], i, (ncov - j));
             if (std::isnan(snpdata[i])) {
                 masked_data[i] = 1;
-                // SNP not masked
             } else {
+                // SNP not masked
                 // check for first predictor
                 if (j == 0) {
                     gcount++;
@@ -155,11 +199,11 @@ void regdata::update_snp(gendata *gend, const int snpnum)
                     // Add second genotype in two predicor data form
                     freq += snpdata[i] * 0.5;
                 }
-            }  // End std::isnan(snpdata[i]) snp
-        }  // End i for loop
+            }  // End if std::isnan(snpdata[i]) snp
+        }  // End for loop: i = 0 to nids
 
         delete[] snpdata;
-    }  // End ngpreds loop
+    }  // End for loop: j = 0 to ngpreds
 
     freq /= static_cast<double>(gcount); // Allele frequency
 }
@@ -197,6 +241,20 @@ void regdata::remove_snp_from_X()
 //}
 
 
+/**
+ * Create a new regdata object that contains only the non-masked
+ * data.
+ *
+ * The non-masked data is extracted according to the data in the
+ * regdata::masked_data array. The resulting regdata::nids corresponds
+ * to the number of IDs for which genotype data is present.
+ *
+ * Note that the regdata::masked_data array of the new object should
+ * contain only zeros (i.e. not masked).
+ *
+ * @return A new regdata object containing only the rows from
+ * regdata::X and regdata::Y for which genotype data is present.
+ */
 regdata regdata::get_unmasked_data()
 {
     regdata to;  // = regdata(*this);
@@ -238,6 +296,13 @@ regdata regdata::get_unmasked_data()
 }
 
 
+/**
+ * Extracts the genotype data from the design matrix regdata::X of a
+ * regdata object.
+ *
+ * @return A new mematrix object of dimensions regdata::X.nrow x
+ * ngpreds that contains the genotype data.
+ */
 mematrix<double> regdata::extract_genotypes(void)
 {
     mematrix<double> out;
