@@ -96,7 +96,7 @@ class regdata {
      * ID/sample will be masked because the SNP data is NA for that
      * ID.
      */
-    unsigned short int * masked_data;
+    bool *masked_data;
 
     /**
      * Number of non-masked genotypes.

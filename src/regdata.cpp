@@ -80,7 +80,7 @@ regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
     gcount = obj.gcount;
     freq = obj.freq;
     is_interaction_excluded = obj.is_interaction_excluded;
-    masked_data = new unsigned short int[nids];
+    masked_data = new bool[nids];
 
     std::copy(obj.masked_data, obj.masked_data + nids, masked_data);
 }
@@ -105,7 +105,7 @@ regdata::regdata(phedata &phed, gendata &gend, const int snpnum,
     freq        = 0;
     gcount      = 0;
     nids        = gend.nids;
-    masked_data = new unsigned short int[nids];
+    masked_data = new bool[nids];
 
     std::fill(masked_data, masked_data + nids, 0);
     ngpreds = gend.ngpreds;
@@ -289,7 +289,7 @@ regdata regdata::get_unmasked_data()
 
     // delete [] to.masked_data;
     const int arr_size = nids;
-    to.masked_data = new unsigned short int[arr_size];
+    to.masked_data = new bool[arr_size];
     std::copy(masked_data, masked_data + arr_size, to.masked_data);
 
     return (to);

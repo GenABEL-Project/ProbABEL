@@ -49,7 +49,7 @@ masked_matrix::masked_matrix(mematrix<double> M) : matrix_original(M)
 {
 //    matrix_original = M;
     masked_data = &matrix_original;
-    mask_of_old = new unsigned short int[M.nrow];
+    mask_of_old = new bool[M.nrow];
     std::fill(mask_of_old, mask_of_old+M.nrow, 0);
     length_of_mask = M.nrow;
 }
@@ -58,7 +58,7 @@ void masked_matrix::set_matrix(const mematrix<double> &M)
 {
     matrix_original = M;
     masked_data = &matrix_original;
-    mask_of_old = new unsigned short int[M.nrow];
+    mask_of_old = new bool[M.nrow];
     std::fill(mask_of_old, mask_of_old+M.nrow, 0);
     length_of_mask = M.nrow;
 }
@@ -68,7 +68,7 @@ masked_matrix::~masked_matrix()
     delete[] mask_of_old;
 }
 
-void masked_matrix::update_mask(short unsigned int *newmask)
+void masked_matrix::update_mask(bool *newmask)
 {
     //find length of masked matrix
     int nmeasured=std::count (newmask, newmask+length_of_mask, 0);
@@ -119,4 +119,3 @@ void masked_matrix::mask_symmetric(int nmeasured)
             i1++;
         }
 }
-

@@ -43,7 +43,7 @@ class masked_matrix {
     masked_matrix(mematrix<double> M);
     void set_matrix(const mematrix<double> &M);
     ~masked_matrix();
-    void update_mask(short unsigned int *newmask);
+    void update_mask(bool *newmask);
 //    mematrix<double>* get_matrix();
     mematrix<double> matrix_original;
     mematrix<double> *masked_data;
@@ -51,7 +51,7 @@ class masked_matrix {
 
  private:
     mematrix<double> matrix_masked_data;
-    unsigned short int *mask_of_old;
+    bool *mask_of_old;
     void mask_symmetric(int nmeasured);
 };
 
