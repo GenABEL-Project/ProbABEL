@@ -30,13 +30,8 @@
 
 #include <algorithm>
 #include "maskedmatrix.h"
-#if EIGEN
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
-#else
-#include "mematrix.h"
-#include "mematri1.h"
-#endif
 
 masked_matrix::masked_matrix()
 {

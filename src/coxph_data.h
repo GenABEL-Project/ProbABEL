@@ -29,13 +29,8 @@
 #ifndef COXPH_DATA_H_
 #define COXPH_DATA_H_
 
-#if EIGEN
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
-#else
-#include "mematrix.h"
-#include "mematri1.h"
-#endif
 
 #include "data.h"
 #include "reg1.h"

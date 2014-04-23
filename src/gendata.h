@@ -31,12 +31,9 @@
 #include <string>
 #include "fvlib/FileVector.h"
 
-#if EIGEN
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
-#else
-#include "mematrix.h"
-#endif
+
 
 class gendata {
  public:

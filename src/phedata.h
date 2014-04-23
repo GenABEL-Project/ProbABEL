@@ -29,13 +29,8 @@
 #ifndef PHEDATA_H_
 #define PHEDATA_H_
 
-#if EIGEN
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
-#else
-#include "mematrix.h"
-#include "mematri1.h"
-#endif
 
 class phedata {
  public:

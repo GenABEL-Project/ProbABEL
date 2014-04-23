@@ -405,21 +405,13 @@ void coxph_reg::estimate(coxph_data &cdatain,
 
     // When using Eigen coxfit2 needs to be called in a slightly
     // different way (i.e. the .data()-part needs to be added).
-#if EIGEN
     coxfit2(&maxiter, &cdata.nids, &X.nrow, cdata.stime.data.data(),
             cdata.sstat.data.data(), X.data.data(), newoffset.data.data(),
             cdata.weights.data.data(), cdata.strata.data.data(),
             means.data.data(), beta.data.data(), u.data.data(),
             imat.data.data(), loglik_int, &flag, work, &eps, &tol_chol,
             &sctest);
-#else
-    coxfit2(&maxiter, &cdata.nids, &X.nrow, cdata.stime.data,
-            cdata.sstat.data, X.data, newoffset.data,
-            cdata.weights.data, cdata.strata.data,
-            means.data, beta.data, u.data,
-            imat.data, loglik_int, &flag, work, &eps, &tol_chol,
-            &sctest);
-#endif
+
 
     niter = maxiter;
 
@@ -449,7 +441,6 @@ void coxph_reg::estimate(coxph_data &cdatain,
              << " setting beta and se to 'nan'\n";
         setToZero = true;
     } else {
-#if EIGEN
         VectorXd ueigen = u.data;
         MatrixXd imateigen = imat.data;
         VectorXd infs = ueigen.transpose() * imateigen;
@@ -463,12 +454,7 @@ void coxph_reg::estimate(coxph_data &cdatain,
 
             setToZero = true;
         }
-#else
-        cerr << "Warning for " << snpinfo.name[cursnp]
-             << ": can't check for infinite betas."
-             << " Please compile ProbABEL with Eigen support to fix this."
-             << endl;
-#endif
+
     }
 
     for (int i = 0; i < X.nrow; i++)

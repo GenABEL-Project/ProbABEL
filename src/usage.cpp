@@ -31,9 +31,7 @@
 #include "config.h"
 #endif
 
-#if EIGEN
 #include "eigen_mematrix.h"
-#endif
 
 
 using std::cout;
@@ -102,11 +100,9 @@ void print_version(void) {
          << " v. " << PACKAGE_VERSION
          << "\n(C) Yurii Aulchenko, Lennart C. Karssen, Maarten Kooyman, "
          << "Maksim Struchalin, The GenABEL team, EMC Rotterdam\n\n";
-#if EIGEN
     cout << "Using EIGEN version " << EIGEN_WORLD_VERSION
          << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION
          << " for matrix operations\n";
-#endif
 }
 
 

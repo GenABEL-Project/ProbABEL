@@ -67,15 +67,8 @@
 
 #include <ctime> //needed for timing loading non file vector format
 
-
-#if EIGEN
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
-#else
-#include "mematrix.h"
-#include "mematri1.h"
-#endif
-
 #include "maskedmatrix.h"
 #include "data.h"
 #include "reg1.h"

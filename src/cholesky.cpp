@@ -9,13 +9,8 @@
 #include <cstdio>
 #include <cstdlib>
 
-#if EIGEN
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
-#else
-#include "mematrix.h"
-#include "mematri1.h"
-#endif
 
 
 /*  SCCS @(#)cholesky2.c    5.2 10/27/98

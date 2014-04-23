@@ -29,13 +29,8 @@
 #ifndef MASKEDMATRIX_H_
 #define MASKEDMATRIX_H_
 
-#if EIGEN
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
-#else
-#include "mematrix.h"
-#include "mematri1.h"
-#endif
 
 class masked_matrix {
  public:

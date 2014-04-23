@@ -31,9 +31,7 @@
 #include <iostream>
 #include "usage.h"
 #include "command_line_settings.h"
-#if EIGEN
 #include "eigen_mematrix.h"
-#endif
 
 // config.h and fvlib/FileVector.h are included for the upper case variables
 #if HAVE_CONFIG_H
