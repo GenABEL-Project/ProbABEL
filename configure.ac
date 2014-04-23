@@ -73,40 +73,22 @@ AC_CHECK_HEADERS([float.h inttypes.h libintl.h limits.h stddef.h \
                           stdint.h stdlib.h string.h sys/param.h \
                           wchar.h wctype.h])
 
+# Option that lets the user specify a path to the EIGEN include files.
+AC_ARG_WITH([eigen-include-path],
+    [AS_HELP_STRING([--with-eigen-include-path],
+      [location of the Eigen headers, defaults to /usr/include/eigen3])],
+    [CXXFLAGS+=" -I${withval}"
+    CPPFLAGS+=" -I${withval}"],
+    [CXXFLAGS+=' -I/usr/include/eigen3'
+    CPPFLAGS+=' -I/usr/include/eigen3'])
 
-# See if we want use of the Eigen library enabled (yes by default) and if so,
-# whether we can find the library files.
-AC_ARG_WITH([eigen],
- AS_HELP_STRING([--with-eigen], [Use the Eigen template library for fast \
-                                    linear algebra (Eigen can be downloaded \
-                                    from eigen.tuxfamily.org); this is enabled \
-                                    by default]
-               )
-)
+# Check for the EIGEN header files
+AC_CHECK_HEADERS([Eigen/Dense Eigen/LU])
 
-if test "x$with_eigen" != "xno"; then
-    AC_MSG_NOTICE([building using the Eigen headers enabled])
-
-    AC_ARG_WITH([eigen-include-path],
-        [AS_HELP_STRING([--with-eigen-include-path],
-          [location of the Eigen headers, defaults to /usr/include/eigen3])],
-        [CXXFLAGS+=" -I${withval}"
-        CPPFLAGS+=" -I${withval}"],
-        [CXXFLAGS+=' -I/usr/include/eigen3'
-        CPPFLAGS+=' -I/usr/include/eigen3'])
-
-    # Check for the EIGEN header files
-    AC_CHECK_HEADERS([Eigen/Dense Eigen/LU])
-
-    if test x$ac_cv_header_Eigen_Dense = xno; then
-      AC_MSG_ERROR([Could not find the Eigen header files. Did you specify \
---with-eigen-include-path correctly? Or use --without-eigen \
-to disable use of fast linear algebra.])
-    fi
-else
-   AC_MSG_NOTICE([not using Eigen for linear algebra])
+if test x$ac_cv_header_Eigen_Dense = xno; then
+  AC_MSG_ERROR([Could not find the Eigen header files. Did you specify \
+--with-eigen-include-path correctly?])
 fi
-AM_CONDITIONAL([WITH_EIGEN], test "x$with_eigen" != "xno")
 
 
 # Checks for typedefs, structures, and compiler characteristics.

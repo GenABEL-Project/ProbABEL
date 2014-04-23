@@ -30,11 +30,6 @@ TESTS = $(check_SCRIPTS)
 ## The palogist R test still doesn't run correctly.
 XFAIL_TESTS = run_R_test_palogist.sh
 
-## The pacoxph R test fails on SNP 6 when EIGEN is not enabled.
-if !WITH_EIGEN
-XFAIL_TESTS += run_R_test_pacox.sh
-endif
-
 EXTRA_DIST = $(check_SCRIPTS) $(R_test_files)
 
 
