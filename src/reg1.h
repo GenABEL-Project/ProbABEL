@@ -104,6 +104,11 @@ class linear_reg: public base_reg {
     void mmscore_regression(const mematrix<double>& X,
             const masked_matrix& W_masked, LDLT<MatrixXd>& Ch);
     void logLikelihood(const mematrix<double>& X);
+    void LeastSquaredRegression(mematrix<double> X,LDLT<MatrixXd>& Ch);
+    void RobustSEandCovariance(mematrix<double> X, mematrix<double> robust_sigma2,
+            MatrixXd tXX_inv, int offset);
+    void PlainSEandCovariance(double sigma2_internal, MatrixXd tXX_inv,
+            int offset);
 };
 
 class logistic_reg: public base_reg {

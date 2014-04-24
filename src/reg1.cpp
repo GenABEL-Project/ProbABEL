@@ -327,6 +327,14 @@ void linear_reg::mmscore_regression(const mematrix<double>& X,
     sigma2 = (Y - tXW * beta_vec).squaredNorm();
     beta.data = beta_vec;
 }
+void linear_reg::LeastSquaredRegression(mematrix<double> X,LDLT<MatrixXd>& Ch) {
+    int m = X.ncol;
+    MatrixXd txx = MatrixXd(m, m).setZero().selfadjointView<Lower>().rankUpdate(
+            X.data.adjoint());
+    Ch = LDLT < MatrixXd > (txx.selfadjointView<Lower>());
+    beta.data = Ch.solve(X.data.adjoint() * reg_data.Y.data);
+    sigma2 = (reg_data.Y.data - (X.data * beta.data)).squaredNorm();
+}
 
 void linear_reg::logLikelihood(const mematrix<double>& X) {
     /*
@@ -363,6 +371,27 @@ void linear_reg::logLikelihood(const mematrix<double>& X) {
 
 }
 
+
+
+void linear_reg::RobustSEandCovariance(mematrix<double> X, mematrix<double> robust_sigma2,
+        MatrixXd tXX_inv, int offset) {
+    MatrixXd Xresiduals = X.data.array().colwise()
+            * residuals.data.col(0).array();
+    MatrixXd XbyR =
+            MatrixXd(X.ncol, X.ncol).setZero().selfadjointView<Lower>().rankUpdate(
+                    Xresiduals.adjoint());
+    robust_sigma2.data = tXX_inv * XbyR * tXX_inv;
+    sebeta.data = robust_sigma2.data.diagonal().array().sqrt();
+    covariance.data =
+            robust_sigma2.data.bottomLeftCorner(offset, offset).diagonal();
+}
+
+void linear_reg::PlainSEandCovariance(double sigma2_internal, MatrixXd tXX_inv,
+        int offset) {
+    sebeta.data = (sigma2_internal * tXX_inv.diagonal().array()).sqrt();
+    covariance.data = sigma2_internal
+            * tXX_inv.bottomLeftCorner(offset, offset).diagonal().array();
+}
 
 void linear_reg::estimate(int verbose, double tol_chol,
         int model, int interaction, int ngpreds, masked_matrix& invvarmatrixin,
@@ -415,13 +444,6 @@ void linear_reg::estimate(int verbose, double tol_chol,
     {
         //retrieve masked data W
         invvarmatrixin.update_mask(reg_data.masked_data);
-
-        // This regression is Weighted Least Square: used for mmscore :
-        // FLOPS count are calculated for 3*1000 matrix as follow:
-        //C=AB (m X n matrix A and n x P matrix B)
-        //flops=mp(2n-1) (when n is big enough flops=mpn2)
-        //Oct 26, 2009
-
         mmscore_regression(X, invvarmatrixin, Ch);
         double N = X.nrow;
         //sigma2_internal = sigma2 / (N - static_cast<double>(length_beta));
@@ -434,14 +456,7 @@ void linear_reg::estimate(int verbose, double tol_chol,
     else  // NO mm-score regression : normal least square regression
     {
 
-        int m = X.ncol;
-        MatrixXd txx = MatrixXd(m, m).setZero().selfadjointView<Lower>().\
-                rankUpdate(X.data.adjoint());
-        Ch = LDLT <MatrixXd>(txx.selfadjointView<Lower>());
-        beta.data = Ch.solve(X.data.adjoint() * reg_data.Y.data);
-        sigma2 = (reg_data.Y.data - (X.data * beta.data)).squaredNorm();
-
-
+        LeastSquaredRegression(X,Ch);
         double N = static_cast<double>(X.nrow);
         double P = static_cast<double>(length_beta);
         sigma2_internal = sigma2 / (N - P);
@@ -468,43 +483,22 @@ void linear_reg::estimate(int verbose, double tol_chol,
                                 Identity(length_beta, length_beta));
 
     mematrix<double> robust_sigma2(X.ncol, X.ncol);
-    if (robust)
-    {
-        MatrixXd Xresiduals = X.data.array().colwise()\
-            *residuals.data.col(0).array();
-        MatrixXd  XbyR = MatrixXd(X.ncol, X.ncol).setZero()\
-            .selfadjointView<Lower>().rankUpdate(Xresiduals.adjoint());
-        robust_sigma2.data = tXX_inv * XbyR * tXX_inv;
-    }
-    //cout << "estimate 0\n";
-    if (robust)
-    {
-        sebeta.data = robust_sigma2.data.diagonal().array().sqrt();
-    }
-    else
-    {
-        sebeta.data =
-                (sigma2_internal
-                        * tXX_inv.diagonal().array()).sqrt();
-    }
+
+
     int offset = X.ncol- 1;
-    //if additive and interaction and 2 predictors and more then 2 betas
-
-    if (model == 0 && interaction != 0 && ngpreds == 2 && length_beta > 2){
-        offset = X.ncol - 2;
-    }
+     //if additive and interaction and 2 predictors and more then 2 betas
+     if (model == 0 && interaction != 0 && ngpreds == 2 && length_beta > 2){
+         offset = X.ncol - 2;
+     }
 
     if (robust)
     {
-        covariance.data = robust_sigma2.data.bottomLeftCorner(
-                offset, offset).diagonal();
+        RobustSEandCovariance(X, robust_sigma2, tXX_inv, offset);
     }
     else
     {
-            covariance.data = sigma2_internal
-                    * tXX_inv.bottomLeftCorner(offset,
-                            offset).diagonal().array();
-        }
+        PlainSEandCovariance(sigma2_internal, tXX_inv, offset);
+    }
 
 }
 
