@@ -33,7 +33,7 @@ if test "x$devoptions" = "xyes"; then
    AC_MSG_NOTICE([Building with developer options enabled])
    if test -z "$CXXFLAGS"; then
       # User did not set CXXFLAGS, so we can put in our own defaults
-      CXXFLAGS="-O2"
+      CXXFLAGS=""
    fi
    if test -z "$CPPFLAGS"; then
       # User did not set CPPFLAGS, so we can put in our own defaults
