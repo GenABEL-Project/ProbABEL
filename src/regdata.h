@@ -91,7 +91,7 @@ class regdata {
      * ID/sample will be masked because the SNP data is NA for that
      * ID.
      */
-    bool *masked_data;
+    std::vector<bool> masked_data;
 
     /**
      * Number of non-masked genotypes.

@@ -58,7 +58,6 @@ regdata::regdata()
     ngpreds                 = 0;
     noutcomes               = 0;
     is_interaction_excluded = false;
-    masked_data             = NULL;
     gcount                  = 0;
     freq                    = 0;
 }
@@ -80,9 +79,7 @@ regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
     gcount = obj.gcount;
     freq = obj.freq;
     is_interaction_excluded = obj.is_interaction_excluded;
-    masked_data = new bool[nids];
-
-    std::copy(obj.masked_data, obj.masked_data + nids, masked_data);
+    masked_data = obj.masked_data;
 }
 
 
@@ -105,9 +102,8 @@ regdata::regdata(phedata &phed, gendata &gend, const int snpnum,
     freq        = 0;
     gcount      = 0;
     nids        = gend.nids;
-    masked_data = new bool[nids];
+    masked_data = std::vector<bool>(nids, false);
 
-    std::fill(masked_data, masked_data + nids, 0);
     ngpreds = gend.ngpreds;
 
     if (snpnum >= 0)
@@ -178,13 +174,14 @@ void regdata::update_snp(gendata *gend, const int snpnum)
     for (int j = 0; j < ngpreds; j++)
     {
         double *snpdata = new double[nids];
-        std::fill(masked_data, masked_data + nids, 0);
+        masked_data = std::vector<bool>(nids, false);
+
         gend->get_var(snpnum * ngpreds + j, snpdata);
 
         for (int i = 0; i < nids; i++) {
             X.put(snpdata[i], i, (ncov - j));
             if (std::isnan(snpdata[i])) {
-                masked_data[i] = 1;
+                masked_data[i] = true;
             } else {
                 // SNP not masked
                 // check for first predictor
@@ -257,8 +254,9 @@ void regdata::remove_snp_from_X()
  */
 regdata regdata::get_unmasked_data()
 {
-    regdata to;  // = regdata(*this);
-    int nmeasured = std::count(masked_data, masked_data + nids, 0);
+    regdata to;
+    int nmeasured = std::count(masked_data.begin(), masked_data.end(), 0);
+
     to.nids                    = nmeasured;
     to.ncov                    = ncov;
     to.ngpreds                 = ngpreds;
@@ -287,11 +285,7 @@ regdata regdata::get_unmasked_data()
         }
     }
 
-    // delete [] to.masked_data;
-    const int arr_size = nids;
-    to.masked_data = new bool[arr_size];
-    std::copy(masked_data, masked_data + arr_size, to.masked_data);
-
+    to.masked_data = masked_data;
     return (to);
 }
 

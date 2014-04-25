@@ -83,13 +83,7 @@ class base_reg {
 class linear_reg: public base_reg {
  public:
     linear_reg(regdata& rdatain);
-    ~linear_reg()
-    {
-        delete [] reg_data.masked_data;
-        //		delete beta;
-        //		delete sebeta;
-        //		delete residuals;
-    }
+    // ~linear_reg();
 
     void estimate(int verbose, double tol_chol, int model,
                   int interaction, int ngpreds,
@@ -102,13 +96,15 @@ class linear_reg: public base_reg {
 
  private:
     void mmscore_regression(const mematrix<double>& X,
-            const masked_matrix& W_masked, LDLT<MatrixXd>& Ch);
+                            const masked_matrix& W_masked,
+                            LDLT<MatrixXd>& Ch);
     void logLikelihood(const mematrix<double>& X);
-    void LeastSquaredRegression(mematrix<double> X,LDLT<MatrixXd>& Ch);
-    void RobustSEandCovariance(mematrix<double> X, mematrix<double> robust_sigma2,
-            MatrixXd tXX_inv, int offset);
+    void LeastSquaredRegression(mematrix<double> X, LDLT<MatrixXd>& Ch);
+    void RobustSEandCovariance(mematrix<double> X,
+                               mematrix<double> robust_sigma2,
+                               MatrixXd tXX_inv, int offset);
     void PlainSEandCovariance(double sigma2_internal, MatrixXd tXX_inv,
-            int offset);
+                              int offset);
 };
 
 class logistic_reg: public base_reg {
@@ -116,12 +112,7 @@ class logistic_reg: public base_reg {
     int niter;
 
     logistic_reg(regdata& rdatain);
-    ~logistic_reg()
-    {
-        delete [] reg_data.masked_data;
-        //		delete beta;
-        //		delete sebeta;
-    }
+    // ~logistic_reg();
 
     void estimate(int verbose, int maxiter, double eps,
                   int model, int interaction, int ngpreds,
@@ -133,4 +124,4 @@ class logistic_reg: public base_reg {
                masked_matrix& invvarmatrix, int nullmodel = 0);
 };
 
-#endif//REG1_H_
+#endif // REG1_H_
