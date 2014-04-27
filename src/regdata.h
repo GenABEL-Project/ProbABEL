@@ -124,13 +124,13 @@ class regdata {
     // Constructors and destructors
     regdata();
     regdata(const regdata &obj);
-    regdata(phedata &phed, gendata &gend, const int snpnum,
+    regdata(const phedata &phed, const gendata &gend, const int snpnum,
             const bool ext_is_interaction_excluded);
     //~regdata();
 
 
     // Member functions.
-    void update_snp(gendata *gend, const int snpnum);
+    void update_snp(const gendata *gend, const int snpnum);
     void remove_snp_from_X();
     regdata get_unmasked_data();
     mematrix<double> extract_genotypes();

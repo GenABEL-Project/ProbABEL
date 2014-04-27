@@ -41,18 +41,27 @@ class gendata {
     unsigned int nids;
     unsigned int ngpreds;
     gendata();
-    void mldose_line_to_matrix(int k, const char *all_numbers,
-                               int amount_of_numbers);
+    void mldose_line_to_matrix(const int k,
+                               const char *all_numbers,
+                               const int amount_of_numbers);
 
-    void re_gendata(char * fname, unsigned int insnps, unsigned int ingpreds,
-            unsigned int npeople, unsigned int nmeasured,
-            unsigned short int * allmeasured, int skipd, std::string * idnames);
+    void re_gendata(const char * fname,
+                    const unsigned int insnps,
+                    const unsigned int ingpreds,
+                    const unsigned int npeople,
+                    const unsigned int nmeasured,
+                    const unsigned short int * allmeasured,
+                    const int skipd,
+                    const std::string * idnames);
 
-    void re_gendata(string filename, unsigned int insnps, unsigned int ingpreds,
-            unsigned int npeople, unsigned int nmeasured,
-            unsigned short int * allmeasured, std::string * idnames);
+    void re_gendata(const string filename, const unsigned int insnps,
+                    const unsigned int ingpreds,
+                    const unsigned int npeople,
+                    const unsigned int nmeasured,
+                    const unsigned short int * allmeasured,
+                    const std::string * idnames);
 
-    void get_var(int var, double * data);
+    void get_var(const int var, double * data) const;
 
     ~gendata();
 

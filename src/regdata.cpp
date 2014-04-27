@@ -96,7 +96,7 @@ regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
  * \param ext_is_interaction_excluded Boolean that shows whether
  * interactions are excluded.
  */
-regdata::regdata(phedata &phed, gendata &gend, const int snpnum,
+regdata::regdata(const phedata &phed, const gendata &gend, const int snpnum,
                  const bool ext_is_interaction_excluded)
 {
     freq        = 0;
@@ -163,7 +163,7 @@ regdata::regdata(phedata &phed, gendata &gend, const int snpnum,
  * @param snpnum Number of the SNP for which the dosage/probability
  * data will be extracted from the gend object.
  */
-void regdata::update_snp(gendata *gend, const int snpnum)
+void regdata::update_snp(const gendata *gend, const int snpnum)
 {
     // Reset counter for frequency since it is a new SNP
     gcount = 0;
