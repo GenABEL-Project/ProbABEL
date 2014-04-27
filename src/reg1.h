@@ -50,10 +50,8 @@
 #ifndef REG1_H_
 #define REG1_H_
 #include <cmath>
-#include "cholesky.h"
 #include "regdata.h"
 #include "maskedmatrix.h"
-
 
 mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
         int ngpreds, bool is_interaction_excluded, bool iscox = false,
@@ -99,11 +97,10 @@ class linear_reg: public base_reg {
                             const masked_matrix& W_masked,
                             LDLT<MatrixXd>& Ch);
     void logLikelihood(const mematrix<double>& X);
-    void LeastSquaredRegression(mematrix<double> X, LDLT<MatrixXd>& Ch);
-    void RobustSEandCovariance(mematrix<double> X,
-                               mematrix<double> robust_sigma2,
-                               MatrixXd tXX_inv, int offset);
-    void PlainSEandCovariance(double sigma2_internal, MatrixXd tXX_inv,
+    void LeastSquaredRegression(const mematrix<double> & X,LDLT<MatrixXd>& Ch);
+    void RobustSEandCovariance(const mematrix<double> & X,
+            mematrix <double> robust_sigma2, MatrixXd tXX_inv, int offset);
+    void PlainSEandCovariance(double sigma2_internal, const MatrixXd & tXX_inv,
                               int offset);
 };
 

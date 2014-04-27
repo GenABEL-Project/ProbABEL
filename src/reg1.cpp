@@ -275,10 +275,12 @@ void base_reg::base_score(mematrix<double>& resid,
             reg_data.is_interaction_excluded, false, nullmodel);
     beta.reinit(X.ncol, 1);
     sebeta.reinit(X.ncol, 1);
+    int length_beta=X.ncol;
     double N = static_cast<double>(resid.nrow);
     mematrix<double> tX = transpose(X);
-    if (invvarmatrix.length_of_mask != 0)
+    if (invvarmatrix.length_of_mask != 0){
         tX = tX * invvarmatrix.masked_data;
+    }
 
     mematrix<double> u = tX * resid;
     mematrix<double> v = tX * X;
@@ -287,12 +289,16 @@ void base_reg::base_score(mematrix<double>& resid,
     csum = csum * (1. / N);
     v = v - csum;
     // use cholesky to invert
-    mematrix<double> v_i = v;
-    cholesky2_mm(v_i, tol_chol);
-    chinv2_mm(v_i);
+
+    LDLT <MatrixXd> Ch = LDLT < MatrixXd > (v.data.selfadjointView<Lower>());
     // before was
     // mematrix<double> v_i = invert(v);
-    beta = v_i * u;
+    beta.data = Ch.solve(v.data.adjoint() * u.data);
+    //TODO(maartenk): set size of v_i directly or remove mematrix class
+    mematrix<double> v_i = v;
+    v_i.data = Ch.solve(MatrixXd(length_beta, length_beta).
+                                    Identity(length_beta, length_beta));
+
     double sr = 0.;
     double srr = 0.;
     for (int i = 0; i < resid.nrow; i++)
@@ -327,7 +333,7 @@ void linear_reg::mmscore_regression(const mematrix<double>& X,
     sigma2 = (Y - tXW * beta_vec).squaredNorm();
     beta.data = beta_vec;
 }
-void linear_reg::LeastSquaredRegression(mematrix<double> X,LDLT<MatrixXd>& Ch) {
+void linear_reg::LeastSquaredRegression(const mematrix<double>& X, LDLT<MatrixXd>& Ch) {
     int m = X.ncol;
     MatrixXd txx = MatrixXd(m, m).setZero().selfadjointView<Lower>().rankUpdate(
             X.data.adjoint());
@@ -368,12 +374,11 @@ void linear_reg::logLikelihood(const mematrix<double>& X) {
     //residuals[i] -= resid_sub;
     loglik -= (residuals.data.array().square() * halfrecsig2).sum();
     loglik -= static_cast<double>(reg_data.nids) * log(sqrt(sigma2));
-
 }
 
 
 
-void linear_reg::RobustSEandCovariance(mematrix<double> X, mematrix<double> robust_sigma2,
+void linear_reg::RobustSEandCovariance(const mematrix<double> &X, mematrix<double> robust_sigma2,
         MatrixXd tXX_inv, int offset) {
     MatrixXd Xresiduals = X.data.array().colwise()
             * residuals.data.col(0).array();
@@ -386,7 +391,7 @@ void linear_reg::RobustSEandCovariance(mematrix<double> X, mematrix<double> robu
             robust_sigma2.data.bottomLeftCorner(offset, offset).diagonal();
 }
 
-void linear_reg::PlainSEandCovariance(double sigma2_internal, MatrixXd tXX_inv,
+void linear_reg::PlainSEandCovariance(double sigma2_internal,const MatrixXd &tXX_inv,
         int offset) {
     sebeta.data = (sigma2_internal * tXX_inv.diagonal().array()).sqrt();
     covariance.data = sigma2_internal
@@ -438,7 +443,6 @@ void linear_reg::estimate(int verbose, double tol_chol,
 
     double sigma2_internal;
 
-
     LDLT <MatrixXd> Ch;
     if (invvarmatrixin.length_of_mask != 0)
     {
@@ -481,9 +485,7 @@ void linear_reg::estimate(int verbose, double tol_chol,
 
     MatrixXd tXX_inv = Ch.solve(MatrixXd(length_beta, length_beta).
                                 Identity(length_beta, length_beta));
-
     mematrix<double> robust_sigma2(X.ncol, X.ncol);
-
 
     int offset = X.ncol- 1;
      //if additive and interaction and 2 predictors and more then 2 betas
@@ -499,9 +501,7 @@ void linear_reg::estimate(int verbose, double tol_chol,
     {
         PlainSEandCovariance(sigma2_internal, tXX_inv, offset);
     }
-
 }
-
 
 void linear_reg::score(mematrix<double>& resid,
         double tol_chol, int model, int interaction, int ngpreds,
@@ -510,7 +510,6 @@ void linear_reg::score(mematrix<double>& resid,
     base_score(resid,  tol_chol, model, interaction, ngpreds,
             invvarmatrix, nullmodel = 0);
 }
-
 
 logistic_reg::logistic_reg(regdata& rdatain) {
     reg_data = rdatain.get_unmasked_data();
