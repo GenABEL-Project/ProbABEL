@@ -44,7 +44,7 @@ template<class DT> class mematrix {
         nrow = ncol = nelements = 0;
         data.resize(1, 1);
     }
-    mematrix(int nr, int nc);
+    mematrix(const int nr, const int nc);
     mematrix(const mematrix &M);
     ~mematrix()
     {
@@ -53,33 +53,33 @@ template<class DT> class mematrix {
     }
 
     mematrix & operator=(const mematrix &M);
-    DT & operator[](int i);
+    DT & operator[](const int i);
 //    mematrix operator+(DT toadd);
     mematrix operator+(const mematrix &M);
-    mematrix operator-(DT toadd);
+    mematrix operator-(const DT toadd);
     mematrix operator-(const mematrix &M);
-    mematrix operator*(DT toadd);
+    mematrix operator*(const DT toadd);
     mematrix operator*(const mematrix &M);
     mematrix operator*(const mematrix *M);
 
     void delete_column(const int delcol);
     void delete_row(const int delrow);
 
-    void reinit(int nr, int nc);
+    void reinit(const int nr, const int nc);
 
-    unsigned int getnrow(void)
+    unsigned int getnrow(void) const
     {
         return nrow;
     }
-    unsigned int getncol(void)
+    unsigned int getncol(void) const
     {
         return ncol;
     }
-    DT get(int nr, int nc);
-    void put(DT value, int nr, int nc);
-    DT column_mean(int nc);
-    DT column_sum(int nc);
-    void print(void);
+    DT get(const int nr, const int nc) const;
+    void put(const DT value, const int nr, const int nc);
+    DT column_mean(const int nc) const;
+    DT column_sum(const int nc);
+    void print(void) const;
 };
 
 #endif
