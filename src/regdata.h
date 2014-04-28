@@ -83,13 +83,12 @@ class regdata {
     bool is_interaction_excluded;
 
     /**
-     * Pointer to an array that contains ones/zeros to indicate which
-     * data points should be omitted because no genetic data is
-     * present.
+     * A vector that contains ones/zeros to indicate which data points
+     * should be omitted because no genetic data is present.
      *
-     * The array is regdata::nids long. A value of 1 means that that
-     * ID/sample will be masked because the SNP data is NA for that
-     * ID.
+     * The vector is regdata::nids long. A value of 1 or 'true' means
+     * that that ID/sample will be masked because the SNP data is NA
+     * for that ID.
      */
     std::vector<bool> masked_data;
 
