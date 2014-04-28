@@ -57,11 +57,11 @@ void gendata::mldose_line_to_matrix(const int k,
 
         // check NaN (right now checks only first character)
         // TODO: make catching of NaN more rigid
-        if (*all_numbers == 'N')
+        if (toupper(*all_numbers) == 'N')
         {
             result = std::numeric_limits<double>::quiet_NaN();
             // Skip other characters of NaN
-            while ((*all_numbers == 'a') | (*all_numbers == 'N'))
+            while ((toupper(*all_numbers) == 'A') | (toupper(*all_numbers) == 'N'))
             {
                 all_numbers++;
             }
