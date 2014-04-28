@@ -152,7 +152,7 @@ regdata::regdata(const phedata &phed, const gendata &gend, const int snpnum,
 
 
 /**
- * Update the SNP dosages/probabilities in the design matrix
+ * \brief Update the SNP dosages/probabilities in the design matrix
  * regdata::X.
  *
  * Adds the genetic information for a new SNP to the design
@@ -207,6 +207,8 @@ void regdata::update_snp(const gendata *gend, const int snpnum)
 
 
 /**
+ * \brief Remove SNP information from the design matrix regdata::X.
+ *
  * update_snp() adds SNP information to the design matrix. This
  * function allows you to strip that information from X again.
  * This is used for example when calculating the null model.
@@ -229,18 +231,10 @@ void regdata::remove_snp_from_X()
     }
 }
 
-//
-//regdata::~regdata()
-//{
-//    //delete[] regdata::masked_data;
-//    // delete X;
-//    // delete Y;
-//}
-
 
 /**
- * Create a new regdata object that contains only the non-masked
- * data.
+ * \brief Create a new regdata object that contains only the
+ * non-masked data.
  *
  * The non-masked data is extracted according to the data in the
  * regdata::masked_data array. The resulting regdata::nids corresponds

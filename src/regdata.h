@@ -55,7 +55,7 @@ class regdata {
     int nids;                   /**< Number of IDs/samples. */
 
     /**
-     * Number of covariates + possible nr of genomic predictors.
+     * \brief Number of covariates + possible nr of genomic predictors.
      *
      * If snpnum >=0 then this equals the number of covariates + the
      * number of regdata::ngpreds.
@@ -63,19 +63,18 @@ class regdata {
     int ncov;
 
     /**
-     * Number of genomic predictors, 1 for dosage data, 2 for
+     * \brief Number of genomic predictors, 1 for dosage data, 2 for
      * probability data.
-     *
      */
     int ngpreds;
 
      /**
-      * Number of outcomes, taken from phedata::noutcomes.
+      * \brief Number of outcomes, taken from phedata::noutcomes.
       */
     int noutcomes;
 
     /**
-     * Boolean that indicates whether the command line option
+     * \brief Boolean that indicates whether the command line option
      * --interaction_only was set.
      *
      * See cmdvars::is_interaction_excluded.
@@ -83,8 +82,8 @@ class regdata {
     bool is_interaction_excluded;
 
     /**
-     * A vector that contains ones/zeros to indicate which data points
-     * should be omitted because no genetic data is present.
+     * \brief A vector that contains ones/zeros to indicate which data
+     * points should be omitted because no genetic data is present.
      *
      * The vector is regdata::nids long. A value of 1 or 'true' means
      * that that ID/sample will be masked because the SNP data is NA
@@ -93,26 +92,26 @@ class regdata {
     std::vector<bool> masked_data;
 
     /**
-     * Number of non-masked genotypes.
+     * \brief Number of non-masked genotypes.
      */
     unsigned int gcount;
 
     /**
-     * Allele frequency.
+     * \brief Allele frequency.
      *
      * Calculation is only based on non-masked SNPs.
      */
     double freq;
 
     /**
-     * The design matrix.
+     * \brief The design matrix.
      *
      * The matrix dimensions are regdata::nids x (regdata::ncov + 1)
      */
     mematrix<double> X;
 
     /**
-     * Matrix containing the phenotype data.
+     * \brief Matrix containing the phenotype data.
      *
      * The matrix dimensions are regdata::nids x
      * regdata::noutcomes.
