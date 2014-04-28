@@ -252,7 +252,7 @@ void regdata::remove_snp_from_X()
  * @return A new regdata object containing only the rows from
  * regdata::X and regdata::Y for which genotype data is present.
  */
-regdata regdata::get_unmasked_data()
+regdata regdata::get_unmasked_data() const
 {
     regdata to;
     int nmeasured = std::count(masked_data.begin(), masked_data.end(), 0);

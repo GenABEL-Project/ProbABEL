@@ -132,7 +132,7 @@ class regdata {
     // Member functions.
     void update_snp(const gendata *gend, const int snpnum);
     void remove_snp_from_X();
-    regdata get_unmasked_data();
+    regdata get_unmasked_data() const;
     mematrix<double> extract_genotypes();
 
  private:
