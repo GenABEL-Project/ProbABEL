@@ -92,19 +92,19 @@ coxph_data::coxph_data()
  * object.
  */
 coxph_data::coxph_data(const coxph_data &obj) : X(obj.X),
+                                                stime(obj.stime),
                                                 sstat(obj.sstat),
+                                                weights(obj.weights),
                                                 offset(obj.offset),
                                                 strata(obj.strata),
-                                                order(obj.order)
+                                                order(obj.order),
+                                                masked_data(obj.masked_data)
 {
     nids        = obj.nids;
     ncov        = obj.ncov;
     ngpreds     = obj.ngpreds;
-    weights     = obj.weights;
-    stime       = obj.stime;
     gcount      = 0;
     freq        = 0;
-    masked_data = obj.masked_data;
 }
 
 

@@ -70,7 +70,8 @@ regdata::regdata()
  * \param obj Reference to the regdata object to be copied to the new
  * object
  */
-regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
+regdata::regdata(const regdata &obj) : masked_data(obj.masked_data),
+                                       X(obj.X), Y(obj.Y)
 {
     nids = obj.nids;
     ncov = obj.ncov;
@@ -79,7 +80,6 @@ regdata::regdata(const regdata &obj) : X(obj.X), Y(obj.Y)
     gcount = obj.gcount;
     freq = obj.freq;
     is_interaction_excluded = obj.is_interaction_excluded;
-    masked_data = obj.masked_data;
 }
 
 
