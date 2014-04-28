@@ -150,6 +150,12 @@ char* cmdvars::getPhefilename() const
 }
 
 
+/**
+ * Process the command line arguments and save them in a cmdvars object.
+ *
+ * @param argc Number of command line arguments
+ * @param argv Values of the command line arguments
+ */
 void cmdvars::set_variables(int argc, char * argv[])
 {
     int next_option;
