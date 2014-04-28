@@ -305,7 +305,7 @@ void base_reg::base_score(const mematrix<double>& resid,
             reg_data.is_interaction_excluded, false, nullmodel);
     beta.reinit(X.ncol, 1);
     sebeta.reinit(X.ncol, 1);
-    int length_beta=X.ncol;
+    int length_beta = X.ncol;
     double N = static_cast<double>(resid.nrow);
     mematrix<double> tX = transpose(X);
     if (invvarmatrix.length_of_mask != 0){
@@ -415,21 +415,21 @@ void linear_reg::logLikelihood(const mematrix<double>& X) {
 
 void linear_reg::RobustSEandCovariance(const mematrix<double> &X,
                                        mematrix<double> robust_sigma2,
-                                       MatrixXd tXX_inv,
+                                       const MatrixXd tXX_inv,
                                        const int offset) {
     MatrixXd Xresiduals = X.data.array().colwise()
-            * residuals.data.col(0).array();
+        * residuals.data.col(0).array();
     MatrixXd XbyR =
-            MatrixXd(X.ncol, X.ncol).setZero().selfadjointView<Lower>().rankUpdate(
-                    Xresiduals.adjoint());
+        MatrixXd(X.ncol, X.ncol).setZero().selfadjointView<Lower>().rankUpdate(
+            Xresiduals.adjoint());
     robust_sigma2.data = tXX_inv * XbyR * tXX_inv;
     sebeta.data = robust_sigma2.data.diagonal().array().sqrt();
     covariance.data =
-            robust_sigma2.data.bottomLeftCorner(offset, offset).diagonal();
+        robust_sigma2.data.bottomLeftCorner(offset, offset).diagonal();
 }
 
 
-void linear_reg::PlainSEandCovariance(double sigma2_internal,
+void linear_reg::PlainSEandCovariance(const double sigma2_internal,
                                       const MatrixXd &tXX_inv,
                                       const int offset) {
     sebeta.data = (sigma2_internal * tXX_inv.diagonal().array()).sqrt();
@@ -501,8 +501,7 @@ void linear_reg::estimate(const int verbose, const double tol_chol,
     }
     else  // NO mm-score regression : normal least square regression
     {
-
-        LeastSquaredRegression(X,Ch);
+        LeastSquaredRegression(X, Ch);
         double N = static_cast<double>(X.nrow);
         double P = static_cast<double>(length_beta);
         sigma2_internal = sigma2 / (N - P);
@@ -579,9 +578,11 @@ logistic_reg::logistic_reg(const regdata& rdatain)
 }
 
 
-void logistic_reg::estimate(int verbose, int maxiter,
-        double eps, int model, int interaction, int ngpreds,
-        masked_matrix& invvarmatrixin, int robust, int nullmodel) {
+void logistic_reg::estimate(const int verbose, const int maxiter,
+                            const double eps, const int model,
+                            const int interaction, const int ngpreds,
+                            masked_matrix& invvarmatrixin,
+                            const int robust, const int nullmodel) {
     // In contrast to the 'linear' case 'invvarmatrix' contains the
     // inverse of correlation matrix (not the inverse of var-cov matrix)
     // h2.object$InvSigma * h.object2$h2an$estimate[length(h2$h2an$estimate)]

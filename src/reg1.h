@@ -114,9 +114,9 @@ class linear_reg: public base_reg {
                                 LDLT<MatrixXd>& Ch);
     void RobustSEandCovariance(const mematrix<double> & X,
                                mematrix <double> robust_sigma2,
-                               MatrixXd tXX_inv,
+                               const MatrixXd tXX_inv,
                                const int offset);
-    void PlainSEandCovariance(double sigma2_internal,
+    void PlainSEandCovariance(const double sigma2_internal,
                               const MatrixXd & tXX_inv,
                               const int offset);
 };
