@@ -42,17 +42,21 @@ class phedata {
         noutcomes               = 0;
         ncov                    = 0;
         n_model_terms           = 0;
-        allmeasured = NULL;
-        idnames     = NULL;
-        model_terms = NULL;
+        allmeasured             = NULL;
+        idnames                 = NULL;
+        model_terms             = NULL;
     }
 
-    phedata(char * fname, int noutc, int npeople, int interaction, bool iscox);
+    phedata(const char * fname, const int noutc, const int npeople,
+            const int interaction, const bool iscox);
 
-    void setphedata(char * fname, int noutc, int npeople, int interaction,
-                    bool iscox);
+    ~phedata();
 
-    void set_is_interaction_excluded(bool inter_excluded);
+
+    void setphedata(const char * fname, const int noutc, const int npeople,
+                    const int interaction, const bool iscox);
+    void set_is_interaction_excluded(const bool inter_excluded);
+
 
     bool is_interaction_excluded;
     int nids_all;
@@ -66,8 +70,6 @@ class phedata {
     std::string * model_terms;
     mematrix<double> X;       /* Will contain the values of the covariate(s) */
     mematrix<double> Y;       /* Will contain the values of the outcome(s) */
-
-    ~phedata();
 };
 
 #endif /* PHEDATA_H_ */
