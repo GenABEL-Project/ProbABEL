@@ -215,20 +215,21 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
     delete[] passed_sorted;
 }
 
-void coxph_data::update_snp(gendata *gend, const int snpnum) {
-    /**
+void coxph_data::update_snp(const gendata *gend, const int snpnum) {
+    /*
      * This is the main part of the fix of bug #1846
      * (C) of the fix:
      *   UMC St Radboud Nijmegen,
      *   Dept of Epidemiology & Biostatistics,
      *   led by Prof. B. Kiemeney
-     *
+     */
+    /**
      * Note this sorts by "order"!!!
      * Here we deal with transposed X, hence last two arguments are swapped
-     * compared to the other 'update_snp'
+     * compared to regdata::update_snp().
      * Also, the starting column-1 is not necessary for cox X therefore
      * 'ncov-j' changes to 'ncov-j-1'
-     **/
+     */
 
     // reset counter for frequency since it is a new snp
     gcount = 0;
@@ -236,7 +237,7 @@ void coxph_data::update_snp(gendata *gend, const int snpnum) {
 
     for (int j = 0; j < ngpreds; j++) {
         double *snpdata = new double[nids];
-       std::fill (masked_data, masked_data + nids, 0);
+        std::fill (masked_data, masked_data + nids, 0);
 
         gend->get_var(snpnum * ngpreds + j, snpdata);
 
