@@ -39,6 +39,8 @@ template<class DT> class mematrix {
     int nelements;
     Matrix<DT, Dynamic, Dynamic, RowMajor> data;
 
+
+    // Constructors and destructors
     mematrix()
     {
         nrow = ncol = nelements = 0;
@@ -46,15 +48,13 @@ template<class DT> class mematrix {
     }
     mematrix(const int nr, const int nc);
     mematrix(const mematrix &M);
-    ~mematrix()
-    {
-//        if (nelements > 0)
-//            delete data;
-    }
+    // ~mematrix()
 
+
+    // Operator overloading
     mematrix & operator=(const mematrix &M);
-    DT & operator[](const int i);
-//    mematrix operator+(DT toadd);
+    const DT & operator[](const int i) const; /* Subscript for reading */
+    DT & operator[](const int i);             /* Subscript for writing */
     mematrix operator+(const mematrix &M);
     mematrix operator-(const DT toadd);
     mematrix operator-(const mematrix &M);
@@ -62,6 +62,8 @@ template<class DT> class mematrix {
     mematrix operator*(const mematrix &M);
     mematrix operator*(const mematrix *M);
 
+
+    // Other member functions
     void delete_column(const int delcol);
     void delete_row(const int delrow);
 

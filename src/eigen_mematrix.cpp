@@ -80,7 +80,7 @@ mematrix<DT> &mematrix<DT>::operator=(const mematrix<DT> &M)
 }
 
 template<class DT>
-DT & mematrix<DT>::operator[](const int i)
+const DT & mematrix<DT>::operator[](const int i) const
 {
     if (i < 0 || i >= (ncol * nrow))
     {
@@ -94,14 +94,21 @@ DT & mematrix<DT>::operator[](const int i)
     return data(row, column);
 }
 
-// template<class DT>
-// mematrix<DT> mematrix<DT>::operator+(DT toadd)
-// {
-//     mematrix<DT> temp(nrow, ncol);
-//     for (int i = 0; i < nelements; i++)
-//         temp.data[i] = data[i] + toadd;
-//     return temp;
-// }
+
+template<class DT>
+DT & mematrix<DT>::operator[](const int i)
+{
+    if (i < 0 || i >= (ncol * nrow))
+    {
+        std::cerr << "mematrix[]: " << i << " out of bounds (0,"
+                  << nrow * ncol - 1 << ")\n";
+        exit(1);
+    }
+    int column = i % ncol;
+    int row = static_cast<int>( floor(static_cast<double>(i / ncol)) );
+
+    return data(row, column);
+}
 
 template<class DT>
 mematrix<DT> mematrix<DT>::operator+(const mematrix<DT> &M)
