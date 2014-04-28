@@ -51,7 +51,7 @@ class coxph_data {
     mematrix<int>    strata;
     mematrix<double> X;
     mematrix<int>    order;
-    unsigned short int * masked_data;
+    std::vector<bool> masked_data;
 
 
     coxph_data()
@@ -59,17 +59,16 @@ class coxph_data {
         nids        = 0;
         ncov        = 0;
         ngpreds     = 0;
-        masked_data = NULL;
         gcount      = 0;
         freq        = 0;
     }
 
     coxph_data(const coxph_data &obj);
-    coxph_data(phedata &phed, gendata &gend, const int snpnum);
+    coxph_data(const phedata &phed, const gendata &gend, const int snpnum);
     ~coxph_data();
 
 
-    coxph_data get_unmasked_data();
+    coxph_data get_unmasked_data() const;
     void update_snp(const gendata *gend, const int snpnum);
     void remove_snp_from_X();
 };
@@ -89,7 +88,7 @@ class coxph_reg {
     coxph_reg(coxph_data &cdatain);
 
 
-    void estimate(coxph_data &cdatain, int maxiter,
+    void estimate(const coxph_data &cdatain, int maxiter,
                   double eps, double tol_chol, const int model,
                   const int interaction, const int ngpreds, const bool iscox,
                   const int nullmodel, const mlinfo &snpinfo, const int cursnp);

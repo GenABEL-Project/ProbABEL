@@ -80,20 +80,16 @@ coxph_data::coxph_data(const coxph_data &obj) : sstat(obj.sstat),
     stime       = obj.stime;
     gcount      = 0;
     freq        = 0;
-    masked_data = new unsigned short int[nids];
-
-    std::copy(obj.masked_data, obj.masked_data + nids, masked_data);
+    masked_data = obj.masked_data;
 }
 
-coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
+coxph_data::coxph_data(const phedata &phed, const gendata &gend,
+                       const int snpnum)
 {
     freq        = 0;
     gcount      = 0;
     nids        = gend.nids;
-    masked_data = new unsigned short int[nids];
-
-
-    std::fill(masked_data,masked_data + nids, 0);
+    masked_data = std::vector<bool>(nids, false);
 
     ngpreds = gend.ngpreds;
     if (snpnum >= 0)
@@ -237,14 +233,14 @@ void coxph_data::update_snp(const gendata *gend, const int snpnum) {
 
     for (int j = 0; j < ngpreds; j++) {
         double *snpdata = new double[nids];
-        std::fill (masked_data, masked_data + nids, 0);
+        masked_data = std::vector<bool>(nids, false);
 
         gend->get_var(snpnum * ngpreds + j, snpdata);
 
         for (int i = 0; i < nids; i++) {
             X.put(snpdata[i], (ncov - j - 1), order[i]);
             if (std::isnan(snpdata[i])) {
-                masked_data[order[i]] = 1;
+                masked_data[order[i]] = true;
                 // snp not masked
             } else {
                 // check for first predictor
@@ -256,14 +252,14 @@ void coxph_data::update_snp(const gendata *gend, const int snpnum) {
                         freq += snpdata[i];
                     }
                 } else if (j == 1) {
-                    // add second genotype in two predicor data form
+                    // Add second genotype in two predicor data form
                     freq += snpdata[i] * 0.5;
                 }
             }    // end std::isnan(snpdata[i]) snp
-        }    // end i for loop
+        }    // end for loop: i=0 to nids
 
         delete[] snpdata;
-    }    // end ngpreds loop
+    }    // End for loop: j=0 to ngpreds
 
     freq /= static_cast<double>(gcount);  // Allele frequency
 }
@@ -296,25 +292,14 @@ void coxph_data::remove_snp_from_X()
 
 coxph_data::~coxph_data()
 {
-    delete[] coxph_data::masked_data;
-    //      delete X;
-    //      delete sstat;
-    //      delete stime;
-    //      delete weights;
-    //      delete offset;
-    //      delete strata;
-    //      delete order;
 }
 
 
-coxph_data coxph_data::get_unmasked_data()
+coxph_data coxph_data::get_unmasked_data() const
 {
-    coxph_data to;  // = coxph_data(*this);
+    coxph_data to;
 
-    // filter missing data
-
-    int nmeasured = std::count(masked_data, masked_data + nids, 0);
-
+    int nmeasured = std::count(masked_data.begin(), masked_data.end(), 0);
     to.nids = nmeasured;
     to.ncov = ncov;
     to.ngpreds = ngpreds;
@@ -346,9 +331,7 @@ coxph_data coxph_data::get_unmasked_data()
         }
     }
 
-    //delete [] to.masked_data;
-    to.masked_data = new unsigned short int[to.nids];
-    std::fill(to.masked_data, to.masked_data + to.nids, 0);
+    to.masked_data = masked_data;
     return (to);
 }
 
@@ -365,7 +348,7 @@ coxph_reg::coxph_reg(coxph_data &cdatain)
 }
 
 
-void coxph_reg::estimate(coxph_data &cdatain,
+void coxph_reg::estimate(const coxph_data &cdatain,
                         int maxiter, double eps,
                         double tol_chol, const int model,
                         const int interaction, const int ngpreds,
