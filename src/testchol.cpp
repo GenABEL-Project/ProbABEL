@@ -28,13 +28,8 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
-#if EIGEN
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
-#else
-#include "mematrix.h"
-#include "mematri1.h"
-#endif
 #include "data.h"
 #include "reg1.h"
 #include "usage.h"

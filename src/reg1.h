@@ -50,17 +50,25 @@
 #ifndef REG1_H_
 #define REG1_H_
 #include <cmath>
-#include "cholesky.h"
 #include "regdata.h"
 #include "maskedmatrix.h"
 
 
-mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
-        int ngpreds, bool is_interaction_excluded, bool iscox = false,
-        int nullmodel = 0);
+mematrix<double> apply_model(const mematrix<double>& X,
+                             const int model,
+                             const int interaction,
+                             const int ngpreds,
+                             const bool is_interaction_excluded,
+                             const bool iscox = false,
+                             const int nullmodel = 0);
 
-mematrix<double> t_apply_model(mematrix<double>& X, int model, int interaction,
-        int ngpreds, bool iscox, int nullmodel = 0);
+mematrix<double> t_apply_model(const mematrix<double>& X,
+                               const int model,
+                               const int interaction,
+                               const int ngpreds,
+                               const bool iscox,
+                               const int nullmodel = 0);
+
 
 class base_reg {
  public:
@@ -75,57 +83,61 @@ class base_reg {
     double chi2_score;
     regdata reg_data;
 
-    void base_score(mematrix<double>& resid,
-            double tol_chol, int model, int interaction, int ngpreds,
-            const masked_matrix& invvarmatrix, int nullmodel);
+    void base_score(const mematrix<double>& resid,
+                    const double tol_chol, const int model,
+                    const int interaction, const int ngpreds,
+                    const masked_matrix& invvarmatrix,
+                    int nullmodel);
 };
+
 
 class linear_reg: public base_reg {
  public:
-    linear_reg(regdata& rdatain);
-    ~linear_reg()
-    {
-        delete [] reg_data.masked_data;
-        //		delete beta;
-        //		delete sebeta;
-        //		delete residuals;
-    }
+    linear_reg(const regdata& rdatain);
 
-    void estimate(int verbose, double tol_chol, int model,
-                  int interaction, int ngpreds,
+    void estimate(const int verbose, const double tol_chol, const int model,
+                  const int interaction, const int ngpreds,
                   masked_matrix& invvarmatrixin,
-                  int robust, int nullmodel = 0);
+                  const int robust, const int nullmodel = 0);
 
-    void score(mematrix<double>& resid,
-               double tol_chol, int model, int interaction, int ngpreds,
-               const masked_matrix& invvarmatrix, int nullmodel = 0);
+    void score(const mematrix<double>& resid,
+               const double tol_chol, const int model, const int interaction,
+               const int ngpreds, const masked_matrix& invvarmatrix,
+               int nullmodel = 0);
 
-private:
+ private:
     void mmscore_regression(const mematrix<double>& X,
-            const masked_matrix& W_masked, LDLT<MatrixXd>& Ch);
+                            const masked_matrix& W_masked,
+                            LDLT<MatrixXd>& Ch);
     void logLikelihood(const mematrix<double>& X);
+    void LeastSquaredRegression(const mematrix<double> & X,
+                                LDLT<MatrixXd>& Ch);
+    void RobustSEandCovariance(const mematrix<double> & X,
+                               mematrix <double> robust_sigma2,
+                               const MatrixXd tXX_inv,
+                               const int offset);
+    void PlainSEandCovariance(const double sigma2_internal,
+                              const MatrixXd & tXX_inv,
+                              const int offset);
 };
+
 
 class logistic_reg: public base_reg {
  public:
     int niter;
 
-    logistic_reg(regdata& rdatain);
-    ~logistic_reg()
-    {
-        delete [] reg_data.masked_data;
-        //		delete beta;
-        //		delete sebeta;
-    }
+    logistic_reg(const regdata& rdatain);
 
-    void estimate(int verbose, int maxiter, double eps,
-                  int model, int interaction, int ngpreds,
-                  masked_matrix& invvarmatrixin, int robust,
-                  int nullmodel = 0);
+    void estimate(const int verbose, const int maxiter, const double eps,
+                  const int model, const int interaction, const int ngpreds,
+                  masked_matrix& invvarmatrixin, const int robust,
+                  const int nullmodel = 0);
+
     // just a stupid copy from linear_reg
-    void score(mematrix<double>& resid,
-               double tol_chol, int model, int interaction, int ngpreds,
-               masked_matrix& invvarmatrix, int nullmodel = 0);
+    void score(const mematrix<double>& resid,
+               const double tol_chol, const int model, const int interaction,
+               const int ngpreds, const masked_matrix& invvarmatrix,
+               int nullmodel = 0);
 };
 
-#endif//REG1_H_
+#endif // REG1_H_

@@ -23,17 +23,36 @@
 
 #include "reg1.h"
 
-mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
-        int ngpreds, bool is_interaction_excluded, bool iscox, int nullmodel)
-// if ngpreds==1 (dose data):
-// model 0 = additive 1 df
-// if ngpreds==2 (prob data):
-// model 0 = 2 df
-// model 1 = additive 1 df
-// model 2 = dominant 1 df
-// model 3 = recessive 1 df
-// model 4 = over-dominant 1 df
-        {
+
+/**
+ *
+ *
+ * if ngpreds==1 (dose data):
+ * model 0 = additive 1 df
+ * if ngpreds==2 (prob data):
+ * model 0 = 2 df
+ * model 1 = additive 1 df
+ * model 2 = dominant 1 df
+ * model 3 = recessive 1 df
+ * model 4 = over-dominant 1 df
+ * @param X Design matrix, including SNP column
+ * @param model
+ * @param interaction
+ * @param ngpreds
+ * @param is_interaction_excluded
+ * @param iscox
+ * @param nullmodel
+ *
+ * @return Matrix with the model applied to it.
+ */
+mematrix<double> apply_model(const mematrix<double>& X,
+                             const int model,
+                             const int interaction,
+                             const int ngpreds,
+                             const bool is_interaction_excluded,
+                             const bool iscox,
+                             const int nullmodel)
+{
     if (nullmodel)
     {
         // No need to apply any genotypic model when calculating the
@@ -239,8 +258,14 @@ mematrix<double> apply_model(mematrix<double>& X, int model, int interaction,
     return nX;
 }
 
-mematrix<double> t_apply_model(mematrix<double>& X, int model, int interaction,
-        int ngpreds, bool iscox, int nullmodel) {
+
+mematrix<double> t_apply_model(const mematrix<double>& X,
+                               const int model,
+                               const int interaction,
+                               const int ngpreds,
+                               const bool iscox,
+                               const int nullmodel)
+{
     mematrix<double> tmpX = transpose(X);
     mematrix<double> nX = apply_model(tmpX, model, interaction, ngpreds,
             interaction, iscox, nullmodel);
@@ -248,7 +273,8 @@ mematrix<double> t_apply_model(mematrix<double>& X, int model, int interaction,
     return out;
 }
 
-linear_reg::linear_reg(regdata& rdatain) {
+
+linear_reg::linear_reg(const regdata& rdatain) {
     reg_data = rdatain.get_unmasked_data();
     // std::cout << "linear_reg: " << rdata.nids << " " << (rdata.X).ncol
     //           << " " << (rdata.Y).ncol << "\n";
@@ -267,18 +293,24 @@ linear_reg::linear_reg(regdata& rdatain) {
     chi2_score = -1.;
 }
 
-void base_reg::base_score(mematrix<double>& resid,
-        double tol_chol, int model, int interaction, int ngpreds,
-        const masked_matrix& invvarmatrix, int nullmodel) {
+
+void base_reg::base_score(const mematrix<double>& resid,
+                          const double tol_chol, const int model,
+                          const int interaction,
+                          const int ngpreds,
+                          const masked_matrix& invvarmatrix,
+                          const int nullmodel) {
     mematrix<double> oX = reg_data.extract_genotypes();
     mematrix<double> X = apply_model(oX, model, interaction, ngpreds,
             reg_data.is_interaction_excluded, false, nullmodel);
     beta.reinit(X.ncol, 1);
     sebeta.reinit(X.ncol, 1);
+    int length_beta = X.ncol;
     double N = static_cast<double>(resid.nrow);
     mematrix<double> tX = transpose(X);
-    if (invvarmatrix.length_of_mask != 0)
+    if (invvarmatrix.length_of_mask != 0){
         tX = tX * invvarmatrix.masked_data;
+    }
 
     mematrix<double> u = tX * resid;
     mematrix<double> v = tX * X;
@@ -287,12 +319,16 @@ void base_reg::base_score(mematrix<double>& resid,
     csum = csum * (1. / N);
     v = v - csum;
     // use cholesky to invert
-    mematrix<double> v_i = v;
-    cholesky2_mm(v_i, tol_chol);
-    chinv2_mm(v_i);
+
+    LDLT <MatrixXd> Ch = LDLT < MatrixXd > (v.data.selfadjointView<Lower>());
     // before was
     // mematrix<double> v_i = invert(v);
-    beta = v_i * u;
+    beta.data = Ch.solve(v.data.adjoint() * u.data);
+    //TODO(maartenk): set size of v_i directly or remove mematrix class
+    mematrix<double> v_i = v;
+    v_i.data = Ch.solve(MatrixXd(length_beta, length_beta).
+                                    Identity(length_beta, length_beta));
+
     double sr = 0.;
     double srr = 0.;
     for (int i = 0; i < resid.nrow; i++)
@@ -310,9 +346,10 @@ void base_reg::base_score(mematrix<double>& resid,
     chi2_score = chi2[0];
 }
 
-void linear_reg::mmscore_regression(const mematrix<double>& X,
-        const masked_matrix& W_masked, LDLT<MatrixXd>& Ch) {
 
+void linear_reg::mmscore_regression(const mematrix<double>& X,
+                                    const masked_matrix& W_masked,
+                                    LDLT<MatrixXd>& Ch) {
     VectorXd Y = reg_data.Y.data.col(0);
     /*
      in ProbABEL <0.50 this calculation was performed like t(X)*W
@@ -327,8 +364,19 @@ void linear_reg::mmscore_regression(const mematrix<double>& X,
     VectorXd beta_vec = Ch.solve(tXW.transpose() * Y);
     sigma2 = (Y - tXW * beta_vec).squaredNorm();
     beta.data = beta_vec;
-
 }
+
+
+void linear_reg::LeastSquaredRegression(const mematrix<double>& X,
+                                        LDLT<MatrixXd>& Ch) {
+    int m = X.ncol;
+    MatrixXd txx = MatrixXd(m, m).setZero().selfadjointView<Lower>().rankUpdate(
+            X.data.adjoint());
+    Ch = LDLT < MatrixXd > (txx.selfadjointView<Lower>());
+    beta.data = Ch.solve(X.data.adjoint() * reg_data.Y.data);
+    sigma2 = (reg_data.Y.data - (X.data * beta.data)).squaredNorm();
+}
+
 
 void linear_reg::logLikelihood(const mematrix<double>& X) {
     /*
@@ -348,9 +396,7 @@ void linear_reg::logLikelihood(const mematrix<double>& X) {
     //cout << endl;
     loglik = 0.;
     double halfrecsig2 = .5 / sigma2;
-#if EIGEN
     //loglik -= halfrecsig2 * residuals[i] * residuals[i];
-
 
     double intercept = beta.get(0, 0);
     residuals.data = reg_data.Y.data.array() - intercept;
@@ -364,23 +410,39 @@ void linear_reg::logLikelihood(const mematrix<double>& X) {
     //residuals[i] -= resid_sub;
     loglik -= (residuals.data.array().square() * halfrecsig2).sum();
     loglik -= static_cast<double>(reg_data.nids) * log(sqrt(sigma2));
-
-#else
-    for (int i = 0; i < reg_data.nids; i++)
-     {
-         double resid = reg_data.Y[i] - beta.get(0, 0); // intercept
-         for (int j = 1; j < beta.nrow; j++){
-             resid -= beta.get(j, 0) * X.get(i, j);
-         }
-         residuals[i] = resid;
-         loglik -= halfrecsig2 * resid * resid;
-     }
-#endif
 }
 
-void linear_reg::estimate(int verbose, double tol_chol,
-        int model, int interaction, int ngpreds, masked_matrix& invvarmatrixin,
-        int robust, int nullmodel) {
+
+void linear_reg::RobustSEandCovariance(const mematrix<double> &X,
+                                       mematrix<double> robust_sigma2,
+                                       const MatrixXd tXX_inv,
+                                       const int offset) {
+    MatrixXd Xresiduals = X.data.array().colwise()
+        * residuals.data.col(0).array();
+    MatrixXd XbyR =
+        MatrixXd(X.ncol, X.ncol).setZero().selfadjointView<Lower>().rankUpdate(
+            Xresiduals.adjoint());
+    robust_sigma2.data = tXX_inv * XbyR * tXX_inv;
+    sebeta.data = robust_sigma2.data.diagonal().array().sqrt();
+    covariance.data =
+        robust_sigma2.data.bottomLeftCorner(offset, offset).diagonal();
+}
+
+
+void linear_reg::PlainSEandCovariance(const double sigma2_internal,
+                                      const MatrixXd &tXX_inv,
+                                      const int offset) {
+    sebeta.data = (sigma2_internal * tXX_inv.diagonal().array()).sqrt();
+    covariance.data = sigma2_internal
+            * tXX_inv.bottomLeftCorner(offset, offset).diagonal().array();
+}
+
+
+void linear_reg::estimate(const int verbose, const double tol_chol,
+                          const int model, const int interaction,
+                          const int ngpreds,
+                          masked_matrix& invvarmatrixin,
+                          const int robust, const int nullmodel) {
     // suda interaction parameter
     // model should come here
     //regdata rdata = rdatain.get_unmasked_data();
@@ -423,43 +485,12 @@ void linear_reg::estimate(int verbose, double tol_chol,
 
     double sigma2_internal;
 
-#if EIGEN
-
     LDLT <MatrixXd> Ch;
-#else
-    mematrix<double> tXX_i;
-#endif
     if (invvarmatrixin.length_of_mask != 0)
     {
         //retrieve masked data W
         invvarmatrixin.update_mask(reg_data.masked_data);
-
-        // This regression is Weighted Least Square: used for mmscore :
-        // FLOPS count are calculated for 3*1000 matrix as follow:
-        //C=AB (m X n matrix A and n x P matrix B)
-        //flops=mp(2n-1) (when n is big enough flops=mpn2)
-        //Oct 26, 2009
-
-#if EIGEN
         mmscore_regression(X, invvarmatrixin, Ch);
-#else
-        // next line is  5997000 flops
-        mematrix<double> tXW = transpose(X) * invvarmatrixin.masked_data;
-        tXX_i = tXW * X;        // 17991 flops
-        // use cholesky to invert
-        cholesky2_mm(tXX_i, tol_chol);
-        chinv2_mm(tXX_i);
-        beta = tXX_i * (tXW * reg_data.Y);        // flops 15+5997
-        // now compute residual variance
-        sigma2 = 0.;
-        //next line is: 1000+5000+= 6000 flops
-        mematrix<double> sigma2_matrix = reg_data.Y - (transpose(tXW) * beta); //flops: 1000+5000
-        for (int i = 0; i < sigma2_matrix.nrow; i++)
-        {
-            double val = sigma2_matrix.get(i, 0);
-            sigma2 += val * val; // flops: 3000 (iterations counted)
-        }
-#endif
         double N = X.nrow;
         //sigma2_internal = sigma2 / (N - static_cast<double>(length_beta));
         // Ugly fix to the fact that if we do mmscore, sigma2 is already
@@ -467,35 +498,10 @@ void linear_reg::estimate(int verbose, double tol_chol,
         //      YSA, 2009.07.20
         sigma2_internal = 1.0;
         sigma2 /= N;
-
     }
-    else//NO mm-score regression : normal least square regression
+    else  // NO mm-score regression : normal least square regression
     {
-#if EIGEN
-        int m = X.ncol;
-        MatrixXd txx = MatrixXd(m, m).setZero().selfadjointView<Lower>().\
-                rankUpdate(X.data.adjoint());
-        Ch = LDLT <MatrixXd>(txx.selfadjointView<Lower>());
-        beta.data = Ch.solve(X.data.adjoint() * reg_data.Y.data);
-        sigma2 = (reg_data.Y.data - (X.data * beta.data)).squaredNorm();
-
-#else
-        mematrix<double> tX = transpose(X);
-        // use cholesky to invert
-                tXX_i = tX * X;
-                cholesky2_mm(tXX_i, tol_chol);
-                chinv2_mm(tXX_i);
-                beta = tXX_i * (tX * (reg_data.Y));
-
-        // now compute residual variance
-        sigma2 = 0.;
-        mematrix<double> sigma2_matrix = reg_data.Y - (X * beta);
-        for (int i = 0; i < sigma2_matrix.nrow; i++)
-        {
-            double val = sigma2_matrix.get(i, 0);
-            sigma2 += val * val;
-        }
-#endif
+        LeastSquaredRegression(X, Ch);
         double N = static_cast<double>(X.nrow);
         double P = static_cast<double>(length_beta);
         sigma2_internal = sigma2 / (N - P);
@@ -518,136 +524,42 @@ void linear_reg::estimate(int verbose, double tol_chol,
     //cout << endl;
     logLikelihood(X);
 
-#if EIGEN
     MatrixXd tXX_inv = Ch.solve(MatrixXd(length_beta, length_beta).
-            Identity(length_beta,length_beta));
-#endif
-
+                                Identity(length_beta, length_beta));
     mematrix<double> robust_sigma2(X.ncol, X.ncol);
-    if (robust)
-    {
-#if EIGEN
-        MatrixXd Xresiduals = X.data.array().colwise()\
-                *residuals.data.col(0).array();
-        MatrixXd  XbyR = MatrixXd(X.ncol, X.ncol).setZero()\
-                .selfadjointView<Lower>().rankUpdate(Xresiduals.adjoint());
-        robust_sigma2.data= tXX_inv*XbyR *tXX_inv;
-#else
 
-        mematrix<double> XbyR = X;
-        for (int i = 0; i < X.nrow; i++){
-            for (int j = 0; j < X.ncol; j++)
-            {
-                double tmpval = XbyR.get(i, j) * residuals[i];
-                XbyR.put(tmpval, i, j);
-            }
-        }
-        XbyR = transpose(XbyR) * XbyR;
-        robust_sigma2 = tXX_i * XbyR;
-        robust_sigma2 = robust_sigma2 * tXX_i;
-
-#endif
-
-    }
-    //cout << "estimate 0\n";
-#if EIGEN
-    if (robust)
-    {
-        sebeta.data = robust_sigma2.data.diagonal().array().sqrt();
-    }
-    else
-    {
-        sebeta.data =
-                (sigma2_internal
-                        * tXX_inv.diagonal().array()).sqrt();
-    }
     int offset = X.ncol- 1;
-    //if additive and interaction and 2 predictors and more then 2 betas
-
-    if (model == 0 && interaction != 0 && ngpreds == 2 && length_beta > 2){
-          offset = X.ncol - 2;
-    }
+     //if additive and interaction and 2 predictors and more then 2 betas
+     if (model == 0 && interaction != 0 && ngpreds == 2 && length_beta > 2){
+         offset = X.ncol - 2;
+     }
 
     if (robust)
     {
-        covariance.data = robust_sigma2.data.bottomLeftCorner(
-                offset, offset).diagonal();
+        RobustSEandCovariance(X, robust_sigma2, tXX_inv, offset);
     }
     else
     {
-            covariance.data = sigma2_internal
-                    * tXX_inv.bottomLeftCorner(offset,
-                            offset).diagonal().array();
-        }
-
-#else
-
-    //cout << "estimate 0\n";
-    for (int i = 0; i < (length_beta); i++)
-    {
-        if (robust)
-        {
-            // cout << "estimate :robust\n";
-            double value = sqrt(robust_sigma2.get(i, i));
-            sebeta.put(value, i, 0);
-            //Han Chen
-            if (i > 0)
-            {
-                if (model == 0 && interaction != 0 && ngpreds == 2
-                        && length_beta > 2)
-                {
-                    if (i > 1)
-                    {
-                        double covval = robust_sigma2.get(i, i - 2);
-                        covariance.put(covval, i - 2, 0);
-                    }
-                }
-                else
-                {
-                    double covval = robust_sigma2.get(i, i - 1);
-                    covariance.put(covval, i - 1, 0);
-                }
-            }
-            //Oct 26, 2009
-        }
-        else
-        {
-            // cout << "estimate :non-robust\n";
-            double value = sqrt(sigma2_internal * tXX_i.get(i, i));
-            sebeta.put(value, i, 0);
-            //Han Chen
-            if (i > 0)
-            {
-                if (model == 0 && interaction != 0 && ngpreds == 2
-                        && length_beta > 2)
-                {
-                    if (i > 1)
-                    {
-                        double covval = sigma2_internal * tXX_i.get(i, i - 2);
-                        covariance.put(covval, i - 2, 0);
-                    }
-                }
-                else
-                {
-                    double covval = sigma2_internal * tXX_i.get(i, i - 1);
-                    covariance.put(covval, i - 1, 0);
-                }
-            }
-            //Oct 26, 2009
-        }
+        PlainSEandCovariance(sigma2_internal, tXX_inv, offset);
     }
-#endif
 }
 
-void linear_reg::score(mematrix<double>& resid,
-        double tol_chol, int model, int interaction, int ngpreds,
-        const masked_matrix& invvarmatrix, int nullmodel) {
+
+void linear_reg::score(const mematrix<double>& resid,
+                       const double tol_chol, const int model,
+                       const int interaction, const int ngpreds,
+                       const masked_matrix& invvarmatrix,
+                       int nullmodel)
+{
     //regdata rdata = rdatain.get_unmasked_data();
-    base_score(resid,  tol_chol, model, interaction, ngpreds,
-            invvarmatrix, nullmodel = 0);
+    base_score(resid, tol_chol, model, interaction, ngpreds,
+               invvarmatrix, nullmodel = 0);
+    // TODO: find out why nullmodel is assigned 0 in the call above.
 }
 
-logistic_reg::logistic_reg(regdata& rdatain) {
+
+logistic_reg::logistic_reg(const regdata& rdatain)
+{
     reg_data = rdatain.get_unmasked_data();
     int length_beta = reg_data.X.ncol;
     beta.reinit(length_beta, 1);
@@ -665,9 +577,12 @@ logistic_reg::logistic_reg(regdata& rdatain) {
     chi2_score = -1.;
 }
 
-void logistic_reg::estimate(int verbose, int maxiter,
-        double eps, int model, int interaction, int ngpreds,
-        masked_matrix& invvarmatrixin, int robust, int nullmodel) {
+
+void logistic_reg::estimate(const int verbose, const int maxiter,
+                            const double eps, const int model,
+                            const int interaction, const int ngpreds,
+                            masked_matrix& invvarmatrixin,
+                            const int robust, const int nullmodel) {
     // In contrast to the 'linear' case 'invvarmatrix' contains the
     // inverse of correlation matrix (not the inverse of var-cov matrix)
     // h2.object$InvSigma * h.object2$h2an$estimate[length(h2$h2an$estimate)]
@@ -681,7 +596,8 @@ void logistic_reg::estimate(int verbose, int maxiter,
         invvarmatrixin.update_mask(reg_data.masked_data);
     }
     mematrix<double> X = apply_model(reg_data.X, model, interaction, ngpreds,
-            reg_data.is_interaction_excluded, false, nullmodel);
+                                     reg_data.is_interaction_excluded, false,
+                                     nullmodel);
     int length_beta = X.ncol;
     beta.reinit(length_beta, 1);
     sebeta.reinit(length_beta, 1);
@@ -896,9 +812,13 @@ void logistic_reg::estimate(int verbose, int maxiter,
     // exit(1);
 }
 
-void logistic_reg::score(mematrix<double>& resid,
-        double tol_chol, int model, int interaction, int ngpreds,
-        masked_matrix& invvarmatrix, int nullmodel) {
+
+void logistic_reg::score(const mematrix<double>& resid,
+                         const double tol_chol, const int model,
+                         const int interaction, const int ngpreds,
+                         const masked_matrix& invvarmatrix,
+                         int nullmodel) {
     base_score(resid, tol_chol, model, interaction, ngpreds,
-            invvarmatrix, nullmodel = 0);
+               invvarmatrix, nullmodel = 0);
+    // TODO: find out why nullmodel is assigned 0 in the call above.
 }

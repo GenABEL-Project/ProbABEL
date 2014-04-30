@@ -264,7 +264,7 @@ void create_header(std::vector<std::ofstream*>& outfile,
         }
         *outfile[0] << input_var.getSep() << "chi2_SNP_add";
 #if WITH_BOOST
-        *outfile[0] << input_var.getSep() << "pval_SNP";
+        *outfile[0] << input_var.getSep() << "pval_SNP_add";
 #endif
         *outfile[0] << "\n";
     } // ngpreds == 1

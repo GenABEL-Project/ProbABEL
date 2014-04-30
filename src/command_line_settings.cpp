@@ -31,9 +31,7 @@
 #include <iostream>
 #include "usage.h"
 #include "command_line_settings.h"
-#if EIGEN
 #include "eigen_mematrix.h"
-#endif
 
 // config.h and fvlib/FileVector.h are included for the upper case variables
 #if HAVE_CONFIG_H
@@ -152,6 +150,12 @@ char* cmdvars::getPhefilename() const
 }
 
 
+/**
+ * Process the command line arguments and save them in a cmdvars object.
+ *
+ * @param argc Number of command line arguments
+ * @param argv Values of the command line arguments
+ */
 void cmdvars::set_variables(int argc, char * argv[])
 {
     int next_option;

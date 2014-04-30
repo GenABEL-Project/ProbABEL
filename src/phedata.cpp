@@ -33,13 +33,13 @@ using std::cerr;
 using std::endl;
 
 
-phedata::phedata(char * fname, int noutc, int npeople, int interaction,
-                 bool iscox)
+phedata::phedata(const char * fname, const int noutc, const int npeople,
+                 const int interaction, const bool iscox)
 {
     setphedata(fname, noutc, npeople, interaction, iscox);
 }
 
-void phedata::set_is_interaction_excluded(bool int_exl)
+void phedata::set_is_interaction_excluded(const bool int_exl)
 {
     is_interaction_excluded = int_exl;
 }
@@ -50,13 +50,17 @@ void phedata::set_is_interaction_excluded(bool int_exl)
  *
  * @param fname Name of the file containing phenotype data
  * @param noutc Number of outcomes/phenotypes
- * @param npeople Number of people
+ * @param npeople Number of people to use in the analysis. If set to
+ * 0, then all individuals in the phenotype file will be used. If > 0
+ * (i.e. set using the --nids command line option, see
+ * cmdvars::set_variables()) only the first npeople will be use.
  * @param interaction Column specifying which phenotype is selected to
  * interact with the SNP (default: 0, i.e. no interaction)
  * @param iscox Are we running a Cox PH regression?
  */
-void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
-                         bool iscox)
+void phedata::setphedata(const char * fname, const int noutc,
+                         const int npeople, const int interaction,
+                         const bool iscox)
 {
     static const unsigned int BFS = 1048576;
     std::ifstream myfile(fname);
@@ -66,8 +70,8 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     is_interaction_excluded = false;
 
     int nphenocols = 0;
-    int savenpeople = npeople;
-    npeople = 0;
+    const int savenpeople = npeople;
+    int nrpeople = 0;
     if (myfile.is_open())
     {
         myfile.getline(line, BFS);
@@ -92,7 +96,7 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
                 myfile.close();
                 exit(1);
             }
-            npeople++;
+            nrpeople++;
         };
         myfile.close();
     }
@@ -101,12 +105,12 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
         std::cerr << "Unable to open file " << fname << endl;
         exit(1);
     }
-    std::cout << "Actual number of people in phenofile = " << npeople;
+    std::cout << "Actual number of people in phenofile = " << nrpeople;
 
     if (savenpeople > 0)
     {
-        npeople = savenpeople;
-        std::cout << "; using only " << npeople << " first\n";
+        nrpeople = savenpeople;
+        std::cout << "; using only " << nrpeople << " first\n";
     }
     else
     {
@@ -114,7 +118,7 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     }
 
     ncov = nphenocols - 1 - noutcomes;
-    nids_all = npeople;
+    nids_all = nrpeople;
     model_terms = new std::string[ncov + 2];
 
     // first pass -- find unmeasured people
@@ -197,9 +201,9 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
 #endif
     std::cout << "model: " << model << "\n";
 
-    allmeasured = new unsigned short int[npeople];
+    allmeasured = new unsigned short int[nrpeople];
     nids = 0;
-    for (int i = 0; i < npeople; i++)
+    for (int i = 0; i < nrpeople; i++)
     {
         allmeasured[i] = 1;
         for (int j = 0; j < nphenocols; j++)
@@ -239,7 +243,7 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
     }
 
     int m = 0;
-    for (int i = 0; i < npeople; i++)
+    for (int i = 0; i < nrpeople; i++)
         if (allmeasured[i] == 1)
         {
             infile >> tmp;

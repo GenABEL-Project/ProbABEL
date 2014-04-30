@@ -3,14 +3,13 @@
 ## Using wildcards in these lists doesn't work. Also GNU make's
 ## ($wildcard,) doesn't work. It gives warning message about
 ## portability, but in the end doesn't work, I tried :-).
-REGFILES = data.h data.cpp gendata.h gendata.cpp mematrix.h		\
- mematri1.h command_line_settings.h command_line_settings.cpp reg1.h	\
- usage.h usage.cpp main.cpp utilities.h utilities.cpp phedata.h		\
- phedata.cpp cholesky.h cholesky.cpp regdata.h regdata.cpp		\
- maskedmatrix.cpp maskedmatrix.h reg1.cpp main_functions_dump.h		\
+REGFILES = data.h data.cpp gendata.h gendata.cpp eigen_mematrix.h	\
+ eigen_mematrix.cpp command_line_settings.h command_line_settings.cpp	\
+ reg1.h usage.h usage.cpp main.cpp utilities.h utilities.cpp		\
+ phedata.h phedata.cpp regdata.h regdata.cpp maskedmatrix.cpp		\
+ maskedmatrix.h reg1.cpp main_functions_dump.h				\
  main_functions_dump.cpp
 
-EIGENFILES = eigen_mematrix.h eigen_mematrix.cpp
 
 ## Filevector files:
 FVSRC = fvlib/AbstractMatrix.cpp fvlib/CastUtils.cpp			\
@@ -55,28 +54,19 @@ endif
 palinear_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
 palinear_CXXFLAGS = -DLINEAR $(AM_CXXFLAGS)
 palinear_CPPFLAGS = $(AM_CPPFLAGS)
-if WITH_EIGEN
 palinear_SOURCES += $(EIGENFILES)
-palinear_CXXFLAGS += -DEIGEN
-endif
 
 palogist_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
 palogist_CXXFLAGS = -DLOGISTIC $(AM_CXXFLAGS)
 palogist_CPPFLAGS = $(AM_CPPFLAGS)
-if WITH_EIGEN
 palogist_SOURCES += $(EIGENFILES)
-palogist_CXXFLAGS += -DEIGEN
-endif
 
 pacoxph_SOURCES = $(COXSRC) $(REGFILES) $(FVSRC) $(FVHEADERS)	\
  $(RHEADERS) survS.h survproto.h coxph_data.h coxph_data.cpp
 pacoxph_CXXFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CXXFLAGS)
 pacoxph_CPPFLAGS = $(AM_CPPFLAGS)
 pacoxph_CFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CFLAGS)
-if WITH_EIGEN
 pacoxph_SOURCES += $(EIGENFILES)
-pacoxph_CXXFLAGS += -DEIGEN
-endif
 
 if WITH_BOOST
 palinear_CXXFLAGS += -DWITH_BOOST

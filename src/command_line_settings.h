@@ -3,7 +3,7 @@
  *
  *  Created on: Apr 2; int 2012
  *      Author: mkooyman
-*
+ *
  *
  * Copyright (C) 2009--2014 Various members of the GenABEL team. See
  * the SVN commit logs for more details.

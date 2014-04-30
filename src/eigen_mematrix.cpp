@@ -36,7 +36,7 @@ using namespace Eigen;
 //
 
 template<class DT>
-mematrix<DT>::mematrix(int nr, int nc)
+mematrix<DT>::mematrix(const int nr, const int nc)
 {
     if (nr <= 0)
     {
@@ -80,7 +80,7 @@ mematrix<DT> &mematrix<DT>::operator=(const mematrix<DT> &M)
 }
 
 template<class DT>
-DT & mematrix<DT>::operator[](const int i)
+const DT & mematrix<DT>::operator[](const int i) const
 {
     if (i < 0 || i >= (ncol * nrow))
     {
@@ -94,14 +94,21 @@ DT & mematrix<DT>::operator[](const int i)
     return data(row, column);
 }
 
-// template<class DT>
-// mematrix<DT> mematrix<DT>::operator+(DT toadd)
-// {
-//     mematrix<DT> temp(nrow, ncol);
-//     for (int i = 0; i < nelements; i++)
-//         temp.data[i] = data[i] + toadd;
-//     return temp;
-// }
+
+template<class DT>
+DT & mematrix<DT>::operator[](const int i)
+{
+    if (i < 0 || i >= (ncol * nrow))
+    {
+        std::cerr << "mematrix[]: " << i << " out of bounds (0,"
+                  << nrow * ncol - 1 << ")\n";
+        exit(1);
+    }
+    int column = i % ncol;
+    int row = static_cast<int>( floor(static_cast<double>(i / ncol)) );
+
+    return data(row, column);
+}
 
 template<class DT>
 mematrix<DT> mematrix<DT>::operator+(const mematrix<DT> &M)
@@ -149,7 +156,7 @@ mematrix<DT> mematrix<DT>::operator-(const mematrix<DT> &M)
 }
 
 template<class DT>
-mematrix<DT> mematrix<DT>::operator*(DT multiplyer)
+mematrix<DT> mematrix<DT>::operator*(const DT multiplyer)
 {
 //    MatrixXd add = MatrixXd::Constant(nrow, ncol, toadd);
     mematrix<DT> temp(nrow, ncol);
@@ -202,7 +209,7 @@ mematrix<DT> mematrix<DT>::operator*(const mematrix<DT> *M)
 // operations
 //
 template<class DT>
-void mematrix<DT>::reinit(int nr, int nc)
+void mematrix<DT>::reinit(const int nr, const int nc)
 {
 //    if (nelements > 0)
 //        delete[] data;
@@ -226,7 +233,7 @@ void mematrix<DT>::reinit(int nr, int nc)
 }
 
 template<class DT>
-DT mematrix<DT>::get(int nr, int nc)
+DT mematrix<DT>::get(const int nr, const int nc) const
 {
 #ifndef NDEBUG
     if (nc < 0 || nc > ncol -1)
@@ -247,7 +254,7 @@ DT mematrix<DT>::get(int nr, int nc)
 }
 
 template<class DT>
-void mematrix<DT>::put(DT value, int nr, int nc)
+void mematrix<DT>::put(const DT value, const int nr, const int nc)
 {
 #ifndef NDEBUG
     if (nc < 0 || nc > ncol -1)
@@ -267,7 +274,7 @@ void mematrix<DT>::put(DT value, int nr, int nc)
 }
 
 template<class DT>
-DT mematrix<DT>::column_mean(int nc)
+DT mematrix<DT>::column_mean(const int nc) const
 {
     if (nc >= ncol || nc < 0)
     {
@@ -288,7 +295,7 @@ mematrix<DT> column_sum(const mematrix<DT> &M)
 }
 
 template<class DT>
-void mematrix<DT>::print(void)
+void mematrix<DT>::print(void) const
 {
     std::cout << "nrow=" << nrow << "; ncol=" << ncol
          << "; nelements=" << nelements << "\n";

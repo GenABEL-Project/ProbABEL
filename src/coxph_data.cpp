@@ -28,6 +28,7 @@
 
 #include "coxph_data.h"
 #include <iostream>
+#include <algorithm>
 #include <cmath>
 extern "C" {
 #include "survproto.h"
@@ -44,7 +45,10 @@ extern "C" {
 #include "fvlib/Logger.h"
 #include "fvlib/Transposer.h"
 
-// compare for sort of times
+/**
+ * Definition of the compare function used for the sort of times. Used
+ * by the qsort() function.
+ */
 int cmpfun(const void *a, const void *b)
 {
     double el1 = *(double*) a;
@@ -66,33 +70,62 @@ int cmpfun(const void *a, const void *b)
     return -9;
 }
 
-coxph_data::coxph_data(const coxph_data &obj) : sstat(obj.sstat),
+
+/**
+ * Constructor. Initialises all values to zero.
+ */
+coxph_data::coxph_data()
+{
+    nids    = 0;
+    ncov    = 0;
+    ngpreds = 0;
+    gcount  = 0;
+    freq    = 0;
+}
+
+
+/**
+ * Copy constructor. Creates a coxph_data object by copying the values
+ * of another one.
+ *
+ * \param obj Reference to the coxph_data object to be copied to the new
+ * object.
+ */
+coxph_data::coxph_data(const coxph_data &obj) : X(obj.X),
+                                                stime(obj.stime),
+                                                sstat(obj.sstat),
+                                                weights(obj.weights),
                                                 offset(obj.offset),
                                                 strata(obj.strata),
-                                                X(obj.X),
-                                                order(obj.order)
+                                                order(obj.order),
+                                                masked_data(obj.masked_data)
 {
     nids        = obj.nids;
     ncov        = obj.ncov;
     ngpreds     = obj.ngpreds;
-    weights     = obj.weights;
-    stime       = obj.stime;
     gcount      = 0;
     freq        = 0;
-    masked_data = new unsigned short int[nids];
-
-    std::copy(obj.masked_data, obj.masked_data+nids,masked_data);
 }
 
-coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
+
+/**
+ * Constructor that fills a coxph_data object with phenotype and genotype
+ * data.
+ *
+ * @param phed Reference to a phedata object with phenotype data
+ * @param gend Reference to a gendata object with genotype data
+ * @param snpnum The number of the SNP in the genotype data object to
+ * be added to the design matrix regdata::X. When set to a number < 0
+ * no SNP data is added to the design matrix (e.g. when calculating
+ * the null model).
+ */
+coxph_data::coxph_data(const phedata &phed, const gendata &gend,
+                       const int snpnum)
 {
     freq        = 0;
     gcount      = 0;
     nids        = gend.nids;
-    masked_data = new unsigned short int[nids];
-
-
-    std::fill(masked_data,masked_data+nids,0);
+    masked_data = std::vector<bool>(nids, false);
 
     ngpreds = gend.ngpreds;
     if (snpnum >= 0)
@@ -120,7 +153,6 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
     order.reinit(nids, 1);
     for (int i = 0; i < nids; i++)
     {
-        //          X.put(1.,i,0);
         stime[i] = (phed.Y).get(i, 0);
         sstat[i] = static_cast<int>((phed.Y).get(i, 1));
         if (sstat[i] != 1 && sstat[i] != 0)
@@ -162,7 +194,7 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
     // sort by time
     double *tmptime = new double[nids];
     int *passed_sorted = new int[nids];
-    std::fill (passed_sorted,passed_sorted+nids,0);
+    std::fill(passed_sorted, passed_sorted + nids, 0);
 
 
     for (int i = 0; i < nids; i++)
@@ -214,35 +246,49 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
     delete[] passed_sorted;
 }
 
-void coxph_data::update_snp(gendata *gend, const int snpnum) {
-    /**
+
+/**
+ * \brief Update the SNP dosages/probabilities in the design matrix
+ * coxph_data::X.
+ *
+ * Adds the genetic information for a new SNP to the design
+ * matrix.
+ *
+ * @param gend Object that contains the genetic data from which the
+ * dosages/probabilities will be added to the design matrix.
+ * @param snpnum Number of the SNP for which the dosage/probability
+ * data will be extracted from the gend object.
+ */
+void coxph_data::update_snp(const gendata *gend, const int snpnum) {
+    /*
      * This is the main part of the fix of bug #1846
      * (C) of the fix:
      *   UMC St Radboud Nijmegen,
      *   Dept of Epidemiology & Biostatistics,
      *   led by Prof. B. Kiemeney
-     *
+     */
+    /**
      * Note this sorts by "order"!!!
      * Here we deal with transposed X, hence last two arguments are swapped
-     * compared to the other 'update_snp'
+     * compared to regdata::update_snp().
      * Also, the starting column-1 is not necessary for cox X therefore
      * 'ncov-j' changes to 'ncov-j-1'
-     **/
+     */
 
-    // reset counter for frequency since it is a new snp
+    // reset counter for frequency since it is a new SNP
     gcount = 0;
     freq   = 0.0;
 
     for (int j = 0; j < ngpreds; j++) {
         double *snpdata = new double[nids];
-       std::fill (masked_data,masked_data+nids,0);
+        masked_data = std::vector<bool>(nids, false);
 
         gend->get_var(snpnum * ngpreds + j, snpdata);
 
         for (int i = 0; i < nids; i++) {
             X.put(snpdata[i], (ncov - j - 1), order[i]);
             if (std::isnan(snpdata[i])) {
-                masked_data[order[i]] = 1;
+                masked_data[order[i]] = true;
                 // snp not masked
             } else {
                 // check for first predictor
@@ -254,23 +300,25 @@ void coxph_data::update_snp(gendata *gend, const int snpnum) {
                         freq += snpdata[i];
                     }
                 } else if (j == 1) {
-                    // add second genotype in two predicor data form
+                    // Add second genotype in two predicor data form
                     freq += snpdata[i] * 0.5;
                 }
             }    // end std::isnan(snpdata[i]) snp
-        }    // end i for loop
+        }    // end for loop: i=0 to nids
 
         delete[] snpdata;
-    }    // end ngpreds loop
+    }    // End for loop: j=0 to ngpreds
 
     freq /= static_cast<double>(gcount);  // Allele frequency
 }
 
 
 /**
- * update_snp() adds SNP information to the design matrix. This
- * function allows you to strip that information from X again. This
- * is used for example when calculating the null model.
+ * \brief Remove SNP information from the design matrix coxph_data::X.
+ *
+ * coxph_data::update_snp() adds SNP information to the design
+ * matrix. This function allows you to strip that information from X
+ * again. This is used for example when calculating the null model.
  *
  */
 void coxph_data::remove_snp_from_X()
@@ -292,27 +340,25 @@ void coxph_data::remove_snp_from_X()
 }
 
 
-coxph_data::~coxph_data()
+/**
+ * \brief Create a new coxph_data object that contains only the
+ * non-masked data.
+ *
+ * The non-masked data is extracted according to the data in the
+ * regdata::masked_data array. The resulting regdata::nids corresponds
+ * to the number of IDs for which genotype data is present.
+ *
+ * Note that the regdata::masked_data array of the new object should
+ * contain only zeros (i.e. not masked).
+ *
+ * @return A new regdata object containing only the rows from
+ * regdata::X and regdata::Y for which genotype data is present.
+ */
+coxph_data coxph_data::get_unmasked_data() const
 {
-    delete[] coxph_data::masked_data;
-    //      delete X;
-    //      delete sstat;
-    //      delete stime;
-    //      delete weights;
-    //      delete offset;
-    //      delete strata;
-    //      delete order;
-}
+    coxph_data to;
 
-
-coxph_data coxph_data::get_unmasked_data()
-{
-    coxph_data to;  // = coxph_data(*this);
-
-    // filter missing data
-
-    int nmeasured=std::count (masked_data, masked_data+nids, 0);
-
+    int nmeasured = std::count(masked_data.begin(), masked_data.end(), 0);
     to.nids = nmeasured;
     to.ncov = ncov;
     to.ngpreds = ngpreds;
@@ -344,14 +390,12 @@ coxph_data coxph_data::get_unmasked_data()
         }
     }
 
-    //delete [] to.masked_data;
-    to.masked_data = new unsigned short int[to.nids];
-    std::fill(to.masked_data,to.masked_data+to.nids,0);
+    to.masked_data = masked_data;
     return (to);
 }
 
 
-coxph_reg::coxph_reg(coxph_data &cdatain)
+coxph_reg::coxph_reg(const coxph_data &cdatain)
 {
     coxph_data cdata = cdatain.get_unmasked_data();
     beta.reinit(cdata.X.nrow, 1);
@@ -363,7 +407,7 @@ coxph_reg::coxph_reg(coxph_data &cdatain)
 }
 
 
-void coxph_reg::estimate(coxph_data &cdatain,
+void coxph_reg::estimate(const coxph_data &cdatain,
                         int maxiter, double eps,
                         double tol_chol, const int model,
                         const int interaction, const int ngpreds,
@@ -402,23 +446,13 @@ void coxph_reg::estimate(coxph_data &cdatain,
     // R's coxph()
     double sctest = 1.0;
 
-    // When using Eigen coxfit2 needs to be called in a slightly
-    // different way (i.e. the .data()-part needs to be added).
-#if EIGEN
     coxfit2(&maxiter, &cdata.nids, &X.nrow, cdata.stime.data.data(),
             cdata.sstat.data.data(), X.data.data(), newoffset.data.data(),
             cdata.weights.data.data(), cdata.strata.data.data(),
             means.data.data(), beta.data.data(), u.data.data(),
             imat.data.data(), loglik_int, &flag, work, &eps, &tol_chol,
             &sctest);
-#else
-    coxfit2(&maxiter, &cdata.nids, &X.nrow, cdata.stime.data,
-            cdata.sstat.data, X.data, newoffset.data,
-            cdata.weights.data, cdata.strata.data,
-            means.data, beta.data, u.data,
-            imat.data, loglik_int, &flag, work, &eps, &tol_chol,
-            &sctest);
-#endif
+
 
     niter = maxiter;
 
@@ -448,13 +482,12 @@ void coxph_reg::estimate(coxph_data &cdatain,
              << " setting beta and se to 'nan'\n";
         setToZero = true;
     } else {
-#if EIGEN
         VectorXd ueigen = u.data;
         MatrixXd imateigen = imat.data;
         VectorXd infs = ueigen.transpose() * imateigen;
         VectorXd betaeigen = beta.data;
         if ( infs.norm() > eps ||
-            infs.norm() > sqrt(eps) * betaeigen.norm() )
+             infs.norm() > sqrt(eps) * betaeigen.norm() )
         {
             cerr << "Warning for " << snpinfo.name[cursnp]
                  << ": beta may be infinite,"
@@ -462,12 +495,6 @@ void coxph_reg::estimate(coxph_data &cdatain,
 
             setToZero = true;
         }
-#else
-        cerr << "Warning for " << snpinfo.name[cursnp]
-             << ": can't check for infinite betas."
-             << " Please compile ProbABEL with Eigen support to fix this."
-             << endl;
-#endif
     }
 
     for (int i = 0; i < X.nrow; i++)
