@@ -19,6 +19,8 @@ endif
 
 EXTRA_DIST = $(man_MANS)
 
+CLEANFILES =
+
 if HAVE_PDFLATEX
 MANNAME = ProbABEL_manual
 MANPDF = $(MANNAME).pdf
@@ -26,9 +28,22 @@ MANTEXSRC = $(MANNAME).tex
 MANAUX = $(MANNAME).aux
 doc_DATA = $(MANPDF)
 
-CLEANFILES = $(MANPDF) $(MANNAME).log $(MANNAME).idx $(MANNAME).out \
+CLEANFILES += $(MANPDF) $(MANNAME).log $(MANNAME).idx $(MANNAME).out \
  $(MANNAME).toc $(MANNAME).idx $(MANNAME).ilg $(MANNAME).ind $(MANAUX) .btmp
+endif
 
+if HAVE_DOXYGEN
+doxygen.stamp: Doxyfile
+	$(DOXYGEN) $<
+	echo Timestamp > $@
+
+CLEANFILES += doxygen.stamp
+
+all-local: doxygen.stamp
+
+# CLEANFILES is only for files, so add an entry for the doxygen directory
+clean-local:
+	-rm -rf doxygen-docs
 endif
 
 
