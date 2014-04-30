@@ -242,7 +242,7 @@ int main(int argc, char * argv[])
     std::vector<std::ostringstream *> covvalue;
     std::vector<double*> chi2val; // vector that contains the chi2 values
     std::vector<std::ostringstream *> chi2;
-#if WITH_BOOST
+#if WITH_BOOST_MATH
     std::vector<std::ostringstream *> pval;
 #endif
 
@@ -263,7 +263,7 @@ int main(int argc, char * argv[])
         chi2[i]->precision(6);
         // *chi2[i] << scientific;
         chi2val.push_back(new double);
-#if WITH_BOOST
+#if WITH_BOOST_MATH
         pval.push_back(new std::ostringstream());
         pval[i]->precision(6);
 #endif
@@ -559,7 +559,7 @@ int main(int argc, char * argv[])
                 }  // END ngpreds == 1 (and SNP is rare)
             }  // END else: SNP is rare
 
-#if WITH_BOOST
+#if WITH_BOOST_MATH
             // Calulate p-values based on the chi^2 values
             int chi2df = 1;
             *pval[model] << pchisq(*chi2val[model], chi2df);
@@ -583,7 +583,7 @@ int main(int argc, char * argv[])
 #endif
                 *outfile[model] << chi2[model]->str();
 
-#if WITH_BOOST
+#if WITH_BOOST_MATH
                 *outfile[model] << input_var.getSep() << pval[model]->str();
 #endif
 
@@ -601,7 +601,7 @@ int main(int argc, char * argv[])
 #endif
             *outfile[0] << chi2[0]->str();
 
-#if WITH_BOOST
+#if WITH_BOOST_MATH
             *outfile[0] << input_var.getSep() << pval[0]->str();
 #endif
 
@@ -616,7 +616,7 @@ int main(int argc, char * argv[])
             covvalue[model]->str("");
             // Oct 26, 2009
             chi2[model]->str("");
-#if WITH_BOOST
+#if WITH_BOOST_MATH
             pval[model]->str("");
 #endif
         }
@@ -663,7 +663,7 @@ int main(int argc, char * argv[])
         ++it;
     }
 
-#if WITH_BOOST
+#if WITH_BOOST_MATH
     it = pval.begin();
     while (it != pval.end())
     {

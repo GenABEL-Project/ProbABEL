@@ -1,3 +1,12 @@
+/**
+ * \file   main_functions_dump.cpp
+ * \author Yurii S. Aulchenko
+ * \author M. Kooyman
+ * \author L.C. Karssen
+ * \author Maksim V. Struchalin
+ *
+ * \brief File containing a bunch of functions used in main().
+ */
 /*
  * main_functions_dump.cpp
  *
@@ -35,7 +44,7 @@
 #include <iomanip>
 #include <vector>
 
-#if WITH_BOOST
+#if WITH_BOOST_MATH
 #include <boost/math/distributions.hpp>
 #endif
 
@@ -263,7 +272,7 @@ void create_header(std::vector<std::ofstream*>& outfile,
 #endif
         }
         *outfile[0] << input_var.getSep() << "chi2_SNP_add";
-#if WITH_BOOST
+#if WITH_BOOST_MATH
         *outfile[0] << input_var.getSep() << "pval_SNP_add";
 #endif
         *outfile[0] << "\n";
@@ -350,7 +359,7 @@ void create_header(std::vector<std::ofstream*>& outfile,
         *outfile[3] << input_var.getSep() << "chi2_SNP_rec";
         *outfile[4] << input_var.getSep() << "chi2_SNP_odom";
 
-#ifdef WITH_BOOST
+#ifdef WITH_BOOST_MATH
         *outfile[0] << input_var.getSep() << "pval_SNP_2df";
         *outfile[1] << input_var.getSep() << "pval_SNP_add";
         *outfile[2] << input_var.getSep() << "pval_SNP_dom";
@@ -372,7 +381,8 @@ void create_header(std::vector<std::ofstream*>& outfile,
 
 
 /**
- * Write the information from the mlinfo file to the output file(s).
+ * \brief Write the information from the mlinfo file to the output
+ * file(s).
  *
  * \param outfile Vector of output file(s)
  * \param file index number identifying the file in the vector of files
@@ -468,13 +478,16 @@ int get_start_position(const cmdvars& input_var, const int model,
 }
 
 
-#ifdef WITH_BOOST
+#if WITH_BOOST_MATH
 /**
- * Calculate the p-value based on the chi^2 distribution.
+ * \brief Calculate the p-value based on the chi^2 distribution.
  *
- * \param chi2 chi^2 value for which the p-value should be
+ * This function is only available if ./configure has detected the
+ * Boost Math libraries.
+ *
+ * \param chi2 \f$\chi^2\f$ value for which the \f$p\f$-value should be
  * calculated.
- * \param df degrees of freedom of the chi^2 distribution
+ * \param df degrees of freedom of the \f$\chi^2\f$ distribution
  */
 double pchisq(const double chi2, const int df)
 {

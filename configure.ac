@@ -39,7 +39,7 @@ if test "x$devoptions" = "xyes"; then
       # User did not set CPPFLAGS, so we can put in our own defaults
       CPPFLAGS="-Wall"
    fi
-   CXXFLAGS+=" -g -Wextra"
+   CXXFLAGS+=" -g"
 fi
 
 if test "x$devoptions" = "xno"; then
@@ -91,9 +91,9 @@ if test x$ac_cv_header_Eigen_Dense = xno; then
 fi
 
 
-# See if we can use the Boost libraries for calculating p-values
-AC_ARG_WITH([boost],
- AS_HELP_STRING([--with-boost], [Use the Boost Math library for
+# See if we can use the Boost math libraries for calculating p-values
+AC_ARG_WITH([boost-math],
+ AS_HELP_STRING([--with-boost-math], [Use the Boost Math library for
  calculating p-values. This is enabled by default]
                )
 )
@@ -103,7 +103,7 @@ if test "x$with_boost" != "xno"; then
 
     AC_ARG_WITH([boost-include-path],
         [AS_HELP_STRING([--with-boost-include-path],
-          [location of the Boost Math headers, defaults to /usr/include/boost])],
+          [location of the Boost headers, defaults to /usr/include/boost])],
         [CXXFLAGS+=" -I${withval}"
         CPPFLAGS+=" -I${withval}"],
         [CXXFLAGS+=' -I/usr/include/boost'
@@ -118,10 +118,10 @@ you specify --with-boost-include-path correctly? Or use --without-boost \
 to disable the calculation of p-values.])
     fi
 else
-   AC_MSG_NOTICE([not using the Boost libraries, so no p-values in the \
+   AC_MSG_NOTICE([not using the Boost Math libraries, so no p-values in the \
 output])
 fi
-AM_CONDITIONAL([WITH_BOOST], test "x$with_boost" != "xno")
+AM_CONDITIONAL([WITH_BOOST_MATH], test "x$with_boost" != "xno")
 
 
 # Checks for typedefs, structures, and compiler characteristics.
