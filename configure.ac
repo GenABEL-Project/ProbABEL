@@ -1,4 +1,3 @@
-#                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
@@ -151,18 +150,27 @@ AC_PROG_SED
 AC_PROG_AWK
 
 # Check for presence of pdfLaTeX
-AC_CHECK_PROG(PDFLATEX, pdflatex, pdflatex)
+AC_CHECK_PROGS(PDFLATEX, pdflatex)
 if test -z "$PDFLATEX"; then
-  AC_MSG_WARN([Unable to create PDF version of the user manual])
+  AC_MSG_NOTICE([pdflatex not found - Unable to create PDF version of the user manual])
 fi
 AM_CONDITIONAL([HAVE_PDFLATEX], test -n "$PDFLATEX")
 
 # Check for presence of R
-AC_CHECK_PROG(R, R, R)
+AC_CHECK_PROGS(R, R)
 if test -z "$R"; then
-  AC_MSG_NOTICE([Unable to do tests comparing ProbABEL output against R output])
+  AC_MSG_NOTICE([R not found - Unable to do tests comparing ProbABEL output against R output])
 fi
 AM_CONDITIONAL([HAVE_R], test -n "$R")
+
+# Check for the presence of Doxygen
+AC_CHECK_PROGS([DOXYGEN], doxygen)
+if test -z "$DOXYGEN"; then
+   AC_MSG_NOTICE([Doxygen not found - Not generating code documentation])
+fi
+AM_CONDITIONAL([HAVE_DOXYGEN],
+               [test -n "$DOXYGEN"]) AM_COND_IF([HAVE_DOXYGEN],
+               [AC_CONFIG_FILES([doc/Doxyfile])])
 
 
 # Building of each of the three modules can be disabled on request
