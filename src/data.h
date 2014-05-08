@@ -75,7 +75,7 @@ class InvSigma {
     mematrix<double> matrix;    /* file is stored here */
 
  public:
-    InvSigma(const char * filename_, phedata * phe);
+    InvSigma(const char * filename_, const phedata& phe);
     mematrix<double> & get_matrix();
     ~InvSigma();
 };

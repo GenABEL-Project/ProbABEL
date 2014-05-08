@@ -35,7 +35,7 @@
 
 void update_progress_to_cmd_line(const int csnp, const int nsnps);
 
-void loadInvSigma(const cmdvars& input_var, phedata& phd,
+void loadInvSigma(const cmdvars& input_var, const phedata& phd,
                   masked_matrix& invvarmatrix);
 
 int create_phenotype(phedata& phd, const cmdvars& input_var);

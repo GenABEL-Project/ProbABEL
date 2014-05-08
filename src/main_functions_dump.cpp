@@ -146,11 +146,11 @@ int create_phenotype(phedata& phd, const cmdvars& input_var)
  * @param invvarmatrix The object of type masked_matrix in which the
  * inverse variance-covariance matrix is returned.
  */
-void loadInvSigma(const cmdvars& input_var, phedata& phd,
+void loadInvSigma(const cmdvars& input_var, const phedata& phd,
                   masked_matrix& invvarmatrix)
 {
     std::cout << "You are running mmscore...\n";
-    InvSigma inv(input_var.getInverseFilename(), &phd);
+    InvSigma inv(input_var.getInverseFilename(), phd);
     // invvarmatrix = inv.get_matrix();
     //double par = 1.; //var(phd.Y)*phd.nids/(phd.nids-phd.ncov-1);
     invvarmatrix.set_matrix(inv.get_matrix());    // = invvarmatrix * par;
