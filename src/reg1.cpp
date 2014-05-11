@@ -1,3 +1,12 @@
+/**
+ * \file   reg1.cpp
+ * \author The ProbABEL team
+ *
+ * \brief File containing the parts of the code for linear and
+ * logistic regression.
+ *
+ * For CoxPH regression look in the file coxph_data.h.
+ */
 /*
  *
  * Copyright (C) 2009--2014 Various members of the GenABEL team. See
@@ -28,13 +37,14 @@
  *
  *
  * if ngpreds==1 (dose data):
- * model 0 = additive 1 df
+ * \li model 0 = additive (1 df)
+ *
  * if ngpreds==2 (prob data):
- * model 0 = 2 df
- * model 1 = additive 1 df
- * model 2 = dominant 1 df
- * model 3 = recessive 1 df
- * model 4 = over-dominant 1 df
+ * \li model 0 = 2 df
+ * \li model 1 = additive (1 df)
+ * \li model 2 = dominant (1 df)
+ * \li model 3 = recessive (1 df)
+ * \li model 4 = over-dominant (1 df)
  * @param X Design matrix, including SNP column
  * @param model
  * @param interaction
@@ -347,6 +357,45 @@ void base_reg::base_score(const mematrix<double>& resid,
 }
 
 
+/**
+ * \brief Solve the linear system in case the --mmscore option was
+ * specified.
+ *
+ * Specifying the --mmscore command line option requires a file name
+ * argument as well. This file should contain the inverse
+ * variance-covariance matrix file. This function is run when Linear
+ * regression is done in combination with the mmscore option. It
+ * solves the 'mmscore' equation as specified in Eq. (5) in section
+ * 8.2.1 of the ProbABEL manual:
+ * \f[
+ *    \hat{\beta}_g = (\mathbf{X}^T_g
+ *    \mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}
+ *    \mathbf{X}_g)^{-1}
+ *    \mathbf{X}^T_g \mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}
+ *    \mathbf{R}_{\hat{\beta}_x},
+ * \f]
+ * where \f$\mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}\f$ is the
+ * inverse variance-covariance matrix, and
+ * \f$\mathbf{R}_{\hat{\beta}_x}\f$ is the vector containing the
+ * residuals obtained from the base regression model i.e. the
+ * phenotype. In this function, the phenotype is stored in the
+ * variable \c Y.
+ *
+ * @param X The design matrix \f$X_g\f$. \c X should only contain the
+ * parts involving genotype data (including any interactions involving
+ * a genetic term), all other covariates should have been regressed out
+ * before running ProbABEL.
+ * @param W_masked The inverse variance-covariance matrix
+ * \f$\mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}\f$.
+ * @param Ch Reference to the LDLT Cholesky decomposition of the
+ * matrix to be inverted to get \f$\hat\beta_g\f$:
+ * \f[
+ * \mathbf{X}^T_g
+ *    \mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}
+ *    \mathbf{X}_g.
+ * \f]
+ * On return this variable contains said matrix.
+ */
 void linear_reg::mmscore_regression(const mematrix<double>& X,
                                     const masked_matrix& W_masked,
                                     LDLT<MatrixXd>& Ch) {
@@ -357,12 +406,18 @@ void linear_reg::mmscore_regression(const mematrix<double>& X,
      side has more rows: this introduces an additional transpose, but can be
      neglected compared to the speedup this brings(about a factor 2 for the
      palinear with 1 predictor)
+
+     This function solves the system
+        (X^T W X) beta = X^T W Y.
+     Since W is symmetric (WX)^T = X^T W, so this can be rewritten as
+        (WX)^T X beta = (WX)^T Y,
+     which is solved using LDLT Cholesky decomposition.
      */
-    MatrixXd tXW = W_masked.masked_data->data * X.data;
-    MatrixXd xWx = tXW.transpose() * X.data;
-    Ch = LDLT<MatrixXd>(xWx);
-    VectorXd beta_vec = Ch.solve(tXW.transpose() * Y);
-    sigma2 = (Y - tXW * beta_vec).squaredNorm();
+    MatrixXd WX = W_masked.masked_data->data * X.data;
+    MatrixXd XWT = WX.transpose();
+    Ch = LDLT<MatrixXd>(XWT * X.data);
+    VectorXd beta_vec = Ch.solve(XWT * Y);
+    sigma2 = (Y - WX * beta_vec).squaredNorm();
     beta.data = beta_vec;
 }
 
@@ -438,6 +493,18 @@ void linear_reg::PlainSEandCovariance(const double sigma2_internal,
 }
 
 
+/**
+ * \brief Estimate the parameters for linear regression.
+ *
+ * @param verbose
+ * @param tol_chol
+ * @param model
+ * @param interaction
+ * @param ngpreds
+ * @param invvarmatrixin
+ * @param robust
+ * @param nullmodel
+ */
 void linear_reg::estimate(const int verbose, const double tol_chol,
                           const int model, const int interaction,
                           const int ngpreds,
