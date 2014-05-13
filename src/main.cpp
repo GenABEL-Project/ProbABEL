@@ -76,15 +76,6 @@
 #include "coxph_data.h"
 #include "main_functions_dump.h"
 
-/// Maximum number of iterations we allow the regression to run
-#define MAXITER 20
-/// Tolerance for convergence
-#define EPS 1.e-8
-/// Precision for the Cholesky decomposition
-#define CHOLTOL 1.5e-12
-
-
-
 
 /**
  * Main routine. The main logic of ProbABEL can be found here
@@ -158,7 +149,7 @@ int main(int argc, char * argv[])
 #if LOGISTIC
     logistic_reg nrd = logistic_reg(nrgd);
 
-    nrd.estimate(0, MAXITER, EPS, 0,
+    nrd.estimate(0, 0,
                  input_var.getInteraction(),
                  input_var.getNgpreds(),
                  invvarmatrix,
@@ -170,12 +161,12 @@ int main(int argc, char * argv[])
 #if DEBUG
     std::cout << "[DEBUG] linear_reg nrd = linear_reg(nrgd); DONE.";
 #endif
-    nrd.estimate(0, CHOLTOL, 0, input_var.getInteraction(),
+    nrd.estimate(0, 0, input_var.getInteraction(),
                  input_var.getNgpreds(), invvarmatrix,
                  input_var.getRobust(), 1);
 #elif COXPH
     coxph_reg nrd = coxph_reg(nrgd);
-    nrd.estimate(nrgd,  MAXITER, EPS, CHOLTOL, 0,
+    nrd.estimate(nrgd, 0,
                  input_var.getInteraction(), input_var.getNgpreds(),
                  true, 1, mli, 0);
 #endif
@@ -302,41 +293,29 @@ int main(int argc, char * argv[])
             {
 #if LOGISTIC
                 logistic_reg rd(rgd);
-                if (input_var.getScore())
-                {
-                    rd.score(nrd.residuals, CHOLTOL, model,
-                             input_var.getInteraction(),
-                             input_var.getNgpreds(),
-                             invvarmatrix);
-                }
-                else
-                {
-                    rd.estimate(0, MAXITER, EPS, model,
-                                input_var.getInteraction(),
-                                input_var.getNgpreds(),
-                                invvarmatrix,
-                                input_var.getRobust());
-                }
 #elif LINEAR
                 linear_reg rd(rgd);
+#elif COXPH
+                coxph_reg rd(rgd);
+#endif
+#if !COXPH
                 if (input_var.getScore())
                 {
-                    rd.score(nrd.residuals,  CHOLTOL, model,
+                    rd.score(nrd.residuals, model,
                              input_var.getInteraction(),
                              input_var.getNgpreds(),
                              invvarmatrix);
                 }
                 else
                 {
-                    rd.estimate(0, CHOLTOL, model,
+                    rd.estimate(0, model,
                                 input_var.getInteraction(),
                                 input_var.getNgpreds(),
                                 invvarmatrix,
                                 input_var.getRobust());
                 }
-#elif COXPH
-                coxph_reg rd(rgd);
-                rd.estimate(rgd,  MAXITER, EPS, CHOLTOL, model,
+#else
+                rd.estimate(rgd, model,
                             input_var.getInteraction(),
                             input_var.getNgpreds(), true, 0, mli, csnp);
 #endif
@@ -408,34 +387,30 @@ int main(int argc, char * argv[])
                             // the X matrix in the regression object
                             // and run the null model estimation again
                             // for this SNP.
-#ifdef LINEAR
+#if !COXPH
                             regdata new_rgd = rgd;
-                            new_rgd.remove_snp_from_X();
-                            linear_reg new_null_rd(new_rgd);
-                            new_null_rd.estimate(0,
-                                                 CHOLTOL, model,
-                                                 input_var.getInteraction(),
-                                                 input_var.getNgpreds(),
-                                                 invvarmatrix,
-                                                 input_var.getRobust(), 1);
-
-#elif LOGISTIC
-                            regdata new_rgd = rgd;
-                            new_rgd.remove_snp_from_X();
-                            logistic_reg new_null_rd(new_rgd);
-                            new_null_rd.estimate(0, MAXITER, EPS,
-                                                  model,
-                                                 input_var.getInteraction(),
-                                                 input_var.getNgpreds(),
-                                                 invvarmatrix,
-                                                 input_var.getRobust(), 1);
-
-#elif COXPH
+#else
                             coxph_data new_rgd = rgd;
+#endif
+
                             new_rgd.remove_snp_from_X();
+
+#ifdef LINEAR
+                            linear_reg new_null_rd(new_rgd);
+#elif LOGISTIC
+                            logistic_reg new_null_rd(new_rgd);
+#endif
+#if !COXPH
+                            new_null_rd.estimate(0,
+                                                 model,
+                                                 input_var.getInteraction(),
+                                                 input_var.getNgpreds(),
+                                                 invvarmatrix,
+                                                 input_var.getRobust(), 1);
+#else
                             coxph_reg new_null_rd(new_rgd);
-                            new_null_rd.estimate(new_rgd, MAXITER,
-                                                 EPS, CHOLTOL, model,
+                            new_null_rd.estimate(new_rgd,
+                                                 model,
                                                  input_var.getInteraction(),
                                                  input_var.getNgpreds(),
                                                  true, 1, mli, csnp);

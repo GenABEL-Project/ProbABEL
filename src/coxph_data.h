@@ -199,10 +199,31 @@ class coxph_reg {
 
 
     // Member functions
-    void estimate(const coxph_data &cdatain, int maxiter,
-                  double eps, double tol_chol, const int model,
+    void estimate(const coxph_data &cdatain, const int model,
                   const int interaction, const int ngpreds, const bool iscox,
                   const int nullmodel, const mlinfo &snpinfo, const int cursnp);
+
+ private:
+    /**
+     * \brief Constant that contains the maximum number of iterations
+     * done during the regression routine.
+     */
+    static const int MAXITER = 20;
+
+    /**
+     * \brief Constant containing the tolerance for
+     * convergence.
+     *
+     * Iteration continues until the percent change in loglikelihood
+     * is <= EPS.
+     */
+    static const double EPS = 1e-8;
+
+    /**
+     * \brief Constant containing the precision for the Cholesky
+     * decomposition.
+     */
+    static const double CHOLTOL = 1.5e-12;
 };
 
 #endif /* COXPH_DATA_H_ */

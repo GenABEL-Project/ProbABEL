@@ -305,7 +305,7 @@ linear_reg::linear_reg(const regdata& rdatain) {
 
 
 void base_reg::base_score(const mematrix<double>& resid,
-                          const double tol_chol, const int model,
+                          const int model,
                           const int interaction,
                           const int ngpreds,
                           const masked_matrix& invvarmatrix,
@@ -497,7 +497,6 @@ void linear_reg::PlainSEandCovariance(const double sigma2_internal,
  * \brief Estimate the parameters for linear regression.
  *
  * @param verbose
- * @param tol_chol
  * @param model
  * @param interaction
  * @param ngpreds
@@ -505,11 +504,13 @@ void linear_reg::PlainSEandCovariance(const double sigma2_internal,
  * @param robust
  * @param nullmodel
  */
-void linear_reg::estimate(const int verbose, const double tol_chol,
-                          const int model, const int interaction,
+void linear_reg::estimate(const int verbose,
+                          const int model,
+                          const int interaction,
                           const int ngpreds,
                           masked_matrix& invvarmatrixin,
-                          const int robust, const int nullmodel) {
+                          const int robust,
+                          const int nullmodel) {
     // suda interaction parameter
     // model should come here
     //regdata rdata = rdatain.get_unmasked_data();
@@ -613,13 +614,13 @@ void linear_reg::estimate(const int verbose, const double tol_chol,
 
 
 void linear_reg::score(const mematrix<double>& resid,
-                       const double tol_chol, const int model,
+                       const int model,
                        const int interaction, const int ngpreds,
                        const masked_matrix& invvarmatrix,
                        int nullmodel)
 {
     //regdata rdata = rdatain.get_unmasked_data();
-    base_score(resid, tol_chol, model, interaction, ngpreds,
+    base_score(resid, model, interaction, ngpreds,
                invvarmatrix, nullmodel = 0);
     // TODO: find out why nullmodel is assigned 0 in the call above.
 }
@@ -645,8 +646,8 @@ logistic_reg::logistic_reg(const regdata& rdatain)
 }
 
 
-void logistic_reg::estimate(const int verbose, const int maxiter,
-                            const double eps, const int model,
+void logistic_reg::estimate(const int verbose,
+                            const int model,
                             const int interaction, const int ngpreds,
                             masked_matrix& invvarmatrixin,
                             const int robust, const int nullmodel) {
@@ -721,7 +722,7 @@ void logistic_reg::estimate(const int verbose, const int maxiter,
      */
     niter = 0;
     double delta = 1.;
-    while (niter < maxiter && delta > eps)
+    while (niter < MAXITER && delta > EPS)
     {
         mematrix<double> eMu = (X) * beta;
         mematrix<double> eMu_us = eMu;
@@ -800,7 +801,7 @@ void logistic_reg::estimate(const int verbose, const int maxiter,
 
         delta = fabs(1. - (prevlik / loglik));
         niter++;
-    }  // END while (niter < maxiter && delta > eps)
+    }  // END while (niter < MAXITER && delta > EPS)
 
     sigma2 = 0.;
     mematrix<double> robust_sigma2(X.ncol, X.ncol);
@@ -881,11 +882,11 @@ void logistic_reg::estimate(const int verbose, const int maxiter,
 
 
 void logistic_reg::score(const mematrix<double>& resid,
-                         const double tol_chol, const int model,
+                         const int model,
                          const int interaction, const int ngpreds,
                          const masked_matrix& invvarmatrix,
                          int nullmodel) {
-    base_score(resid, tol_chol, model, interaction, ngpreds,
+    base_score(resid, model, interaction, ngpreds,
                invvarmatrix, nullmodel = 0);
     // TODO: find out why nullmodel is assigned 0 in the call above.
 }

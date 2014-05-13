@@ -408,11 +408,10 @@ coxph_reg::coxph_reg(const coxph_data &cdatain)
 
 
 void coxph_reg::estimate(const coxph_data &cdatain,
-                        int maxiter, double eps,
-                        double tol_chol, const int model,
-                        const int interaction, const int ngpreds,
-                        const bool iscox, const int nullmodel,
-                        const mlinfo &snpinfo, const int cursnp)
+                         const int model,
+                         const int interaction, const int ngpreds,
+                         const bool iscox, const int nullmodel,
+                         const mlinfo &snpinfo, const int cursnp)
 {
     coxph_data cdata = cdatain.get_unmasked_data();
 
@@ -425,8 +424,6 @@ void coxph_reg::estimate(const coxph_data &cdatain,
     mematrix<double> newoffset = cdata.offset -
         (cdata.offset).column_mean(0);
     mematrix<double> means(X.nrow, 1);
-
-    int maxiterinput = maxiter;
 
     for (int i = 0; i < X.nrow; i++)
     {
@@ -446,32 +443,44 @@ void coxph_reg::estimate(const coxph_data &cdatain,
     // R's coxph()
     double sctest = 1.0;
 
-    coxfit2(&maxiter, &cdata.nids, &X.nrow, cdata.stime.data.data(),
+    // Set the maximum number of iterations that coxfit2() will run to
+    // the default value from the class definition.
+    int maxiterinput = MAXITER;
+    // Make separate variables epsinput and tolcholinput that are not
+    // const to send to coxfit2(), this way we won't have to alter
+    // that function (which is a good thing: we want to keep it as
+    // pristine as possible because it is copied from the R survival
+    // package).
+    double epsinput = EPS;
+    double tolcholinput = CHOLTOL;
+
+    coxfit2(&maxiterinput, &cdata.nids, &X.nrow, cdata.stime.data.data(),
             cdata.sstat.data.data(), X.data.data(), newoffset.data.data(),
             cdata.weights.data.data(), cdata.strata.data.data(),
             means.data.data(), beta.data.data(), u.data.data(),
-            imat.data.data(), loglik_int, &flag, work, &eps, &tol_chol,
-            &sctest);
+            imat.data.data(), loglik_int, &flag, work, &epsinput,
+            &tolcholinput, &sctest);
 
-
-    niter = maxiter;
+    // After coxfit2() maxiterinput contains the actual number of
+    // iterations that were used. Store it in niter.
+    niter = maxiterinput;
 
     // Check the results of the Cox fit; mirrored from the same checks
     // in coxph_fit.S from the R survival package
 
     bool setToZero = false;
 
-    if (flag < X.nrow && maxiter > 0) {
+    if (flag < X.nrow && niter > 0) {
         cerr << "Warning for " << snpinfo.name[cursnp]
              << ": X matrix deemed to be singular,"
              << " setting beta and se to 'nan'\n";
         setToZero = true;
     }
 
-    if (niter >= maxiterinput)
+    if (niter >= MAXITER)
     {
         cerr << "Warning for " << snpinfo.name[cursnp]
-             << ": nr of iterations > MAXITER (" << maxiterinput << "): "
+             << ": nr of iterations > the maximum (" << MAXITER << "): "
              << niter << endl;
     }
 
@@ -486,8 +495,8 @@ void coxph_reg::estimate(const coxph_data &cdatain,
         MatrixXd imateigen = imat.data;
         VectorXd infs = ueigen.transpose() * imateigen;
         VectorXd betaeigen = beta.data;
-        if ( infs.norm() > eps ||
-             infs.norm() > sqrt(eps) * betaeigen.norm() )
+        if ( infs.norm() > EPS ||
+             infs.norm() > sqrt(EPS) * betaeigen.norm() )
         {
             cerr << "Warning for " << snpinfo.name[cursnp]
                  << ": beta may be infinite,"
