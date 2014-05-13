@@ -97,7 +97,7 @@ AC_ARG_WITH([boost-math],
                )
 )
 
-if test "x$with_boost" != "xno"; then
+if test "x$with_boost_math" != "xno"; then
     AC_MSG_NOTICE([building using the Boost Math library enabled])
 
     AC_ARG_WITH([boost-include-path],
@@ -120,7 +120,7 @@ else
    AC_MSG_NOTICE([not using the Boost Math libraries, so no p-values in the \
 output])
 fi
-AM_CONDITIONAL([WITH_BOOST_MATH], test "x$with_boost" != "xno")
+AM_CONDITIONAL([WITH_BOOST_MATH], test "x$with_boost_math" != "xno")
 
 
 # Checks for typedefs, structures, and compiler characteristics.

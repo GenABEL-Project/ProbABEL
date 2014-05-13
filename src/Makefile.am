@@ -68,10 +68,10 @@ pacoxph_CPPFLAGS = $(AM_CPPFLAGS)
 pacoxph_CFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CFLAGS)
 pacoxph_SOURCES += $(EIGENFILES)
 
-if WITH_BOOST
-palinear_CXXFLAGS += -DWITH_BOOST
-palogist_CXXFLAGS += -DWITH_BOOST
-pacoxph_CXXFLAGS += -DWITH_BOOST
+if WITH_BOOST_MATH
+palinear_CXXFLAGS += -DWITH_BOOST_MATH
+palogist_CXXFLAGS += -DWITH_BOOST_MATH
+pacoxph_CXXFLAGS += -DWITH_BOOST_MATH
 endif
 
 extract_snp_SOURCES = extract-snp.cpp $(FVSRC) $(FVHEADERS)
