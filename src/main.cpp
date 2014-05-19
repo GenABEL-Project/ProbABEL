@@ -124,7 +124,6 @@ int main(int argc, char * argv[])
         // TODO(maartenk): remove timing code
         double millisec=((std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000))/1000;
         cout << "done in "<< millisec<< " seconds.\n" << flush;
-
     }
     else
     {
@@ -134,7 +133,6 @@ int main(int argc, char * argv[])
                        input_var.getNgpreds(), phd.nids_all, phd.nids,
                        phd.allmeasured, phd.idnames);
         cout << "done.\n" << flush;
-
     }
 
 

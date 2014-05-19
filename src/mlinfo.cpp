@@ -54,14 +54,16 @@ mlinfo::mlinfo(char * filename, char * mapname)
         }
         nlin--; // Subtract one, the previous loop added 1 too much
     } else {
-        std::cerr << "mlinfo: cannot open info file " << filename << std::endl;
+        std::cerr << "mlinfo: cannot open info file "
+                  << filename << std::endl;
         exit(1);
     }
     infile.close();
 
     if (nlin % 7)
     {
-        std::cerr << "mlinfo: number of columns != 7 in " << filename << std::endl;
+        std::cerr << "mlinfo: number of columns != 7 in "
+                  << filename << std::endl;
         exit(1);
     }
     nsnps = static_cast<int>((nlin / 7) - 1);
@@ -78,7 +80,8 @@ mlinfo::mlinfo(char * filename, char * mapname)
     infile.open(filename);
     if (!infile)
     { // file couldn't be opened
-        std::cerr << "mlinfo: cannot open info file " << filename << std::endl;
+        std::cerr << "mlinfo: cannot open info file "
+                  << filename << std::endl;
         exit(1);
     }
     /* Read the header and discard it */
@@ -114,7 +117,8 @@ mlinfo::mlinfo(char * filename, char * mapname)
 
         if (!instr.is_open())
         {
-            std::cerr << "mlinfo: cannot open map file " << mapname << std::endl;
+            std::cerr << "mlinfo: cannot open map file "
+                      << mapname << std::endl;
             exit(1);
         }
 

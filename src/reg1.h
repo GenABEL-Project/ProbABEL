@@ -138,6 +138,7 @@ class logistic_reg: public base_reg {
                const int model, const int interaction,
                const int ngpreds, const masked_matrix& invvarmatrix,
                int nullmodel = 0);
+
  private:
     /**
      * \brief Constant that contains the maximum number of iterations
