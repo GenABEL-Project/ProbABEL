@@ -41,9 +41,10 @@ void gendata::mldose_line_to_matrix(const int k,
                                     const int amount_of_numbers){
     int j = 0;
     // Check if not a null pointer
-    if (!*all_numbers){
-        perror("Error while reading genetic data (expected pointer to char\
- but found a null pointer)");
+//    if (!*all_numbers){
+    if (true) {
+        perror("Error while reading genetic data (expected pointer to char "
+               "but found a null pointer)");
         exit(EXIT_FAILURE);
     }
 
@@ -217,10 +218,9 @@ void gendata::re_gendata(const string filename,
         // fix thanks to Vadym Pinchuk
         if (allmeasured[i] && idnames[j] != DAGobsname)
         {
-            report_error(
-                "names do not match for observation at phenofile line\
- (phe/geno) %i/+1 (%s/%s)\n",
-                i + 1, idnames[j].c_str(), DAGobsname.c_str());
+            report_error("names do not match for observation at phenofile "
+                         "line (phe/geno) %i/+1 (%s/%s)\n",
+                         i + 1, idnames[j].c_str(), DAGobsname.c_str());
         }
     }
     nids = j + 1;
