@@ -472,7 +472,7 @@ void coxph_reg::estimate(const coxph_data &cdatain,
     if (flag < X.nrow && niter > 0) {
         cerr << "Warning for " << snpinfo.name[cursnp]
              << ": X matrix deemed to be singular,"
-             << " setting beta and se to 'nan'\n";
+             << " setting beta and se to 'NaN'\n";
         setToZero = true;
     }
 
@@ -487,7 +487,7 @@ void coxph_reg::estimate(const coxph_data &cdatain,
     {
         cerr << "Warning for " << snpinfo.name[cursnp]
              << ": Cox regression ran out of iterations and did not converge,"
-             << " setting beta and se to 'nan'\n";
+             << " setting beta and se to 'NaN'\n";
         setToZero = true;
     } else {
         VectorXd ueigen = u.data;
@@ -499,7 +499,7 @@ void coxph_reg::estimate(const coxph_data &cdatain,
         {
             cerr << "Warning for " << snpinfo.name[cursnp]
                  << ": beta may be infinite,"
-                 << " setting beta and se to 'nan'\n";
+                 << " setting beta and se to 'NaN'\n";
 
             setToZero = true;
         }

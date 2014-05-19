@@ -1,6 +1,9 @@
 ***** v.0.5.0 (2014.)
 * ProbABEL now depends on the Eigen library. The option to compile without
   Eigen has been removed.
+* Not-a-number values in the output are now printed as "NaN" instead of
+  "nan".
+
 
 ***** v.0.4.3 (2014.04.01)
 * Speed-up of a factor of ~ 2 for linear, logistic and Cox regression when
