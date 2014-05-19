@@ -70,12 +70,12 @@
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
 #include "maskedmatrix.h"
-#include "data.h"
 #include "reg1.h"
 #include "command_line_settings.h"
 #include "coxph_data.h"
 #include "main_functions_dump.h"
-
+#include "mlinfo.h"
+#include "invsigma.h"
 
 /**
  * Main routine. The main logic of ProbABEL can be found here

@@ -4,7 +4,7 @@ AC_PREREQ([2.67])
 AC_INIT(ProbABEL, 0.4.3, genabel-devel@r-forge.wu-wien.ac.at)
 AM_INIT_AUTOMAKE([silent-rules subdir-objects])
 AM_SILENT_RULES([yes])
-AC_CONFIG_SRCDIR([src/data.h])
+AC_CONFIG_SRCDIR([src/mlinfo.h])
 AC_CONFIG_HEADERS([src/config.h])
 
 # Add the --disable-maintainer-mode option used by e.g. Debian and

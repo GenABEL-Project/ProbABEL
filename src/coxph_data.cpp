@@ -34,7 +34,6 @@ extern "C" {
 #include "survproto.h"
 }
 
-//  #include "reg1.h"
 #include "fvlib/AbstractMatrix.h"
 #include "fvlib/CastUtils.h"
 #include "fvlib/const.h"

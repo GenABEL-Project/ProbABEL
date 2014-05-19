@@ -37,13 +37,10 @@
 #define COXPH_DATA_H_
 
 #include "eigen_mematrix.h"
-#include "eigen_mematrix.cpp"
-
-#include "data.h"
-#include "reg1.h"
 #include "gendata.h"
+#include "mlinfo.h"
 #include "phedata.h"
-
+#include "reg1.h"
 
 /**
  * \brief A coxph_data object contains the data used for Cox PH

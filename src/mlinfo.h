@@ -1,11 +1,14 @@
 /**
- * \file   data.h
- * \author mkooyman
+ * \file   mlinfo.h
+ * \author The GenABEL team
  *
- * \brief Contains several classes we didn't put somewhere else yet
+ * \brief Contains the class information for the mlinfo class.
  *
+ * The mlinfo class contains the information read from the .info of
+ * .mlinfo files.
  *
- * Copyright (C) 2009--2014 Various members of the GenABEL team. See
+ */
+/* Copyright (C) 2009--2014 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
  *
  * This program is free software; you can redistribute it and/or
@@ -25,16 +28,10 @@
  *
  */
 
-
-#ifndef DATA_H_
-#define DATA_H_
+#ifndef MLINFO_H_
+#define MLINFO_H_
 #include <string>
-
-extern bool is_interaction_excluded;
-//TODO(unknown) This function is not used. Remove in near future
-//unsigned int Nmeasured(char * fname, int nphenocols, int npeople);
-#include "phedata.h"
-#include "gendata.h"
+#include <cstdlib>
 
 /**
  * \brief Data from the mlinfo file.
@@ -51,6 +48,9 @@ class mlinfo {
     double * Quality;           /**< The imputation quality metric */
     double * Rsq;               /**< The imputation \f$R^2\f$ */
     std::string * map;          /**< Array with the SNP positions */
+
+
+    // Constructors and destructors
     mlinfo()
     {
         Freq1 = NULL;
@@ -67,17 +67,4 @@ class mlinfo {
     ~mlinfo();
 };
 
-class InvSigma {
- private:
-    static const unsigned MAXIMUM_PEOPLE_AMOUNT = 1000000;
-    unsigned int npeople;       /* number of people */
-    std::string filename;
-    mematrix<double> matrix;    /* file is stored here */
-
- public:
-    InvSigma(const char * filename_, const phedata& phe);
-    mematrix<double> & get_matrix();
-    ~InvSigma();
-};
-
-#endif//DATA_H_
+#endif // MLINFO_H_

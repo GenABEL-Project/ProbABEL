@@ -3,12 +3,19 @@
 ## Using wildcards in these lists doesn't work. Also GNU make's
 ## ($wildcard,) doesn't work. It gives warning message about
 ## portability, but in the end doesn't work, I tried :-).
-REGFILES = data.h data.cpp gendata.h gendata.cpp eigen_mematrix.h	\
- eigen_mematrix.cpp command_line_settings.h command_line_settings.cpp	\
- reg1.h usage.h usage.cpp main.cpp utilities.h utilities.cpp		\
- phedata.h phedata.cpp regdata.h regdata.cpp maskedmatrix.cpp		\
- maskedmatrix.h reg1.cpp main_functions_dump.h				\
- main_functions_dump.cpp
+REGFILES = main.cpp					\
+ invsigma.h invsigma.cpp				\
+ gendata.h gendata.cpp					\
+ eigen_mematrix.h eigen_mematrix.cpp			\
+ command_line_settings.h command_line_settings.cpp	\
+ reg1.h reg1.cpp					\
+ usage.h usage.cpp					\
+ utilities.h utilities.cpp				\
+ phedata.h phedata.cpp					\
+ regdata.h regdata.cpp					\
+ maskedmatrix.h maskedmatrix.cpp			\
+ main_functions_dump.h main_functions_dump.cpp		\
+ mlinfo.h mlinfo.cpp
 
 
 ## Filevector files:

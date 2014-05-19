@@ -36,8 +36,9 @@
 #include <vector>
 
 #include "maskedmatrix.h"
+#include "mlinfo.h"
 #include "phedata.h"
-#include "data.h"
+#include "invsigma.h"
 #include "command_line_settings.h"
 
 /**
