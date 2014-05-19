@@ -41,7 +41,7 @@ void loadInvSigma(const cmdvars& input_var, const phedata& phd,
 int create_phenotype(phedata& phd, const cmdvars& input_var);
 
 void create_start_of_header(std::vector<std::ofstream*>& outfile,
-                            cmdvars& input_var, phedata& phd);
+                            const cmdvars& input_var, const phedata& phd);
 
 void write_mlinfo(const std::vector<std::ofstream*>& outfile,
                   const unsigned int file, const mlinfo& mli,
@@ -52,8 +52,9 @@ void open_files_for_output(std::vector<std::ofstream*>& outfile,
                            const std::string& outfilename_str);
 
 void create_header(std::vector<std::ofstream*>& outfile,
-                   cmdvars& input_var, phedata& phd, int& interaction_cox);
+                   const cmdvars& input_var, const phedata& phd,
+                   const int& interaction_cox);
 
 int get_start_position(const cmdvars& input_var, const int model,
-        const int number_of_rows_or_columns);
+                       const int number_of_rows_or_columns);
 #endif /* MAIN_FUNCTIONS_DUMP_H_ */
