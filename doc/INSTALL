@@ -4,27 +4,20 @@ The ProbABEL manual (in .tex or .pdf format) also contains detailed
 (complementary) instructions on how to obtain and install ProbABEL.
 
 * Dependencies
-  ProbABEL can be compiled without depending on other
-  libraries. However, when the Eigen library is present
-  (http://eigen.tuxfamily.org) matrix manipulation is much more
-  efficient and fast. On Debian/Ubuntu systems the Eigen library can
-  be installed in the following way:
-apt-get install libeigen3-dev
+** The Eigen library
+   ProbABEL has one external dependency that has to be met before
+   compilation will succeed: it depends on the Eigen library
+   (http://eigen.tuxfamily.org) for fast matrix manipulation. On
+   Debian/Ubuntu systems the Eigen library can be installed in the
+   following way: apt-get install libeigen3-dev
 
-  If you install the eigen library by hand (e.g. after downloading the
-  files from the aforementioned website) you have to specify the
-  location of the header files when running ./configure (see below):
-./configure --with-eigen-include-path=/your/path/to/eigen
-  The default for this option is /usr/include/eigen3. This is the
-  directory in which files like Eigen/Dense and Eigen/Cholesky can be
-  found.
-
-  If ./configure cannot find the Eigen library it will say so. To
-  disable the use of Eigen (even if the library is present) use:
-./configure --without-eigen
-  Note that we do not recommend building ProbABEL without EIGEN as
-  the non-EIGEN code is tested less well and we are preparing to
-  phase out the non-EIGEN code.
+   If you install the eigen library by hand (e.g. after downloading
+   the files from the aforementioned website) you have to specify the
+   location of the header files when running ./configure (see below):
+./configure --with-eigen-include-path=/your/path/to/eigen The
+   default for this option is /usr/include/eigen3. This is the
+   directory in which files like Eigen/Dense and Eigen/Cholesky can be
+   found. If ./configure cannot find the Eigen library it will say so.
 
 * Compiling for Linux
   If you downloaded the source from SVN (this is not necessary when
