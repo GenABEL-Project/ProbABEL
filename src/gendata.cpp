@@ -41,8 +41,7 @@ void gendata::mldose_line_to_matrix(const int k,
                                     const int amount_of_numbers){
     int j = 0;
     // Check if not a null pointer
-//    if (!*all_numbers){
-    if (true) {
+    if (!*all_numbers){
         perror("Error while reading genetic data (expected pointer to char "
                "but found a null pointer)");
         exit(EXIT_FAILURE);
