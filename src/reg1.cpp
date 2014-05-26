@@ -72,7 +72,7 @@ mematrix<double> apply_model(const mematrix<double>& X,
 
     if (model == 0)
     {
-        if (interaction != 0 && !nullmodel)
+        if (interaction != 0)
         {
             if (ngpreds == 2)
             {
