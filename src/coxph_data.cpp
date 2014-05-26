@@ -441,7 +441,7 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
     // Check the results of the Cox fit; mirrored from the same checks
     // in coxph.fit.S and coxph.R from the R survival package.
 
-    bool setToZero = false;
+    bool setToNAN = false;
 
     // Based on coxph.fit.S lines with 'which.sing' and coxph.R line
     // with if(any(is.NA(coefficients))). These lines set coefficients
@@ -452,7 +452,7 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
         cerr << "Warning for " << snpinfo.name[cursnp]
              << ": X matrix deemed to be singular,"
              << " setting beta and se to 'NaN'\n";
-        setToZero = true;
+        setToNAN = true;
     }
 
     if (niter >= maxiterinput)
@@ -467,7 +467,7 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
         cerr << "Warning for " << snpinfo.name[cursnp]
              << ": Cox regression ran out of iterations and did not converge,"
              << " setting beta and se to 'NaN'\n";
-        setToZero = true;
+        setToNAN = true;
     } else {
 #if EIGEN
         VectorXd ueigen = u.data;
@@ -496,7 +496,7 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
             // cout << "beta values for SNP: " << snpinfo.name[cursnp]
             //      << " are: " << betaeigen << std::endl;
 
-            setToZero = true;
+            setToNAN = true;
         }
 #else
         cerr << "Warning for " << snpinfo.name[cursnp]
@@ -508,7 +508,7 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
 
     for (int i = 0; i < X.nrow; i++)
     {
-        if (setToZero)
+        if (setToNAN)
         {
             // Cox regression failed
             // sebeta[i] = NAN;
