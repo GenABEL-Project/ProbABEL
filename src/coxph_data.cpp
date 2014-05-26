@@ -439,14 +439,19 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
     niter = maxiter;
 
     // Check the results of the Cox fit; mirrored from the same checks
-    // in coxph_fit.S from the R survival package
+    // in coxph.fit.S and coxph.R from the R survival package.
 
     bool setToZero = false;
 
+    // Based on coxph.fit.S lines with 'which.sing' and coxph.R line
+    // with if(any(is.NA(coefficients))). These lines set coefficients
+    // to NA if flag < nvar (with nvar = ncol(x)) and maxiter >
+    // 0. coxph.R then checks for any NAs in the coefficients and
+    // outputs the warning message if NAs were found.
     if (flag < X.nrow && maxiter > 0) {
         cerr << "Warning for " << snpinfo.name[cursnp]
              << ": X matrix deemed to be singular,"
-             << " setting beta and se to 'nan'\n";
+             << " setting beta and se to 'NaN'\n";
         setToZero = true;
     }
 
@@ -461,20 +466,35 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
     {
         cerr << "Warning for " << snpinfo.name[cursnp]
              << ": Cox regression ran out of iterations and did not converge,"
-             << " setting beta and se to 'nan'\n";
+             << " setting beta and se to 'NaN'\n";
         setToZero = true;
     } else {
 #if EIGEN
         VectorXd ueigen = u.data;
         MatrixXd imateigen = imat.data;
         VectorXd infs = ueigen.transpose() * imateigen;
+        infs = infs.cwiseAbs();
         VectorXd betaeigen = beta.data;
-        if ( infs.norm() > eps ||
-            infs.norm() > sqrt(eps) * betaeigen.norm() )
-        {
+        bool problems = false;
+
+        assert(betaeigen.size() == infs.size());
+
+        // We check the beta's for all coefficients
+        // (incl. covariates), maybe stick to only checking the SNP
+        // coefficient?
+        for (int i = 0; i < infs.size(); i++) {
+            if (infs[i] > eps && infs[i] > sqrt(eps) * abs(betaeigen[i])) {
+                problems = true;
+            }
+        }
+
+        if (problems) {
             cerr << "Warning for " << snpinfo.name[cursnp]
                  << ": beta may be infinite,"
-                 << " setting beta and se to 'nan'\n";
+                 << " setting beta and se to 'NaN'\n";
+
+            // cout << "beta values for SNP: " << snpinfo.name[cursnp]
+            //      << " are: " << betaeigen << std::endl;
 
             setToZero = true;
         }
@@ -491,9 +511,9 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
         if (setToZero)
         {
             // Cox regression failed
-            sebeta[i] = NAN;
-            beta[i]   = NAN;
-            loglik    = NAN;
+            // sebeta[i] = NAN;
+            // beta[i]   = NAN;
+            // loglik    = NAN;
         } else {
             sebeta[i] = sqrt(imat.get(i, i));
             loglik = loglik_int[1];
