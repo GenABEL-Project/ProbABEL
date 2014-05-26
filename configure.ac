@@ -116,19 +116,32 @@ AC_PROG_SED
 # Check for the presence of awk. Needed in the test suite
 AC_PROG_AWK
 
-# Check for presence of pdfLaTeX
-AC_CHECK_PROGS(PDFLATEX, pdflatex)
-if test -z "$PDFLATEX"; then
-  AC_MSG_NOTICE([pdflatex not found - Unable to create PDF version of the user manual])
-fi
-AM_CONDITIONAL([HAVE_PDFLATEX], test -n "$PDFLATEX")
-
 # Check for presence of R
 AC_CHECK_PROGS(R, R)
 if test -z "$R"; then
   AC_MSG_NOTICE([R not found - Unable to do tests comparing ProbABEL output against R output])
 fi
 AM_CONDITIONAL([HAVE_R], test -n "$R")
+
+# The user can disable building of the PDF of the manual, for example
+# if the required LaTeX packages are not installed
+AC_ARG_ENABLE([latex-doc],
+    [AS_HELP_STRING([--disable-latex-doc], [disable building the PDF
+    documentation from LaTeX source])],
+    [latexdoc=no],
+    [latexdoc=yes])
+
+if test "x$latexdoc" = "xyes"; then
+   AC_MSG_NOTICE([building of the PDF of the user manual from LaTeX source is enabled])
+   # Check for presence of pdfLaTeX
+   AC_CHECK_PROGS(PDFLATEX, pdflatex)
+   if test -z "$PDFLATEX"; then
+      AC_MSG_NOTICE([pdflatex not found - Unable to create PDF version of the user manual])
+   fi
+fi
+AM_CONDITIONAL([HAVE_PDFLATEX], test -n "$PDFLATEX")
+AM_CONDITIONAL([BUILD_latexdoc], test "x$latexdoc" = "xyes")
+
 
 # Check for the presence of Doxygen
 AC_CHECK_PROGS([DOXYGEN], doxygen)
