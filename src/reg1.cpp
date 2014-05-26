@@ -70,137 +70,99 @@ mematrix<double> apply_model(const mematrix<double>& X,
         return (X);
     }
 
-    if (model == 0)
+    if (model == 0) // Only run these steps the first time this
+                    // function is called
     {
         if (interaction != 0)
         {
-            if (ngpreds == 2)
+            mematrix<double> nX;
+            nX.reinit(X.nrow, X.ncol + ngpreds);
+            int csnp_p1 = nX.ncol - 2 * ngpreds;
+            int c1 = nX.ncol - ngpreds;
+            // The following two variables are only used when
+            // ngpreds == 2
+            int csnp_p2 = nX.ncol - 3;
+            int c2 = nX.ncol - 1;
+
+            // Copy the data from X to nX (note: nX has more columns!)
+            for (int i = 0; i < X.nrow; i++)
+                for (int j = 0; j < X.ncol; j++)
+                    nX[i * nX.ncol + j] = X[i * X.ncol + j];
+
+            for (int i = 0; i < nX.nrow; i++)
             {
-                mematrix<double> nX;
-                nX.reinit(X.nrow, X.ncol + 2);
-                int csnp_p1 = nX.ncol - 4;
-                int csnp_p2 = nX.ncol - 3;
-                int c1 = nX.ncol - 2;
-                int c2 = nX.ncol - 1;
-                for (int i = 0; i < X.nrow; i++)
-                    for (int j = 0; j < (X.ncol); j++)
-                        nX[i * nX.ncol + j] = X[i * X.ncol + j];
-                for (int i = 0; i < nX.nrow; i++)
+                if (iscox)
                 {
-                    if (iscox)
+                    // Maksim: interaction with SNP;;
+                    nX[i * nX.ncol + c1] =
+                        X[i * X.ncol + csnp_p1]
+                        * X[i * X.ncol + interaction - 1];
+                    if (ngpreds == 2)
                     {
-                        // Maksim: interaction with SNP;;
-                        nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
-                                * X[i * X.ncol + interaction - 1];
-                        nX[i * nX.ncol + c2] = X[i * X.ncol + csnp_p2]
-                                * X[i * X.ncol + interaction - 1];
-                    }
-                    else
-                    {
-                        // Maksim: interaction with SNP;;
-                        nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
-                                * X[i * X.ncol + interaction];
-                        nX[i * nX.ncol + c2] = X[i * X.ncol + csnp_p2]
-                                * X[i * X.ncol + interaction];
+                        nX[i * nX.ncol + c2] =
+                            X[i * X.ncol + csnp_p2]
+                            * X[i * X.ncol + interaction - 1];
                     }
                 }
-                //________________________
-                if (is_interaction_excluded)
+                else
                 {
-                    mematrix<double> nX_without_interact_phe;
-                    nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
-
-                    for (int row = 0; row < nX.nrow; row++)
+                    // Maksim: interaction with SNP;;
+                    nX[i * nX.ncol + c1] =
+                        X[i * X.ncol + csnp_p1]
+                        * X[i * X.ncol + interaction];
+                    if (ngpreds == 2)
                     {
-                        // Han Chen
-                        int col_new = -1;
-                        for (int col = 0; col < nX.ncol; col++)
-                        {
-                            if (col != interaction && !iscox)
-                            {
-                                col_new++;
-                                nX_without_interact_phe[row
-                                    * nX_without_interact_phe.ncol + col_new] =
-                                        nX[row * nX.ncol + col];
-                            }
-                            if (col != interaction - 1 && iscox)
-                            {
-                                col_new++;
-                                nX_without_interact_phe[row
-                                    * nX_without_interact_phe.ncol + col_new] =
-                                        nX[row * nX.ncol + col];
-                            }
-                        } // interaction_only, model==0, ngpreds==2
-                          // Oct 26, 2009
+                        nX[i * nX.ncol + c2] =
+                            X[i * X.ncol + csnp_p2]
+                            * X[i * X.ncol + interaction];
                     }
-                    return nX_without_interact_phe;
-                }  // end of is_interaction_excluded
-                   //________________________
-                return (nX);
+                }
             }
-            if (ngpreds == 1)
-            {
-                mematrix<double> nX;
-                nX.reinit(X.nrow, X.ncol + 1);
-                int csnp_p1 = nX.ncol - 2;
-                int c1 = nX.ncol - 1;
-                for (int i = 0; i < X.nrow; i++)
-                    for (int j = 0; j < (X.ncol); j++)
-                        nX[i * nX.ncol + j] = X[i * X.ncol + j];
 
-                for (int i = 0; i < nX.nrow; i++)
+            if (is_interaction_excluded)
+            {
+                mematrix<double> nX_without_interact_phe;
+                nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
+
+                for (int row = 0; row < nX.nrow; row++)
                 {
-                    if (iscox)
+                    // Han Chen
+                    int col_new = -1;
+                    for (int col = 0; col < nX.ncol; col++)
                     {
-                        // Maksim: interaction with SNP;;
-                        nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
-                                * X[i * X.ncol + interaction - 1];
-                    }
-                    else
-                    {
-                        // Maksim: interaction with SNP;;
-                        nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
-                                * X[i * X.ncol + interaction];
-                    }
-                }
-                //________________________
-                if (is_interaction_excluded)
-                {
-                    mematrix<double> nX_without_interact_phe;
-                    nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
-                    for (int row = 0; row < nX.nrow; row++)
-                    {
-                        int col_new = -1;
-                        for (int col = 0; col < nX.ncol; col++)
+                        if (col != interaction && !iscox)
                         {
-                            if (col != interaction && !iscox)
-                            {
-                                col_new++;
-                                nX_without_interact_phe[row
-                                    * nX_without_interact_phe.ncol + col_new] =
-                                        nX[row * nX.ncol + col];
-                            }
-                            if (col != interaction - 1 && iscox)
-                            {
-                                col_new++;
-                                nX_without_interact_phe[row
-                                     * nX_without_interact_phe.ncol + col_new] =
-                                        nX[row * nX.ncol + col];
-                            }
+                            col_new++;
+                            nX_without_interact_phe[row
+                               * nX_without_interact_phe.ncol + col_new] =
+                                nX[row * nX.ncol + col];
                         }
-                    }
-                    return nX_without_interact_phe;
-                }  // end of is_interaction_excluded
-                   //________________________
-                return (nX);
-            }
-        }
+                        if (col != interaction - 1 && iscox)
+                        {
+                            col_new++;
+                            nX_without_interact_phe[row
+                               * nX_without_interact_phe.ncol + col_new] =
+                                nX[row * nX.ncol + col];
+                        }
+                    } // interaction_only, model==0
+                    // Oct 26, 2009
+                }
+                return nX_without_interact_phe;
+            }  // End of is_interaction_excluded
+            return (nX);
+        } // End if (interaction !=0)
         else
         {
+            // interaction == 0
             return (X);
         }
-    }
+    } // End: if (model == 0)
 
+
+    // NOTE: The rest of this function is not run for dosage data
+    // (ngpreds == 1) because in that case there is only one value for
+    // model: model == 0; so this function stops at the if() that
+    // ended just above.
     mematrix<double> nX;
     if (interaction != 0)
     {
@@ -226,7 +188,7 @@ mematrix<double> apply_model(const mematrix<double>& X,
     {
         if (model == 1)  // additive
             nX[i * nX.ncol + c1] = X[i * X.ncol + c1] + 2. * X[i * X.ncol + c2];
-        else if (model == 2)  //dominant
+        else if (model == 2)  // dominant
             nX[i * nX.ncol + c1] = X[i * X.ncol + c1] + X[i * X.ncol + c2];
         else if (model == 3)  // recessive
             nX[i * nX.ncol + c1] = X[i * X.ncol + c2];
