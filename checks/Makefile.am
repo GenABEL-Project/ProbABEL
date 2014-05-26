@@ -49,12 +49,16 @@ if BUILD_palogist
 check_SCRIPTS += test_bt.sh
 endif
 if BUILD_pacoxph
-check_SCRIPTS +=  test_cox.sh
+check_SCRIPTS +=  test_cox.sh check_pacoxph_nocovar.sh
 endif
 
 AM_TESTS_ENVIRONMENT= \
 	PA_BINDIR=$(top_builddir)/src
 TESTS = $(check_SCRIPTS)
+
+## The pacoxph nocovar test doesn't run correctly until bug #1266 is
+## fixed.
+XFAIL_TESTS = check_pacoxph_nocovar.sh
 
 EXTRA_DIST = $(verified_results) $(input_files) $(check_SCRIPTS)
 
@@ -118,11 +122,13 @@ mmscore_prob_fv_recess.out.txt mmscore_prob_domin.out.txt		\
 mmscore_prob_recess.out.txt mmscore_prob_add.out.txt			\
 mmscore_prob_2df.out.txt mmscore_prob_fv_2df.out.txt
 
-cleanfiles_cox = coxph_dose_add.out.txt coxph_dose_fv_add.out.txt	\
-coxph_prob_fv_over_domin.out.txt coxph_prob_fv_domin.out.txt		\
-coxph_prob_over_domin.out.txt coxph_prob_fv_add.out.txt			\
-coxph_prob_fv_recess.out.txt coxph_prob_domin.out.txt			\
-coxph_prob_recess.out.txt coxph_prob_add.out.txt			\
+cleanfiles_cox = pacoxph_nocovar_add.out.txt			\
+coxph_data.txt							\
+coxph_dose_add.out.txt coxph_dose_fv_add.out.txt		\
+coxph_prob_fv_over_domin.out.txt coxph_prob_fv_domin.out.txt	\
+coxph_prob_over_domin.out.txt coxph_prob_fv_add.out.txt		\
+coxph_prob_fv_recess.out.txt coxph_prob_domin.out.txt		\
+coxph_prob_recess.out.txt coxph_prob_add.out.txt		\
 coxph_prob_2df.out.txt coxph_prob_fv_2df.out.txt
 
 
