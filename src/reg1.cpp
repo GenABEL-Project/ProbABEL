@@ -34,24 +34,36 @@
 
 
 /**
+ * \brief Apply the genetic model to the design matrix X before
+ * running the regression.
  *
+ * This also includes taking care of an interaction term if the user
+ * requested that.
  *
- * if ngpreds==1 (dose data):
+ * Depending on the number of genetic predictors (ngpreds) the integer
+ * coding for the models has a different meaning:
+ *
+ * If ngpreds==1 (dose data):
  * \li model 0 = additive (1 df)
  *
- * if ngpreds==2 (prob data):
+ * If ngpreds==2 (prob data):
  * \li model 0 = 2 df
  * \li model 1 = additive (1 df)
  * \li model 2 = dominant (1 df)
  * \li model 3 = recessive (1 df)
  * \li model 4 = over-dominant (1 df)
- * @param X Design matrix, including SNP column
- * @param model
- * @param interaction
- * @param ngpreds
- * @param is_interaction_excluded
- * @param iscox
- * @param nullmodel
+ * @param X Design matrix, including SNP column(s).
+ * @param model Integer describing the genetic model to be
+ * applied. See the list above.
+ * @param interaction Column number of the covariate used in the
+ * interaction term.
+ * @param ngpreds Number of genetic predictors (1 for dosage data, 2
+ * for probability data).
+ * @param is_interaction_excluded Indicates whether the main term for
+ * the covariate used in the interaction term should be excluded from
+ * the model.
+ * @param iscox Indicates whether a CoxPH regression is being done.
+ * @param nullmodel Indicates whether the null model is being analysed.
  *
  * @return Matrix with the model applied to it.
  */
@@ -75,6 +87,8 @@ mematrix<double> apply_model(const mematrix<double>& X,
     {
         if (interaction != 0)
         {
+            // The user requested analysis with an interaction term,
+            // so ngpreds columns need to be added to the X matrix.
             mematrix<double> nX;
             nX.reinit(X.nrow, X.ncol + ngpreds);
             int csnp_p1 = nX.ncol - 2 * ngpreds;
@@ -154,7 +168,8 @@ mematrix<double> apply_model(const mematrix<double>& X,
         } // End if (interaction !=0)
         else
         {
-            // interaction == 0
+            // No interaction analysis, no need to add/change columns
+            // to/in X.
             return (X);
         }
     } // End: if (model == 0)

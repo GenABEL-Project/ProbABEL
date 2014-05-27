@@ -46,7 +46,7 @@ How many traits are analysed (default is 1).
 .BI "\-g, \-\^\-ngpreds"  " NUMBER"
 How many predictor columns per marker (default 1 = MLDOSE; else use 2 for MLPROB).
 .TP
-.B "\-a, \-\^\-separat" " FILE"
+.BI "\-a, \-\^\-separat" " FILE"
 Character to separate fields (default is space).
 .TP
 .B \-r, \-\^\-score
@@ -58,18 +58,18 @@ Do not report header line in the output.
 .B \-l \-\^\-allcov
 Report estimates for all covariates (large outputs!).
 .TP
-.B \-b, \-\^\-interaction
-Which covariate to use for interaction with SNP analysis (default is no interaction, 0).
+.BI "\-b, \-\^\-interaction" " NUMBER"
+Which covariate to use for interaction with SNP analysis (default is no interaction, 0). \fINUMBER\fR indicates the column number of the covariate.
 .TP
-.B \-k, \-\^\-interaction_only
+.BI "\-k, \-\^\-interaction_only" " NUMBER"
 Like
 .B \-\^\-interaction
-but without covariate acting in interaction with SNP (default is no interaction, 0).
+but excludes the covariate-only model term for the covariate acting in interaction with the SNP (default is no interaction, 0).
 .TP
 .BI "\-v, \-\^\-mmscore" " FILE"
 Score test in samples of related individuals. The FILE argument is the name of a file with the inverse correlation matrix. NOTE THAT THIS FEATURE IS STILL EXPERIMENTAL!
 .TP
-.B \-\^\-robust
+.B \-u, \-\^\-robust
 Report robust (a.k.a. sandwich, a.k.a. Hubert-White) standard errors.
 .TP
 .B \-\^\-help
