@@ -156,7 +156,10 @@ regdata::regdata(const phedata &phed, const gendata &gend, const int snpnum,
  * regdata::X.
  *
  * Adds the genetic information for a new SNP to the design
- * matrix.
+ * matrix. NOTE: For probability data, the order of the two
+ * probabilities is reversed compared to the way they are stored in
+ * the input file. Mach stores the probabilities as \f$P_{A_1A_1}\f$
+ * \f$P_{A_1A_2}\f$.
  *
  * @param gend Object that contains the genetic data from which the
  * dosages/probabilities will be added to the design matrix.
@@ -170,7 +173,9 @@ void regdata::update_snp(const gendata *gend, const int snpnum)
     freq = 0.0;
 
     // Add genotypic data (dosage or probabilities) to the design
-    // matrix X
+    // matrix X. Start filling from the last column, so for
+    // probability data (ngpreds==2) the order of the two
+    // probabilities is reversed.
     for (int j = 0; j < ngpreds; j++)
     {
         double *snpdata = new double[nids];

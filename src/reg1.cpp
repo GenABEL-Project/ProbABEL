@@ -79,8 +79,9 @@ mematrix<double> apply_model(const mematrix<double>& X,
             nX.reinit(X.nrow, X.ncol + ngpreds);
             int csnp_p1 = nX.ncol - 2 * ngpreds;
             int c1 = nX.ncol - ngpreds;
-            // The following two variables are only used when
-            // ngpreds == 2
+            // The following two variables are only used when ngpreds
+            // == 2. Note that the order of the two probabilities is
+            // swapped w.r.t. the file (see regdata::update_snp())!
             int csnp_p2 = nX.ncol - 3;
             int c2 = nX.ncol - 1;
 
@@ -173,9 +174,11 @@ mematrix<double> apply_model(const mematrix<double>& X,
         nX.reinit(X.nrow, (X.ncol - 1));
     }
 
+    // Note that the order of the two probabilities is swapped
+    // w.r.t. the file (see regdata::update_snp())!
     // column with Prob(A1A2)
     int c1 = X.ncol - 2;
-    // column with Prob(A1A1). Note the order is swapped cf the file!
+    // column with Prob(A1A1)
     int c2 = X.ncol - 1;
 
     for (int i = 0; i < X.nrow; i++){
