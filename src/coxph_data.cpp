@@ -462,24 +462,28 @@ void coxph_reg::estimate(const coxph_data &cdatain,
     bool setToZero = false;
 
     if (flag < X.nrow && maxiter > 0) {
-        cerr << "Warning for " << snpinfo.name[cursnp]
-             << ": X matrix deemed to be singular,"
-             << " setting beta and se to 'nan'\n";
+        std::cerr << snpinfo.name[cursnp]
+                  << ": Warning, X matrix deemed to be singular,"
+                  << " setting beta and se to 'nan'"
+                  << std::endl;
         setToZero = true;
     }
 
     if (niter >= maxiterinput)
     {
-        cerr << "Warning for " << snpinfo.name[cursnp]
-             << ": nr of iterations > MAXITER (" << maxiterinput << "): "
-             << niter << endl;
+        std::cerr << snpinfo.name[cursnp]
+                  << ": Warning, nr of iterations > MAXITER ("
+                  << maxiterinput << "): "
+                  << niter << std::endl;
     }
 
     if (flag == 1000)
     {
-        cerr << "Warning for " << snpinfo.name[cursnp]
-             << ": Cox regression ran out of iterations and did not converge,"
-             << " setting beta and se to 'nan'\n";
+        std::cerr << snpinfo.name[cursnp]
+                  << ": Warning, Cox regression ran out of iterations"
+                  << " and did not converge,"
+                  << " setting beta and se to 'nan'"
+                  << std::endl;
         setToZero = true;
     } else {
         VectorXd ueigen = u.data;
@@ -489,9 +493,10 @@ void coxph_reg::estimate(const coxph_data &cdatain,
         if ( infs.norm() > eps ||
              infs.norm() > sqrt(eps) * betaeigen.norm() )
         {
-            cerr << "Warning for " << snpinfo.name[cursnp]
-                 << ": beta may be infinite,"
-                 << " setting beta and se to 'nan'\n";
+            std::cerr << snpinfo.name[cursnp]
+                      << ": Warning, beta may be infinite,"
+                      << " setting beta and se to 'nan'"
+                      << std::endl;
 
             setToZero = true;
         }
