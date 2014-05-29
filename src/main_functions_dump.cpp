@@ -46,6 +46,7 @@
 
 #if WITH_BOOST_MATH
 #include <boost/math/distributions.hpp>
+#include <boost/exception/all.hpp>
 #endif
 
 #include "maskedmatrix.h"
@@ -495,13 +496,27 @@ double pchisq(const double chi2, const int df)
 
     if (!std::isnan(chi2))
     {
-        // Initialise the distribution
-        boost::math::chi_squared chi2dist(df);
+        try
+        {
+            // Initialise the distribution
+            boost::math::chi_squared chi2dist(df);
 
-        /* Use the complement here (in R we would also set
-         * lower.tail=FALSE)
-         */
-        pval = boost::math::cdf(complement(chi2dist, chi2));
+            /* Use the complement here (in R we would also set
+             * lower.tail=FALSE)
+             */
+            pval = boost::math::cdf(complement(chi2dist, chi2));
+        }
+        catch (boost::exception &e)
+        {
+            /* Pass on exceptions like chi^2 < 0. By throwing them up
+             * a level we can make use of e.g. the SNP information
+             * when printing the error message.
+             * Note that when we 'throw' pval won't be set, so that
+             * needs to be taken care of as well in the calling
+             * function.
+             */
+            throw;
+        }
     }
     else
     {

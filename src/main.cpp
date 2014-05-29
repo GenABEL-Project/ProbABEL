@@ -562,7 +562,16 @@ int main(int argc, char * argv[])
 #if WITH_BOOST_MATH
             // Calulate p-values based on the chi^2 values
             int chi2df = 1;
-            *pval[model] << pchisq(*chi2val[model], chi2df);
+            try
+            {
+                *pval[model] << pchisq(*chi2val[model], chi2df);
+            }
+            catch (std::exception &e)
+            {
+                std::cerr << mli.name[csnp] << ": "
+                          << e.what() << std::endl;
+                *pval[model] << NAN;
+            }
 #endif
         }  // END of model cycle
 
