@@ -83,7 +83,7 @@
 /// Maximum number of iterations we allow the regression to run
 #define MAXITER 20
 /// Tolerance for convergence
-#define EPS 1.e-8
+#define EPS 1.e-9
 /// Precision for the Cholesky decomposition
 #define CHOLTOL 1.5e-12
 

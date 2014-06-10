@@ -438,6 +438,17 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
 
     niter = maxiter;
 
+    cerr << snpinfo.name[cursnp]
+         << ": MAF = " << snpinfo.MAF[cursnp]
+         << "; Freq1 = " << snpinfo.Freq1[cursnp]
+         << "; Rsq = " << snpinfo.Rsq[cursnp]
+         << "; FLAG = " << flag
+         << "; niter = " << maxiter
+         << "; imat.nrow = " << imat.data.rows()
+         << "; X.nrow = " << X.nrow
+         << "; X.ncol = " << X.ncol
+         << "\n";
+
     // Check the results of the Cox fit; mirrored from the same checks
     // in coxph.fit.S and coxph.R from the R survival package.
 
@@ -452,6 +463,7 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
         cerr << "Warning for " << snpinfo.name[cursnp]
              << ": X matrix deemed to be singular,"
              << " setting beta and se to 'NaN'\n";
+
         setToNAN = true;
     }
 
@@ -493,11 +505,11 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
                  << ": beta may be infinite,"
                  << " setting beta and se to 'NaN'\n";
 
-            // cout << "beta values for SNP: " << snpinfo.name[cursnp]
-            //      << " are: " << betaeigen << std::endl;
-
             setToNAN = true;
         }
+
+        // cout << "beta values for SNP: " << snpinfo.name[cursnp]
+        //      << " are: " << betaeigen << std::endl;
 #else
         cerr << "Warning for " << snpinfo.name[cursnp]
              << ": can't check for infinite betas."
