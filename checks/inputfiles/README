@@ -1,0 +1,15 @@
+This README file describes the 'special' properties of the SNPs in the
+test input files, as well as any other relevant information related
+the files in the inputfiles directory.
+
+* The SNPs
+  - SNP 1: Tests multi-letter alleles (indel, e.g. from 1kG) in Al1 (bug
+           #2586).
+  - SNP 2: Tests multi-letter alleles (indel, e.g. from 1kG) in Al2 (bug
+           #2586); Tests NaN in genetic data.
+  - SNP 3:
+  - SNP 4:
+  - SNP 5: Tests low Rsq in info file.
+  - SNP 6: Tests low MAF, only one out of 200 people has a different dosage.
+
+* Other files
