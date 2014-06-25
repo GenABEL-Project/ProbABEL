@@ -11,6 +11,13 @@ tol <- 1e-5
 ## look for the variables freq and poly.
 rsq.thresh <- 1e-16
 
+## A function that prints text with empty space following it. Used to
+## print what is tested (to be followed with an OK if all is OK).
+prnt <- function(string) {
+    cat(sprintf("%-50s", string))
+}
+
+
 ####
 ## load the data
 ####
@@ -28,7 +35,7 @@ dose <- read.table(paste0(inputfiles.path, "test.mldose"),
 idNames   <- dose[, 1]
 idNames   <- sub("[0-9]+->", "", idNames)
 dose[, 1] <- idNames
-cat("Dose: check consistency of names\t\t")
+prnt("Dose: check consistency of names")
 stopifnot( all.equal(dose[, 1], pheno[, 1], tol) )
 cat("OK\n")
 
@@ -39,7 +46,7 @@ prob <- read.table(paste0(inputfiles.path, "test.mlprob"),
 idNames   <- prob[, 1]
 idNames   <- sub("[0-9]+->", "", idNames)
 prob[, 1] <- idNames
-cat("Prob: check consistency of names\t\t")
+prnt("Prob: check consistency of names")
 stopifnot( all.equal(prob[, 1], pheno[, 1], tol) )
 cat("OK\n")
 
@@ -50,7 +57,7 @@ for (i in 3:dim(dose)[2]) {
         indexHet <- indexHom + 1
         doseFromProb[, i] <- prob[, indexHom] * 2 + prob[, indexHet]
 }
-cat("Check consistency dose <-> prob gtdata\t\t")
+prnt("Check consistency dose <-> prob gtdata")
 stopifnot( all.equal(dose[, 3:ncol(dose)],
                      as.data.frame(doseFromProb)[,3:ncol(doseFromProb)],
                      tol=tol )
