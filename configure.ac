@@ -101,6 +101,7 @@ AC_FUNC_ERROR_AT_LINE
 # Disabled the next line to make cross compiling for Windows work.
 #AC_FUNC_MALLOC
 AC_CHECK_FUNCS([pow putenv sqrt strdup strncasecmp floor])
+AC_FUNC_STRTOD
 
 # Check if we can use large (>2GB) files on 32 bit platforms
 AC_SYS_LARGEFILE
