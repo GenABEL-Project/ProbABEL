@@ -3,6 +3,14 @@
   Eigen has been removed.
 * Not-a-number values in the output are now printed as "NaN" instead of
   "nan".
+* Linear regression mmscore option is 2 times faster
+* Speedup of Linear regression:(measured with multiple runs with 2 covariates,
+  33815 SNP and 3485 people(using all) compares to v.0.4.3)
+** Reading mldose/mlprob files 14 times faster 
+** Calculation of regression is more than 3.5 faster
+** Overall runtime using above settings is 5
+* Handles multiple variants of NaN (NA,Na,Nan,na,nan) correct while reading of
+  mldose/mlprob files
 
 
 ***** v.0.4.3 (2014.04.01)
