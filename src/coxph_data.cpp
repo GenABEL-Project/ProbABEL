@@ -438,16 +438,6 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
 
     niter = maxiter;
 
-    cerr << snpinfo.name[cursnp]
-         << ": MAF = " << snpinfo.MAF[cursnp]
-         << "; Freq1 = " << snpinfo.Freq1[cursnp]
-         << "; Rsq = " << snpinfo.Rsq[cursnp]
-         << "; FLAG = " << flag
-         << "; niter = " << maxiter
-         << "; imat.nrow = " << imat.data.rows()
-         << "; X.nrow = " << X.nrow
-         << "; X.ncol = " << X.ncol
-         << "\n";
 
     // Check the results of the Cox fit; mirrored from the same checks
     // in coxph.fit.S and coxph.R from the R survival package.
@@ -523,9 +513,9 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
         if (setToNAN)
         {
             // Cox regression failed
-            // sebeta[i] = NAN;
-            // beta[i]   = NAN;
-            // loglik    = NAN;
+            sebeta[i] = NAN;
+            beta[i]   = NAN;
+            loglik    = NAN;
         } else {
             sebeta[i] = sqrt(imat.get(i, i));
             loglik = loglik_int[1];
