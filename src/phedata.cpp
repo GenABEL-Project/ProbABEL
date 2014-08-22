@@ -148,11 +148,6 @@ void phedata::setphedata(const char * fname, const int noutc,
     model_terms[n_model_terms++] = "mu";
 #endif
 
-
-
-
-
-
     if (nphenocols > noutcomes + 1)
     {
         infile >> tmp;
@@ -161,18 +156,22 @@ void phedata::setphedata(const char * fname, const int noutc,
         for (int i = (2 + noutcomes); i < nphenocols; i++)
         {
             infile >> tmp;
-            std::cout << "nphenocols="<<nphenocols<<"\n";
-            std::cout<<"i="<<i<<", is_interaction_excluded="<<is_interaction_excluded<<", interaction="<<interaction<<", n_model_terms="<<n_model_terms<<"\n";
-            if(n_model_terms == interaction  && is_interaction_excluded)
+            std::cout << "nphenocols=" << nphenocols << "\n";
+            std::cout << "i=" << i
+                      << ", is_interaction_excluded="
+                      << is_interaction_excluded
+                      << ", interaction=" << interaction
+                      << ", n_model_terms=" << n_model_terms << "\n";
+            if (n_model_terms == interaction && is_interaction_excluded)
                {
-               strcpy(interaction_cov_name, tmp);
-               continue;
+                   strcpy(interaction_cov_name, tmp);
+                   continue;
                }
 
             model = model + " + ";
             model = model + tmp;
             model_terms[n_model_terms++] = tmp;
-            std::cout << "model="<<model<<"\n";
+            std::cout << "model=" << model << "\n";
         }
     }
     model = model + " + SNP_A1";
@@ -180,26 +179,30 @@ void phedata::setphedata(const char * fname, const int noutc,
     {
         if (iscox)
         {
-           if(!is_interaction_excluded) model = model + " + " + model_terms[interaction - 1] + "*SNP_A1";
-           else model = model + " + " + interaction_cov_name + "*SNP_A1";
+           if (!is_interaction_excluded)
+           {
+               model = model + " + "
+                   + model_terms[interaction - 1]
+                   + "*SNP_A1";
+           }
+           else
+           {
+               model = model + " + " + interaction_cov_name + "*SNP_A1";
+           }
         }
         else
         {
-            if(!is_interaction_excluded) model = model + " + " + model_terms[interaction] + "*SNP_A1";
-            else model = model + " + " + interaction_cov_name + "*SNP_A1";
+            if (!is_interaction_excluded)
+            {
+                model = model + " + " + model_terms[interaction] + "*SNP_A1";
+            }
+            else
+            {
+                model = model + " + " + interaction_cov_name + "*SNP_A1";
+            }
         }
     }
     model_terms[n_model_terms++] = "SNP_A1";
-
-
-
-
-
-
-
-
-
-
 
 #if LOGISTIC
     std::cout << "Logistic ";
