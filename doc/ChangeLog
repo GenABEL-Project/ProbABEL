@@ -6,11 +6,14 @@
 * Linear regression mmscore option is 2 times faster
 * Speedup of Linear regression:(measured with multiple runs with 2 covariates,
   33815 SNP and 3485 people(using all) compares to v.0.4.3)
-** Reading mldose/mlprob files 14 times faster 
+** Reading mldose/mlprob files 14 times faster
 ** Calculation of regression is more than 3.5 faster
 ** Overall runtime using above settings is 5
 * Handles multiple variants of NaN (NA,Na,Nan,na,nan) correct while reading of
   mldose/mlprob files
+* Fixed bug #5883: The main effect is displayed in the output with the
+  `interaction_only` option. Thanks to Maksim Struchalin for fixing it and
+  to Farid Radmanesh for reporting it.
 
 
 ***** v.0.4.3 (2014.04.01)
