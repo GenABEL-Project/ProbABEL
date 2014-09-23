@@ -27,7 +27,6 @@
 #include <fstream>
 #include <cstdarg>
 #include <cstdlib>
-#include <cstring>
 
 using std::cout;
 using std::cerr;
@@ -67,7 +66,7 @@ void phedata::setphedata(const char * fname, const int noutc,
     std::ifstream myfile(fname);
     char *line = new char[BFS];
     char *tmp  = new char[BFS];
-    char *interaction_cov_name  = new char[BFS];
+    std::string interaction_cov_name;
     noutcomes = noutc;
     is_interaction_excluded = false;
 
@@ -164,7 +163,7 @@ void phedata::setphedata(const char * fname, const int noutc,
                       << ", n_model_terms=" << n_model_terms << "\n";
             if (n_model_terms == interaction && is_interaction_excluded)
                {
-                   strcpy(interaction_cov_name, tmp);
+                   interaction_cov_name = tmp;
                    continue;
                }
 
