@@ -45,7 +45,6 @@ $palinear \
     -o linear_base_fv \
     >& 3
 
-#echo -n "QT check: dose vs. dose_fv"
 run_diff linear_base_add.out.txt \
     linear_base_fv_add.out.txt \
     "QT check: dose vs. dose_fv"
