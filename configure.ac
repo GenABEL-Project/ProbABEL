@@ -105,17 +105,16 @@ if test "x$with_boost_math" != "xno"; then
           [location of the Boost headers, defaults to /usr/include/boost])],
         [CXXFLAGS+=" -I${withval}"
         CPPFLAGS+=" -I${withval}"],
-        [CXXFLAGS+=' -I/usr/include/boost'
-        CPPFLAGS+=' -I/usr/include/boost'])
+        [CXXFLAGS+=' -I/usr/include/'
+        CPPFLAGS+=' -I/usr/include/'])
 
     # Check for the Boost Math header files
-    AC_CHECK_HEADERS([boost/math/distributions.hpp])
-
-    if test x$ac_cv_header_boost_math_distributions_hpp = xno; then
-      AC_MSG_ERROR([Could not find the Boost Math header files. Did \
+    AC_CHECK_HEADER([boost/math/distributions.hpp],
+        [],
+        [AC_MSG_ERROR([Could not find the Boost Math header files. Did \
 you specify --with-boost-include-path correctly? Or use --without-boost \
-to disable the calculation of p-values.])
-    fi
+to disable the calculation of p-values.])]
+    )
 else
    AC_MSG_NOTICE([not using the Boost Math libraries, so no p-values in the \
 output])
