@@ -14,6 +14,8 @@
 * Fixed bug #5883: The main effect is displayed in the output with the
   `interaction_only` option. Thanks to Maksim Struchalin for fixing it and
   to Farid Radmanesh for reporting it.
+* Fixed bug #5982: ProbABEL's make install fails on MacOS X and FreeBSD
+  with sed error. Thanks to forum user mmold for reporting the bug.
 
 
 ***** v.0.4.3 (2014.04.01)

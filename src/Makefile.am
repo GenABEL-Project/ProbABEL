@@ -90,10 +90,10 @@ dist_sysconf_DATA = probabel_config.cfg.example
 ## Insert the correct values of several variables in the installed
 ## probabel script
 install-exec-hook:
-	$(SED) -i "s;probabel_config.cfg;@sysconfdir@/probabel_config.cfg;" \
+	$(SED) -i -e "s;probabel_config.cfg;@sysconfdir@/probabel_config.cfg;" \
 		$(DESTDIR)$(bindir)/probabel
-	$(SED) -i "s;\./;@bindir@/;" $(DESTDIR)$(bindir)/probabel
-	$(SED) -i "s;PROBABEL_VERSION;@VERSION@;" $(DESTDIR)$(bindir)/probabel
+	$(SED) -i -e "s;\./;@bindir@/;" $(DESTDIR)$(bindir)/probabel
+	$(SED) -i -e "s;PROBABEL_VERSION;@VERSION@;" $(DESTDIR)$(bindir)/probabel
 	ln -s $(DESTDIR)$(bindir)/probabel $(DESTDIR)$(bindir)/probabel.pl
 
 ## Make the script executable
