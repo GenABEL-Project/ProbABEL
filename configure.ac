@@ -44,11 +44,11 @@ fi
 if test "x$devoptions" = "xno"; then
    if test -z "$CXXFLAGS"; then
       # User did not set CXXFLAGS, so we can put in our own defaults
-      CXXFLAGS="-O2 -DNDEBUG"
+      CXXFLAGS="-O2"
    fi
    if test -z "$CPPFLAGS"; then
       # User did not set CPPFLAGS, so we can put in our own defaults
-      CPPFLAGS+="-Wall"
+      CPPFLAGS+="-Wall -DNDEBUG"
    fi
 fi
 
@@ -57,7 +57,7 @@ fi
 AC_PROG_CXX
 
 # Tell the compiler to build not R version of filevector
-CXXFLAGS+=" -D_NOT_R_FILEVECTOR"
+AC_SUBST(CPPFLAGS, "$CPPFLAGS -D_NOT_R_FILEVECTOR")
 
 
 # Since most of our code is in C++, set that language as the default
@@ -76,10 +76,8 @@ AC_CHECK_HEADERS([float.h inttypes.h libintl.h limits.h stddef.h \
 AC_ARG_WITH([eigen-include-path],
     [AS_HELP_STRING([--with-eigen-include-path],
       [location of the Eigen headers, defaults to /usr/include/eigen3])],
-    [CXXFLAGS+=" -I${withval}"
-    CPPFLAGS+=" -I${withval}"],
-    [CXXFLAGS+=' -I/usr/include/eigen3'
-    CPPFLAGS+=' -I/usr/include/eigen3'])
+    [CPPFLAGS+=" -I${withval}"],
+    [CPPFLAGS+=' -I/usr/include/eigen3'])
 
 # Check for the EIGEN header files
 AC_CHECK_HEADERS([Eigen/Dense Eigen/LU])
