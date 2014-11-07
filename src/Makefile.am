@@ -55,14 +55,14 @@ palinear_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
 palinear_CPPFLAGS = -DLINEAR $(AM_CPPFLAGS)
 if WITH_EIGEN
 palinear_SOURCES += $(EIGENFILES)
-palinear_CXXFLAGS += -DEIGEN
+palinear_CPPFLAGS += -DEIGEN
 endif
 
 palogist_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
 palogist_CPPFLAGS = -DLOGISTIC $(AM_CPPFLAGS)
 if WITH_EIGEN
 palogist_SOURCES += $(EIGENFILES)
-palogist_CXXFLAGS += -DEIGEN
+palogist_CPPFLAGS += -DEIGEN
 endif
 
 pacoxph_SOURCES = $(COXSRC) $(REGFILES) $(FVSRC) $(FVHEADERS)	\
@@ -72,7 +72,7 @@ pacoxph_CPPFLAGS = -DCOXPH $(AM_CPPFLAGS)
 pacoxph_CFLAGS = -I $(top_srcdir)/src/include $(AM_CFLAGS)
 if WITH_EIGEN
 pacoxph_SOURCES += $(EIGENFILES)
-pacoxph_CXXFLAGS += -DEIGEN
+pacoxph_CPPFLAGS += -DEIGEN
 endif
 
 extract_snp_SOURCES = extract-snp.cpp $(FVSRC) $(FVHEADERS)
