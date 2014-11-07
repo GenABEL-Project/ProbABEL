@@ -59,20 +59,18 @@ endif
 
 
 palinear_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
-palinear_CXXFLAGS = -DLINEAR $(AM_CXXFLAGS)
-palinear_CPPFLAGS = $(AM_CPPFLAGS)
+palinear_CPPFLAGS = -DLINEAR $(AM_CPPFLAGS)
 palinear_SOURCES += $(EIGENFILES)
 
 palogist_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
-palogist_CXXFLAGS = -DLOGISTIC $(AM_CXXFLAGS)
-palogist_CPPFLAGS = $(AM_CPPFLAGS)
+palogist_CPPFLAGS = -DLOGISTIC $(AM_CPPFLAGS)
 palogist_SOURCES += $(EIGENFILES)
 
 pacoxph_SOURCES = $(COXSRC) $(REGFILES) $(FVSRC) $(FVHEADERS)	\
  $(RHEADERS) survS.h survproto.h coxph_data.h coxph_data.cpp
-pacoxph_CXXFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CXXFLAGS)
-pacoxph_CPPFLAGS = $(AM_CPPFLAGS)
-pacoxph_CFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CFLAGS)
+pacoxph_CXXFLAGS = -I $(top_srcdir)/src/include $(AM_CXXFLAGS)
+pacoxph_CPPFLAGS = -DCOXPH $(AM_CPPFLAGS)
+pacoxph_CFLAGS = -I $(top_srcdir)/src/include $(AM_CFLAGS)
 pacoxph_SOURCES += $(EIGENFILES)
 
 extract_snp_SOURCES = extract-snp.cpp $(FVSRC) $(FVHEADERS)
