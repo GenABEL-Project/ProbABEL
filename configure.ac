@@ -103,10 +103,8 @@ if test "x$with_boost_math" != "xno"; then
     AC_ARG_WITH([boost-include-path],
         [AS_HELP_STRING([--with-boost-include-path],
           [location of the Boost headers, defaults to /usr/include/boost])],
-        [CXXFLAGS+=" -I${withval}"
-        CPPFLAGS+=" -I${withval}"],
-        [CXXFLAGS+=' -I/usr/include/'
-        CPPFLAGS+=' -I/usr/include/'])
+        [CPPFLAGS+=" -I${withval}"],
+        [CPPFLAGS+=' -I/usr/include/'])
 
     # Check for the Boost Math header files
     AC_CHECK_HEADER([boost/math/distributions.hpp],
