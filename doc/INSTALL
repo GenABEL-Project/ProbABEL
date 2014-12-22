@@ -137,7 +137,10 @@ apt-get install binutils-mingw-w64-i686 gcc-mingw-w64-base gcc-mingw-w64-i686 \
   easily):
 ./configure --host=i686-w64-mingw32 --build=i686-linux-gnu \
             --prefix=/tmp/PA --sysconfdir=/tmp/PA/ \
-            --datarootdir=/tmp/PA --docdir=/tmp/PA/doc
+            --datarootdir=/tmp/PA --docdir=/tmp/PA/doc \
+            CPPFLAGS="-DNDEBUG" \
+            CFLAGS="-O2 -static-libgcc -static-libstdc++" \
+            CXXFLAGS="-O2 -static-libgcc -static-libstdc++"
 
   The --host option sets the type of the host the programs will be run
   on, the --build option sets the type of machine you are building the
@@ -154,8 +157,7 @@ apt-get install binutils-mingw-w64-i686 gcc-mingw-w64-base gcc-mingw-w64-i686 \
   subdirectories like 'share/' and 'etc/'.
 
   Now you can run
-make CFLAGS+="-O2 -static-libgcc -static-libstdc++ -D_NOT_R_FILEVECTOR" \
-     CXXFLAGS+="-O2 -static-libgcc -static-libstdc++ -D_NOT_R_FILEVECTOR"
+make
 make install
 
   This creates the binaries pacoxph.exe, palinear.exe and
