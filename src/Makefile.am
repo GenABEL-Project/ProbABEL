@@ -3,12 +3,19 @@
 ## Using wildcards in these lists doesn't work. Also GNU make's
 ## ($wildcard,) doesn't work. It gives warning message about
 ## portability, but in the end doesn't work, I tried :-).
-REGFILES = data.h data.cpp gendata.h gendata.cpp eigen_mematrix.h	\
- eigen_mematrix.cpp command_line_settings.h command_line_settings.cpp	\
- reg1.h usage.h usage.cpp main.cpp utilities.h utilities.cpp		\
- phedata.h phedata.cpp regdata.h regdata.cpp maskedmatrix.cpp		\
- maskedmatrix.h reg1.cpp main_functions_dump.h				\
- main_functions_dump.cpp
+REGFILES = main.cpp					\
+ invsigma.h invsigma.cpp				\
+ gendata.h gendata.cpp					\
+ eigen_mematrix.h eigen_mematrix.cpp			\
+ command_line_settings.h command_line_settings.cpp	\
+ reg1.h reg1.cpp					\
+ usage.h usage.cpp					\
+ utilities.h utilities.cpp				\
+ phedata.h phedata.cpp					\
+ regdata.h regdata.cpp					\
+ maskedmatrix.h maskedmatrix.cpp			\
+ main_functions_dump.h main_functions_dump.cpp		\
+ mlinfo.h mlinfo.cpp
 
 
 ## Filevector files:
@@ -52,26 +59,24 @@ endif
 
 
 palinear_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
-palinear_CXXFLAGS = -DLINEAR $(AM_CXXFLAGS)
-palinear_CPPFLAGS = $(AM_CPPFLAGS)
+palinear_CPPFLAGS = -DLINEAR $(AM_CPPFLAGS)
 palinear_SOURCES += $(EIGENFILES)
 
 palogist_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
-palogist_CXXFLAGS = -DLOGISTIC $(AM_CXXFLAGS)
-palogist_CPPFLAGS = $(AM_CPPFLAGS)
+palogist_CPPFLAGS = -DLOGISTIC $(AM_CPPFLAGS)
 palogist_SOURCES += $(EIGENFILES)
 
 pacoxph_SOURCES = $(COXSRC) $(REGFILES) $(FVSRC) $(FVHEADERS)	\
  $(RHEADERS) survS.h survproto.h coxph_data.h coxph_data.cpp
-pacoxph_CXXFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CXXFLAGS)
-pacoxph_CPPFLAGS = $(AM_CPPFLAGS)
-pacoxph_CFLAGS = -DCOXPH -I $(top_srcdir)/src/include $(AM_CFLAGS)
+pacoxph_CXXFLAGS = -I $(top_srcdir)/src/include $(AM_CXXFLAGS)
+pacoxph_CPPFLAGS = -DCOXPH $(AM_CPPFLAGS)
+pacoxph_CFLAGS = -I $(top_srcdir)/src/include $(AM_CFLAGS)
 pacoxph_SOURCES += $(EIGENFILES)
 
 if WITH_BOOST_MATH
-palinear_CXXFLAGS += -DWITH_BOOST_MATH
-palogist_CXXFLAGS += -DWITH_BOOST_MATH
-pacoxph_CXXFLAGS += -DWITH_BOOST_MATH
+palinear_CPPFLAGS += -DWITH_BOOST_MATH
+palogist_CPPFLAGS += -DWITH_BOOST_MATH
+pacoxph_CPPFLAGS += -DWITH_BOOST_MATH
 endif
 
 extract_snp_SOURCES = extract-snp.cpp $(FVSRC) $(FVHEADERS)
@@ -89,10 +94,10 @@ dist_sysconf_DATA = probabel_config.cfg.example
 ## Insert the correct values of several variables in the installed
 ## probabel script
 install-exec-hook:
-	$(SED) -i "s;probabel_config.cfg;@sysconfdir@/probabel_config.cfg;" \
+	$(SED) -i -e "s;probabel_config.cfg;@sysconfdir@/probabel_config.cfg;" \
 		$(DESTDIR)$(bindir)/probabel
-	$(SED) -i "s;\./;@bindir@/;" $(DESTDIR)$(bindir)/probabel
-	$(SED) -i "s;PROBABEL_VERSION;@VERSION@;" $(DESTDIR)$(bindir)/probabel
+	$(SED) -i -e "s;\./;@bindir@/;" $(DESTDIR)$(bindir)/probabel
+	$(SED) -i -e "s;PROBABEL_VERSION;@VERSION@;" $(DESTDIR)$(bindir)/probabel
 	ln -s $(DESTDIR)$(bindir)/probabel $(DESTDIR)$(bindir)/probabel.pl
 
 ## Make the script executable

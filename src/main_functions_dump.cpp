@@ -12,7 +12,7 @@
  *
  *  Created on: Nov 27, 2013
  *      Author: mkooyman
-*
+ *
  *
  * Copyright (C) 2009--2014 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
@@ -50,9 +50,11 @@
 #endif
 
 #include "maskedmatrix.h"
+#include "mlinfo.h"
 #include "phedata.h"
-#include "data.h"
+#include "invsigma.h"
 #include "command_line_settings.h"
+
 
 /**
  * Send a progress update (a percentage) to stdout so that the user
@@ -123,6 +125,7 @@ void open_files_for_output(std::vector<std::ofstream*>& outfile,
     }
 }
 
+
 int create_phenotype(phedata& phd, const cmdvars& input_var)
 {
     phd.set_is_interaction_excluded(input_var.isIsInteractionExcluded());
@@ -161,11 +164,11 @@ int create_phenotype(phedata& phd, const cmdvars& input_var)
  * @param invvarmatrix The object of type masked_matrix in which the
  * inverse variance-covariance matrix is returned.
  */
-void loadInvSigma(const cmdvars& input_var, phedata& phd,
+void loadInvSigma(const cmdvars& input_var, const phedata& phd,
                   masked_matrix& invvarmatrix)
 {
     std::cout << "You are running mmscore...\n";
-    InvSigma inv(input_var.getInverseFilename(), &phd);
+    InvSigma inv(input_var.getInverseFilename(), phd);
     // invvarmatrix = inv.get_matrix();
     //double par = 1.; //var(phd.Y)*phd.nids/(phd.nids-phd.ncov-1);
     invvarmatrix.set_matrix(inv.get_matrix());    // = invvarmatrix * par;
@@ -185,7 +188,7 @@ void loadInvSigma(const cmdvars& input_var, phedata& phd,
  * \param phd Object with phenotype data
  */
 void create_start_of_header(std::vector<std::ofstream*>& outfile,
-        cmdvars& input_var, phedata& phd)
+                            const cmdvars& input_var, const phedata& phd)
 {
     for (unsigned int i = 0; i < outfile.size(); i++)
     {
@@ -239,7 +242,8 @@ void create_start_of_header(std::vector<std::ofstream*>& outfile,
  * \param interaction_cox are we using the Cox model with interaction?
  */
 void create_header(std::vector<std::ofstream*>& outfile,
-                   cmdvars& input_var, phedata& phd, int& interaction_cox)
+                   const cmdvars& input_var, const phedata& phd,
+                   const int& interaction_cox)
 {
     create_start_of_header(outfile, input_var, phd);
 
@@ -441,7 +445,7 @@ void write_mlinfo(const std::vector<std::ofstream*>& outfile,
  * @return Start position of beta for this model
  */
 int get_start_position(const cmdvars& input_var, const int model,
-        const int number_of_rows_or_columns)
+                       const int number_of_rows_or_columns)
 {
     int start_pos;
     if (!input_var.getAllcov() &&

@@ -1,10 +1,10 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT(ProbABEL, 0.4.3, genabel-devel@r-forge.wu-wien.ac.at)
+AC_INIT(ProbABEL, 0.4.4, genabel-devel@r-forge.wu-wien.ac.at)
 AM_INIT_AUTOMAKE([silent-rules subdir-objects])
 AM_SILENT_RULES([yes])
-AC_CONFIG_SRCDIR([src/data.h])
+AC_CONFIG_SRCDIR([src/mlinfo.h])
 AC_CONFIG_HEADERS([src/config.h])
 
 # Add the --disable-maintainer-mode option used by e.g. Debian and
@@ -44,11 +44,11 @@ fi
 if test "x$devoptions" = "xno"; then
    if test -z "$CXXFLAGS"; then
       # User did not set CXXFLAGS, so we can put in our own defaults
-      CXXFLAGS="-O2 -DNDEBUG"
+      CXXFLAGS="-O2"
    fi
    if test -z "$CPPFLAGS"; then
       # User did not set CPPFLAGS, so we can put in our own defaults
-      CPPFLAGS+="-Wall"
+      CPPFLAGS+="-Wall -DNDEBUG"
    fi
 fi
 
@@ -57,7 +57,7 @@ fi
 AC_PROG_CXX
 
 # Tell the compiler to build not R version of filevector
-CXXFLAGS+=" -D_NOT_R_FILEVECTOR"
+AC_SUBST(CPPFLAGS, "$CPPFLAGS -D_NOT_R_FILEVECTOR")
 
 
 # Since most of our code is in C++, set that language as the default
@@ -76,10 +76,8 @@ AC_CHECK_HEADERS([float.h inttypes.h libintl.h limits.h stddef.h \
 AC_ARG_WITH([eigen-include-path],
     [AS_HELP_STRING([--with-eigen-include-path],
       [location of the Eigen headers, defaults to /usr/include/eigen3])],
-    [CXXFLAGS+=" -I${withval}"
-    CPPFLAGS+=" -I${withval}"],
-    [CXXFLAGS+=' -I/usr/include/eigen3'
-    CPPFLAGS+=' -I/usr/include/eigen3'])
+    [CPPFLAGS+=" -I${withval}"],
+    [CPPFLAGS+=' -I/usr/include/eigen3'])
 
 # Check for the EIGEN header files
 AC_CHECK_HEADERS([Eigen/Dense Eigen/LU])
@@ -131,6 +129,7 @@ AC_FUNC_ERROR_AT_LINE
 # Disabled the next line to make cross compiling for Windows work.
 #AC_FUNC_MALLOC
 AC_CHECK_FUNCS([pow putenv sqrt strdup strncasecmp floor])
+AC_FUNC_STRTOD
 
 # Check if we can use large (>2GB) files on 32 bit platforms
 AC_SYS_LARGEFILE
@@ -146,19 +145,32 @@ AC_PROG_SED
 # Check for the presence of awk. Needed in the test suite
 AC_PROG_AWK
 
-# Check for presence of pdfLaTeX
-AC_CHECK_PROGS(PDFLATEX, pdflatex)
-if test -z "$PDFLATEX"; then
-  AC_MSG_NOTICE([pdflatex not found - Unable to create PDF version of the user manual])
-fi
-AM_CONDITIONAL([HAVE_PDFLATEX], test -n "$PDFLATEX")
-
 # Check for presence of R
 AC_CHECK_PROGS(R, R)
 if test -z "$R"; then
   AC_MSG_NOTICE([R not found - Unable to do tests comparing ProbABEL output against R output])
 fi
 AM_CONDITIONAL([HAVE_R], test -n "$R")
+
+# The user can disable building of the PDF of the manual, for example
+# if the required LaTeX packages are not installed
+AC_ARG_ENABLE([latex-doc],
+    [AS_HELP_STRING([--disable-latex-doc], [disable building the PDF
+    documentation from LaTeX source])],
+    [latexdoc=no],
+    [latexdoc=yes])
+
+if test "x$latexdoc" = "xyes"; then
+   AC_MSG_NOTICE([building of the PDF of the user manual from LaTeX source is enabled])
+   # Check for presence of pdfLaTeX
+   AC_CHECK_PROGS(PDFLATEX, pdflatex)
+   if test -z "$PDFLATEX"; then
+      AC_MSG_NOTICE([pdflatex not found - Unable to create PDF version of the user manual])
+   fi
+fi
+AM_CONDITIONAL([HAVE_PDFLATEX], test -n "$PDFLATEX")
+AM_CONDITIONAL([BUILD_latexdoc], test "x$latexdoc" = "xyes")
+
 
 # Check for the presence of Doxygen
 AC_CHECK_PROGS([DOXYGEN], doxygen)

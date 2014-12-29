@@ -1,3 +1,9 @@
+/**
+ * \file   mlinfo.cpp
+ * \author The GenABEL team
+ *
+ * \brief Contains the class implementation of the mlinfo class.
+ */
 /*
  *
  * Copyright (C) 2009--2014 Various members of the GenABEL team. See
@@ -21,26 +27,10 @@
  */
 
 
-#include <string>
 #include <sstream>
 #include <fstream>
-
-#include "fvlib/AbstractMatrix.h"
-#include "fvlib/CastUtils.h"
-#include "fvlib/const.h"
-#include "fvlib/convert_util.h"
-#include "fvlib/FileVector.h"
-#include "fvlib/frutil.h"
-#include "fvlib/frversion.h"
-#include "fvlib/Logger.h"
-#include "fvlib/Transposer.h"
-#include "phedata.h"
-#include "gendata.h"
-#include "data.h"
-
-#include "eigen_mematrix.h"
-#include "eigen_mematrix.cpp"
-#include "utilities.h"
+#include <iostream>
+#include "mlinfo.h"
 
 
 /**
@@ -64,18 +54,20 @@ mlinfo::mlinfo(char * filename, char * mapname)
         }
         nlin--; // Subtract one, the previous loop added 1 too much
     } else {
-        std::cerr << "mlinfo: cannot open info file " << filename << endl;
+        std::cerr << "mlinfo: cannot open info file "
+                  << filename << std::endl;
         exit(1);
     }
     infile.close();
 
     if (nlin % 7)
     {
-        std::cerr << "mlinfo: number of columns != 7 in " << filename << endl;
+        std::cerr << "mlinfo: number of columns != 7 in "
+                  << filename << std::endl;
         exit(1);
     }
     nsnps = static_cast<int>((nlin / 7) - 1);
-    std::cout << "Number of SNPs = " << nsnps << endl;
+    std::cout << "Number of SNPs = " << nsnps << std::endl;
     name    = new std::string[nsnps];
     A1      = new std::string[nsnps];
     A2      = new std::string[nsnps];
@@ -88,7 +80,8 @@ mlinfo::mlinfo(char * filename, char * mapname)
     infile.open(filename);
     if (!infile)
     { // file couldn't be opened
-        std::cerr << "mlinfo: cannot open info file " << filename << endl;
+        std::cerr << "mlinfo: cannot open info file "
+                  << filename << std::endl;
         exit(1);
     }
     /* Read the header and discard it */
@@ -124,7 +117,8 @@ mlinfo::mlinfo(char * filename, char * mapname)
 
         if (!instr.is_open())
         {
-            std::cerr << "mlinfo: cannot open map file " << mapname << endl;
+            std::cerr << "mlinfo: cannot open map file "
+                      << mapname << std::endl;
             exit(1);
         }
 
@@ -154,71 +148,4 @@ mlinfo::~mlinfo()
     delete[] mlinfo::Quality;
     delete[] mlinfo::Rsq;
     delete[] mlinfo::map;
-}
-
-//_________________________________________Maksim_start
-
-InvSigma::InvSigma(const char * filename_, phedata * phe) : filename(filename_)
-{
-    npeople = phe->nids;
-    std::ifstream myfile(filename_);
-    char * line = new char[MAXIMUM_PEOPLE_AMOUNT];
-    std::string id;
-
-    matrix.reinit(npeople, npeople);
-
-    // idnames[k], if (allmeasured[i]==1)
-
-    if (myfile.is_open())
-    {
-        double val;
-        unsigned row = 0;
-        while (myfile.getline(line, MAXIMUM_PEOPLE_AMOUNT))
-        {
-            std::stringstream line_stream(line);
-            line_stream >> id;
-
-            if (phe->idnames[row] != id)
-            {
-                std::cerr << "error:in row " << row << " id="
-                          << phe->idnames[row]
-                          << " in inverse variance matrix but id=" << id
-                          << " must be there. Wrong inverse variance matrix"
-                          << " (only measured id must be there)\n";
-                exit(1);
-            }
-            unsigned col = 0;
-            while (line_stream >> val)
-            {
-                matrix.put(val, row, col);
-                col++;
-            }
-
-            if (col != npeople)
-            {
-                std::cerr << "error: inv file: Number of columns in row "
-                          << row << " equals to " << col
-                          << " but number of people is " << npeople << "\n";
-                myfile.close();
-                exit(1);
-            }
-            row++;
-        }
-        myfile.close();
-    } else {
-        std::cerr << "error: inv file: cannot open file '"
-                  << filename_ << "'\n";
-    }
-
-    delete[] line;
-}
-
-
-InvSigma::~InvSigma()
-{
-}
-
-mematrix<double> & InvSigma::get_matrix(void)
-{
-    return matrix;
 }

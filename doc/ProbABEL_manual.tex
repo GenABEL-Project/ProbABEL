@@ -1,17 +1,17 @@
 \documentclass[12pt,a4paper]{article}
 
-\title{Manual for ProbABEL v0.4.3}
+\title{Manual for ProbABEL v0.4.4}
 \author{\emph{Current Programmers:} Lennart Karssen$^{1,2}$, Maarten
   Kooyman$^2$, \\
   Yurii Aulchenko$^{1,3}$ \\
   \emph{Former Programmers:} Maksim Struchalin
   \\
   \\
-  $^{1}${\small YuriiA Consulting} \\
+  $^{1}${\small PolyOmica} \\
   $^{2}${\small Erasmus MC, Rotterdam}\\
   $^{3}${\small Institute of Cytology and Genetics SD RAS, Novosibirsk}
 }
-\date{April 1, 2014}
+\date{November 7, 2014}
 
 
 \usepackage[utf8]{inputenc}
@@ -170,7 +170,7 @@ user@server:~$ apt-get install probabel
   categories\footnote{We know that many people have use Red Hat Linux,
     CentOS, Scientific Linux or any other Red Hat
     derivative. Unfortunately we haven't got \texttt{rpm} files
-    yet. Any help in creating those will be highly appreciated}, you
+    yet. Any help in creating those will be highly appreciated.}, you
   can install \PA{} manually by downloading the source code of the
   latest version from the website and compiling it yourself. This will
   be explained in section~\ref{sec:obtain}.
@@ -184,7 +184,7 @@ can download the source code of \PA{} yourself, compile it and run it
 from your own home directory. This section details the steps you need
 to take. More information can be found in the \texttt{doc/INSTALL}.
 
-On the \href{http://www.genabel.org/packages/probabel}{\PA{}} website
+On the \href{http://www.genabel.org/packages/probabel}{\PA{} website}
 you can find the link to the latest version of the source code of \PA{}
 in a \texttt{tar.gz} file\footnote{The \texttt{tar.gz} file archive
   format is the most commonly used format for distributing source code
@@ -196,7 +196,7 @@ and the \texttt{gpg} tool you can verify the authenticity of the
 source code by typing this command on the command line of a Linux
 shell\footnote{The \$ sign indicates the end of the command line
   prompt. You don't need to type it.}:
-\begin{lstlisting}[]
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily]
 user@server:~$ gpg --verify probabel-0.4.3.tar.gz.asc
 gpg: Signature made Thu Jan  2 02:38:25 2014 CET using DSA key ID DA9CD509
 gpg: Good signature from "L.C. Karssen (GPG key for personal stuff) <lennart@karssen.org>"
@@ -210,21 +210,19 @@ same key (with key ID DA9CD509). If, for some reason, the
 \texttt{tar.gz} file has changed (e.g.~by such a hacker or because
 the file didn't get downloaded correctly) you will see output like
 this (notice the ``BAD signature'' message):
-\begin{lstlisting}[]
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily]
 user@server:~$ gpg --verify probabel-0.4.2.tar.gz.asc
 gpg: Signature made Thu Jan  2 02:38:25 2014 CET using DSA key ID DA9CD509
 gpg: BAD signature from "L.C. Karssen (GPG key for personal stuff) <lennart@karssen.org>"
-user@server:~$
 \end{lstlisting}
 
-Before continuing, it is important to mention that \PA{} can make use
-of the EIGEN library\footnote{EIGEN is a library for fast matrix
-  multiplication.}. We strongly recommend compiling \PA with EIGEN as
-it will speed up your analyses considerably. Moreover, we plan to
-remove the non-EIGEN part of the code in a future release. So, go to
-\url{http://eigen.tuxfamily.org} and download the \texttt{tar.gz} file
-of the latest version of EIGEN (3.2.1 at the time of writing). Extract
-the files:
+Before continuing, it is important to mention that \PA{} needs the
+EIGEN library\footnote{EIGEN is a library for fast matrix
+  multiplication. In ProbABEL versions before v0.5.0 EIGEN was not
+  required (but still recommended).}. In order to download the
+library, go to \url{http://eigen.tuxfamily.org} and download the
+\texttt{tar.gz} file of the latest version of EIGEN (3.2.1 at the time
+of writing). Extract the files:
 \begin{lstlisting}
 user@server:~$ tar -xzf 3.2.1.tar.gz
 \end{lstlisting}
@@ -237,8 +235,8 @@ user@server:~$ mv eigen-eigen-6b38706d90a9 EIGEN
 Now it's time to extract the \PA{} source code and move into the
 directory that is created:
 \begin{lstlisting}
-user@server:~$ tar -xzf probabel-0.4.3.tar.gz
-user@server:~$ cd probabel-0.4.3
+user@server:~$ tar -xzf probabel-0.5.0.tar.gz
+user@server:~$ cd probabel-0.5.0
 \end{lstlisting}
 With the following command we will indicate where the EIGEN files can
 be found and where we want to install \PA{}. Let's install in a
@@ -463,7 +461,7 @@ you run either program with the \texttt{--help} option, you will get a
 short explanation to the command line options:
 \begin{verbatim}
 user@server:~$ palogist --help
-probabel v. 0.4.3
+probabel v. 0.4.4
 (C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EMCR
 
 Using EIGEN version 3.1.2 for matrix operations
@@ -936,13 +934,13 @@ variance-covariance matrix.
 
 In the second step, the unbiased estimates of the fixed effects of the
 terms involving SNP are obtained with
-$$
+\begin{equation}
 \hat{\beta}_g = (\mathbf{X}^T_g
 \mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}
 \mathbf{X}_g)^{-1}
 \mathbf{X}^T_g \mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}
 \mathbf{R}_{\hat{\beta}_x},
-$$
+\end{equation}
 where $\mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}$ is the inverse
 variance-covariance matrix at the point of the MLE estimates of
 $\hat{h}^2_x$ and $\hat{\sigma}^2_x$, and $\mathbf{R}_{\hat{\beta}_x}
@@ -1028,7 +1026,7 @@ BMC Bioinformatics. 2010, 11:134.
 \end{quote}
 A proper reference may look like
 \begin{quote}
-For the analysis of imputed data, we used \PA{} v.0.4.3
+For the analysis of imputed data, we used \PA{} v.0.4.4
 from the \texttt{GenABEL} suite of programs (Aulchenko \emph{et al.}, 2010).
 \end{quote}
 

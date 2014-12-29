@@ -84,7 +84,7 @@ class base_reg {
     regdata reg_data;
 
     void base_score(const mematrix<double>& resid,
-                    const double tol_chol, const int model,
+                    const int model,
                     const int interaction, const int ngpreds,
                     const masked_matrix& invvarmatrix,
                     int nullmodel);
@@ -95,13 +95,13 @@ class linear_reg: public base_reg {
  public:
     linear_reg(const regdata& rdatain);
 
-    void estimate(const int verbose, const double tol_chol, const int model,
+    void estimate(const int verbose, const int model,
                   const int interaction, const int ngpreds,
                   masked_matrix& invvarmatrixin,
                   const int robust, const int nullmodel = 0);
 
     void score(const mematrix<double>& resid,
-               const double tol_chol, const int model, const int interaction,
+               const int model, const int interaction,
                const int ngpreds, const masked_matrix& invvarmatrix,
                int nullmodel = 0);
 
@@ -128,16 +128,31 @@ class logistic_reg: public base_reg {
 
     logistic_reg(const regdata& rdatain);
 
-    void estimate(const int verbose, const int maxiter, const double eps,
+    void estimate(const int verbose,
                   const int model, const int interaction, const int ngpreds,
                   masked_matrix& invvarmatrixin, const int robust,
                   const int nullmodel = 0);
 
     // just a stupid copy from linear_reg
     void score(const mematrix<double>& resid,
-               const double tol_chol, const int model, const int interaction,
+               const int model, const int interaction,
                const int ngpreds, const masked_matrix& invvarmatrix,
                int nullmodel = 0);
+
+ private:
+    /**
+     * \brief Constant that contains the maximum number of iterations
+     * done during the regression routine.
+     */
+    static const int MAXITER = 20;
+
+    /**
+     * \brief Constant containing the tolerance for convergence.
+     *
+     * Iteration continues until the percent change in loglikelihood
+     * is <= EPS.
+     */
+    static const double EPS = 1e-8;
 };
 
 #endif // REG1_H_

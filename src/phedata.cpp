@@ -66,6 +66,7 @@ void phedata::setphedata(const char * fname, const int noutc,
     std::ifstream myfile(fname);
     char *line = new char[BFS];
     char *tmp  = new char[BFS];
+    std::string interaction_cov_name;
     noutcomes = noutc;
     is_interaction_excluded = false;
 
@@ -154,12 +155,22 @@ void phedata::setphedata(const char * fname, const int noutc,
         for (int i = (2 + noutcomes); i < nphenocols; i++)
         {
             infile >> tmp;
+            std::cout << "nphenocols=" << nphenocols << "\n";
+            std::cout << "i=" << i
+                      << ", is_interaction_excluded="
+                      << is_interaction_excluded
+                      << ", interaction=" << interaction
+                      << ", n_model_terms=" << n_model_terms << "\n";
+            if (n_model_terms == interaction && is_interaction_excluded)
+               {
+                   interaction_cov_name = tmp;
+                   continue;
+               }
 
-            // if(iscox && ) {if(n_model_terms+1 == interaction-1) {continue;} }
-            // else      {if(n_model_terms+1 == interaction) {continue;} }
             model = model + " + ";
             model = model + tmp;
             model_terms[n_model_terms++] = tmp;
+            std::cout << "model=" << model << "\n";
         }
     }
     model = model + " + SNP_A1";
@@ -167,28 +178,30 @@ void phedata::setphedata(const char * fname, const int noutc,
     {
         if (iscox)
         {
-            model = model + " + " + model_terms[interaction - 1] + "*SNP_A1";
+           if (!is_interaction_excluded)
+           {
+               model = model + " + "
+                   + model_terms[interaction - 1]
+                   + "*SNP_A1";
+           }
+           else
+           {
+               model = model + " + " + interaction_cov_name + "*SNP_A1";
+           }
         }
         else
         {
-            model = model + " + " + model_terms[interaction] + "*SNP_A1";
+            if (!is_interaction_excluded)
+            {
+                model = model + " + " + model_terms[interaction] + "*SNP_A1";
+            }
+            else
+            {
+                model = model + " + " + interaction_cov_name + "*SNP_A1";
+            }
         }
     }
     model_terms[n_model_terms++] = "SNP_A1";
-
-    if (is_interaction_excluded) // exclude covariates from covariate names
-    {
-        if (iscox)
-        {
-            std::cout << "model is running without "
-                      << model_terms[interaction - 1] << ", term\n";
-        }
-        else
-        {
-            std::cout << "model is running without " << model_terms[interaction]
-                      << ", term\n";
-        }
-    }
 
 #if LOGISTIC
     std::cout << "Logistic ";

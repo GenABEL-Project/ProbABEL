@@ -1,3 +1,34 @@
+***** v.0.5.0 (2014.)
+* ProbABEL now depends on the Eigen library. The option to compile without
+  Eigen has been removed.
+* Not-a-number values in the output are now printed as "NaN" instead of
+  "nan".
+* Linear regression mmscore option is 2 times faster
+* Speedup of Linear regression:(measured with multiple runs with 2 covariates,
+  33815 SNP and 3485 people(using all) compares to v.0.4.3)
+** Reading mldose/mlprob files 14 times faster
+** Calculation of regression is more than 3.5 faster
+** Overall runtime using above settings is 5
+* Handles multiple variants of NaN (NA,Na,Nan,na,nan) correct while reading of
+  mldose/mlprob files
+* Fixed bug #5883: The main effect is displayed in the output with the
+  `interaction_only` option. Thanks to Maksim Struchalin for fixing it and
+  to Farid Radmanesh for reporting it.
+* Fixed bug #5982: ProbABEL's make install fails on MacOS X and FreeBSD
+  with sed error. Thanks to forum user mmold for reporting the bug.
+
+
+***** v.0.4.4 (2014.11.07)
+* Fixed bug #5729 in the Cox PH module. Some checks for problems with the
+  regression were incorrectly implemented. Thanks to Matthias Wuttke from
+  the University Medical Centre Freiburg, Anne Grotenhuis from the Radboud
+  Medical Centre Nijmegen, and Luba Pardo and Joris Verkouteren from the
+  Erasmus Medical Centre Rotterdam for their time and effort in reporting
+  the bug, helping to identify the problem and testing the fix.
+* Backported fix of bug #5982: ProbABEL's make install fails on MacOS X
+  and FreeBSD with sed error. Thanks to forum user mmold for reporting the bug.
+
+
 ***** v.0.4.3 (2014.04.01)
 * Speed-up of a factor of ~ 2 for linear, logistic and Cox regression when
   using filevector input files.

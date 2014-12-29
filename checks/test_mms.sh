@@ -1,6 +1,7 @@
 #!/bin/bash
 # This script runs checks on ProbABEL's palinear module for
 # quantitative traits combined with the mmscore option.
+
 echo "Analysis using MMScore..."
 
 scriptdir=$(dirname $0)
@@ -26,6 +27,7 @@ if [ "$1" = "verbose" ]; then
     exec 3>&1
 fi
 
+echo "base analysis"
 $palinear \
     -p ${inputdir}/mmscore_pheno.PHE \
     -i ${inputdir}/mmscore_gen.mlinfo \
@@ -34,7 +36,6 @@ $palinear \
     -o mmscore_dose \
     --mmscore ${inputdir}/mmscore_InvSigma_aj.sex.age.dat \
     >& 3
-
 $palinear \
     -p ${inputdir}/mmscore_pheno.PHE \
     -i ${inputdir}/mmscore_gen.mlinfo \
@@ -44,12 +45,12 @@ $palinear \
     --mmscore ${inputdir}/mmscore_InvSigma_aj.sex.age.dat \
     >& 3
 
-
 run_diff mmscore_dose_add.out.txt \
     mmscore_dose_fv_add.out.txt \
     "mmscore check: dose vs. dose_fv"
 
 
+echo "Option --ngp=2, mlprob file"
 $palinear \
     -p ${inputdir}/mmscore_pheno.PHE \
     -i ${inputdir}/mmscore_gen.mlinfo \

@@ -21,6 +21,7 @@ EXTRA_DIST = $(man_MANS)
 
 CLEANFILES =
 
+if BUILD_latexdoc
 if HAVE_PDFLATEX
 MANNAME = ProbABEL_manual
 MANPDF = $(MANNAME).pdf
@@ -30,6 +31,7 @@ doc_DATA = $(MANPDF)
 
 CLEANFILES += $(MANPDF) $(MANNAME).log $(MANNAME).idx $(MANNAME).out \
  $(MANNAME).toc $(MANNAME).idx $(MANNAME).ilg $(MANNAME).ind $(MANAUX) .btmp
+endif
 endif
 
 if HAVE_DOXYGEN

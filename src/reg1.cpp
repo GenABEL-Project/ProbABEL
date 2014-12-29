@@ -1,3 +1,12 @@
+/**
+ * \file   reg1.cpp
+ * \author The ProbABEL team
+ *
+ * \brief File containing the parts of the code for linear and
+ * logistic regression.
+ *
+ * For CoxPH regression look in the file coxph_data.h.
+ */
 /*
  *
  * Copyright (C) 2009--2014 Various members of the GenABEL team. See
@@ -25,23 +34,36 @@
 
 
 /**
+ * \brief Apply the genetic model to the design matrix X before
+ * running the regression.
  *
+ * This also includes taking care of an interaction term if the user
+ * requested that.
  *
- * if ngpreds==1 (dose data):
- * model 0 = additive 1 df
- * if ngpreds==2 (prob data):
- * model 0 = 2 df
- * model 1 = additive 1 df
- * model 2 = dominant 1 df
- * model 3 = recessive 1 df
- * model 4 = over-dominant 1 df
- * @param X Design matrix, including SNP column
- * @param model
- * @param interaction
- * @param ngpreds
- * @param is_interaction_excluded
- * @param iscox
- * @param nullmodel
+ * Depending on the number of genetic predictors (ngpreds) the integer
+ * coding for the models has a different meaning:
+ *
+ * If ngpreds==1 (dose data):
+ * \li model 0 = additive (1 df)
+ *
+ * If ngpreds==2 (prob data):
+ * \li model 0 = 2 df
+ * \li model 1 = additive (1 df)
+ * \li model 2 = dominant (1 df)
+ * \li model 3 = recessive (1 df)
+ * \li model 4 = over-dominant (1 df)
+ * @param X Design matrix, including SNP column(s).
+ * @param model Integer describing the genetic model to be
+ * applied. See the list above.
+ * @param interaction Column number of the covariate used in the
+ * interaction term.
+ * @param ngpreds Number of genetic predictors (1 for dosage data, 2
+ * for probability data).
+ * @param is_interaction_excluded Indicates whether the main term for
+ * the covariate used in the interaction term should be excluded from
+ * the model.
+ * @param iscox Indicates whether a CoxPH regression is being done.
+ * @param nullmodel Indicates whether the null model is being analysed.
  *
  * @return Matrix with the model applied to it.
  */
@@ -60,137 +82,103 @@ mematrix<double> apply_model(const mematrix<double>& X,
         return (X);
     }
 
-    if (model == 0)
+    if (model == 0) // Only run these steps the first time this
+                    // function is called
     {
-        if (interaction != 0 && !nullmodel)
+        if (interaction != 0)
         {
-            if (ngpreds == 2)
+            // The user requested analysis with an interaction term,
+            // so ngpreds columns need to be added to the X matrix.
+            mematrix<double> nX;
+            nX.reinit(X.nrow, X.ncol + ngpreds);
+            int csnp_p1 = nX.ncol - 2 * ngpreds;
+            int c1 = nX.ncol - ngpreds;
+            // The following two variables are only used when ngpreds
+            // == 2. Note that the order of the two probabilities is
+            // swapped w.r.t. the file (see regdata::update_snp())!
+            int csnp_p2 = nX.ncol - 3;
+            int c2 = nX.ncol - 1;
+
+            // Copy the data from X to nX (note: nX has more columns!)
+            for (int i = 0; i < X.nrow; i++)
+                for (int j = 0; j < X.ncol; j++)
+                    nX[i * nX.ncol + j] = X[i * X.ncol + j];
+
+            for (int i = 0; i < nX.nrow; i++)
             {
-                mematrix<double> nX;
-                nX.reinit(X.nrow, X.ncol + 2);
-                int csnp_p1 = nX.ncol - 4;
-                int csnp_p2 = nX.ncol - 3;
-                int c1 = nX.ncol - 2;
-                int c2 = nX.ncol - 1;
-                for (int i = 0; i < X.nrow; i++)
-                    for (int j = 0; j < (X.ncol); j++)
-                        nX[i * nX.ncol + j] = X[i * X.ncol + j];
-                for (int i = 0; i < nX.nrow; i++)
+                if (iscox)
                 {
-                    if (iscox)
+                    // Maksim: interaction with SNP;;
+                    nX[i * nX.ncol + c1] =
+                        X[i * X.ncol + csnp_p1]
+                        * X[i * X.ncol + interaction - 1];
+                    if (ngpreds == 2)
                     {
-                        // Maksim: interaction with SNP;;
-                        nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
-                                * X[i * X.ncol + interaction - 1];
-                        nX[i * nX.ncol + c2] = X[i * X.ncol + csnp_p2]
-                                * X[i * X.ncol + interaction - 1];
-                    }
-                    else
-                    {
-                        // Maksim: interaction with SNP;;
-                        nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
-                                * X[i * X.ncol + interaction];
-                        nX[i * nX.ncol + c2] = X[i * X.ncol + csnp_p2]
-                                * X[i * X.ncol + interaction];
+                        nX[i * nX.ncol + c2] =
+                            X[i * X.ncol + csnp_p2]
+                            * X[i * X.ncol + interaction - 1];
                     }
                 }
-                //________________________
-                if (is_interaction_excluded)
+                else
                 {
-                    mematrix<double> nX_without_interact_phe;
-                    nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
-
-                    for (int row = 0; row < nX.nrow; row++)
+                    // Maksim: interaction with SNP;;
+                    nX[i * nX.ncol + c1] =
+                        X[i * X.ncol + csnp_p1]
+                        * X[i * X.ncol + interaction];
+                    if (ngpreds == 2)
                     {
-                        // Han Chen
-                        int col_new = -1;
-                        for (int col = 0; col < nX.ncol; col++)
-                        {
-                            if (col != interaction && !iscox)
-                            {
-                                col_new++;
-                                nX_without_interact_phe[row
-                                    * nX_without_interact_phe.ncol + col_new] =
-                                        nX[row * nX.ncol + col];
-                            }
-                            if (col != interaction - 1 && iscox)
-                            {
-                                col_new++;
-                                nX_without_interact_phe[row
-                                    * nX_without_interact_phe.ncol + col_new] =
-                                        nX[row * nX.ncol + col];
-                            }
-                        } // interaction_only, model==0, ngpreds==2
-                          // Oct 26, 2009
+                        nX[i * nX.ncol + c2] =
+                            X[i * X.ncol + csnp_p2]
+                            * X[i * X.ncol + interaction];
                     }
-                    return nX_without_interact_phe;
-                }  // end of is_interaction_excluded
-                   //________________________
-                return (nX);
+                }
             }
-            if (ngpreds == 1)
-            {
-                mematrix<double> nX;
-                nX.reinit(X.nrow, X.ncol + 1);
-                int csnp_p1 = nX.ncol - 2;
-                int c1 = nX.ncol - 1;
-                for (int i = 0; i < X.nrow; i++)
-                    for (int j = 0; j < (X.ncol); j++)
-                        nX[i * nX.ncol + j] = X[i * X.ncol + j];
 
-                for (int i = 0; i < nX.nrow; i++)
+            if (is_interaction_excluded)
+            {
+                mematrix<double> nX_without_interact_phe;
+                nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
+
+                for (int row = 0; row < nX.nrow; row++)
                 {
-                    if (iscox)
+                    // Han Chen
+                    int col_new = -1;
+                    for (int col = 0; col < nX.ncol; col++)
                     {
-                        // Maksim: interaction with SNP;;
-                        nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
-                                * X[i * X.ncol + interaction - 1];
-                    }
-                    else
-                    {
-                        // Maksim: interaction with SNP;;
-                        nX[i * nX.ncol + c1] = X[i * X.ncol + csnp_p1]
-                                * X[i * X.ncol + interaction];
-                    }
-                }
-                //________________________
-                if (is_interaction_excluded)
-                {
-                    mematrix<double> nX_without_interact_phe;
-                    nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
-                    for (int row = 0; row < nX.nrow; row++)
-                    {
-                        int col_new = -1;
-                        for (int col = 0; col < nX.ncol; col++)
+                        if (col != interaction && !iscox)
                         {
-                            if (col != interaction && !iscox)
-                            {
-                                col_new++;
-                                nX_without_interact_phe[row
-                                    * nX_without_interact_phe.ncol + col_new] =
-                                        nX[row * nX.ncol + col];
-                            }
-                            if (col != interaction - 1 && iscox)
-                            {
-                                col_new++;
-                                nX_without_interact_phe[row
-                                     * nX_without_interact_phe.ncol + col_new] =
-                                        nX[row * nX.ncol + col];
-                            }
+                            col_new++;
+                            nX_without_interact_phe[row
+                               * nX_without_interact_phe.ncol + col_new] =
+                                nX[row * nX.ncol + col];
                         }
-                    }
-                    return nX_without_interact_phe;
-                }  // end of is_interaction_excluded
-                   //________________________
-                return (nX);
-            }
-        }
+                        if (col != interaction - 1 && iscox)
+                        {
+                            col_new++;
+                            nX_without_interact_phe[row
+                               * nX_without_interact_phe.ncol + col_new] =
+                                nX[row * nX.ncol + col];
+                        }
+                    } // interaction_only, model==0
+                    // Oct 26, 2009
+                }
+                return nX_without_interact_phe;
+            }  // End of is_interaction_excluded
+            return (nX);
+        } // End if (interaction !=0)
         else
         {
+            // No interaction analysis, no need to add/change columns
+            // to/in X.
             return (X);
         }
-    }
+    } // End: if (model == 0)
 
+
+    // NOTE: The rest of this function is not run for dosage data
+    // (ngpreds == 1) because in that case there is only one value for
+    // model: model == 0; so this function stops at the if() that
+    // ended just above.
     mematrix<double> nX;
     if (interaction != 0)
     {
@@ -201,9 +189,11 @@ mematrix<double> apply_model(const mematrix<double>& X,
         nX.reinit(X.nrow, (X.ncol - 1));
     }
 
+    // Note that the order of the two probabilities is swapped
+    // w.r.t. the file (see regdata::update_snp())!
     // column with Prob(A1A2)
     int c1 = X.ncol - 2;
-    // column with Prob(A1A1). Note the order is swapped cf the file!
+    // column with Prob(A1A1)
     int c2 = X.ncol - 1;
 
     for (int i = 0; i < X.nrow; i++){
@@ -216,7 +206,7 @@ mematrix<double> apply_model(const mematrix<double>& X,
     {
         if (model == 1)  // additive
             nX[i * nX.ncol + c1] = X[i * X.ncol + c1] + 2. * X[i * X.ncol + c2];
-        else if (model == 2)  //dominant
+        else if (model == 2)  // dominant
             nX[i * nX.ncol + c1] = X[i * X.ncol + c1] + X[i * X.ncol + c2];
         else if (model == 3)  // recessive
             nX[i * nX.ncol + c1] = X[i * X.ncol + c2];
@@ -295,7 +285,7 @@ linear_reg::linear_reg(const regdata& rdatain) {
 
 
 void base_reg::base_score(const mematrix<double>& resid,
-                          const double tol_chol, const int model,
+                          const int model,
                           const int interaction,
                           const int ngpreds,
                           const masked_matrix& invvarmatrix,
@@ -347,6 +337,45 @@ void base_reg::base_score(const mematrix<double>& resid,
 }
 
 
+/**
+ * \brief Solve the linear system in case the --mmscore option was
+ * specified.
+ *
+ * Specifying the --mmscore command line option requires a file name
+ * argument as well. This file should contain the inverse
+ * variance-covariance matrix file. This function is run when Linear
+ * regression is done in combination with the mmscore option. It
+ * solves the 'mmscore' equation as specified in Eq. (5) in section
+ * 8.2.1 of the ProbABEL manual:
+ * \f[
+ *    \hat{\beta}_g = (\mathbf{X}^T_g
+ *    \mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}
+ *    \mathbf{X}_g)^{-1}
+ *    \mathbf{X}^T_g \mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}
+ *    \mathbf{R}_{\hat{\beta}_x},
+ * \f]
+ * where \f$\mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}\f$ is the
+ * inverse variance-covariance matrix, and
+ * \f$\mathbf{R}_{\hat{\beta}_x}\f$ is the vector containing the
+ * residuals obtained from the base regression model i.e. the
+ * phenotype. In this function, the phenotype is stored in the
+ * variable \c Y.
+ *
+ * @param X The design matrix \f$X_g\f$. \c X should only contain the
+ * parts involving genotype data (including any interactions involving
+ * a genetic term), all other covariates should have been regressed out
+ * before running ProbABEL.
+ * @param W_masked The inverse variance-covariance matrix
+ * \f$\mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}\f$.
+ * @param Ch Reference to the LDLT Cholesky decomposition of the
+ * matrix to be inverted to get \f$\hat\beta_g\f$:
+ * \f[
+ * \mathbf{X}^T_g
+ *    \mathbf{V}^{-1}_{\hat{\sigma}^2,\hat{h}^2}
+ *    \mathbf{X}_g.
+ * \f]
+ * On return this variable contains said matrix.
+ */
 void linear_reg::mmscore_regression(const mematrix<double>& X,
                                     const masked_matrix& W_masked,
                                     LDLT<MatrixXd>& Ch) {
@@ -357,12 +386,18 @@ void linear_reg::mmscore_regression(const mematrix<double>& X,
      side has more rows: this introduces an additional transpose, but can be
      neglected compared to the speedup this brings(about a factor 2 for the
      palinear with 1 predictor)
+
+     This function solves the system
+        (X^T W X) beta = X^T W Y.
+     Since W is symmetric (WX)^T = X^T W, so this can be rewritten as
+        (WX)^T X beta = (WX)^T Y,
+     which is solved using LDLT Cholesky decomposition.
      */
-    MatrixXd tXW = W_masked.masked_data->data * X.data;
-    MatrixXd xWx = tXW.transpose() * X.data;
-    Ch = LDLT<MatrixXd>(xWx);
-    VectorXd beta_vec = Ch.solve(tXW.transpose() * Y);
-    sigma2 = (Y - tXW * beta_vec).squaredNorm();
+    MatrixXd WX = W_masked.masked_data->data * X.data;
+    MatrixXd XWT = WX.transpose();
+    Ch = LDLT<MatrixXd>(XWT * X.data);
+    VectorXd beta_vec = Ch.solve(XWT * Y);
+    sigma2 = (Y - WX * beta_vec).squaredNorm();
     beta.data = beta_vec;
 }
 
@@ -438,11 +473,24 @@ void linear_reg::PlainSEandCovariance(const double sigma2_internal,
 }
 
 
-void linear_reg::estimate(const int verbose, const double tol_chol,
-                          const int model, const int interaction,
+/**
+ * \brief Estimate the parameters for linear regression.
+ *
+ * @param verbose
+ * @param model
+ * @param interaction
+ * @param ngpreds
+ * @param invvarmatrixin
+ * @param robust
+ * @param nullmodel
+ */
+void linear_reg::estimate(const int verbose,
+                          const int model,
+                          const int interaction,
                           const int ngpreds,
                           masked_matrix& invvarmatrixin,
-                          const int robust, const int nullmodel) {
+                          const int robust,
+                          const int nullmodel) {
     // suda interaction parameter
     // model should come here
     //regdata rdata = rdatain.get_unmasked_data();
@@ -546,13 +594,13 @@ void linear_reg::estimate(const int verbose, const double tol_chol,
 
 
 void linear_reg::score(const mematrix<double>& resid,
-                       const double tol_chol, const int model,
+                       const int model,
                        const int interaction, const int ngpreds,
                        const masked_matrix& invvarmatrix,
                        int nullmodel)
 {
     //regdata rdata = rdatain.get_unmasked_data();
-    base_score(resid, tol_chol, model, interaction, ngpreds,
+    base_score(resid, model, interaction, ngpreds,
                invvarmatrix, nullmodel = 0);
     // TODO: find out why nullmodel is assigned 0 in the call above.
 }
@@ -578,8 +626,8 @@ logistic_reg::logistic_reg(const regdata& rdatain)
 }
 
 
-void logistic_reg::estimate(const int verbose, const int maxiter,
-                            const double eps, const int model,
+void logistic_reg::estimate(const int verbose,
+                            const int model,
                             const int interaction, const int ngpreds,
                             masked_matrix& invvarmatrixin,
                             const int robust, const int nullmodel) {
@@ -654,7 +702,7 @@ void logistic_reg::estimate(const int verbose, const int maxiter,
      */
     niter = 0;
     double delta = 1.;
-    while (niter < maxiter && delta > eps)
+    while (niter < MAXITER && delta > EPS)
     {
         mematrix<double> eMu = (X) * beta;
         mematrix<double> eMu_us = eMu;
@@ -733,7 +781,7 @@ void logistic_reg::estimate(const int verbose, const int maxiter,
 
         delta = fabs(1. - (prevlik / loglik));
         niter++;
-    }  // END while (niter < maxiter && delta > eps)
+    }  // END while (niter < MAXITER && delta > EPS)
 
     sigma2 = 0.;
     mematrix<double> robust_sigma2(X.ncol, X.ncol);
@@ -814,11 +862,11 @@ void logistic_reg::estimate(const int verbose, const int maxiter,
 
 
 void logistic_reg::score(const mematrix<double>& resid,
-                         const double tol_chol, const int model,
+                         const int model,
                          const int interaction, const int ngpreds,
                          const masked_matrix& invvarmatrix,
                          int nullmodel) {
-    base_score(resid, tol_chol, model, interaction, ngpreds,
+    base_score(resid, model, interaction, ngpreds,
                invvarmatrix, nullmodel = 0);
     // TODO: find out why nullmodel is assigned 0 in the call above.
 }
