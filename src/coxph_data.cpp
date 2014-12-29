@@ -464,16 +464,23 @@ void coxph_reg::estimate(const coxph_data &cdatain,
     // iterations that were used. Store it in niter.
     niter = maxiterinput;
 
+
     // Check the results of the Cox fit; mirrored from the same checks
-    // in coxph_fit.S from the R survival package
+    // in coxph.fit.S and coxph.R from the R survival package.
 
-    bool setToZero = false;
+    bool setToNAN = false;
 
-    if (flag < X.nrow && niter > 0) {
+    // Based on coxph.fit.S lines with 'which.sing' and coxph.R line
+    // with if(any(is.NA(coefficients))). These lines set coefficients
+    // to NA if flag < nvar (with nvar = ncol(x)) and MAXITER >
+    // 0. coxph.R then checks for any NAs in the coefficients and
+    // outputs the warning message if NAs were found.
+    if (flag < X.nrow && MAXITER > 0) {
         cerr << "Warning for " << snpinfo.name[cursnp]
              << ": X matrix deemed to be singular,"
              << " setting beta and se to 'NaN'\n";
-        setToZero = true;
+
+        setToNAN = true;
     }
 
     if (niter >= MAXITER)
@@ -488,26 +495,46 @@ void coxph_reg::estimate(const coxph_data &cdatain,
         cerr << "Warning for " << snpinfo.name[cursnp]
              << ": Cox regression ran out of iterations and did not converge,"
              << " setting beta and se to 'NaN'\n";
-        setToZero = true;
+        setToNAN = true;
     } else {
         VectorXd ueigen = u.data;
         MatrixXd imateigen = imat.data;
         VectorXd infs = ueigen.transpose() * imateigen;
+        infs = infs.cwiseAbs();
         VectorXd betaeigen = beta.data;
-        if ( infs.norm() > EPS ||
-             infs.norm() > sqrt(EPS) * betaeigen.norm() )
-        {
+        bool problems = false;
+
+        assert(betaeigen.size() == infs.size());
+
+        // We check the beta's for all coefficients
+        // (incl. covariates), maybe stick to only checking the SNP
+        // coefficient?
+        for (int i = 0; i < infs.size(); i++) {
+            if (infs[i] > EPS &&
+                infs[i] > sqrt(EPS) * abs(betaeigen[i])) {
+                problems = true;
+            }
+        }
+
+        if (problems) {
             cerr << "Warning for " << snpinfo.name[cursnp]
                  << ": beta may be infinite,"
                  << " setting beta and se to 'NaN'\n";
 
-            setToZero = true;
+            setToNAN = true;
         }
+
+        // cout << "beta values for SNP: " << snpinfo.name[cursnp]
+        //      << " are: " << betaeigen << std::endl;
+        cerr << "Warning for " << snpinfo.name[cursnp]
+             << ": can't check for infinite betas."
+             << " Please compile ProbABEL with Eigen support to fix this."
+             << endl;
     }
 
     for (int i = 0; i < X.nrow; i++)
     {
-        if (setToZero)
+        if (setToNAN)
         {
             // Cox regression failed
             sebeta[i] = NAN;
