@@ -451,7 +451,7 @@ int main(int argc, char * argv[])
                          * paper. TODO LCK
                          */
                         *chi2val[model] = NAN;
-                        *chi2[model] << "nan";
+                        *chi2[model] << *chi2val[model];
                     }
                     else
                     {
@@ -488,9 +488,9 @@ int main(int argc, char * argv[])
                 for (int pos = start_pos; pos <= end_pos; pos++)
                 {
                     *beta_sebeta[model] << input_var.getSep()
-                            << "NaN"
+                            << NAN
                             << input_var.getSep()
-                            << "NaN";
+                            << NAN;
                 }
 
                 if (input_var.getNgpreds() == 2)
@@ -502,17 +502,17 @@ int main(int argc, char * argv[])
                     {
                         if (model == 0)
                         {
-                            *covvalue[model] << "NaN"
+                            *covvalue[model] << NAN
                                              << input_var.getSep()
-                                             << "NaN";
+                                             << NAN;
                         } else{
-                            *covvalue[model] << "NaN";
+                            *covvalue[model] << NAN;
                         }
                     }
 #endif
                     // Oct 26, 2009
                     *chi2val[model] = NAN;
-                    *chi2[model] << "nan";
+                    *chi2[model] << *chi2val[model];
                 } else{
                     // ngpreds==1 (and SNP is rare)
                     if (input_var.getInverseFilename() == NULL)
@@ -522,13 +522,13 @@ int main(int argc, char * argv[])
                         if (!input_var.getAllcov()
                                 && input_var.getInteraction() != 0)
                         {
-                            *covvalue[model] << "NaN";
+                            *covvalue[model] << NAN;
                         }
 #endif
                         // Oct 26, 2009
                     }  // END if getInverseFilename == NULL
                     *chi2val[model] = NAN;
-                    *chi2[model] << "nan";
+                    *chi2[model] << *chi2val[model];
                 }  // END ngpreds == 1 (and SNP is rare)
             }  // END else: SNP is rare
 
@@ -542,7 +542,9 @@ int main(int argc, char * argv[])
             catch (std::exception &e)
             {
                 std::cerr << mli.name[csnp] << ": "
-                          << e.what() << std::endl;
+                          << e.what()
+                          << "  Setting p-value to NAN"
+                          << std::endl;
                 *pval[model] << NAN;
             }
 #endif
