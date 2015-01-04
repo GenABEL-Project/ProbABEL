@@ -413,6 +413,12 @@ void linear_reg::LeastSquaredRegression(const mematrix<double>& X,
 }
 
 
+/**
+ * \brief Calculate the loglikelihood of a linear regression contained
+ * in a linear_reg object.
+ *
+ * @param X The design matrix.
+ */
 void linear_reg::logLikelihood(const mematrix<double>& X) {
     /*
      loglik = 0.;
@@ -448,6 +454,16 @@ void linear_reg::logLikelihood(const mematrix<double>& X) {
 }
 
 
+/**
+ * \brief Calculate the robust standard errors and covariance.
+ *
+ * @param X The design matrix \f$X\f$.
+ * @param robust_sigma2 The variable in which to store the robust
+ * \f$\hat{\sigma}^2\f$.
+ * @param tXX_inv Matrix containing \f$(X^T X)^{-1}\f$.
+ * @param offset Offset indicating where the columns of the SNP
+ * parameters start in the linear_reg::beta vector.
+ */
 void linear_reg::RobustSEandCovariance(const mematrix<double> &X,
                                        mematrix<double> robust_sigma2,
                                        const MatrixXd tXX_inv,
@@ -464,6 +480,15 @@ void linear_reg::RobustSEandCovariance(const mematrix<double> &X,
 }
 
 
+/**
+ * Calculate the (plain) standard error and covariance of the betas
+ * of a linear_reg object.
+ *
+ * @param sigma2_internal The internal \f$\hat{\sigma}^2\f$.
+ * @param tXX_inv Matrix containing \f$(X^T X)^{-1}\f$.
+ * @param offset Offset indicating where the columns of the SNP
+ * parameters start in the linear_reg::beta vector.
+ */
 void linear_reg::PlainSEandCovariance(const double sigma2_internal,
                                       const MatrixXd &tXX_inv,
                                       const int offset) {
@@ -476,13 +501,17 @@ void linear_reg::PlainSEandCovariance(const double sigma2_internal,
 /**
  * \brief Estimate the parameters for linear regression.
  *
- * @param verbose
- * @param model
+ * @param verbose Turns verbose printing of various matrices on if
+ * non-zero.
+ * @param model The number of the genetic model (e.g. additive,
+ * recessive, ...) that is to be applied by the apply_model() function.
  * @param interaction
- * @param ngpreds
+ * @param ngpreds Number of genomic predictors (1 for dosages, 2 for
+ * probabilities).
  * @param invvarmatrixin
- * @param robust
- * @param nullmodel
+ * @param robust If non-zero calculate robust standard errors.
+ * @param nullmodel If non-zero calculate the null model (excluding
+ * SNP information).
  */
 void linear_reg::estimate(const int verbose,
                           const int model,
