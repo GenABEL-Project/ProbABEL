@@ -24,6 +24,7 @@
 \usepackage{verbatim}
 
 \usepackage{listings}
+\lstMakeShortInline{|}
 \lstloadlanguages{Bash}
 \definecolor{lstbgcolor}{rgb}{0.9,0.9,0.9}
 \lstset{
@@ -44,7 +45,7 @@
   keywordstyle=\color[rgb]{0,0,1},
   commentstyle=\color[rgb]{0,0.4,0},
   stringstyle=\color[rgb]{0.5,0,1},
-  basicstyle=\footnotesize\ttfamily,
+  basicstyle=\ttfamily,
   backgroundcolor=\color{lstbgcolor},
 }
 
@@ -160,7 +161,7 @@ Linux.
 \item If your computer runs Debian Linux\footnote{At the moment \PA{}
     is only available in Debian testing and unstable.} (and you have
   administrative rights on it), you can install ProbABEL like this:
-  \begin{lstlisting}
+  \begin{lstlisting}[basicstyle=\footnotesize\ttfamily,]
 user@server:~$ apt-get install probabel
   \end{lstlisting}
 \item Zip files with pre-compiled binaries (if available) can be found
@@ -223,18 +224,18 @@ EIGEN library\footnote{EIGEN is a library for fast matrix
 library, go to \url{http://eigen.tuxfamily.org} and download the
 \texttt{tar.gz} file of the latest version of EIGEN (3.2.1 at the time
 of writing). Extract the files:
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,]
 user@server:~$ tar -xzf 3.2.1.tar.gz
 \end{lstlisting}
 This will create a directory called \texttt{eigen-eigen} followed by a
 series of letters and digits. For simplicity we rename it to EIGEN
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,]
 user@server:~$ mv eigen-eigen-6b38706d90a9 EIGEN
 \end{lstlisting}
 
 Now it's time to extract the \PA{} source code and move into the
 directory that is created:
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,]
 user@server:~$ tar -xzf probabel-0.5.0.tar.gz
 user@server:~$ cd probabel-0.5.0
 \end{lstlisting}
@@ -242,7 +243,7 @@ With the following command we will indicate where the EIGEN files can
 be found and where we want to install \PA{}. Let's install in a
 subdirectory of your home directory,
 e.g.~\texttt{/home/yourusername/ProbABEL}:
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,]
 user@server:~$ ./configure \
    --prefix=/home/yourusername/ProbABEL/ \
    --with-eigen-include-path=/home/yourusername/EIGEN
@@ -259,9 +260,9 @@ command\footnote{If you work on a machine with multiple processors (or
   to the \texttt{-j} option. For example for four cores run
   \texttt{make -j4}.} The next step will check the compiled code,
 after wich you install the program, documentation and examples to the
-directory you specified previously with the \texttt{--prefix} argument
+directory you specified previously with the \lstinline{--prefix} argument
 to the \texttt{./configure} command.
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,]
 user@server:~$ make
 user@server:~$ make check
 user@server:~$ make install
@@ -353,7 +354,7 @@ The dose/probability file may be supplied in filevector format
 (\texttt{.fvi} and \texttt{.fvd} files) in which case
 \texttt{ProbABEL} will operate much faster, and in low-RAM mode
 (approx.~128 MB). On the command line simply specify the \texttt{.fvi}
-file as argument for the \texttt{--dose} option
+file as argument for the \lstinline{--dose} option
 (cf.~section~\ref{sec:runanalysis} for more information on the options
 accepted by \texttt{ProbABEL}). See the R libraries \GA{} and
 \DA{} on how to convert MaCH and IMPUTE files to
@@ -457,7 +458,7 @@ program).
 
 There are in total 11 command line options you can specify to the
 \PA{} analysis functions \texttt{palinear} or \texttt{palogist}. If
-you run either program with the \texttt{--help} option, you will get a
+you run either program with the \lstinline{--help} option, you will get a
 short explanation to the command line options:
 \begin{verbatim}
 user@server:~$ palogist --help
@@ -503,11 +504,11 @@ user@server$ man palinear
 However, for a simple run only three options are mandatory, which
 specify the necessary files needed to run the regression analysis.
 
-These options are \texttt{--dose} (or \texttt{-d}), specifying the
+These options are \lstinline{--dose} (or \lstinline{-d}), specifying the
 genomic predictor/MLDOSE file described in section \ref{ssec:dosein};
-\texttt{--pheno} (or \texttt{-p}), specifying the phenotypic data file
-described in section \ref{ssec:phenoin}; and \texttt{--info} (or
-\texttt{-i}), specifying the SNP information file described in section
+\lstinline{--pheno} (or \lstinline{-p}), specifying the phenotypic data file
+described in section \ref{ssec:phenoin}; and \lstinline{--info} (or
+\lstinline{-i}), specifying the SNP information file described in section
 \ref{ssec:infoin}.
 
 If you change to the \texttt{examples} directory you can run
@@ -533,7 +534,7 @@ Please have a look at the shell script files \texttt{example\_qt.sh},
 a better overview of the analysis options.
 
 To run an analysis with MLPROB files, you need specify the MLPROB file
-with the \texttt{-d} option and also specify that there are two
+with the \lstinline{-d} option and also specify that there are two
 genetic predictors per SNP, e.g.~you can run a linear model with
 \begin{verbatim}
 palinear -p height.txt -d gtdata/test.mlprob -i gtdata/test.mlinfo \
@@ -551,29 +552,29 @@ palinear -p height.txt -d gtdata/test.mlprob.fvi -i gtdata/test.mlinfo \
 \end{verbatim}
 
 \subsection{Advanced analysis options}
-The option \texttt{--interaction} allows you to include interaction
+The option \lstinline{--interaction} allows you to include interaction
 between SNPs and any covariate. If for example your model is
 \begin{equation*}
   \textrm{trait} \sim \textrm{sex} + \textrm{age} + \textrm{SNP},
 \end{equation*}
-running the program with the option \texttt{--interaction=2} will model
+running the program with the option \lstinline{--interaction=2} will model
 \begin{equation*}
   \textrm{trait} \sim \textrm{sex} + \textrm{age} + \textrm{SNP} +
   \textrm{age} \times \mathrm{SNP}.
 \end{equation*}
-The option \texttt{--robust} allows you to compute so-called
+The option \lstinline{--robust} allows you to compute so-called
 ``robust'' (a.k.a.~``sandwich'', a.k.a.~Hubert-White) standard errors
 (cf.~section \ref{sec:methodology} ``Methodology'' for details).
 
-With the option \texttt{--mmscore} a score test for association
+With the option \lstinline{--mmscore} a score test for association
 between a trait and genetic polymorphisms in samples of related
 individuals is performed. For quantitative traits (\texttt{palinear})
 a file with the inverse of the variance-covariance matrix goes as input
-parameter with that option, e.g.~\texttt{--mmscore <filename>}. The
+parameter with that option, e.g.~\lstinline{--mmscore <filename>}. The
 file has to contain the first column with id names exactly like in
 phenotype file, BUT OMITTING people with no measured phenotype. The
 rest is a matrix. The phenotype file in case of using the
-\texttt{--mmscore} argument may contain any amount of covariates (this
+\lstinline{--mmscore} argument may contain any amount of covariates (this
 is different from previous versions). The first column contains id
 names, the second the trait. The others are covariates.
 
@@ -591,17 +592,26 @@ procedure in more detail.
 An example of how a polygenic object estimated by \GA{} can be used
 with ProbABEL is provided in \texttt{examples/mmscore.R}
 
-Though technically \texttt{--mmscore} allows for inclusion of multiple
+Though technically \lstinline{--mmscore} allows for inclusion of multiple
 covariates, these should be kept to minimum as this is a score test. We
 suggest that any covariates explaining an essential proportion of
 variance should be fit as part of \GA{}'s
 \texttt{polygenic} procedure.
 
-%Option \texttt{--interaction\_only} is like \texttt{--interaction} but does not
-%include in the model the main effect of the covariate, which is acting in
-%interaction with SNP. This option is useful when running \texttt{--mmscore},
-%in which case the main effect should normally estimated in the polygenic
-%model and only the interaction term in the \PA{} analysis.
+The option \lstinline{--interaction_only} is like \lstinline{--interaction}
+but does not include the main effect of the covariate which is acting
+in interaction with SNP into the model. For example, if \texttt{age}
+is the second covariate in the phenotype file, using the option
+\lstinline{--interaction_only=2} leads to the following model:
+\begin{equation*}
+  \textrm{trait} \sim \textrm{sex} + \textrm{SNP} +
+  \textrm{age} \times \mathrm{SNP}.
+\end{equation*}
+
+This option is useful when
+running \lstinline{--mmscore}, in which case the main effect should
+normally estimated in the polygenic model and only the interaction
+term in the \PA{} analysis.
 
 \subsection{Running multiple analyses at once: \texttt{probabel}}
 The \texttt{bin/probabel} script is a handy wraper for the \PA{}
@@ -663,8 +673,8 @@ The next column, nine (``Mean\_predictor\_allele''), gives the estimated
 frequency of the predictor allele (\texttt{A1}) in subjects with complete
 phenotypic data.
 
-If the \texttt{--chrom} option was used, in the next column you will
-find the value specified by this option. If \texttt{--map} option was
+If the \lstinline{--chrom} option was used, in the next column you will
+find the value specified by this option. If \lstinline{--map} option was
 used, in the subsequent column you will find map location taken from
 the map-file. The subsequent columns provide coefficients of
 regression of the phenotype onto the genotype ($\beta$), corresponding
@@ -672,7 +682,7 @@ standard errors ($\text{SE}_\beta$), and the $\chi^2$ test value based
 on the likelihood ratio test. Note that for the additive, recessive,
 dominant and overdominant genetic models this is a $\chi^2$ of 1
 degree of freedom (df), whereas for the genotypic model this is a
-$\chi^2$ of 2df. If the \texttt{--mmscore} option is used, the
+$\chi^2$ of 2df. If the \lstinline{--mmscore} option is used, the
 $\chi^2$ values are calculated from the Wald statistic
 (1df)\footnote{For the genotypic (2df) model the $\chi^2$ values can't
   be simply calculated using the Wald statistic, consequently the
@@ -703,7 +713,7 @@ faster, and in low-RAM mode (approx.~128 MB). See the R libraries
 format (functions: \texttt{mach2databel()} and
 \texttt{impute2databel()}, respectively).
 
-When the \texttt{--mmscore} option is used, the analysis takes
+When the \lstinline{--mmscore} option is used, the analysis takes
 more time.
 
 \section{Methodology}
