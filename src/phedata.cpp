@@ -151,12 +151,6 @@ void phedata::setphedata(const char * fname, const int noutc,
         for (int i = (2 + noutcomes); i <= nphenocols; i++)
         {
             infile >> tmp;
-            std::cout << "nphenocols=" << nphenocols << "\n";
-            std::cout << "i=" << i
-                      << ", is_interaction_excluded="
-                      << is_interaction_excluded
-                      << ", interaction=" << interaction
-                      << ", n_model_terms=" << n_model_terms << "\n";
             if (n_model_terms == interaction && is_interaction_excluded)
                {
                    interaction_cov_name = tmp;
@@ -167,7 +161,6 @@ void phedata::setphedata(const char * fname, const int noutc,
             model = model + " + ";
             model = model + tmp;
             model_terms[n_model_terms++] = tmp;
-            std::cout << "model=" << model << "\n";
         }
     }
     model = model + " + SNP_A1";
