@@ -249,6 +249,28 @@ mematrix<double> apply_model(const mematrix<double>& X,
 }
 
 
+/**
+ * \brief Apply a genetic model to a transposed design matrix
+ * \f$X\f$. Similar to apply_model(), but used in case the design
+ * matrix is transposed.
+ *
+ * The function transposes a temporary copy of the input matrix,
+ * applies the model (using apply_model()), transposes it back again
+ * and returns that matrix.
+ *
+ * Used only when doing Cox PH regression.
+ * @param X The transposed design matrix, including SNP column(s).
+ * @param model Integer describing the genetic model to be
+ * applied. See apply_model() for details.
+ * @param interaction Column number of the covariate used in the
+ * interaction term.
+ * @param ngpreds Number of genetic predictors (1 for dosage data, 2
+ * for probability data).
+ * @param iscox Indicates whether a CoxPH regression is being done.
+ * @param nullmodel Indicates whether the null model is being analysed.
+ *
+ * @return (transposed) Matrix with the model applied to it.
+ */
 mematrix<double> t_apply_model(const mematrix<double>& X,
                                const int model,
                                const int interaction,
@@ -256,6 +278,10 @@ mematrix<double> t_apply_model(const mematrix<double>& X,
                                const bool iscox,
                                const int nullmodel)
 {
+    /* TODO: Why does this function not have a param called
+       is_interaction_excluded like t_apply_model has? Currently the
+       interaction parameter value is passed to apply_model() in that
+       slot. */
     mematrix<double> tmpX = transpose(X);
     mematrix<double> nX = apply_model(tmpX, model, interaction, ngpreds,
             interaction, iscox, nullmodel);

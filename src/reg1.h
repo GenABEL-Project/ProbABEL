@@ -53,7 +53,13 @@ mematrix<double> t_apply_model(const mematrix<double>& X,
                                const bool iscox,
                                const int nullmodel = 0);
 
-
+/**
+ * \brief The base_reg class defines a basic regression object.
+ *
+ * It contains all elements like a design matrix \f$X\f$, the vector
+ * of regression coefficients \f$\beta\f$, that are shared by more
+ * specialised classes like linear_reg and logistic_reg.
+ */
 class base_reg {
  public:
     /**
@@ -72,6 +78,7 @@ class base_reg {
      *
      */
     mematrix<double> sebeta;
+
     //Han Chen
     mematrix<double> covariance;
     //Oct 26, 2009
@@ -86,7 +93,12 @@ class base_reg {
      */
     double sigma2;
 
+    /**
+     * \brief The loglikelihood of the model
+     *
+     */
     double loglik;
+
     double chi2_score;
     regdata reg_data;
 
@@ -98,6 +110,13 @@ class base_reg {
 };
 
 
+/**
+ * \brief An extension of the  base_reg class specialised in linear
+ * regression.
+ *
+ * This class contains functions for estimation of the model
+ * parameters, loglikelihood, etc. using linear regression.
+ */
 class linear_reg: public base_reg {
  public:
     linear_reg(const regdata& rdatain);
@@ -129,6 +148,13 @@ class linear_reg: public base_reg {
 };
 
 
+/**
+ * \brief An extension of the  base_reg class specialised in logistic
+ * regression.
+ *
+ * This class contains functions for estimation of the model
+ * parameters, loglikelihood, etc. using logistic regression.
+ */
 class logistic_reg: public base_reg {
  public:
     int niter;
