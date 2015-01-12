@@ -27,7 +27,7 @@ The ProbABEL manual (in .tex or .pdf format) also contains detailed
    - fontenc
    - textcomp
    - xcolor
-   - verbating
+   - verbatim
    - listings
    - titleref
    - amsmath
