@@ -75,22 +75,27 @@ Rsq <- read.table(paste0(inputfiles.path, "test.mlinfo"),
 colsAdd <- c("Rsq",
              "beta_SNP_addA1",
              "sebeta_SNP_addA1",
-             "chi2_SNP_add")
+             "chi2_SNP_add",
+             "pval_SNP_add")
 colsDom <- c("Rsq",
              "beta_SNP_domA1",
              "sebeta_SNP_domA1",
-             "chi2_SNP_dom")
+             "chi2_SNP_dom",
+             "pval_SNP_dom")
 colsRec <- c("Rsq",
              "beta_SNP_recA1",
              "sebeta_SNP_recA1",
-             "chi2_SNP_rec")
+             "chi2_SNP_rec",
+             "pval_SNP_rec")
 colsOdom <-c("Rsq",
              "beta_SNP_odomA1",
              "sebeta_SNP_odomA1",
-             "chi2_SNP_odom")
+             "chi2_SNP_odom",
+             "pval_SNP_odom")
 cols2df <- c("Rsq",
              "beta_SNP_A1A2",
              "sebeta_SNP_A1A2",
              "beta_SNP_A1A1",
              "sebeta_SNP_A1A1",
-             "chi2_SNP_2df")
+             "chi2_SNP_2df",
+             "pval_SNP_2df")

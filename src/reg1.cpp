@@ -249,6 +249,28 @@ mematrix<double> apply_model(const mematrix<double>& X,
 }
 
 
+/**
+ * \brief Apply a genetic model to a transposed design matrix
+ * \f$X\f$. Similar to apply_model(), but used in case the design
+ * matrix is transposed.
+ *
+ * The function transposes a temporary copy of the input matrix,
+ * applies the model (using apply_model()), transposes it back again
+ * and returns that matrix.
+ *
+ * Used only when doing Cox PH regression.
+ * @param X The transposed design matrix, including SNP column(s).
+ * @param model Integer describing the genetic model to be
+ * applied. See apply_model() for details.
+ * @param interaction Column number of the covariate used in the
+ * interaction term.
+ * @param ngpreds Number of genetic predictors (1 for dosage data, 2
+ * for probability data).
+ * @param iscox Indicates whether a CoxPH regression is being done.
+ * @param nullmodel Indicates whether the null model is being analysed.
+ *
+ * @return (transposed) Matrix with the model applied to it.
+ */
 mematrix<double> t_apply_model(const mematrix<double>& X,
                                const int model,
                                const int interaction,
@@ -256,6 +278,10 @@ mematrix<double> t_apply_model(const mematrix<double>& X,
                                const bool iscox,
                                const int nullmodel)
 {
+    /* TODO: Why does this function not have a param called
+       is_interaction_excluded like t_apply_model has? Currently the
+       interaction parameter value is passed to apply_model() in that
+       slot. */
     mematrix<double> tmpX = transpose(X);
     mematrix<double> nX = apply_model(tmpX, model, interaction, ngpreds,
             interaction, iscox, nullmodel);
@@ -281,6 +307,7 @@ linear_reg::linear_reg(const regdata& rdatain) {
     sigma2 = -1.;
     loglik = -9.999e+32;
     chi2_score = -1.;
+    w2 = NAN;
 }
 
 
@@ -381,7 +408,7 @@ void linear_reg::mmscore_regression(const mematrix<double>& X,
                                     LDLT<MatrixXd>& Ch) {
     VectorXd Y = reg_data.Y.data.col(0);
     /*
-     in ProbABEL <0.50 this calculation was performed like t(X)*W
+     in ProbABEL < 0.5.0 this calculation was performed like t(X)*W
      This changed to W*X since this is better vectorized since the left hand
      side has more rows: this introduces an additional transpose, but can be
      neglected compared to the speedup this brings(about a factor 2 for the
@@ -413,6 +440,12 @@ void linear_reg::LeastSquaredRegression(const mematrix<double>& X,
 }
 
 
+/**
+ * \brief Calculate the loglikelihood of a linear regression contained
+ * in a linear_reg object.
+ *
+ * @param X The design matrix.
+ */
 void linear_reg::logLikelihood(const mematrix<double>& X) {
     /*
      loglik = 0.;
@@ -448,6 +481,16 @@ void linear_reg::logLikelihood(const mematrix<double>& X) {
 }
 
 
+/**
+ * \brief Calculate the robust standard errors and covariance.
+ *
+ * @param X The design matrix \f$X\f$.
+ * @param robust_sigma2 The variable in which to store the robust
+ * \f$\hat{\sigma}^2\f$.
+ * @param tXX_inv Matrix containing \f$(X^T X)^{-1}\f$.
+ * @param offset Offset indicating where the columns of the SNP
+ * parameters start in the linear_reg::beta vector.
+ */
 void linear_reg::RobustSEandCovariance(const mematrix<double> &X,
                                        mematrix<double> robust_sigma2,
                                        const MatrixXd tXX_inv,
@@ -464,6 +507,15 @@ void linear_reg::RobustSEandCovariance(const mematrix<double> &X,
 }
 
 
+/**
+ * Calculate the (plain) standard error and covariance of the betas
+ * of a linear_reg object.
+ *
+ * @param sigma2_internal The internal \f$\hat{\sigma}^2\f$.
+ * @param tXX_inv Matrix containing \f$(X^T X)^{-1}\f$.
+ * @param offset Offset indicating where the columns of the SNP
+ * parameters start in the linear_reg::beta vector.
+ */
 void linear_reg::PlainSEandCovariance(const double sigma2_internal,
                                       const MatrixXd &tXX_inv,
                                       const int offset) {
@@ -476,13 +528,17 @@ void linear_reg::PlainSEandCovariance(const double sigma2_internal,
 /**
  * \brief Estimate the parameters for linear regression.
  *
- * @param verbose
- * @param model
+ * @param verbose Turns verbose printing of various matrices on if
+ * non-zero.
+ * @param model The number of the genetic model (e.g. additive,
+ * recessive, ...) that is to be applied by the apply_model() function.
  * @param interaction
- * @param ngpreds
+ * @param ngpreds Number of genomic predictors (1 for dosages, 2 for
+ * probabilities).
  * @param invvarmatrixin
- * @param robust
- * @param nullmodel
+ * @param robust If non-zero calculate robust standard errors.
+ * @param nullmodel If non-zero calculate the null model (excluding
+ * SNP information).
  */
 void linear_reg::estimate(const int verbose,
                           const int model,
@@ -507,6 +563,7 @@ void linear_reg::estimate(const int verbose,
 
     mematrix<double> X = apply_model(reg_data.X, model, interaction, ngpreds,
             reg_data.is_interaction_excluded, false, nullmodel);
+
     if (verbose)
     {
         std::cout << "X:\n";
@@ -574,11 +631,12 @@ void linear_reg::estimate(const int verbose,
 
     MatrixXd tXX_inv = Ch.solve(MatrixXd(length_beta, length_beta).
                                 Identity(length_beta, length_beta));
+
     mematrix<double> robust_sigma2(X.ncol, X.ncol);
 
-    int offset = X.ncol- 1;
-    //if additive and interaction and 2 predictors and more then 2 betas
-    if (model == 0 && interaction != 0 && ngpreds == 2 && length_beta > 2)
+    int offset = X.ncol - 1;
+    // If 2 predictors and computing the 2df model and > 2 betas
+    if (ngpreds == 2 && model == 0 && length_beta > 2)
     {
         offset = X.ncol - 2;
     }
@@ -591,6 +649,8 @@ void linear_reg::estimate(const int verbose,
     {
         PlainSEandCovariance(sigma2_internal, tXX_inv, offset);
     }
+
+    w2 = calculateWaldStatistic(X, sigma2_internal, offset);
 }
 
 
@@ -605,6 +665,141 @@ void linear_reg::score(const mematrix<double>& resid,
                invvarmatrix, nullmodel = 0);
     // TODO: find out why nullmodel is assigned 0 in the call above.
 }
+
+
+/**
+ * \brief Calculate the Wald statistic \f$W^2\f$ using its quadratic
+ * form.
+ *
+ * When testing one parameter the Wald test is defined by
+ * \f[
+ * W^2 = \frac{(\hat\beta - \beta_0)^2}{\text{var}(\hat\beta)},
+ * \f]
+ * which is distribuqted as \f$\chi^2\f$ with one degree of freedom. When
+ * testing more than one parameter (say \f$k\f$), the Wald tests is
+ * written in its quadratic form:
+ * \f[
+ *   W^2 = \left( \hat{\bm{\beta}} - \bm{\beta}_0 \right)^\intercal
+ *   \bm{\text{var}}^{-1}(\hat{\bm{\beta}})
+ *   \left(\hat{\bm{\beta}} - \bm{\beta}_0 \right)
+ * \f]
+ * which is distributed as \f$\chi^2\f$ with \f$k\f$ degrees of
+ * freedom. In our case, most genetic models have 1 df. However since
+ * (obviously) the 2df model is different, the implementation below
+ * can be applied for every model.
+ *
+ * In our case the vector \f$\bm{\beta}\f$ can be partitioned into a
+ * vector \f$\bm{\beta} = [\bm{\beta}_x, \bm{\beta}_g]\f$, where
+ * \f$\bm{\beta}_g\f$ contains the coefficient(s) for the SNP data and
+ * \f$\bm{\beta}_x\f$ contains those of the other covariates. Moreover,
+ * we can set \f$\bm{\beta}_0 = \bm{0}\f$ (i.e. the null hypothesis is
+ * no effect). The Wald test for the second partition can be then
+ * calculated using
+ * \f[
+ * W^2_{\beta_g} = \hat{\bm{\beta}}_g^\intercal \,
+ *   \bm{\text{var}}^{-1}(\hat{\bm{\beta}_g}) \,
+ *   \hat{\bm{\beta}}_g.
+ * \f]
+ * In order to calculate \f$\text{var}^{-1}(\hat{\bm{\beta}_g})\f$,
+ * let's simplify notation: first, let's use the term Fisher's
+ * information matrix \f$\bm{I} = \bm{\text{var}}^{-1}\f$ for the inverse
+ * variance-covariance matrix, and partition it as follows:
+ * \f[
+ * \bm{I} = \left[ \begin{array}{cc}
+ * \bm{I}_{xx} & \bm{I}_{xg} \\
+ * \bm{I}_{gx} & \bm{I}_{gg}
+ * \end{array} \right],
+ * \f]
+ * where we have again used the subscripts \f$g\f$ and \f$x\f$ to
+ * indicate the partitions of the covariate and SNP parts. The wald
+ * statistic then becomes
+ * \f[
+ * W^2_{\beta_g} = \hat{\bm{\beta}}_g^\intercal \,
+ *   \bm{I}(\hat{\bm{\beta}_g}) \,
+ *   \hat{\bm{\beta}}_g,
+ * \f]
+ * and \f$\bm{I}(\hat{\bm{\beta}_g})\f$ can be defined as (see
+ * e.g. Wakefield in the references below):
+ * \f[
+ * \bm{I}(\hat{\bm{\beta}_g}) = \bm{I}_{gg} - \bm{I}_{gx}
+ * \bm{I}^{-1}_{xx} \bm{I}_{xg}.
+ * \f]
+ *
+ * From Eq (2) in the ProbABEL paper (see below for references), we
+ * know that
+ * \f[
+ * \bm{I} = \bm{\text{var}}^{-1} = \frac{1}{\hat{\sigma}^2} X^\intercal X,
+ * \f]
+ * which is used in the calculations.
+ *
+ * See also the last equation on page 4 of the ProbABEL paper
+ * (Aulchenko et al. 2010, BMC bioinformatics) and the discussion
+ * leading to that equation, or e.g. "Bayesian and Frequentist
+ * Regression Methods" by Jon Wakefield, ISBN 978-1-4419-0924-4,
+ * sections 2.92 and 2.9.4.
+ *
+ * @param X The design matrix.
+ * @param sigma2hat The MLE of the residual variance:
+ * \f$\hat{\sigma}^2\f$.
+ * @param offset Offset indicating where the columns of the SNP
+ * parameters start in the linear_reg::beta vector.
+ *
+ * @return The Wald statistic, which is distributed as \f$\chi^2\f$
+ * with 1 degree of freedom, except when running the 2df model (in
+ * which case it is distributed as \f$\chi^2\f$ with 2 degrees of
+ * freedom).
+ */
+double linear_reg::calculateWaldStatistic(const mematrix<double>& X,
+                                          const double sigma2hat,
+                                          const int offset)
+{
+    int l_beta = beta.nrow;
+    int l_betaG = l_beta - offset;
+    int l_betaX = l_beta - l_betaG;
+    cerr << "___________________ l_betaG:" << l_betaG << " __________ " << endl;
+    cerr << "___________________ l_betaX:" << l_betaX << " __________ " << endl;
+
+    /*
+     * The inverse variance-covariance matrix. Also known as Fisher's
+     * information matrix (commonly denoted by I).
+     */
+    MatrixXd invvarcovar = X.data.transpose() * X.data / sigma2hat;
+
+    /*
+     * Actually a vector, the bottom ngpreds entries from the beta
+     * vector (SNP coefficients are stored at the bottom of the beta
+     * vector).
+     */
+    MatrixXd betaG = beta.data.bottomLeftCorner(l_betaG, 1);
+
+    // Create submatrices if I
+    MatrixXd vc_beta_xx = invvarcovar.topLeftCorner(l_betaX, l_betaX);
+    MatrixXd vc_beta_xg = invvarcovar.topRightCorner(l_betaX, l_betaG);
+    MatrixXd vc_beta_gg = invvarcovar.bottomRightCorner(l_betaG, l_betaG);
+    MatrixXd vc_beta_gx = invvarcovar.bottomLeftCorner(l_betaG, l_betaX);
+    MatrixXd invvarcovar_betaG =
+        vc_beta_gg -
+        vc_beta_gx *
+        vc_beta_xx.inverse() *
+        vc_beta_xg;
+    // TODO: We take a very simple inverse() here. This should be done
+    // properly using one of EIGEN's decompositions.
+
+    // Calculate the W^2 as described above. Exit if for some reason we
+    // don't get a 1x1 matrix (a scalar).
+    MatrixXd w2_matrix = betaG.transpose() * invvarcovar_betaG * betaG;
+
+    if (w2_matrix.rows() != w2_matrix.cols() || w2_matrix.rows() != 1) {
+        cerr << "ERROR: The Wald statistic is not a scalar - ";
+        cerr << " w2.rows: " << w2_matrix.rows()
+             << " cols: " << w2_matrix.cols()
+             << endl;
+        exit(-1);
+    }
+
+    return w2_matrix(0, 0);
+}
+
 
 
 logistic_reg::logistic_reg(const regdata& rdatain)

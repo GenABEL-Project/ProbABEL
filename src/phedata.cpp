@@ -53,9 +53,9 @@ void phedata::set_is_interaction_excluded(const bool int_exl)
  * @param npeople Number of people to use in the analysis. If set to
  * 0, then all individuals in the phenotype file will be used. If > 0
  * (i.e. set using the --nids command line option, see
- * cmdvars::set_variables()) only the first npeople will be use.
- * @param interaction Column specifying which phenotype is selected to
- * interact with the SNP (default: 0, i.e. no interaction)
+ * cmdvars::set_variables()) only the first npeople will be used.
+ * @param interaction Column specifying which phenotype/covariate is
+ * selected to interact with the SNP (default: 0, i.e. no interaction).
  * @param iscox Are we running a Cox PH regression?
  */
 void phedata::setphedata(const char * fname, const int noutc,
@@ -68,7 +68,6 @@ void phedata::setphedata(const char * fname, const int noutc,
     char *tmp  = new char[BFS];
     std::string interaction_cov_name;
     noutcomes = noutc;
-    is_interaction_excluded = false;
 
     int nphenocols = 0;
     const int savenpeople = npeople;
@@ -143,34 +142,25 @@ void phedata::setphedata(const char * fname, const int noutc,
 #if COXPH
     model = model + " ) ~ ";
 #else
-    model = model + " ) ~ mu + ";
+    model = model + " ) ~ mu";
     model_terms[n_model_terms++] = "mu";
 #endif
 
     if (nphenocols > noutcomes + 1)
     {
-        infile >> tmp;
-        model = model + tmp;
-        model_terms[n_model_terms++] = tmp;
-        for (int i = (2 + noutcomes); i < nphenocols; i++)
+        for (int i = (2 + noutcomes); i <= nphenocols; i++)
         {
             infile >> tmp;
-            std::cout << "nphenocols=" << nphenocols << "\n";
-            std::cout << "i=" << i
-                      << ", is_interaction_excluded="
-                      << is_interaction_excluded
-                      << ", interaction=" << interaction
-                      << ", n_model_terms=" << n_model_terms << "\n";
             if (n_model_terms == interaction && is_interaction_excluded)
                {
                    interaction_cov_name = tmp;
+                   n_model_terms++;
                    continue;
                }
 
             model = model + " + ";
             model = model + tmp;
             model_terms[n_model_terms++] = tmp;
-            std::cout << "model=" << model << "\n";
         }
     }
     model = model + " + SNP_A1";

@@ -18,6 +18,6 @@ run_diff()
         echo -e "${name}${blanks:${#name}} OK"
     else
         echo -e "${name}${blanks:${#name}} FAILED"
-        exit 1
+#        exit 1
     fi
 }

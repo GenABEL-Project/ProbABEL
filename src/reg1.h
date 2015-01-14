@@ -1,29 +1,13 @@
-//==============================================================================
-//
-//           Filename:  src/reg1.h
-//
-//        Description:  ProbABEL
-//
-//            Version:  0.1-3
-//            Created:  ---
-//           Revision:  none
-//  last modification:  11-Jan-2009
-//
-//             Author:  Yurii S. Aulchenko
-//                        modified by:  Maksim V. Struchalin, 11-Jan-2009
-//
-// Modified by Han Chen (hanchen@bu.edu) on Nov 9, 2009
-// based on src/reg1.h version 0.2 as of Oct 19, 2009
-//
-//            Company:  ErasmusMC,
-//                      Epidemiology & Biostatistics Department,
-//                      Rotterdam,
-//                      The Netherlands.
-//              Email:  i.aoultchenko@erasmusmc.nl, m.struchalin@erasmusmc.nl
-//
-//==============================================================================
-
-/*
+/**
+ * \file reg1.h
+ * \author Yurii S. Aulchenko
+ * \author M. Kooyman
+ * \author L.C. Karssen
+ * \author Maksim V. Struchalin
+ * \author Han Chen (hanchen@bu.edu)
+ *
+ * \brief Describes various classes containing regression objects.
+ *
  *
  * Copyright (C) 2009--2014 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
@@ -69,17 +53,52 @@ mematrix<double> t_apply_model(const mematrix<double>& X,
                                const bool iscox,
                                const int nullmodel = 0);
 
-
+/**
+ * \brief The base_reg class defines a basic regression object.
+ *
+ * It contains all elements like a design matrix \f$X\f$, the vector
+ * of regression coefficients \f$\beta\f$, that are shared by more
+ * specialised classes like linear_reg and logistic_reg.
+ */
 class base_reg {
  public:
+    /**
+     * \brief The vector containing the regression coefficients.
+     *
+     * Note that the SNP coefficients are the last elements of the
+     * vector. The mean and coefficients for other covariates come
+     * first.
+     *
+     */
     mematrix<double> beta;
+
+    /**
+     * \brief The vector containing the standard errors of the
+     * regression coefficients.
+     *
+     */
     mematrix<double> sebeta;
+
     //Han Chen
     mematrix<double> covariance;
     //Oct 26, 2009
     mematrix<double> residuals;
+
+    /**
+     * \brief The MLE of the residual variance.
+     *
+     * See the equation following Eq.(1) in the ProbABEL paper
+     * (Aulchenko et al. 2010).
+     *
+     */
     double sigma2;
+
+    /**
+     * \brief The loglikelihood of the model
+     *
+     */
     double loglik;
+
     double chi2_score;
     regdata reg_data;
 
@@ -91,8 +110,21 @@ class base_reg {
 };
 
 
+/**
+ * \brief An extension of the base_reg class specialised in linear
+ * regression.
+ *
+ * This class contains functions for estimation of the model
+ * parameters, loglikelihood, etc. using linear regression.
+ */
 class linear_reg: public base_reg {
  public:
+    /**
+     * \brief The Wald statistic as calculated based on its quadratic
+     * form.
+     */
+    double w2;
+
     linear_reg(const regdata& rdatain);
 
     void estimate(const int verbose, const int model,
@@ -104,6 +136,10 @@ class linear_reg: public base_reg {
                const int model, const int interaction,
                const int ngpreds, const masked_matrix& invvarmatrix,
                int nullmodel = 0);
+
+    double calculateWaldStatistic(const mematrix<double>& X,
+                                  const double sigma2hat,
+                                  const int offset);
 
  private:
     void mmscore_regression(const mematrix<double>& X,
@@ -122,6 +158,13 @@ class linear_reg: public base_reg {
 };
 
 
+/**
+ * \brief An extension of the  base_reg class specialised in logistic
+ * regression.
+ *
+ * This class contains functions for estimation of the model
+ * parameters, loglikelihood, etc. using logistic regression.
+ */
 class logistic_reg: public base_reg {
  public:
     int niter;

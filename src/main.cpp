@@ -64,6 +64,8 @@
 #include <string>
 #include <iomanip>
 #include <vector>
+#include <limits> // Needed for the float epsilon value used in the
+                  // comparison before calculating the p-value.
 
 #include <ctime> //needed for timing loading non file vector format
 
@@ -378,7 +380,6 @@ int main(int argc, char * argv[])
 
                 // calculate chi^2
                 // ________________________________
-                // cout <<  rd.loglik<<" "<<input_var.getNgpreds() << "\n";
 
                 if (input_var.getInverseFilename() == NULL)
                 { // Only if we don't have an inv.sigma file can we use LRT
@@ -388,7 +389,7 @@ int main(int argc, char * argv[])
                         if (rgd.gcount != gtd.nids)
                         {
                             // If SNP data is missing we didn't
-                            // correctly compute the null likelihood
+                            // correctly compute the null likelihood.
 
                             // Recalculate null likelihood by
                             // stripping the SNP data column(s) from
@@ -425,15 +426,42 @@ int main(int argc, char * argv[])
 #endif
                             *chi2val[model] = 2. *
                                 (loglik - new_null_rd.loglik);
+#ifdef LINEAR
+                            cerr << mli.name[csnp]
+                                 << "   model: " << model
+                                 << "   SNP missing!" << endl;
+
+                            double Z = rd.beta[start_pos] / rd.sebeta[start_pos];
+                            cerr << "  w2     = " << rd.w2
+                                 << "    WALD:  " << Z*Z
+                                 << "    LRT:   " << *chi2val[model]
+                                 << endl;
+
+                            *chi2val[model] = rd.w2;
+#endif
                             *chi2[model] << *chi2val[model];
                         }
                         else
                         {
-                            // No missing SNP data, we can compute the LRT
+                            // No missing SNP data, we can compute the
+                            // LRT without recalculating the null
+                            // model likelihood.
                             *chi2val[model] = 2. * (loglik - null_loglik);
+#ifdef LINEAR
+                            cerr << mli.name[csnp]
+                                 << "   model: " << model
+                                 << "   No missing SNP" << endl;
+
+                            double Z = rd.beta[start_pos] / rd.sebeta[start_pos];
+                            cerr << "  w2     = " << rd.w2
+                                 << "    WALD:  " << Z*Z
+                                 << "    LRT:   " << *chi2val[model]
+                                 << endl;
+                            *chi2val[model] = rd.w2;
+#endif
                             *chi2[model] << *chi2val[model];
                         }
-                    } else{
+                    } else {
                         // We want score test output
                         *chi2val[model] = rd.chi2_score;
                         *chi2[model] << *chi2val[model];
@@ -443,22 +471,27 @@ int main(int argc, char * argv[])
                 {
                     // We can't use the LRT here, because mmscore is a
                     // REML method. Therefore go for the Wald test
-                    if (input_var.getNgpreds() == 2 && model == 0)
-                    {
-                        /* For the 2df model we can't simply use the
-                         * Wald statistic. This can be fixed using the
-                         * equation just below Eq.(4) in the ProbABEL
-                         * paper. TODO LCK
-                         */
-                        *chi2val[model] = NAN;
-                        *chi2[model] << *chi2val[model];
-                    }
-                    else
-                    {
-                        double Z = rd.beta[start_pos] / rd.sebeta[start_pos];
-                        *chi2val[model] = Z * Z;
-                        *chi2[model] << *chi2val[model];
-                    }
+#ifdef LINEAR
+                    *chi2val[model] = rd.w2;
+                    *chi2[model] << *chi2val[model];
+#else
+                    // if (input_var.getNgpreds() == 2 && model == 0)
+                    // {
+                    //     /* For the 2df model we can't simply use the
+                    //      * Wald statistic. This can be fixed using the
+                    //      * equation just below Eq.(4) in the ProbABEL
+                    //      * paper. TODO LCK
+                    //      */
+                    //     *chi2val[model] = NAN;
+                    //     *chi2[model] << *chi2val[model];
+                    // }
+                    // else
+                    // {
+                    double Z = rd.beta[start_pos] / rd.sebeta[start_pos];
+                    *chi2val[model] = Z * Z;
+                    *chi2[model] << *chi2val[model];
+#endif
+                    // }
                 }
             }  // END first part of if(poly); allele not too rare
             else
@@ -476,7 +509,7 @@ int main(int argc, char * argv[])
                 if (input_var.getNgpreds() == 0)
                 {
                     end_pos = rgd.X.ncol;
-                } else{
+                } else {
                     end_pos = rgd.X.ncol - 1;
                 }
 
@@ -533,11 +566,25 @@ int main(int argc, char * argv[])
             }  // END else: SNP is rare
 
 #if WITH_BOOST_MATH
-            // Calulate p-values based on the chi^2 values
-            int chi2df = 1;
+            // Calculate p-values based on the chi^2 values
+            int chi2_DoF = 1;
+            // if (ngpreds == 2 && model == 0)
+            // { // We are calculating the 2df genetic model
+            //     chi2_DoF = 2;
+            // }
+
+            // Protect against underflow (I've seen some very small,
+            // but negative numbers here). Use the float epsilon as
+            // precision limit.
+            if (*chi2val[model] < 0 &&
+                std::fabs(*chi2val[model]) < std::numeric_limits<float>::epsilon())
+            {
+                *chi2val[model] = 0;
+            }
+
             try
             {
-                *pval[model] << pchisq(*chi2val[model], chi2df);
+                *pval[model] << pchisq(*chi2val[model], chi2_DoF);
             }
             catch (std::exception &e)
             {
