@@ -8,6 +8,9 @@ echo "Checking palinear with dose data without '->'"
 # Exit with error when one of the steps in the script fails
 set -e
 
+if [ -z ${sed} ]; then
+    SED=sed
+fi
 if [ -z ${srcdir} ]; then
     srcdir="."
 fi
@@ -15,7 +18,7 @@ inputdir="${srcdir}/inputfiles/"
 results="${srcdir}/verified_results/"
 outfile="height_base_add.out.txt"
 
-sed 's/^[[:digit:]]*->//' $inputdir/test.mldose > test.mldose
+${SED} 's/^[[:digit:]]*->//' $inputdir/test.mldose > test.mldose
 
 
 ../src/palinear \

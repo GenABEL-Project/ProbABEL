@@ -6,6 +6,10 @@
 
 echo "Testing pacoxph without covariates..."
 
+if [ -z ${AWK} ]; then
+    AWK=awk
+fi
+
 # Exit with error when one of the steps in the script fails
 set -e
 
@@ -24,9 +28,9 @@ phenofile="coxph_data.txt"
 outfile="pacoxph_nocovar"
 pacoxph="${padir}/pacoxph"
 
-# ------ Prepare the phenotype file be removing the covariate column
+# ------ Prepare the phenotype file by removing the covariate column
 # from the existing phenotype file ------
-awk '{print $1, $2, $3}' $orig_phenofile > $phenofile
+${AWK} '{print $1, $2, $3}' $orig_phenofile > $phenofile
 
 
 # ---------- function definitions ----------

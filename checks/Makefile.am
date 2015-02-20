@@ -53,6 +53,8 @@ check_SCRIPTS +=  test_cox.sh check_pacoxph_nocovar.sh
 endif
 
 AM_TESTS_ENVIRONMENT= \
+	AWK=$(AWK) \
+	SED=$(SED) \
 	PA_BINDIR=$(top_builddir)/src
 TESTS = $(check_SCRIPTS)
 

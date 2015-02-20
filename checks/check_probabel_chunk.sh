@@ -5,6 +5,13 @@
 
 echo "Testing probabel..."
 
+if [ -z ${AWK} ]; then
+    AWK=awk
+fi
+if [ -z ${sed} ]; then
+    SED=sed
+fi
+
 # Exit with error when one of the steps in the script fails
 set -e
 
@@ -28,7 +35,7 @@ chunksep="_._chunk_._"
 chrsep="_._chr_._"
 
 # ------ Prepare probabel and the config file ------
-sed 's;"./";"../src/";g' $probabel > probabel
+${SED} 's;"./";"../src/";g' $probabel > probabel
 chmod a+x probabel
 cp $probabelcfg probabel_config.cfg
 chmod +w probabel_config.cfg # Need this for make distcheck to work
@@ -50,50 +57,50 @@ prepare_input ()
         # ------------------ No chunks test -------------------
         # Split the dose, prob and info files up into two chromosomes
         # with some  chunks
-        awk '{print $1,$2,$3,$4}'    $dosefile > chr1.dose
-        awk '{print $1,$2,$5,$6,$7}' $dosefile > chr2.dose
+        ${AWK} '{print $1,$2,$3,$4}'    $dosefile > chr1.dose
+        ${AWK} '{print $1,$2,$5,$6,$7}' $dosefile > chr2.dose
 
-        awk '{print $1,$2,$3,$4,$5,$6}'          $probfile > chr1.prob
-        awk '{print $1,$2,$7,$8,$9,$10,$11,$12}' $probfile > chr2.prob
+        ${AWK} '{print $1,$2,$3,$4,$5,$6}'          $probfile > chr1.prob
+        ${AWK} '{print $1,$2,$7,$8,$9,$10,$11,$12}' $probfile > chr2.prob
 
-        sed -n '1,3p' $infofile >  chr1.info
-        sed -n '1p'   $infofile >  chr2.info
-        sed -n '4,6p' $infofile >> chr2.info
+        ${SED} -n '1,3p' $infofile >  chr1.info
+        ${SED} -n '1p'   $infofile >  chr2.info
+        ${SED} -n '4,6p' $infofile >> chr2.info
 
-        sed -n '1,3p' $mapfile > chr1.map
-        sed -n '1p'   $mapfile >  chr2.map
-        sed -n '4,6p' $mapfile >> chr2.map
+        ${SED} -n '1,3p' $mapfile > chr1.map
+        ${SED} -n '1p'   $mapfile >  chr2.map
+        ${SED} -n '4,6p' $mapfile >> chr2.map
 
         WithOrWithout="without"
     elif [ "$1" = "chunk" ]; then
         # ------------------ Chunks test ----------------------
         # Split the dose and info files up into two chromosomes with
         # some chunks
-        awk '{print $1,$2,$3}'    $dosefile > chr1.chunk1.dose
-        awk '{print $1,$2,$4}'    $dosefile > chr1.chunk2.dose
-        awk '{print $1,$2,$5,$6}' $dosefile > chr2.chunk1.dose
-        awk '{print $1,$2,$7}'    $dosefile > chr2.chunk2.dose
+        ${AWK} '{print $1,$2,$3}'    $dosefile > chr1.chunk1.dose
+        ${AWK} '{print $1,$2,$4}'    $dosefile > chr1.chunk2.dose
+        ${AWK} '{print $1,$2,$5,$6}' $dosefile > chr2.chunk1.dose
+        ${AWK} '{print $1,$2,$7}'    $dosefile > chr2.chunk2.dose
 
-        awk '{print $1,$2,$3,$4}'        $probfile > chr1.chunk1.prob
-        awk '{print $1,$2,$5,$6}'        $probfile > chr1.chunk2.prob
-        awk '{print $1,$2,$7,$8,$9,$10}' $probfile > chr2.chunk1.prob
-        awk '{print $1,$2,$11,$12}'      $probfile > chr2.chunk2.prob
+        ${AWK} '{print $1,$2,$3,$4}'        $probfile > chr1.chunk1.prob
+        ${AWK} '{print $1,$2,$5,$6}'        $probfile > chr1.chunk2.prob
+        ${AWK} '{print $1,$2,$7,$8,$9,$10}' $probfile > chr2.chunk1.prob
+        ${AWK} '{print $1,$2,$11,$12}'      $probfile > chr2.chunk2.prob
 
-        sed -n '1,2p' $infofile >  chr1.chunk1.info
-        sed -n '1p'   $infofile >  chr1.chunk2.info
-        sed -n '3p'   $infofile >> chr1.chunk2.info
-        sed -n '1p'   $infofile >  chr2.chunk1.info
-        sed -n '4,5p' $infofile >> chr2.chunk1.info
-        sed -n '1p'   $infofile >  chr2.chunk2.info
-        sed -n '6p'   $infofile >> chr2.chunk2.info
+        ${SED} -n '1,2p' $infofile >  chr1.chunk1.info
+        ${SED} -n '1p'   $infofile >  chr1.chunk2.info
+        ${SED} -n '3p'   $infofile >> chr1.chunk2.info
+        ${SED} -n '1p'   $infofile >  chr2.chunk1.info
+        ${SED} -n '4,5p' $infofile >> chr2.chunk1.info
+        ${SED} -n '1p'   $infofile >  chr2.chunk2.info
+        ${SED} -n '6p'   $infofile >> chr2.chunk2.info
 
-        sed -n '1,2p' $mapfile >  chr1.chunk1.map
-        sed -n '1p'   $mapfile >  chr1.chunk2.map
-        sed -n '3p'   $mapfile >> chr1.chunk2.map
-        sed -n '1p'   $mapfile >  chr2.chunk1.map
-        sed -n '4,5p' $mapfile >> chr2.chunk1.map
-        sed -n '1p'   $mapfile >  chr2.chunk2.map
-        sed -n '6p'   $mapfile >> chr2.chunk2.map
+        ${SED} -n '1,2p' $mapfile >  chr1.chunk1.map
+        ${SED} -n '1p'   $mapfile >  chr1.chunk2.map
+        ${SED} -n '3p'   $mapfile >> chr1.chunk2.map
+        ${SED} -n '1p'   $mapfile >  chr2.chunk1.map
+        ${SED} -n '4,5p' $mapfile >> chr2.chunk1.map
+        ${SED} -n '1p'   $mapfile >  chr2.chunk2.map
+        ${SED} -n '6p'   $mapfile >> chr2.chunk2.map
 
         WithOrWithout="with"
     else
