@@ -1,3 +1,8 @@
+***** v.0.4.5 (2015)
+* Fixed bug #6054: "Not all ProbABEL's short command line options are
+  correctly parsed."
+
+
 ***** v.0.4.4 (2014.11.07)
 * Fixed bug #5729 in the Cox PH module. Some checks for problems with the
   regression were incorrectly implemented. Thanks to Matthias Wuttke from
