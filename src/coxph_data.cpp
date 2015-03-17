@@ -5,7 +5,7 @@
  *      Author: mkooyman
  *
  *
- * Copyright (C) 2009--2014 Various members of the GenABEL team. See
+ * Copyright (C) 2009--2015 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
  *
  * This program is free software; you can redistribute it and/or
@@ -116,16 +116,16 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
         exit(1);
     }
 
-    X.reinit(nids, ncov);
+    X.reinit(nids, (ncov + 1));
     stime.reinit(nids, 1);
     sstat.reinit(nids, 1);
     weights.reinit(nids, 1);
     offset.reinit(nids, 1);
     strata.reinit(nids, 1);
     order.reinit(nids, 1);
+
     for (int i = 0; i < nids; i++)
     {
-        //          X.put(1.,i,0);
         stime[i] = (phed.Y).get(i, 0);
         sstat[i] = static_cast<int>((phed.Y).get(i, 1));
         if (sstat[i] != 1 && sstat[i] != 0)
@@ -137,11 +137,20 @@ coxph_data::coxph_data(phedata &phed, gendata &gend, const int snpnum)
         }
     }
 
-    for (int j = 0; j < phed.ncov; j++)
+    // Add a column with a constant (=1) to the X matrix (the mean)
+    for (int i = 0; i < nids; i++)
+    {
+        X.put(1., i, 0);
+    }
+
+    for (int j = 1; j <= phed.ncov; j++)
     {
         for (int i = 0; i < nids; i++)
-            X.put((phed.X).get(i, j), i, j);
+        {
+            X.put((phed.X).get(i, j - 1), i, j);
+        }
     }
+
 
     if (snpnum > 0)
     {
@@ -246,7 +255,7 @@ void coxph_data::update_snp(gendata *gend, const int snpnum) {
         gend->get_var(snpnum * ngpreds + j, snpdata);
 
         for (int i = 0; i < nids; i++) {
-            X.put(snpdata[i], (ncov - j - 1), order[i]);
+            X.put(snpdata[i], (ncov - j), order[i]);
             if (std::isnan(snpdata[i])) {
                 masked_data[order[i]] = 1;
                 // snp not masked
@@ -398,8 +407,6 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
         (cdata.offset).column_mean(0);
     mematrix<double> means(X.nrow, 1);
 
-    int maxiterinput = maxiter;
-
     for (int i = 0; i < X.nrow; i++)
     {
         beta[i] = 0.;
@@ -417,6 +424,10 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
     // Use Efron method of handling ties (for Breslow: 0.0), like in
     // R's coxph()
     double sctest = 1.0;
+
+    // Set the maximum number of iterations that coxfit2() will run to
+    // the default value from the class definition.
+    int maxiterinput = maxiter;
 
     // When using Eigen coxfit2 needs to be called in a slightly
     // different way (i.e. the .data()-part needs to be added).
@@ -449,18 +460,39 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
     // to NA if flag < nvar (with nvar = ncol(x)) and maxiter >
     // 0. coxph.R then checks for any NAs in the coefficients and
     // outputs the warning message if NAs were found.
-    if (flag < X.nrow && maxiter > 0) {
-        cerr << "Warning for " << snpinfo.name[cursnp]
-             << ": X matrix deemed to be singular,"
-             << " setting beta and se to 'NaN'\n";
 
-        setToNAN = true;
+    if (flag < X.nrow)
+    {
+#if EIGEN
+        int which_sing = NAN;
+        MatrixXd imateigen = imat.data;
+        VectorXd imatdiag = imateigen.diagonal();
+
+        // Start at i=1 to exclude the beta coefficient for the
+        // (constant) mean from the check.
+        for (int i=1; i < imatdiag.size(); i++)
+        {
+            if (imatdiag[i] == 0)
+                {
+                    which_sing = i;
+                    setToNAN = true;
+                    std::cerr << "Warning for " << snpinfo.name[cursnp]
+                              << ": X matrix deemed to be singular (variable "
+                              << which_sing + 1 << ")" << std::endl;
+                }
+        }
+#else
+        std::cerr << "Warning for " << snpinfo.name[cursnp]
+                  << ": can't check for singular X matrix."
+                  << " Please compile ProbABEL with Eigen support to fix this."
+                  << std::endl;
+#endif
     }
 
     if (niter >= maxiterinput)
     {
         cerr << "Warning for " << snpinfo.name[cursnp]
-             << ": nr of iterations > MAXITER (" << maxiterinput << "): "
+             << ": nr of iterations >= MAXITER (" << maxiterinput << "): "
              << niter << endl;
     }
 
@@ -485,7 +517,8 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
         // (incl. covariates), maybe stick to only checking the SNP
         // coefficient?
         for (int i = 0; i < infs.size(); i++) {
-            if (infs[i] > eps && infs[i] > sqrt(eps) * abs(betaeigen[i])) {
+            if (infs[i] > eps &&
+                infs[i] > sqrt(eps) * abs(betaeigen[i])) {
                 problems = true;
             }
         }
@@ -497,9 +530,6 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
 
             setToNAN = true;
         }
-
-        // cout << "beta values for SNP: " << snpinfo.name[cursnp]
-        //      << " are: " << betaeigen << std::endl;
 #else
         cerr << "Warning for " << snpinfo.name[cursnp]
              << ": can't check for infinite betas."

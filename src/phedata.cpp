@@ -135,17 +135,14 @@ void phedata::setphedata(char * fname, int noutc, int npeople, int interaction,
         model = model + tmp;
     }
     n_model_terms = 0;
-#if COXPH
-    model = model + " ) ~ ";
-#else
-    model = model + " ) ~ mu + ";
+
+    model = model + " ) ~ mu";
     model_terms[n_model_terms++] = "mu";
-#endif
 
     if (nphenocols > noutcomes + 1)
     {
         infile >> tmp;
-        model = model + tmp;
+        model = model + " + " + tmp;
         model_terms[n_model_terms++] = tmp;
         for (int i = (2 + noutcomes); i < nphenocols; i++)
         {

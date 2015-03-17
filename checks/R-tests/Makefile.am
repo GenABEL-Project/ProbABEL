@@ -104,5 +104,18 @@ coxph_prob_fv_recess.out.txt coxph_prob_domin.out.txt			\
 coxph_prob_recess.out.txt coxph_prob_add.out.txt			\
 coxph_prob_2df.out.txt coxph_prob_fv_2df.out.txt
 
+cleanfiles_cox_nocovar = coxph_dose_nocovar_add.out.txt	\
+coxph_dose_nocovar_fv_add.out.txt			\
+coxph_prob_nocovar_fv_over_domin.out.txt		\
+coxph_prob_nocovar_fv_domin.out.txt			\
+coxph_prob_nocovar_over_domin.out.txt			\
+coxph_prob_nocovar_fv_add.out.txt			\
+coxph_prob_nocovar_fv_recess.out.txt			\
+coxph_prob_nocovar_domin.out.txt			\
+coxph_prob_nocovar_recess.out.txt			\
+coxph_prob_nocovar_add.out.txt				\
+coxph_prob_nocovar_2df.out.txt				\
+coxph_prob_nocovar_fv_2df.out.txt
+
 CLEANFILES = $(cleanfiles_bt) $(cleanfiles_qt) $(cleanfiles_mms)	\
- $(cleanfiles_cox)
+ $(cleanfiles_cox) $(cleanfiles_cox_nocovar)
