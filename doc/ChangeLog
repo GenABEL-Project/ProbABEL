@@ -1,6 +1,7 @@
 ***** v.0.4.5 (2015)
 * Fixed bug #6054: "Not all ProbABEL's short command line options are
   correctly parsed."
+* Minor fix to the manual: the Rsq values in the info file should be > 1e-16 otherwise the output will be set to 'nan'.
 
 
 ***** v.0.4.4 (2014.11.07)
