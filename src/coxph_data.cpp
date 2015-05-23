@@ -464,7 +464,7 @@ void coxph_reg::estimate(coxph_data &cdatain, const int verbose,
     if (flag < X.nrow)
     {
 #if EIGEN
-        int which_sing = NAN;
+        int which_sing = 0;
         MatrixXd imateigen = imat.data;
         VectorXd imatdiag = imateigen.diagonal();
 
