@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT(ProbABEL, 0.4.4, genabel-devel@r-forge.wu-wien.ac.at)
+AC_INIT(ProbABEL, 0.4.5, genabel-devel@r-forge.wu-wien.ac.at)
 AM_INIT_AUTOMAKE([silent-rules subdir-objects])
 AM_SILENT_RULES([yes])
 AC_CONFIG_SRCDIR([src/data.h])
