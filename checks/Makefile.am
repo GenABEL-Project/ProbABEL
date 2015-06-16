@@ -17,6 +17,7 @@ input_files_dir = inputfiles
 phenofiles = $(input_files_dir)/height.txt	\
  $(input_files_dir)/logist_data.txt		\
  $(input_files_dir)/coxph_data.txt		\
+ $(input_files_dir)/coxph_data_nocovar.txt	\
  $(input_files_dir)/mmscore_pheno.PHE
 
 genofiles = $(input_files_dir)/test.mldose		\
@@ -49,7 +50,7 @@ if BUILD_palogist
 check_SCRIPTS += test_bt.sh
 endif
 if BUILD_pacoxph
-check_SCRIPTS +=  test_cox.sh check_pacoxph_nocovar.sh
+check_SCRIPTS += test_cox.sh test_cox_nocovar.sh
 endif
 
 AM_TESTS_ENVIRONMENT= \
@@ -133,6 +134,18 @@ coxph_prob_fv_recess.out.txt coxph_prob_domin.out.txt		\
 coxph_prob_recess.out.txt coxph_prob_add.out.txt		\
 coxph_prob_2df.out.txt coxph_prob_fv_2df.out.txt
 
+cleanfiles_cox_nocovar = coxph_dose_nocovar_add.out.txt	\
+coxph_dose_nocovar_fv_add.out.txt			\
+coxph_prob_nocovar_fv_over_domin.out.txt		\
+coxph_prob_nocovar_fv_domin.out.txt			\
+coxph_prob_nocovar_over_domin.out.txt			\
+coxph_prob_nocovar_fv_add.out.txt			\
+coxph_prob_nocovar_fv_recess.out.txt			\
+coxph_prob_nocovar_domin.out.txt			\
+coxph_prob_nocovar_recess.out.txt			\
+coxph_prob_nocovar_add.out.txt				\
+coxph_prob_nocovar_2df.out.txt				\
+coxph_prob_nocovar_fv_2df.out.txt
 
 dose_files = chr1.chunk1.dose chr1.chunk2.dose chr2.chunk1.dose	\
  chr2.chunk2.dose chr1.dose chr2.dose
@@ -155,4 +168,5 @@ cleanfiles_probabel_check = height.PHE $(dose_files) $(prob_files)	\
 cleanfiles_dose_check = test.mldose
 
 CLEANFILES =  $(cleanfiles_probabel_check) $(cleanfiles_dose_check)	\
- $(cleanfiles_bt) $(cleanfiles_qt) $(cleanfiles_mms) $(cleanfiles_cox)
+ $(cleanfiles_bt) $(cleanfiles_qt) $(cleanfiles_mms) $(cleanfiles_cox)  \
+ $(cleanfiles_cox_nocovar)

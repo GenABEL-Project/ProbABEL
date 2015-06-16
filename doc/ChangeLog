@@ -1,4 +1,4 @@
-***** v.0.5.0 (2014.)
+***** v.0.5.0 (2015.)
 * ProbABEL now depends on the Eigen library. The option to compile without
   Eigen has been removed.
 * Not-a-number values in the output are now printed as "NaN" instead of
@@ -17,6 +17,26 @@
   error, computations were not affected.
 * Fixed bug #5982: ProbABEL's make install fails on MacOS X and FreeBSD
   with sed error. Thanks to forum user mmold for reporting the bug.
+
+
+***** v.0.4.5 (2015.05.26)
+* Fixed bug #6054: "Not all ProbABEL's short command line options are
+  correctly parsed."
+* Fixed bug #6041: "ProbABEL's Cox module reports too many errors (beta
+  may be infinite, setting beta and se to 'NaN')". Thanks to Anne
+  Grotenhuis from the Radboud Medical Centre Nijmegen and forum user
+  quentin300 for their extensive bug reports and help in testing the fix.
+* Fixed bug #1266: "pacoxph with no covariates"; ProbABEL now also works
+  when no covariates have been provided. Thanks to Aaron Joon for
+  reporting this bug back in 2011 and to Anne Grotenhuis and to forum user
+  quentin300 for pushing this bug to my attention and their help in beta
+  testing.
+* pacoxph now displays the regression equation correctly.
+* Minor fix to the manual: the Rsq values in the info file should be >
+  1e-16 (and not > 0 as mentioned before) otherwise the output will be set
+  to 'nan'.
+* Minor fix to the man-pages: according to the man-pages palogist,
+  palinear and pacoxph all did regression using a linear model.
 
 
 ***** v.0.4.4 (2014.11.07)
