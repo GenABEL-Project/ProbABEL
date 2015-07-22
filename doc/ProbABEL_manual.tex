@@ -1,4 +1,4 @@
-\documentclass[12pt,a4paper]{article}
+\documentclass[12pt,a4paper]{scrartcl}
 
 \title{Manual for ProbABEL v0.4.5}
 \author{\emph{Current Programmers:} Lennart Karssen$^{1,2}$, Maarten
@@ -17,6 +17,14 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{textcomp}
+
+% Use the Palatino font. The KOMA scrartcl document class uses a
+% sans-serif font for several labels/headinges. So we set those to
+% Palatino as well.
+\usepackage[osf,sc]{mathpazo}
+\linespread{1.05} % Palatino needs more leading (space between lines)
+\addtokomafont{descriptionlabel}{\normalfont\bfseries}
+\addtokomafont{sectioning}{\normalfont\bfseries}
 
 \usepackage[svgnames]{xcolor}
 \definecolor{webgreen}{rgb}{0,.5,0}
@@ -562,6 +570,12 @@ running the program with the option \lstinline{--interaction=2} will model
   \textrm{trait} \sim \textrm{sex} + \textrm{age} + \textrm{SNP} +
   \textrm{age} \times \mathrm{SNP}.
 \end{equation*}
+In this case, the \texttt{chi2_SNP} column in the output file contains
+the $\chi_2^2$ statistic taken from the Likelihood ratio test. This
+LRT statistic is calculated based on a full model that contains all
+terms (sex, age, SNP and age$\times$SNP). The null model does not
+contain the terms that include the SNP.
+
 The option \lstinline{--robust} allows you to compute so-called
 ``robust'' (a.k.a.~``sandwich'', a.k.a.~Hubert-White) standard errors
 (cf.~section \ref{sec:methodology} ``Methodology'' for details).
