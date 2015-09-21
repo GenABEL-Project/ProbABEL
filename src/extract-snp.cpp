@@ -27,6 +27,10 @@
 #include <fstream>
 #include <map>
 
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -57,6 +61,10 @@ void info(char *program_name)
          << "only print the dosage for the given SNP and ID" << endl;
     cout << "\t--debug (-d): show debugging output" << endl;
     cout << "\t--help (-h): show this information" << endl;
+    cout << endl;
+    cout << program_name << " is part of " << PACKAGE
+         << " v" << PACKAGE_VERSION << endl;
+    cout << "(C) 2015 Lennart C. Karssen, PolyΩmica, NL" << endl;
 }
 
 
