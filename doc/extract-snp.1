@@ -28,6 +28,16 @@ Extract the dosage for only one individual (with ID
 \fIindividualID\fR) for the SNP listed with the \-\-snp option.
 .RE
 .TP
+.BI "-I, \-\^\-listids"
+List all ID names in the fv file. If this option is used, any other
+options are ignored.
+.RE
+.TP
+.BI "-L, \-\^\-listsnps"
+List all SNP names in the fv file. If this option is used, any other
+options are ignored.
+.RE
+.TP
 .BI "-h, \-\^\-help"
 Print usage information to the screen and exit.
 .RE
@@ -38,10 +48,11 @@ screen, for example it lists the names of all individuals and SNPs
 found in the file.
 .RE
 .SH EXAMPLES
-This extracts the dosages for all individuals:
+This extracts the dosages for all individuals and saves them in the
+file dosages.txt:
 .nf
 .RS
-extract-snp \-f ../checks/inputfiles/mmscore_gen.dose.fvi \-s  rs70099 > dosage.txt
+extract-snp \-f ../checks/inputfiles/mmscore_gen.dose.fvi \-s rs70099 > dosages.txt
 .RE
 .fi
 .SH "SEE ALSO"
