@@ -16,6 +16,9 @@ endif
 if BUILD_pacoxph
 man_MANS += pacoxph.1
 endif
+if BUILD_extractsnp
+man_MANS += extract-snp.1
+endif
 
 EXTRA_DIST = $(man_MANS)
 

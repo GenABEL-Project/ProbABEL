@@ -40,7 +40,7 @@ void info(char *program_name)
 {
     cout << program_name
          << " extracts the dosage for a SNP for one or more individuals from a"
-         << "file in filevector format (.fvi/.fvd)." << endl;
+         << " file in filevector format (.fvi/.fvd)." << endl;
     cout << endl;
     cout << "Usage: " << program_name << " --file <fv file> --snp <snpname>"
          << endl;
@@ -121,6 +121,7 @@ int main(int argc, char* argv[])
 
     if (debug)
     {
+        // Print all individual names
         for (unsigned long int col = 0; col < fv.getNumObservations(); col++)
         {
             cout << fv.readObservationName(col).name << " ";
