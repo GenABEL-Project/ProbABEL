@@ -1,0 +1,25 @@
+
+# /
+/.project
+/autom4te.cache
+/aclocal.m4
+/Makefile.in
+/configure
+
+# /checks/
+/checks/Makefile
+/checks/Makefile.in
+
+# /checks/R-tests/
+/checks/R-tests/Makefile.in
+
+# /doc/
+/doc/Makefile.in
+/doc/doxygen-docs
+
+# /examples/
+/examples/Makefile.in
+
+# /src/
+/src/Makefile.in
+/src/config.h.in
