@@ -1,5 +1,6 @@
 language: cpp
 script:
+  - autoreconf -i
   - ./configure --enable-dev-options --disable-silent-rules
   - make
   - make check
