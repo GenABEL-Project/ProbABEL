@@ -10,4 +10,4 @@ compiler:
   - gcc
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq libeigen3-dev gcc-5
+  - sudo apt-get install -qq libeigen3-dev
