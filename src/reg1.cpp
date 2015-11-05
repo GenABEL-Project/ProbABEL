@@ -632,7 +632,7 @@ void linear_reg::estimate(const int verbose,
     mematrix<double> robust_sigma2(X.ncol, X.ncol);
 
     int offset = X.ncol- 1;
-     //if additive and interaction and 2 predictors and more then 2 betas
+     //if additive and interaction and 2 predictors and more than 2 betas
      if (model == 0 && interaction != 0 && ngpreds == 2 && length_beta > 2){
          offset = X.ncol - 2;
      }
