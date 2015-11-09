@@ -1,0 +1,13 @@
+dist: trusty
+language: cpp
+script:
+  - autoreconf -i
+  - ./configure --enable-dev-options --disable-silent-rules
+  - make
+  - make check
+compiler:
+  - clang
+  - gcc
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq libeigen3-dev

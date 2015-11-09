@@ -1,0 +1,65 @@
+.TH extract-snp 1 "21 September 2015" "ProbABEL 0.4.5"
+.SH NAME
+extract-snp \- tool to extract dosage values for a given SNP for all or some individuals.
+.SH SYNOPSIS
+.B extract-snp
+.B "-f\ \fIFILE\fR"
+.B "-s\ \fISNPNAME\fR"
+.RI "[" "OPTIONS" "]"
+.SH DESCRIPTION
+.B extract-snp
+extracts the dosage for a SNP for one or more individuals from a file in filevector
+format (.fvi/.fvd).
+.PP
+.SH OPTIONS
+.SS Required command line options
+.TP
+.BI "-f, \-\^\-file" " FILE"
+Name of the filevector file from which to extract the dosages. This
+can be either the file with the .fvi or the .fvd extension.
+.TP
+.BI "-s, \-\^\-snp" " snpname"
+Name of the SNP or variant for which to extract the dosages
+.RE
+.SS Other, non-mandatory options
+.TP
+.BI "-i, \-\^\-id" " individualID"
+Extract the dosage for only one individual (with ID
+\fIindividualID\fR) for the SNP listed with the \-\-snp option.
+.RE
+.TP
+.BI "-I, \-\^\-listids"
+List all ID names in the fv file. If this option is used, any other
+options are ignored.
+.RE
+.TP
+.BI "-L, \-\^\-listsnps"
+List all SNP names in the fv file. If this option is used, any other
+options are ignored.
+.RE
+.TP
+.BI "-h, \-\^\-help"
+Print usage information to the screen and exit.
+.RE
+.TP
+.BI "-d, \-\^\-debug"
+Turn on debug mode. This will print a lot of extra output to the
+screen, for example it lists the names of all individuals and SNPs
+found in the file.
+.RE
+.SH EXAMPLES
+This extracts the dosages for all individuals and saves them in the
+file dosages.txt:
+.nf
+.RS
+extract-snp \-f ../checks/inputfiles/mmscore_gen.dose.fvi \-s rs70099 > dosages.txt
+.RE
+.fi
+.SH "SEE ALSO"
+palinear(1), palogist(1), pacoxph(1), probabel(1), and the R package DatABEL.
+.SH BUGS
+The bugtracker is located at
+.br
+https://r-forge.r-project.org/tracker/?group_id=505
+.SH AUTHORS
+Lennart C. Karssen

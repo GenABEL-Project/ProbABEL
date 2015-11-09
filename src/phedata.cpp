@@ -139,16 +139,16 @@ void phedata::setphedata(const char * fname, const int noutc,
         model = model + tmp;
     }
     n_model_terms = 0;
-#if COXPH
-    model = model + " ) ~ ";
-#else
+
     model = model + " ) ~ mu";
     model_terms[n_model_terms++] = "mu";
-#endif
 
     if (nphenocols > noutcomes + 1)
     {
-        for (int i = (2 + noutcomes); i <= nphenocols; i++)
+        infile >> tmp;
+        model = model + " + " + tmp;
+        model_terms[n_model_terms++] = tmp;
+        for (int i = (2 + noutcomes); i < nphenocols; i++)
         {
             infile >> tmp;
             if (n_model_terms == interaction && is_interaction_excluded)

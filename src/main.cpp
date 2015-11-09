@@ -220,9 +220,9 @@ int main(int argc, char * argv[])
     int maxmod = 5;             // Total number of models (in random
                                 // order: additive, recessive,
                                 // dominant, over_dominant, 2df). Only
-                                // with dosage data can we run all of
-                                // them. For dosage data we can only
-                                // run the additive model.
+                                // with probability data can we run
+                                // all of them. For dosage data we can
+                                // only run the additive model.
 
     int start_pos, end_pos;
 

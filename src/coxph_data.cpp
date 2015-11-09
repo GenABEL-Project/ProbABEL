@@ -143,13 +143,14 @@ coxph_data::coxph_data(const phedata &phed, const gendata &gend,
         exit(1);
     }
 
-    X.reinit(nids, ncov);
+    X.reinit(nids, (ncov + 1));
     stime.reinit(nids, 1);
     sstat.reinit(nids, 1);
     weights.reinit(nids, 1);
     offset.reinit(nids, 1);
     strata.reinit(nids, 1);
     order.reinit(nids, 1);
+
     for (int i = 0; i < nids; i++)
     {
         stime[i] = (phed.Y).get(i, 0);
@@ -163,11 +164,20 @@ coxph_data::coxph_data(const phedata &phed, const gendata &gend,
         }
     }
 
-    for (int j = 0; j < phed.ncov; j++)
+    // Add a column with a constant (=1) to the X matrix (the mean)
+    for (int i = 0; i < nids; i++)
+    {
+        X.put(1., i, 0);
+    }
+
+    for (int j = 1; j <= phed.ncov; j++)
     {
         for (int i = 0; i < nids; i++)
-            X.put((phed.X).get(i, j), i, j);
+        {
+            X.put((phed.X).get(i, j - 1), i, j);
+        }
     }
+
 
     if (snpnum > 0)
     {
@@ -285,7 +295,7 @@ void coxph_data::update_snp(const gendata *gend, const int snpnum) {
         gend->get_var(snpnum * ngpreds + j, snpdata);
 
         for (int i = 0; i < nids; i++) {
-            X.put(snpdata[i], (ncov - j - 1), order[i]);
+            X.put(snpdata[i], (ncov - j), order[i]);
             if (std::isnan(snpdata[i])) {
                 masked_data[order[i]] = true;
                 // snp not masked
@@ -475,13 +485,25 @@ void coxph_reg::estimate(const coxph_data &cdatain,
     // to NA if flag < nvar (with nvar = ncol(x)) and MAXITER >
     // 0. coxph.R then checks for any NAs in the coefficients and
     // outputs the warning message if NAs were found.
-    if (flag < X.nrow && MAXITER > 0) {
-        std::cerr << "Warning for " << snpinfo.name[cursnp]
-                  << ": X matrix deemed to be singular,"
-                  << " setting beta and se to 'NaN'"
-                  << std::endl;
+    if (flag < X.nrow)
+    {
+        int which_sing = 0;
+        MatrixXd imateigen = imat.data;
+        VectorXd imatdiag = imateigen.diagonal();
 
-        setToNAN = true;
+        // Start at i=1 to exclude the beta coefficient for the
+        // (constant) mean from the check.
+        for (int i=1; i < imatdiag.size(); i++)
+        {
+            if (imatdiag[i] == 0)
+                {
+                    which_sing = i;
+                    setToNAN = true;
+                    std::cerr << "Warning for " << snpinfo.name[cursnp]
+                              << ": X matrix deemed to be singular (variable "
+                              << which_sing + 1 << ")" << std::endl;
+                }
+        }
     }
 
     if (niter >= MAXITER)
@@ -526,13 +548,6 @@ void coxph_reg::estimate(const coxph_data &cdatain,
 
             setToNAN = true;
         }
-
-        // cout << "beta values for SNP: " << snpinfo.name[cursnp]
-        //      << " are: " << betaeigen << std::endl;
-        std::cerr << "Warning for " << snpinfo.name[cursnp]
-             << ": can't check for infinite betas."
-             << " Please compile ProbABEL with Eigen support to fix this."
-             << std::endl;
     }
 
     for (int i = 0; i < X.nrow; i++)

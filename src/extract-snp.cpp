@@ -27,6 +27,10 @@
 #include <fstream>
 #include <map>
 
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -40,17 +44,27 @@ void info(char *program_name)
 {
     cout << program_name
          << " extracts the dosage for a SNP for one or more individuals from a"
-         << "file in filevector format (.fvi/.fvd)." << endl;
+         << " file in filevector format (.fvi/.fvd)." << endl;
     cout << endl;
     cout << "Usage: " << program_name << " --file <fv file> --snp <snpname>"
          << endl;
     cout << "   or: " << program_name << " -f <fv file> -s <snpname>" << endl;
     cout << endl;
     cout << "Additional options:" << endl;
+    cout << "\t--listsnps (-L); list all SNP names from the fv file"
+         << " (the program exist after this)"
+         << endl;
+    cout << "\t--listids (-I); list all ID names from the fv file"
+         << " (the program exist after this)"
+         << endl;
     cout << "\t--id (-i) <idname>: "
          << "only print the dosage for the given SNP and ID" << endl;
     cout << "\t--debug (-d): show debugging output" << endl;
     cout << "\t--help (-h): show this information" << endl;
+    cout << endl;
+    cout << program_name << " is part of " << PACKAGE
+         << " v" << PACKAGE_VERSION << endl;
+    cout << "(C) 2015 Lennart C. Karssen, PolyΩmica, NL" << endl;
 }
 
 
@@ -63,21 +77,26 @@ int main(int argc, char* argv[])
     }
 
     int next_option;
-    const char * const short_options = "df:hi:s:";
+    const char * const short_options = "df:hi:ILs:";
     const struct option long_options [] =
         {
-            {"debug",  0, NULL, 'd'},
-            {"file",  1, NULL, 'f'},
-            {"help",  0, NULL, 'h'},
-            {"id",   1, NULL, 'i'},
-            {"snp",  1, NULL, 's'},
-            {NULL  ,   0, NULL, 0  }
+            {"debug",    0, NULL, 'd'},
+            {"file",     1, NULL, 'f'},
+            {"help",     0, NULL, 'h'},
+            {"id",       1, NULL, 'i'},
+            {"listids",  0, NULL, 'I'},
+            {"listsnps", 0, NULL, 'L'},
+            {"snp",      1, NULL, 's'},
+            {NULL,       0, NULL, 0  }
         };
+
     char *program_name = argv[0];
-    bool debug = false;
+    bool debug    = false;
+    bool listSNPs = false;
+    bool listIDs  = false;
     string inputFileName = "";
-    string idname = "";
-    string snpname = "";
+    string idname        = "";
+    string snpname       = "";
     do
     {
         next_option = getopt_long(argc, argv,
@@ -96,6 +115,12 @@ int main(int argc, char* argv[])
         case 'i':
             idname = string(optarg);
             break;
+        case 'I':
+            listIDs = true;
+            break;
+        case 'L':
+            listSNPs = true;
+            break;
         case 's':
             snpname = string(optarg);
             break;
@@ -103,6 +128,53 @@ int main(int argc, char* argv[])
         case -1 : break;
         }
     } while (next_option != -1);
+
+    if (inputFileName.compare("") == 0)
+    {
+        cerr << "Error: No filevector file specified.\n";
+        info(program_name);
+        exit(4);
+    }
+
+    if (debug) cout << "Input file is '" << inputFileName << "'." << endl;
+
+
+    FileVector fv(inputFileName, 64, true);
+
+    if (listSNPs)
+    {
+        // Only print SNPs to stdout.
+        for (unsigned long int row = 0; row < fv.getNumVariables(); row++)
+        {
+            string current_snpname = fv.readVariableName(row).name;
+            cout << current_snpname << " ";
+        }
+        cout << endl;
+        exit(0);
+    }
+
+    if (listIDs || debug)
+    {
+        if(debug)
+        {
+            cout << "---------- List of IDs ----------" << endl;
+        }
+        // Only print IDs to stdout.
+        for (unsigned long int col = 0; col < fv.getNumObservations(); col++)
+        {
+            cout << fv.readObservationName(col).name << " ";
+        }
+
+        cout << endl;
+
+        if(debug)
+        {
+            cout << "---------- End of IDs ----------" << endl;
+        }
+
+        if(!debug) exit(0);
+    }
+
 
     if (snpname.compare("") == 0)
     {
@@ -115,22 +187,12 @@ int main(int argc, char* argv[])
     bool snpfound = false;
     bool idfound  = false;
 
-    if (debug) cout << "Input file is '" << inputFileName << "'." << endl;
-
-    FileVector fv(inputFileName, 64, true);
-
-    if (debug)
-    {
-        for (unsigned long int col = 0; col < fv.getNumObservations(); col++)
-        {
-            cout << fv.readObservationName(col).name << " ";
-        }
-
-        cout << endl;
-        cout << "----------------------" << endl;
-    }
 
     // Look at the SNPs (rows) first
+    if(debug)
+    {
+        cout << "---------- List of SNP names ----------" << endl;
+    }
     for (unsigned long int row = 0; row < fv.getNumVariables(); row++)
     {
         string current_snpname = fv.readVariableName(row).name;
@@ -152,7 +214,7 @@ int main(int argc, char* argv[])
     if (debug)
     {
         cout << endl;
-        cout << "----------------------" << endl;
+        cout << "---------- End of SNP names ----------" << endl;
 
         cout << "N_obs = " << fv.getNumObservations() << "\telement size: "
              <<  fv.getElementSize() << "\tDataType: "

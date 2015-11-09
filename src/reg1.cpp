@@ -429,6 +429,25 @@ void linear_reg::mmscore_regression(const mematrix<double>& X,
 }
 
 
+/**
+ * \brief Perform least squares regression
+ *
+ * Basically we solve the following linear system here:
+ * \f[
+ * \mathbf{y} = \mathbf{X} \mathbf{\beta}
+ * \f]
+ *
+ * This function also estimates \f$\sigma^2\f$, the variance of the
+ * error term. An estimator of \f$\sigma^2\f$ is given by:
+ * \f[
+ * \hat\sigma^2 = \frac{1}{n-p}||\mathbf{y} - \mathbf{X} \mathbf{\beta} ||^2,
+ * \f]
+ * with \f$n\f$ the number of rows of \f$\mathbf{X}\f$ and \f$p\f$
+ * the number of columns of \f$\mathbf{X}\f$.
+ *
+ * @param X The design matrix
+ * @param Ch
+ */
 void linear_reg::LeastSquaredRegression(const mematrix<double>& X,
                                         LDLT<MatrixXd>& Ch) {
     int m = X.ncol;
@@ -635,11 +654,10 @@ void linear_reg::estimate(const int verbose,
     mematrix<double> robust_sigma2(X.ncol, X.ncol);
 
     int offset = X.ncol - 1;
-    // If 2 predictors and computing the 2df model and > 2 betas
-    if (ngpreds == 2 && model == 0 && length_beta > 2)
-    {
-        offset = X.ncol - 2;
-    }
+     //if additive and interaction and 2 predictors and more than 2 betas
+     if (model == 0 && interaction != 0 && ngpreds == 2 && length_beta > 2){
+         offset = X.ncol - 2;
+     }
 
     if (robust)
     {
