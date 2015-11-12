@@ -34,6 +34,10 @@
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
 #include "utilities.h"
+#include <iostream>
+#include <fstream>
+#include <boost/iostreams/filtering_stream.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
 
 
 void gendata::mldose_line_to_matrix(const int k,
@@ -247,12 +251,20 @@ void gendata::re_gendata(const char * fname,
 
     G.reinit(nids, (nsnps * ngpreds));
 
-    std::ifstream infile;
-    infile.open(fname);
+	std::ifstream file(fname, std::ios_base::in | std::ios_base::binary);
+	boost::iostreams::filtering_istream infile;
+	std::string filename=fname;
+    if (filename.compare(filename.length()-2,2,"gz")== 0){
+    	infile.push(boost::iostreams::gzip_decompressor());
+    }else{
+    	std::cout << "no gziped:"<< ":\n";
+    }
+    infile.push(file);
 
-    if (!infile)
+    if (!file)
     {
         std::cerr << "gendata: cannot open file " << fname << endl;
+        exit(1);
     }
 
     std::string tmpid, tmpstr;
@@ -282,7 +294,7 @@ void gendata::re_gendata(const char * fname,
                     cerr << "phenotype file and dose or probability file "
                             << "did not match at line " << i + 2 << " ("
                             << tmpid << " != " << idnames[k] << ")" << endl;
-                    infile.close();
+                    file.close();
                     exit(1);
                 }
             }
@@ -312,7 +324,7 @@ void gendata::re_gendata(const char * fname,
         }
     }
 
-    infile.close();
+    file.close();
 }
 
 // HERE NEED A NEW CONSTRUCTOR BASED ON DATABELBASECPP OBJECT

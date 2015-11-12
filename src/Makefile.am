@@ -37,6 +37,8 @@ RHEADERS = include/R.h include/Rmath.h include/R_ext/Arith.h		\
  include/R_ext/Print.h include/R_ext/Random.h include/R_ext/Utils.h	\
  include/R_ext/RS.h
 
+LDADD = -lboost_iostreams -lz 
+
 bin_PROGRAMS =
 if BUILD_palinear
 bin_PROGRAMS += palinear
