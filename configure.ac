@@ -88,6 +88,37 @@ if test x$ac_cv_header_Eigen_Dense = xno; then
 fi
 
 
+# See if we can use the Boost IOstreams libraries for reading gzipped
+# files
+AC_ARG_WITH([boost-iostreams],
+ AS_HELP_STRING([--with-boost-iostreams], [Use the Boost Iostreams library to
+ allow reading from gzipped files. This is enabled by default]
+               )
+)
+
+if test "x$with_boost_iostreams" != "xno"; then
+    AC_MSG_NOTICE([building using the Boost IOstreams library enabled])
+
+    AC_ARG_WITH([boost-include-path],
+        [AS_HELP_STRING([--with-boost-include-path],
+          [location of the Boost headers, defaults to /usr/include/boost])],
+        [CPPFLAGS+=" -I${withval}"],
+        [CPPFLAGS+=' -I/usr/include/'])
+
+    # Check for the Boost IOstreams header files
+    AC_CHECK_HEADER([boost/iostreams/filter/gzip.hpp],
+        [],
+        [AC_MSG_ERROR([Could not find the Boost IOstreams header files. Did \
+you specify --with-boost-include-path correctly? Or use --without-boost \
+to disable the reading of gzipped files.])]
+    )
+else
+   AC_MSG_NOTICE([not using the Boost IOstreams libraries, so input \
+from gzipped files is not possible])
+fi
+AM_CONDITIONAL([WITH_BOOST_IOSTREAMS], test "x$with_boost_iostreams" != "xno")
+
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 AC_C_INLINE
