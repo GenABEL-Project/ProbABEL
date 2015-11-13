@@ -251,13 +251,16 @@ void gendata::re_gendata(const char * fname,
 
     G.reinit(nids, (nsnps * ngpreds));
 
-	std::ifstream file(fname, std::ios_base::in | std::ios_base::binary);
-	boost::iostreams::filtering_istream infile;
-	std::string filename=fname;
-    if (filename.compare(filename.length()-2,2,"gz")== 0){
-    	infile.push(boost::iostreams::gzip_decompressor());
-    }else{
-    	std::cout << "no gziped:"<< ":\n";
+    std::ifstream file(fname, std::ios_base::in | std::ios_base::binary);
+    boost::iostreams::filtering_istream infile;
+    std::string filename = fname;
+    if (filename.compare(filename.length() - 2, 2, "gz") == 0)
+    {
+        infile.push(boost::iostreams::gzip_decompressor());
+    }
+    else
+    {
+        std::cout << "no gziped:" << ":\n";
     }
     infile.push(file);
 
