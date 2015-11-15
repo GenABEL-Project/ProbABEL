@@ -36,9 +36,11 @@
 #include "utilities.h"
 #include <iostream>
 #include <fstream>
+
+#if WITH_BOOST_IOSTREAMS
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
-
+#endif
 
 void gendata::mldose_line_to_matrix(const int k,
                                     const char *all_numbers,
@@ -251,17 +253,34 @@ void gendata::re_gendata(const char * fname,
 
     G.reinit(nids, (nsnps * ngpreds));
 
-	std::ifstream file(fname, std::ios_base::in | std::ios_base::binary);
-	boost::iostreams::filtering_istream infile;
-	std::string filename=fname;
-    if (filename.compare(filename.length()-2,2,"gz")== 0){
-    	infile.push(boost::iostreams::gzip_decompressor());
-    }else{
-    	std::cout << "no gziped:"<< ":\n";
+#if WITH_BOOST_IOSTREAMS
+    std::ifstream file(fname, std::ios_base::in | std::ios_base::binary);
+    boost::iostreams::filtering_istream infile;
+    std::string filename = fname;
+    // Note: a better check would be to read the first two bytes of
+    // the file and check for the gzip signature: 0x1f8b
+    // W.r.t. endianness and bytt width: compare each byte separately,
+    // see the comment to this SE answer:
+    // http://stackoverflow.com/a/6059342/881084
+    if (filename.compare(filename.length() - 2, 2, "gz") == 0)
+    {
+        infile.push(boost::iostreams::gzip_decompressor());
+    }
+    else
+    {
+        std::cout << "no gziped:" << ":\n";
     }
     infile.push(file);
+#else
+    std::ifstream infile;
+    infile.open(fname);
+#endif
 
+#if WITH_BOOST_IOSTREAMS
     if (!file)
+#else
+    if (!infile)
+#endif
     {
         std::cerr << "gendata: cannot open file " << fname << endl;
         exit(1);
@@ -294,7 +313,11 @@ void gendata::re_gendata(const char * fname,
                     cerr << "phenotype file and dose or probability file "
                             << "did not match at line " << i + 2 << " ("
                             << tmpid << " != " << idnames[k] << ")" << endl;
+#if WITH_BOOST_IOSTREAMS
                     file.close();
+#else
+                    infile.close();
+#endif
                     exit(1);
                 }
             }
@@ -324,7 +347,11 @@ void gendata::re_gendata(const char * fname,
         }
     }
 
+#if WITH_BOOST_IOSTREAMS
     file.close();
+#else
+    infile.close();
+#endif
 }
 
 // HERE NEED A NEW CONSTRUCTOR BASED ON DATABELBASECPP OBJECT
