@@ -34,10 +34,10 @@
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
 #include "utilities.h"
-#include <iostream>
-#include <fstream>
 
 #if WITH_BOOST_IOSTREAMS
+#include <iostream>
+#include <fstream>
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #endif
@@ -274,13 +274,12 @@ void gendata::re_gendata(const char * fname,
 #else
     std::ifstream infile;
     infile.open(fname);
+    // small hack to make object "file" available, so no aditional prepocces
+    // if/else statements should be introduced
+    std::ifstream  &file = infile;
 #endif
 
-#if WITH_BOOST_IOSTREAMS
     if (!file)
-#else
-    if (!infile)
-#endif
     {
         std::cerr << "gendata: cannot open file " << fname << endl;
         exit(1);
@@ -313,11 +312,7 @@ void gendata::re_gendata(const char * fname,
                     cerr << "phenotype file and dose or probability file "
                             << "did not match at line " << i + 2 << " ("
                             << tmpid << " != " << idnames[k] << ")" << endl;
-#if WITH_BOOST_IOSTREAMS
                     file.close();
-#else
-                    infile.close();
-#endif
                     exit(1);
                 }
             }
@@ -347,11 +342,7 @@ void gendata::re_gendata(const char * fname,
         }
     }
 
-#if WITH_BOOST_IOSTREAMS
     file.close();
-#else
-    infile.close();
-#endif
 }
 
 // HERE NEED A NEW CONSTRUCTOR BASED ON DATABELBASECPP OBJECT
