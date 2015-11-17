@@ -34,7 +34,7 @@
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
 #include "utilities.h"
-#if WITH_BOOST_IOSTREAM
+#if WITH_BOOST_IOSTREAMS
 #include <iostream>
 #include <fstream>
 #include <boost/iostreams/filtering_stream.hpp>
