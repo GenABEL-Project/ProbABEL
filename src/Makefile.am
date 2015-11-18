@@ -60,10 +60,12 @@ endif
 
 palinear_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
 palinear_CPPFLAGS = -DLINEAR $(AM_CPPFLAGS)
+palinear_LDADD =
 palinear_SOURCES += $(EIGENFILES)
 
 palogist_SOURCES = $(REGFILES) $(FVSRC) $(FVHEADERS)
 palogist_CPPFLAGS = -DLOGISTIC $(AM_CPPFLAGS)
+palogist_LDADD =
 palogist_SOURCES += $(EIGENFILES)
 
 pacoxph_SOURCES = $(COXSRC) $(REGFILES) $(FVSRC) $(FVHEADERS)	\
@@ -71,7 +73,18 @@ pacoxph_SOURCES = $(COXSRC) $(REGFILES) $(FVSRC) $(FVHEADERS)	\
 pacoxph_CXXFLAGS = -I $(top_srcdir)/src/include $(AM_CXXFLAGS)
 pacoxph_CPPFLAGS = -DCOXPH $(AM_CPPFLAGS)
 pacoxph_CFLAGS = -I $(top_srcdir)/src/include $(AM_CFLAGS)
+pacoxph_LDADD =
 pacoxph_SOURCES += $(EIGENFILES)
+
+if WITH_BOOST_IOSTREAMS
+palinear_CPPFLAGS += -DWITH_BOOST_IOSTREAMS
+palinear_LDADD += -lboost_iostreams -lz
+palogist_CPPFLAGS += -DWITH_BOOST_IOSTREAMS
+palogist_LDADD += -lboost_iostreams -lz
+pacoxph_CPPFLAGS += -DWITH_BOOST_IOSTREAMS
+pacoxph_LDADD += -lboost_iostreams -lz
+endif
+
 
 extract_snp_SOURCES = extract-snp.cpp $(FVSRC) $(FVHEADERS)
 

@@ -31,6 +31,10 @@
 #include "config.h"
 #endif
 
+#if WITH_BOOST_IOSTREAMS
+#include <boost/version.hpp>
+#endif
+
 #include "eigen_mematrix.h"
 
 
@@ -103,6 +107,10 @@ void print_version(void) {
     cout << "Using EIGEN version " << EIGEN_WORLD_VERSION
          << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION
          << " for matrix operations\n";
+#if WITH_BOOST_IOSTREAMS
+    cout << "Using Boost libraries version " << BOOST_LIB_VERSION << endl;
+#endif
+
 }
 
 
