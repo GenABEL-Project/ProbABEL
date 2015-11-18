@@ -274,7 +274,7 @@ void gendata::re_gendata(const char * fname,
 #else
     std::ifstream infile;
     infile.open(fname);
-    // small hack to make object "file" availble, so no aditional prepocces
+    // small hack to make object "file" available, so no aditional prepocces
     // if/else statements should be introduced 
     std::ifstream  &file = infile;
 #endif
