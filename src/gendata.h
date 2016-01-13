@@ -54,7 +54,8 @@ class gendata {
                     const int skipd,
                     const std::string * idnames);
 
-    void re_gendata(const string filename, const unsigned int insnps,
+    void re_gendata(const string filename,
+                    const unsigned int insnps,
                     const unsigned int ingpreds,
                     const unsigned int npeople,
                     const unsigned int nmeasured,
@@ -69,8 +70,31 @@ class gendata {
     // ANOTHER PRIVATE OBJECT IS A POINTER TO DATABELBASECPP
     // UPDATE SNP, ALL REGRESSION METHODS: ACCOUNT FOR MISSING
  private:
+    /**
+     * \brief Matrix containing the genotype data.
+     *
+     * - Nr of rows: nr. of individuals (usually phedata::nids).
+     * - Nr. of columns: nr. of SNPs \f[\times\f] nr. of genomic
+     *   predictors.
+     */
     mematrix<double> G;
+
+    /**
+     * \brief Object of FileVector class that "links" to the genotype
+     * information in the filevector file.
+     *
+     * Only used when reading genotype data from filevector files
+     * (obviously).
+     */
     AbstractMatrix * DAG;
+
+    /**
+     * \brief Array that masks individuals with incomplete phenotype
+     * information.
+     *
+     * Only used when reading genotype data from filevector files.
+     */
+
     unsigned short int * DAGmask;
 };
 

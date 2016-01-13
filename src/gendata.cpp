@@ -104,11 +104,20 @@ void gendata::mldose_line_to_matrix(const int k,
     }
 }
 
-
+/**
+ * \brief Read the genetic data for all individuals for a given SNP
+ * and store in the array @data.
+ *
+ * Only one 'column' is extracted, so in case the number of genomic
+ * predictors is 2 (probability data) this function must be called
+ * twice.
+ *
+ * @param var Number of the SNP to read from the genetic data object
+ * @param data Pointer to an array in which the results will be
+ * returned.
+ */
 void gendata::get_var(const int var, double * data) const
 {
-    // Read the genetic data for SNP 'var' and store in the array 'data'
-
     if (DAG == NULL)            // Read from text file
     {
         for (int i = 0; i < G.nrow; i++)
@@ -166,11 +175,34 @@ void gendata::get_var(const int var, double * data) const
 }
 
 
+/**
+ * Constructor. Initialises all variables to zero/NULL
+ */
 gendata::gendata() : nsnps(0), nids(0), ngpreds(0), DAG(NULL), DAGmask(NULL)
 {
 }
 
 
+/**
+ * \brief Read genotype data from filevector files.
+ *
+ * @param filename File name of the filevector file (either .fvi or
+ * .fvd) that contains the genotype data.
+ * @param insnps The number of SNPs/genetic variants to read; usually
+ * inferred from the .info files.
+ * @param ingpreds The number of genomic predictors (1 for dosage
+ * data, 2 for probability data); usually given on the command line.
+ * @param npeople The total number of individuals to expect; usually
+ * inferred from the phenotype data (see phedata::nids_all).
+ * @param nmeasured The number of individuals with complete phenotype
+ * data; usually inferred from the phenotype data (see phedata::nids).
+ * @param allmeasured Array indicating which individuals have complete
+ * phenotype data (value: 1) and which haven't (0); usually inferred
+ * from the phenotype data (see phedata::allmeasured).
+ * @param idnames Array of strings containing the names of the
+ * individuals used in the analysis; usually inferred from the
+ * phenotype data (phedata::idnames).
+ */
 void gendata::re_gendata(const string filename,
                          const unsigned int insnps,
                          const unsigned int ingpreds,
@@ -229,6 +261,27 @@ void gendata::re_gendata(const string filename,
 }
 
 
+/**
+ * \brief Read genotype data from plain text files.
+ *
+ * @param fname File name of the filevector file (either .fvi or .fvd)
+ * that contains the genotype data.
+ * @param insnps The number of SNPs/genetic variants to read; usually
+ * inferred from the .info files.
+ * @param ingpreds The number of genomic predictors (1 for dosage
+ * data, 2 for probability data); usually given on the command line.
+ * @param npeople The total number of individuals to expect; usually
+ * inferred from the phenotype data (see phedata::nids_all).
+ * @param nmeasured The number of individuals with complete phenotype
+ * data; usually inferred from the phenotype data (see phedata::nids).
+ * @param allmeasured Array indicating which individuals have complete
+ * phenotype data (value: 1) and which haven't (0); usually inferred
+ * from the phenotype data (see phedata::allmeasured).
+ * @param skipd
+ * @param idnames Array of strings containing the names of the
+ * individuals used in the analysis; usually inferred from the
+ * phenotype data (phedata::idnames).
+ */
 void gendata::re_gendata(const char * fname,
                          const unsigned int insnps,
                          const unsigned int ingpreds,
@@ -315,7 +368,11 @@ void gendata::re_gendata(const char * fname,
     infile.close();
 }
 
+
 // HERE NEED A NEW CONSTRUCTOR BASED ON DATABELBASECPP OBJECT
+/**
+ * Destructor
+ */
 gendata::~gendata()
 {
     if (DAG != NULL)

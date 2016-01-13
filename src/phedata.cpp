@@ -49,10 +49,11 @@ void phedata::set_is_interaction_excluded(const bool int_exl)
  * Read phenotype data from file.
  *
  * @param fname Name of the file containing phenotype data
- * @param noutc Number of outcomes/phenotypes
+ * @param noutc Number of outcomes/phenotypes in the phenotype file
+ * (see #noutcomes).
  * @param npeople Number of people to use in the analysis. If set to
  * 0, then all individuals in the phenotype file will be used. If > 0
- * (i.e. set using the --nids command line option, see
+ * (i.e. set using the \--nids command line option, see
  * cmdvars::set_variables()) only the first npeople will be used.
  * @param interaction Column specifying which phenotype/covariate is
  * selected to interact with the SNP (default: 0, i.e. no interaction).
@@ -142,7 +143,7 @@ void phedata::setphedata(const char * fname, const int noutc,
     model = model + " ) ~ mu";
     model_terms[n_model_terms++] = "mu";
 
-    if (nphenocols > noutcomes + 1)
+    if (nphenocols > noutcomes + 1) // i.e. we have covariate column(s)
     {
         infile >> tmp;
         model = model + " + " + tmp;
@@ -203,6 +204,8 @@ void phedata::setphedata(const char * fname, const int noutc,
 #endif
     std::cout << "model: " << model << "\n";
 
+    // Filter people with incomplete phenotype (outcome and covariate)
+    // data.
     allmeasured = new unsigned short int[nrpeople];
     nids = 0;
     for (int i = 0; i < nrpeople; i++)
