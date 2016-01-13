@@ -70,7 +70,6 @@ void phedata::setphedata(const char * fname, const int noutc,
     noutcomes = noutc;
 
     int nphenocols = 0;
-    const int savenpeople = npeople;
     int nrpeople = 0;
     if (myfile.is_open())
     {
@@ -107,9 +106,9 @@ void phedata::setphedata(const char * fname, const int noutc,
     }
     std::cout << "Actual number of people in phenofile = " << nrpeople;
 
-    if (savenpeople > 0)
+    if (npeople > 0)
     {
-        nrpeople = savenpeople;
+        nrpeople = npeople;
         std::cout << "; using only " << nrpeople << " first\n";
     }
     else
