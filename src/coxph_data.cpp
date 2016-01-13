@@ -143,7 +143,8 @@ coxph_data::coxph_data(const phedata &phed, const gendata &gend,
         exit(1);
     }
 
-    X.reinit(nids, (ncov + 1));
+    X.reinit(nids, (ncov + 1)); // Note: ncov takes ngpreds into
+                                // account, see above!
     stime.reinit(nids, 1);
     sstat.reinit(nids, 1);
     weights.reinit(nids, 1);
@@ -170,6 +171,8 @@ coxph_data::coxph_data(const phedata &phed, const gendata &gend,
         X.put(1., i, 0);
     }
 
+    // Insert the covariate data into X (note we use phed.ncov and not
+    // ncov, which includes ngpreds is not computing the null model!)
     for (int j = 1; j <= phed.ncov; j++)
     {
         for (int i = 0; i < nids; i++)
@@ -178,7 +181,7 @@ coxph_data::coxph_data(const phedata &phed, const gendata &gend,
         }
     }
 
-
+    // Insert the genotype data into X
     if (snpnum > 0)
     {
         for (int j = 0; j < ngpreds; j++)
@@ -235,6 +238,7 @@ coxph_data::coxph_data(const phedata &phed, const gendata &gend,
             exit(1);
         }
     }
+
     stime   = reorder(stime, order);
     sstat   = reorder(sstat, order);
     weights = reorder(weights, order);
