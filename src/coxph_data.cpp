@@ -313,7 +313,7 @@ void coxph_data::update_snp(const gendata *gend, const int snpnum) {
                         freq += snpdata[i];
                     }
                 } else if (j == 1) {
-                    // Add second genotype in two predicor data form
+                    // Add second genotype in two predictor data form
                     freq += snpdata[i] * 0.5;
                 }
             }    // end std::isnan(snpdata[i]) snp
