@@ -564,7 +564,13 @@ running the program with the option \texttt{--interaction=2} will model
   \textrm{trait} \sim \textrm{sex} + \textrm{age} + \textrm{SNP} +
   \textrm{age} \times \mathrm{SNP}.
 \end{equation*}
-The option \texttt{--robust} allows you to compute so-called
+In this case, the \lstinline{chi2_SNP} column in the output file contains
+the $\chi_2^2$ statistic taken from the Likelihood ratio test. This
+LRT statistic is calculated based on a full model that contains all
+terms (sex, age, SNP and age$\times$SNP). The null model does not
+contain the terms that include the SNP.
+
+The option \lstinline{--robust} allows you to compute so-called
 ``robust'' (a.k.a.~``sandwich'', a.k.a.~Hubert-White) standard errors
 (cf.~section \ref{sec:methodology} ``Methodology'' for details).
 
