@@ -1,3 +1,8 @@
+***** v. ()
+* Fixed issue #16: "Too many NANs for SNPs with low `Rsq` when some
+  commandline options are specified"
+
+
 ***** v.0.4.5 (2015.05.26)
 * Fixed bug #6054: "Not all ProbABEL's short command line options are
   correctly parsed."
