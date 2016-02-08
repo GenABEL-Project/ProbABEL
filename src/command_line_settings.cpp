@@ -58,6 +58,11 @@ string cmdvars::getChrom() const
     return chrom;
 }
 
+bool cmdvars::getFlipMAF() const
+{
+    return flipMAF;
+}
+
 char* cmdvars::getGenfilename() const
 {
     return genfilename;
@@ -159,7 +164,7 @@ char* cmdvars::getPhefilename() const
 void cmdvars::set_variables(int argc, char * argv[])
 {
     int next_option;
-    const char * const short_options = "p:i:d:m:n:c:o:s:t:g:a:relhb:v:u";
+    const char * const short_options = "p:i:d:m:fn:c:o:s:t:g:a:relhb:v:u";
     // b - interaction parameter
     // ADD --fv FLAG (FILEVECTOR), IN WHICH CASE USE ALTERNATIVE
     // CONSTRUCTOR FOR GENDATA
@@ -169,6 +174,7 @@ void cmdvars::set_variables(int argc, char * argv[])
     { "info", 1, NULL, 'i' },
     { "dose", 1, NULL, 'd' },
     { "map", 1, NULL, 'm' },
+    { "flipmaf", 0, NULL, 'f'},
     { "nids", 1, NULL, 'n' },
     { "chrom", 1, NULL, 'c' },
     { "out", 1, NULL, 'o' },
@@ -210,6 +216,9 @@ void cmdvars::set_variables(int argc, char * argv[])
             break;
         case 'm':
             mapfilename = optarg;
+            break;
+        case 'f':
+            flipMAF = true;
             break;
         case 'n':
             npeople = atoi(optarg);
@@ -257,7 +266,6 @@ void cmdvars::set_variables(int argc, char * argv[])
         case 'u':
             robust = 1;
             break;
-
         case '?':
             print_usage(program_name, 2);
         case -1:
@@ -346,6 +354,10 @@ void cmdvars::printinfo()
         cout << "\t --out     = "      << "regression.out.txt" << endl;
     cout << "\t --skipd   = "          << skipd << endl;
     cout << "\t --separat = \""        << sep << "\"" << endl;
+    if (flipMAF)
+        cout << "\t --flipmaf = ON"    << endl;
+    else
+        cout << "\t --flipmaf = OFF"   << endl;
     if (score)
         cout << "\t --score   = ON"    << endl;
     else

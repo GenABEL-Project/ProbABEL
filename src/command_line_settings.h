@@ -50,6 +50,21 @@ class cmdvars
     int score;
     int npeople;
     int ngpreds;
+
+    /**
+     * \brief Boolean to indicate that allele coding should be flipped
+     * based on Minor Allele Frequency (MAF).
+     *
+     * Set to false by default, which means regression is done using
+     * A2 as reference allele (i.e. the dosage in the genetic
+     * predictor files code the dosage of the A1 allele in the info
+     * file). Setting this to true (using the <tt>-f/\--flipmaf</tt>
+     * command line option) will lead to a change in this behaviour
+     * such that the reference and effect allele are recoded in such a
+     * way that the minor allele is used as predictor allele.
+     */
+    bool flipMAF;
+
     int interaction;
     int robust;
     string chrom;
@@ -79,6 +94,7 @@ class cmdvars
         score   = 0;
         npeople = -1;
         ngpreds = 1;
+        flipMAF = false;
         interaction = 0;
         robust = 0;
         chrom = "-1";
@@ -99,6 +115,7 @@ class cmdvars
     char* getPhefilename() const;
     int getAllcov() const;
     string getChrom() const;
+    bool getFlipMAF() const;
     char* getGenfilename() const;
     int getInteraction() const;
     char* getInverseFilename() const;
