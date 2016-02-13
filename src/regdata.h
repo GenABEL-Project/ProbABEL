@@ -40,6 +40,7 @@
 #include "eigen_mematrix.cpp"
 #include "gendata.h"
 #include "phedata.h"
+#include "mlinfo.h"
 
 
 /**
@@ -119,7 +120,10 @@ class regdata {
 
 
     // Member functions.
-    void update_snp(const gendata *gend, const int snpnum);
+    void update_snp(const gendata *gend,
+                    const int snpnum,
+                    const mlinfo &snpinfo,
+                    const bool flipMAF);
     void remove_snp_from_X();
     regdata get_unmasked_data() const;
     mematrix<double> extract_genotypes();

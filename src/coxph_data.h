@@ -174,7 +174,10 @@ class coxph_data {
 
     // Member functions
     coxph_data get_unmasked_data() const;
-    void update_snp(const gendata *gend, const int snpnum);
+    void update_snp(const gendata *gend,
+                    const int snpnum,
+                    const mlinfo &snpinfo,
+                    const bool flipMAF);
     void remove_snp_from_X();
 };
 

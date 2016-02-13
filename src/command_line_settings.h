@@ -61,7 +61,11 @@ class cmdvars
      * file). Setting this to true (using the <tt>-f/\--flipmaf</tt>
      * command line option) will lead to a change in this behaviour
      * such that the reference and effect allele are recoded in such a
-     * way that the minor allele is used as predictor allele.
+     * way that the minor allele as specified in the info file is used
+     * as predictor allele. To be explicit, this option uses the MAF
+     * as recorded in the info file to decide whether to flip the
+     * alleles (if necessary), not the actual MAF in the sample that
+     * is analysed.
      */
     bool flipMAF;
 

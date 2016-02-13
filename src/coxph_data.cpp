@@ -274,12 +274,20 @@ coxph_data::coxph_data(const phedata &phed, const gendata &gend,
  * Adds the genetic information for a new SNP to the design
  * matrix.
  *
- * @param gend Object that contains the genetic data from which the
+ * \param gend Object that contains the genetic data from which the
  * dosages/probabilities will be added to the design matrix.
- * @param snpnum Number of the SNP for which the dosage/probability
+ * \param snpnum Number of the SNP for which the dosage/probability
  * data will be extracted from the gend object.
- */
-void coxph_data::update_snp(const gendata *gend, const int snpnum) {
+ * \param snpinfo An object of \ref mlinfo class that contains
+ * information as read from the info file.
+ * \param flipMAF A boolean indicating whether the reference and
+ * coding alleles should be flipped based on Minor Allele Frequency
+ * (as read from the \a snpinfo object). See also cmdvars::flipMAF.
+*/
+void coxph_data::update_snp(const gendata *gend,
+                            const int snpnum,
+                            const mlinfo &snpinfo,
+                            const bool flipMAF) {
     /*
      * This is the main part of the fix of bug #1846
      * (C) of the fix:
@@ -299,14 +307,61 @@ void coxph_data::update_snp(const gendata *gend, const int snpnum) {
     gcount = 0;
     freq   = 0.0;
 
-    for (int j = 0; j < ngpreds; j++) {
+    for (int j = 0; j < ngpreds; j++)
+    {
         double *snpdata = new double[nids];
         masked_data = std::vector<bool>(nids, false);
 
         gend->get_var(snpnum * ngpreds + j, snpdata);
 
+        double *PA1A2 = new double[nids];
+        if (flipMAF && ngpreds == 2 && j == 0) {
+            // Read next genotype column because we need
+            // P_A1A2 as well to calculate P_A2A2
+            gend->get_var(snpnum * ngpreds + j + 1, PA1A2);
+        }
+
         for (int i = 0; i < nids; i++) {
-            X.put(snpdata[i], (ncov - j), order[i]);
+            if (flipMAF && (snpinfo.Freq1[snpnum] > 0.5)){
+                // Flip the coding.
+                // For dosage data: dosage is dosage_A1 (MaCH tutorial)
+                //  so: dosage_A2 = 2 - dosage_A1
+                //
+                // For probability data:
+                //   P_1 == P_A1A1  (MaCH tutorial)
+                //   P_2 == P_A1A2  (MaCH tutorial)
+                // and d_A1 = P_A1A2 + 2 P_A1A1, so when flipping:
+                //   P_1 = P_A2A2 = 1 - P_A1A1 - P_A1A2== 1 - P_1 - P_2
+                //   P_2 = P_A2A1 = P_A1A2 = P_2
+                if (ngpreds == 1)
+                {
+                    // Dosage data
+                    X.put(2 - snpdata[i], (ncov - j), order[i]);
+                }
+                else if (ngpreds == 2 && j == 0) {
+                    // Probability data, first probability (= P_A1A1)
+                    X.put(1 - snpdata[i] - PA1A2[i], (ncov - j), order[i]);
+                }
+                else if (ngpreds == 2 && j == 1)
+                {
+                    // Probability data, second probability
+                    X.put(snpdata[i], (ncov - j), order[i]);
+                }
+                else {
+                    // You should never come here...
+                    std::cerr << "Error: "
+                              << "ngpreds != 1 or 2 while reading genetic data"
+                              << std::endl;
+                    exit(1);
+                }
+            } // end if (flipMAF && Freq1 > 0.5)
+            else
+            {
+                // No flipping needed, simply copy the genetic data to the
+                // snpdata array.
+                X.put(snpdata[i], (ncov - j), order[i]);
+            }
+
             if (std::isnan(snpdata[i])) {
                 masked_data[order[i]] = true;
                 // SNP not masked
