@@ -1,4 +1,13 @@
-/*
+/**
+ * \file phedata.cpp
+ * \author Y.S. Aulchenko
+ * \author L.C. Karssen
+ * \author M. Kooyman
+ * \author Maksim V. Struchalin
+ *
+ * \brief Contains the functions of the phdata class containing the
+ * phenotype data.
+ *
  *
  * Copyright (C) 2009--2015 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
