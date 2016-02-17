@@ -4,7 +4,7 @@
 
 run_diff()
 {
-    # This function is run after each check. It needs two arguments:
+    # This function is run after each check. It needs three arguments:
     # $1: first file to compare
     # $2: second file to compare
     # $3: start message to print on the output line before OK or FAILED
