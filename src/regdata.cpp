@@ -169,7 +169,7 @@ regdata::regdata(const phedata &phed,
  */
 void regdata::update_snp(const gendata *gend,
                          const int snpnum,
-                         const mlinfo &snpinfo,
+                         mlinfo &snpinfo,
                          const bool flipMAF)
 {
     // Reset counter for frequency since it is a new SNP
@@ -196,7 +196,8 @@ void regdata::update_snp(const gendata *gend,
 
         for (int i = 0; i < nids; i++) {
             if (flipMAF && (snpinfo.Freq1[snpnum] > 0.5)){
-                // Flip the coding.
+                // Flip the allele coding.
+                snpinfo.allelesFlipped[snpnum] = true;
                 // For dosage data: dosage is dosage_A1 (MaCH tutorial)
                 //  so: dosage_A2 = 2 - dosage_A1
                 //

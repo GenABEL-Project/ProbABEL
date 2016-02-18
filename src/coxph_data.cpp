@@ -286,7 +286,7 @@ coxph_data::coxph_data(const phedata &phed, const gendata &gend,
 */
 void coxph_data::update_snp(const gendata *gend,
                             const int snpnum,
-                            const mlinfo &snpinfo,
+                            mlinfo &snpinfo,
                             const bool flipMAF) {
     /*
      * This is the main part of the fix of bug #1846
@@ -323,7 +323,8 @@ void coxph_data::update_snp(const gendata *gend,
 
         for (int i = 0; i < nids; i++) {
             if (flipMAF && (snpinfo.Freq1[snpnum] > 0.5)){
-                // Flip the coding.
+                // Flip the allele coding.
+                snpinfo.allelesFlipped[snpnum] = true;
                 // For dosage data: dosage is dosage_A1 (MaCH tutorial)
                 //  so: dosage_A2 = 2 - dosage_A1
                 //

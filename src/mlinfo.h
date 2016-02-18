@@ -4,8 +4,8 @@
  *
  * \brief Contains the class information for the mlinfo class.
  *
- * The mlinfo class contains the information read from the .info of
- * .mlinfo files.
+ * The mlinfo class contains the information read from the
+ * <tt>.info</tt> or <tt>.mlinfo</tt> files.
  *
  */
 /* Copyright (C) 2009--2015 Various members of the GenABEL team. See
@@ -31,11 +31,15 @@
 #ifndef MLINFO_H_
 #define MLINFO_H_
 #include <string>
+#include <vector>
 #include <cstdlib>
 
 /**
- * \brief Data read from the mlinfo file.
+ * \brief Information about the genetic variants that are being
+ * analysed.
  *
+ * Most of this data is read from the <tt>.info</tt> or
+ * <tt>.mlinfo</tt> files created by the imputation tool.
  */
 class mlinfo {
  public:
@@ -101,6 +105,16 @@ class mlinfo {
      */
     std::string * map;
 
+    /**
+     * \brief Vector indicating whether the mlinfo::A1 and mlinfo::A2
+     * alleles have been flipped.
+     *
+     * This is used when the <tt>--flipmaf</tt> command line option
+     * has been specified by the user. See also cmdvars::getFlipMAF
+     * and cmdvars::flipMAF.
+     */
+    std::vector<bool> allelesFlipped;
+
 
     // Constructors and destructors
     /**
@@ -117,9 +131,12 @@ class mlinfo {
         A2 = NULL;
         name = NULL;
         map = NULL;
+        allelesFlipped = std::vector<bool>(1, false);
     }
 
-    mlinfo(char * filename, char * mapname);
+    mlinfo(const char * filename,
+           const char * mapname,
+           const bool flipMAF);
 
     ~mlinfo();
 };

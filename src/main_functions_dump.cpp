@@ -209,6 +209,8 @@ void create_start_of_header(std::vector<std::ofstream*>& outfile,
             (*outfile[i]) << input_var.getSep() << "chrom";
         if (input_var.getMapfilename() != NULL)
             (*outfile[i]) << input_var.getSep() << "position";
+        if (input_var.getFlipMAF())
+            (*outfile[i]) << input_var.getSep() << "allelesFlipped";
     }
 
     if (input_var.getAllcov()) //All covariates in output

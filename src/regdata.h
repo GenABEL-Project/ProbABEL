@@ -122,7 +122,7 @@ class regdata {
     // Member functions.
     void update_snp(const gendata *gend,
                     const int snpnum,
-                    const mlinfo &snpinfo,
+                    mlinfo &snpinfo,
                     const bool flipMAF);
     void remove_snp_from_X();
     regdata get_unmasked_data() const;

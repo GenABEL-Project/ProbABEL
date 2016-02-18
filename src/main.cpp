@@ -94,7 +94,9 @@ int main(int argc, char * argv[])
     input_var.printinfo();
 
     cout << "Reading info data...\n" << flush;
-    mlinfo mli(input_var.getMlinfofilename(), input_var.getMapfilename());
+    mlinfo mli(input_var.getMlinfofilename(),
+               input_var.getMapfilename(),
+               input_var.getFlipMAF());
     int nsnps = mli.nsnps;
     phedata phd;
     cout << "Reading phenotype data...\n" << flush;
