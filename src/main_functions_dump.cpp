@@ -1,5 +1,12 @@
-/*
- * main_functions_dump.cpp
+/**
+ * \file   main_functions_dump.cpp
+ * \author M. Kooyman
+ * \author L.C. Karssen
+ * \author Yurii S. Aulchenko (cox, log, lin regressions)
+ * \author Maksim V. Struchalin
+ *
+ * \brief File containing some auxiliary functions that used to be in
+ * main.cpp. Having them here helps to keep the overview.
  *
  *  Created on: Nov 27, 2013
  *      Author: mkooyman
@@ -43,6 +50,8 @@
 
 
 /**
+ * \brief Print progress bar of analysis to stdout.
+ *
  * Send a progress update (a percentage) to stdout so that the user
  * has a rough indication of the percentage of SNPs that has already
  * been completed.
@@ -79,8 +88,10 @@ void update_progress_to_cmd_line(const int csnp, const int nsnps)
 
 
 /**
- * Open an output file for each model when using probability data
- * (npgreds == 2). This function creates the _2df.out.txt etc. files.
+ * \brief Open an output file for each model when using probability
+ * data (npgreds == 2).
+ *
+ * This function creates the _2df.out.txt etc. files.
  *
  * @param outfile Vector of output streams
  * @param outfilename_str Basename of the outputfiles.
@@ -141,7 +152,7 @@ int create_phenotype(phedata& phd, const cmdvars& input_var)
 
 
 /**
- * Load the inverse variance-covariance matrix into an InvSigma object.
+ * \brief Load the inverse variance-covariance matrix into an InvSigma object.
  *
  * @param input_var Object containing the values of the various
  * command line options.
@@ -162,7 +173,7 @@ void loadInvSigma(const cmdvars& input_var, const phedata& phd,
 
 
 /**
- * Create the first part of the output file header.
+ * \brief Create the first part of the output file header.
  *
  * \param outfile Vector of output file streams. Contains the streams
  * of the output file(s). One file when using dosage data (ngpreds==1)
@@ -215,7 +226,10 @@ void create_start_of_header(std::vector<std::ofstream*>& outfile,
 
 
 /**
- * Create the header of the output file(s).
+ * \brief Create the rest of header of the output file(s).
+ *
+ * \sa create_start_of_header for the creation of the first few header
+ * columns.
  *
  * \param outfile vector of output file streams. Contains the streams
  * of the output file(s). One file when using dosage data (ngpreds==1)
@@ -353,7 +367,8 @@ void create_header(std::vector<std::ofstream*>& outfile,
 
 
 /**
- * Write the information from the mlinfo file to the output file(s).
+ * \brief Write the information from the mlinfo file to the output
+ * file(s).
  *
  * \param outfile Vector of output file(s)
  * \param file index number identifying the file in the vector of files
@@ -394,13 +409,19 @@ void write_mlinfo(const std::vector<std::ofstream*>& outfile,
     {
         *outfile[file] << input_var.getSep() << mli.map[csnp];
     }
+    if (input_var.getFlipMAF())
+    {
+        *outfile[file] << input_var.getSep() << mli.allelesFlipped[csnp];
+    }
 }
 
 
 /**
- * Get the position within a (row or column) vector (the index) where
- * a \f$ \beta \f$ (or \f$ se_{\beta} \f$) starts. This is basically a
- * matter of counting backwards from the end of the vector/list.
+ * \brief Get the position within a (row or column) vector (the index)
+ * where a \f$ \beta \f$ (or \f$ se_{\beta} \f$) starts.
+ *
+ * This is basically a matter of counting backwards from the end of
+ * the vector/list.
  *
  * @param input_var Object containing the values of the various
  * command line options.
