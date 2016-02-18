@@ -1,22 +1,25 @@
-***** v.0.5.0 (2015.)
+***** v.0.5.0 (2016.)
 * ProbABEL now depends on the Eigen library. The option to compile without
   Eigen has been removed.
+* Fixed issue Github #16: "Too many NANs for SNPs with low `Rsq` when some
+  commandline options are specified"
 * Not-a-number values in the output are now printed as "NaN" instead of
   "nan".
 * Linear regression mmscore option is 2 times faster
-* Speedup of Linear regression:(measured with multiple runs with 2 covariates,
-  33815 SNP and 3485 people(using all) compares to v.0.4.3)
+* Speedup of Linear regression: (measured with multiple runs with 2 covariates,
+  33815 SNP and 3485 people (using all) compared to v.0.4.3)
 ** Reading mldose/mlprob files 14 times faster
 ** Calculation of regression is more than 3.5 faster
-** Overall runtime using above settings is 5
+** Overall runtime using above settings is 5 times faster
 * Handles multiple variants of NaN (NA,Na,Nan,na,nan) correct while reading of
   mldose/mlprob files
 * Fixed Issue #21: Remove "interaction_only" option. According to Yurii's
   post on the forum this option never worked as expected.
-* Fixed bugs #5883 & #6010: The main effect is displayed in the output with the
-  `interaction_only` option. Thanks to Maksim Struchalin & Lennart Karssen for
-  fixing it and to Farid Radmanesh for reporting it. This was only a display
-  error, computations were not affected.
+* Fixed bugs #5883 & #6010 (on R-forge): The main effect is displayed in
+  the output with the  `interaction_only` option. Thanks to Maksim
+  Struchalin & Lennart Karssen for fixing it and to Farid Radmanesh for
+  reporting it. This was only a display error, computations were not
+  affected.
 * Fixed bug #5982: ProbABEL's make install fails on MacOS X and FreeBSD
   with sed error. Thanks to forum user mmold for reporting the bug.
 

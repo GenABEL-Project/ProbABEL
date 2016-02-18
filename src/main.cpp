@@ -449,29 +449,38 @@ int main(int argc, char * argv[])
             }  // END first part of if(poly); allele not too rare
             else
             {   // SNP is rare: beta, sebeta, chi2 = NaN
-                int number_of_rows_or_columns = rgd.X.ncol;
-                start_pos = get_start_position(input_var, model,
-                        number_of_rows_or_columns);
 
-                if (input_var.getInteraction() != 0 && !input_var.getAllcov()
-                    && input_var.getNgpreds() != 2)
+                // Find out how many columns of nan need to be
+                // printed.
+                end_pos = 1;    // One entry for the SNP term
+
+                if (input_var.getAllcov())
                 {
-                    start_pos++;
+                    end_pos += phd.n_model_terms - 1;
                 }
 
-                if (input_var.getNgpreds() == 0)
+                if(input_var.getNgpreds() == 2 && model == 0)
                 {
-                    end_pos = rgd.X.ncol;
-                } else{
-                    end_pos = rgd.X.ncol - 1;
-                }
-
-                if (input_var.getInteraction() != 0)
-                {
+                    // The 2df model needs an extra entry for the
+                    // second genotype coefficient.
                     end_pos++;
                 }
 
-                for (int pos = start_pos; pos <= end_pos; pos++)
+                if(input_var.getInteraction() != 0)
+                {
+                    // There's an interaction term, add an extra entry
+                    // for its coefficient.
+                    end_pos++;
+                    if(input_var.getNgpreds() == 2 && model == 0)
+                    {
+                        // For interaction + 2df model another entry
+                        // needs to be added, because each of the
+                        // genotype coefficients for the interaction.
+                        end_pos++;
+                    }
+                }
+
+                for (int pos = 0; pos < end_pos; pos++)
                 {
                     *beta_sebeta[model] << input_var.getSep()
                             << "NaN"
