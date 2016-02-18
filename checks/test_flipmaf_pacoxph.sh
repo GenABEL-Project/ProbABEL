@@ -117,3 +117,43 @@ verify_results recess domin
 # run_diff coxph_prob_over_domin.out.txt \
 #          coxph_prob_flipmaf_over_domin.out.txt \
 #          "   Cox PH check --flipmaf (overdomin): "
+
+
+echo "Option --ngp=2 --allcov --flipmaf"
+$pabin \
+    -p ${inputdir}/coxph_data.txt \
+    -d ${inputdir}/test.mlprob \
+    -i ${inputdir}/test.mlinfo \
+    -m ${inputdir}/test.map \
+    -c 19 --ngp=2 --flipmaf --allcov \
+    -o coxph_prob_flipmaf_allcov \
+    >& 3
+$pabin \
+    -p ${inputdir}/coxph_data.txt \
+    -d ${inputdir}/test.prob.fvi \
+    -i ${inputdir}/test.mlinfo \
+    -m ${inputdir}/test.map \
+    -c 19 --ngp=2 --flipmaf --allcov \
+    -o coxph_prob_flipmaf_allcov_fv \
+    >& 3
+
+for model in add domin over_domin recess 2df; do
+    run_diff coxph_prob_flipmaf_allcov_${model}.out.txt \
+        coxph_prob_flipmaf_allcov_fv_${model}.out.txt \
+        "   Cox PH check --flipmaf --allcov ($model model): prob vs. prob_fv"
+done
+
+echo "Check signs of beta_SNP, size of SE_beta"
+# After flipping alleles: beta_add -> -beta_add
+verify_results allcov_add add
+# After flipping alleles: beta_A1A1 -> -beta_A1A1
+verify_results allcov_2df 2df
+# After flipping alleles: beta_domin -> -beta_recess
+verify_results allcov_domin recess
+# After flipping alleles: beta_recess -> -beta_domin
+verify_results allcov_recess domin
+# For the overdominant model we don't expect changes
+# NOTE: disabled because of the allelesFlipped column was added.
+# run_diff coxph_prob_over_domin.out.txt \
+#          coxph_prob_flipmaf_over_domin.out.txt \
+#          "   Cox PH check --flipmaf (overdomin): "
