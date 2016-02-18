@@ -44,13 +44,13 @@ check_SCRIPTS =
 
 if BUILD_palinear
 check_SCRIPTS += check_probabel_chunk.sh check_dose_input.sh
-check_SCRIPTS += test_qt.sh test_mms.sh
+check_SCRIPTS += test_qt.sh test_mms.sh test_flipmaf_palinear.sh
 endif
 if BUILD_palogist
-check_SCRIPTS += test_bt.sh
+check_SCRIPTS += test_bt.sh test_flipmaf_palogist.sh
 endif
 if BUILD_pacoxph
-check_SCRIPTS += test_cox.sh test_cox_nocovar.sh
+check_SCRIPTS += test_cox.sh test_cox_nocovar.sh test_flipmaf_pacoxph.sh
 endif
 
 AM_TESTS_ENVIRONMENT= \
@@ -58,6 +58,12 @@ AM_TESTS_ENVIRONMENT= \
 	SED=$(SED) \
 	PA_BINDIR=$(top_builddir)/src
 TESTS = $(check_SCRIPTS)
+
+## Dependencies for the test scripts
+TEST_EXTENSIONS=.sh
+test_flipmaf_palinear.log: test_qt.log
+test_flipmaf_palogist.log: test_bt.log
+test_flipmaf_pacoxph.log: test_cox.log
 
 ## The pacoxph nocovar test doesn't run correctly until bug #1266 is
 ## fixed.
@@ -76,6 +82,19 @@ logist_prob_fv_domin.out.txt logist_prob_add.out.txt		\
 logist_prob_fv_add.out.txt logist_prob_over_domin.out.txt	\
 logist_prob_domin.out.txt logist_prob_fv_recess.out.txt		\
 logist_prob_fv_over_domin.out.txt logist_prob_recess.out.txt
+
+cleanfiles_bt_flipmaf = logist_flipmaf_add.out.txt	\
+logist_flipmaf_fv_add.out.txt				\
+logist_prob_flipmaf_2df.out.txt				\
+logist_prob_flipmaf_fv_2df.out.txt			\
+logist_prob_flipmaf_add.out.txt				\
+logist_prob_flipmaf_fv_add.out.txt			\
+logist_prob_flipmaf_domin.out.txt			\
+logist_prob_flipmaf_fv_domin.out.txt			\
+logist_prob_flipmaf_over_domin.out.txt			\
+logist_prob_flipmaf_fv_over_domin.out.txt		\
+logist_prob_flipmaf_recess.out.txt			\
+logist_prob_flipmaf_fv_recess.out.txt
 
 cleanfiles_qt = linear_base_add.out.txt linear_base_fv_add.out.txt	\
 linear_allcov_add.out.txt linear_allcov_fv_add.out.txt			\
@@ -118,6 +137,19 @@ linear_ngp2_robust_int1_fv_2df.out.txt					\
 linear_ngp2_allcov_fv_2df.out.txt linear_ngp2_robust_fv_add.out.txt	\
 linear_ngp2_allcov_2df.out.txt
 
+cleanfiles_qt_flipmaf = linear_flipmaf_add.out.txt	\
+linear_flipmaf_fv_add.out.txt				\
+linear_ngp2_flipmaf_2df.out.txt				\
+linear_ngp2_flipmaf_add.out.txt				\
+linear_ngp2_flipmaf_domin.out.txt			\
+linear_ngp2_flipmaf_over_domin.out.txt			\
+linear_ngp2_flipmaf_recess.out.txt			\
+linear_ngp2_flipmaf_fv_2df.out.txt			\
+linear_ngp2_flipmaf_fv_add.out.txt			\
+linear_ngp2_flipmaf_fv_domin.out.txt			\
+linear_ngp2_flipmaf_fv_over_domin.out.txt		\
+linear_ngp2_flipmaf_fv_recess.out.txt
+
 cleanfiles_mms = mmscore_dose_add.out.txt mmscore_dose_fv_add.out.txt	\
 mmscore_prob_fv_over_domin.out.txt mmscore_prob_fv_domin.out.txt	\
 mmscore_prob_over_domin.out.txt mmscore_prob_fv_add.out.txt		\
@@ -147,6 +179,19 @@ coxph_prob_nocovar_add.out.txt				\
 coxph_prob_nocovar_2df.out.txt				\
 coxph_prob_nocovar_fv_2df.out.txt
 
+cleanfiles_cox_flipmaf = coxph_flipmaf_add.out.txt	\
+coxph_flipmaf_fv_add.out.txt				\
+coxph_prob_flipmaf_2df.out.txt				\
+coxph_prob_flipmaf_add.out.txt				\
+coxph_prob_flipmaf_domin.out.txt			\
+coxph_prob_flipmaf_over_domin.out.txt			\
+coxph_prob_flipmaf_recess.out.txt			\
+coxph_prob_flipmaf_fv_2df.out.txt			\
+coxph_prob_flipmaf_fv_add.out.txt			\
+coxph_prob_flipmaf_fv_domin.out.txt			\
+coxph_prob_flipmaf_fv_over_domin.out.txt		\
+coxph_prob_flipmaf_fv_recess.out.txt
+
 dose_files = chr1.chunk1.dose chr1.chunk2.dose chr2.chunk1.dose	\
  chr2.chunk2.dose chr1.dose chr2.dose
 
@@ -167,6 +212,7 @@ cleanfiles_probabel_check = height.PHE $(dose_files) $(prob_files)	\
 
 cleanfiles_dose_check = test.mldose
 
-CLEANFILES =  $(cleanfiles_probabel_check) $(cleanfiles_dose_check)	\
- $(cleanfiles_bt) $(cleanfiles_qt) $(cleanfiles_mms) $(cleanfiles_cox)  \
- $(cleanfiles_cox_nocovar)
+CLEANFILES = $(cleanfiles_probabel_check) $(cleanfiles_dose_check)	\
+ $(cleanfiles_bt) $(cleanfiles_bt_flipmaf) $(cleanfiles_qt)		\
+ $(cleanfiles_qt_flipmaf) $(cleanfiles_mms) $(cleanfiles_cox)		\
+ $(cleanfiles_cox_nocovar) $(cleanfiles_cox_flipmaf)
