@@ -36,6 +36,8 @@
 #ifndef COXPH_DATA_H_
 #define COXPH_DATA_H_
 
+#include <vector>
+
 #include "eigen_mematrix.h"
 #include "gendata.h"
 #include "mlinfo.h"
