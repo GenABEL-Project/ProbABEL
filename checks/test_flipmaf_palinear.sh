@@ -114,6 +114,7 @@ verify_results domin recess
 # After flipping alleles: beta_recess -> -beta_domin
 verify_results recess domin
 # For the overdominant model we don't expect changes
-run_diff linear_ngp2_over_domin.out.txt \
-         linear_ngp2_flipmaf_over_domin.out.txt \
-         "   QT check --flipmaf (overdomin): "
+# NOTE: disabled because of the allelesFlipped column was added.
+# run_diff linear_ngp2_over_domin.out.txt \
+#          linear_ngp2_flipmaf_over_domin.out.txt \
+#          "   QT check --flipmaf (overdomin): "

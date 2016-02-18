@@ -117,6 +117,7 @@ verify_results domin recess
 # After flipping alleles: beta_recess -> -beta_domin
 verify_results recess domin
 # For the overdominant model we don't expect changes
-run_diff logist_prob_over_domin.out.txt \
-         logist_prob_flipmaf_over_domin.out.txt \
-         "   Logistic check --flipmaf (overdomin): "
+# NOTE: disabled because of the allelesFlipped column was added.
+# run_diff logist_prob_over_domin.out.txt \
+#          logist_prob_flipmaf_over_domin.out.txt \
+#          "   Logistic check --flipmaf (overdomin): "
