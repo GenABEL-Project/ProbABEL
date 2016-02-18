@@ -34,23 +34,78 @@
 #include <cstdlib>
 
 /**
- * \brief Data from the mlinfo file.
+ * \brief Data read from the mlinfo file.
  *
  */
 class mlinfo {
  public:
-    int nsnps;                  /**< Number of SNPs */
-    std::string * name;         /**< Array of SNP names */
-    std::string * A1;           /**< Array with the first allele */
-    std::string * A2;           /**< Array with the second allele */
+    /**
+     * \brief Total number of SNPs in the info file.
+     */
+    int nsnps;
+
+    /**
+     * \brief Array of SNP names for each SNP.
+     *
+     * As read from the info file.
+     */
+    std::string * name;
+
+    /**
+     * \brief Array with the first allele for each SNP.
+     *
+     * As read from the info file.
+     */
+    std::string * A1;
+
+    /**
+     * \brief Array with the first allele for each SNP.
+     *
+     * As read from the info file.
+     */
+    std::string * A2;
+
+    /**
+     * \brief Array with the frequency of the mlinfo::A1 allele for each SNP.
+     *
+     * As read from the info file.
+     */
     double * Freq1;
-    double * MAF;               /**< The minor allele frequency */
-    double * Quality;           /**< The imputation quality metric */
-    double * Rsq;               /**< The imputation \f$R^2\f$ */
-    std::string * map;          /**< Array with the SNP positions */
+
+    /**
+     * \brief Array with the minor allele frequency for each SNP.
+     *
+     * As read from the info file.
+     */
+    double * MAF;
+
+    /**
+     * \brief Array with the imputation quality metric for each SNP
+     *
+     * As read from the info file. Note that the MaCH website recommends the
+     * use of mlinfo::Rsq.
+     */
+    double * Quality;
+
+    /**
+     * \brief Array The imputation \f$R^2\f$ for each SNP
+     *
+     * As read from the info file.
+     */
+    double * Rsq;
+
+    /**
+     * \brief Array with the SNP positions for each SNP.
+     *
+     * As read from the info file.
+     */
+    std::string * map;
 
 
     // Constructors and destructors
+    /**
+     * \brief Constructor. Sets all pointers to NULL.
+     */
     mlinfo()
     {
         Freq1 = NULL;
@@ -63,7 +118,9 @@ class mlinfo {
         name = NULL;
         map = NULL;
     }
+
     mlinfo(char * filename, char * mapname);
+
     ~mlinfo();
 };
 
