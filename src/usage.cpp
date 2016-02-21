@@ -70,7 +70,8 @@ void print_usage(char * program_name, int exit_code)
     cout << "\t --separat : [optional] character to separate fields "
          << "(default is space)"
          << endl;
-    cout << "\t --mafflip : swap/flip reference and effect allele based on MAF"
+    cout << "\t --flipmaf : [optional] swap/flip reference and effect allele"
+         << " based on MAF"
          << endl;
     cout << "\t --score   : use score test" << endl;
     cout << "\t --no-head : do not report header line" << endl;
