@@ -55,6 +55,16 @@ Use the score test.
 .B \-e, \-\^\-no-head
 Do not report header line in the output.
 .TP
+.B \-f \-\^\-flipmaf
+Flip reference and effect allele according to Minor Allele Frequency
+(MAF) such that the minor allele is the effect/predictor allele. If
+this option is set, ProbABEL will check for each genetic variant
+whether the \fBFreq1\fR column in the info file (see the \fI--info\fR
+option) is > 0.5 and if so will flip the probabilities/dosage of that
+variant such that \fBA1\fR and \fBA2\fR are interchanged. This will
+add a column called \fBAllelesFlipped\fR to the output file(s),
+indicating whether the alleles were flipped (1) or not (0).
+.TP
 .B \-l \-\^\-allcov
 Report estimates for all covariates (large outputs!).
 .TP
