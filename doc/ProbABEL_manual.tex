@@ -460,43 +460,44 @@ There are in total 11 command line options you can specify to the
 \PA{} analysis functions \texttt{palinear} or \texttt{palogist}. If
 you run either program with the \lstinline{--help} option, you will get a
 short explanation to the command line options:
-\begin{verbatim}
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily]
 user@server:~$ palogist --help
-probabel v. 0.4.5
-(C) Yurii Aulchenko, Lennart C. Karssen, Maksim Struchalin, EMCR
+probabel v. 0.5.0
+(C) Yurii Aulchenko, Lennart C. Karssen, Maarten Kooyman, Maksim Struchalin, The GenABEL team, EMC Rotterdam
 
-Using EIGEN version 3.1.2 for matrix operations
+Using EIGEN version 3.2.0 for matrix operations
 
 Usage: src/palogist options
 Options:
-         --pheno   : phenotype file name
-         --info    : information (e.g. MLINFO) file name
-         --dose    : predictor (e.g. MLDOSE/MLPROB) file name
-         --map     : [optional] map file name
-         --nids    : [optional] number of people to analyse
-         --chrom   : [optional] chromosome (to be passed to output)
-         --out     : [optional] output file name (default is regression.out.txt)
-         --skipd   : [optional] how many columns to skip in the predictor
-                     (dose/prob) file (default 2)
-         --ntraits : [optional] how many traits are analysed (default 1)
-         --ngpreds : [optional] how many predictor columns per marker
-                      (default 1 = MLDOSE; else use 2 for MLPROB)
-         --separat : [optional] character to separate fields (default is space)
-         --score   : use score test
-         --no-head : do not report header line
-         --allcov  : report estimates for all covariates (large outputs!)
-         --interaction: Which covariate to use for interaction with SNP analysis (default is no interaction, 0)
-         --mmscore : score test in samples of related individuals. File with inverse of variance-covariance matrix (for palinear) or inverse correlation (for palogist) as input parameter
-         --robust  : report robust (aka sandwich, aka Hubert-White) standard errors
-         --help    : print help
-\end{verbatim}
+	 --pheno   : phenotype file name
+	 --info    : information (e.g. MLINFO) file name
+	 --dose    : predictor (e.g. MLDOSE/MLPROB) file name
+	 --map     : [optional] map file name
+	 --nids    : [optional] number of people to analyse
+	 --chrom   : [optional] chromosome (to be passed to output)
+	 --out     : [optional] output file name (default is regression.out.txt)
+	 --skipd   : [optional] how many columns to skip in the predictor
+	             (dose/prob) file (default 2)
+	 --ntraits : [optional] how many traits are analysed (default 1)
+	 --ngpreds : [optional] how many predictor columns per marker
+	              (default 1 = MLDOSE; else use 2 for MLPROB)
+	 --separat : [optional] character to separate fields (default is space)
+	 --flipmaf : [optional] swap/flip reference and effect allele based on MAF
+	 --score   : use score test
+	 --no-head : do not report header line
+	 --allcov  : report estimates for all covariates (large outputs!)
+	 --interaction: Which covariate to use for interaction with SNP analysis (default is no interaction, 0)
+	 --mmscore : score test in samples of related individuals. File with inverse of variance-covariance matrix (for palinear) or inverse correlation (for palogist) as input parameter
+	 --robust  : report robust (aka sandwich, aka Hubert-White) standard errors
+	 --help    : print help
+\end{lstlisting}
 More information on the options can also be found in the manual page
 of each of the programs. For example, to access the manual page for
 \texttt{palinear} on a Linux system run\footnote{Use the \texttt{q}
   key to quit the man page viewer.}:
-\begin{verbatim}
+\begin{lstlisting}
 user@server$ man palinear
-\end{verbatim}
+\end{lstlisting}
 
 
 \subsection{Basic analysis options}
@@ -551,26 +552,8 @@ palinear -p height.txt -d gtdata/test.mlprob.fvi -i gtdata/test.mlinfo \
 \end{verbatim}
 
 \subsection{Advanced analysis options}
-The option \lstinline{--interaction} allows you to include interaction
-between SNPs and any covariate. If for example your model is
-\begin{equation*}
-  \textrm{trait} \sim \textrm{sex} + \textrm{age} + \textrm{SNP},
-\end{equation*}
-running the program with the option \lstinline{--interaction=2} will model
-\begin{equation*}
-  \textrm{trait} \sim \textrm{sex} + \textrm{age} + \textrm{SNP} +
-  \textrm{age} \times \mathrm{SNP}.
-\end{equation*}
-In this case, the \lstinline{chi2_SNP} column in the output file contains
-the $\chi_2^2$ statistic taken from the Likelihood ratio test. This
-LRT statistic is calculated based on a full model that contains all
-terms (sex, age, SNP and age$\times$SNP). The null model does not
-contain the terms that include the SNP.
-
-The option \lstinline{--robust} allows you to compute so-called
-``robust'' (a.k.a.~``sandwich'', a.k.a.~Hubert-White) standard errors
-(cf.~section \ref{sec:methodology} ``Methodology'' for details).
-
+\subsubsection{\lstinline{--mmscore}}
+\label{sec:mmscore}
 With the option \lstinline{--mmscore} a score test for association
 between a trait and genetic polymorphisms in samples of related
 individuals is performed. For quantitative traits (\texttt{palinear})
@@ -602,6 +585,90 @@ covariates, these should be kept to minimum as this is a score test. We
 suggest that any covariates explaining an essential proportion of
 variance should be fit as part of \GA{}'s
 \texttt{polygenic} procedure.
+
+
+\subsubsection{\lstinline{--flipmaf}}
+\label{sec:flipmaf}
+The \lstinline{--flipmaf} option flips the reference and effect
+alleles according to Minor Allele Frequency (MAF) such that the minor
+allele is the effect/predictor allele. If this option is set, ProbABEL
+will check for each genetic variant whether the \lstinline{Freq1}
+column in the info file (see the \lstinline{--info} option) is $> 0.5$
+and if that is indeed the case the probabilities/dosage of that
+variant will be flipped such that \lstinline{A1} and \lstinline{A2}
+are interchanged. In order to easily identify the variants that were
+flipped\footnote{One could of course simply do the comparison on the
+  \lstinline{Freq1} column oneself.} enabling the \lstinline{flipmaf}
+option will automatically add a column called
+\lstinline{AllelesFlipped} to the output file(s), indicating whether
+the alleles were flipped (\lstinline{1}) or not (\lstinline{0}).
+
+Using this option may help in case or moderately rare variants where
+one of the homozygote classes has only a few observations. In this
+case (particularly with the Cox proportional hazards model), using the
+rare homozygote class as reference can lead to numeric problems while
+performing the regression leading to \lstinline{NaN}s in the output.
+Using the \lstinline{--flipmaf} option can help to mitigate this
+issue.
+
+Assuming alleles A and B, flipping the allele coding has the following
+effect on the following genetic models:
+\begin{itemize}
+\item{additive model:} $\beta_\text{SNP} \to -\beta_\text{SNP}$
+\item{dominant model:}
+  $\beta_\text{SNP, dominant} \to -\beta_\text{SNP, recessive}$
+\item{recessive model:} $\beta_\text{SNP, recessive} \to -\beta_\text{SNP,
+    dominant}$
+\item{2df/genotypic model:} One of the $\beta$s will be flipped, the
+  other one will be raised/lowered.
+\end{itemize}
+To better observe what happens, one could use the \lstinline{--allcov}
+option (cf.~\ref{sec:allcov}) to output the effect sizes and
+corresponding standard errors of all covariates. This will show how
+the flipping of the alleles changes the value of the offset (mean,
+$\mu$) term of the regression equation.
+
+\subsubsection{\lstinline{--allcov}}
+\label{sec:allcov}
+Specifying the \lstinline{--allcov} option will output the effect size
+($\beta$) and corresponding standard error for each of the covariates
+(in addition to those for the SNP term that are output by default).
+For example, a linear regression, additive model with the equation
+\[
+Y \sim \mu + \text{sex} + \text{age} + \text{SNP},
+\]
+the header of the output file will be:
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily]
+name A1 A2 Freq1 MAF Quality Rsq n Mean_predictor_allele chrom position beta_mu sebeta_mu beta_sex sebeta_sex beta_age sebeta_age beta_SNP_addA1 sebeta_SNP_addA1 chi2_SNP_add
+\end{lstlisting}
+Note the \lstinline{beta_mu}, \lstinline{sebeta_mu} etc.~terms. Also
+note that using this option can lead to very large outputs.
+
+
+\subsubsection{\lstinline{--interaction}}
+\label{sec:interaction}
+The option \lstinline{--interaction} allows you to include interaction
+between SNPs and any covariate. If for example your model is
+\begin{equation*}
+  \textrm{trait} \sim \textrm{sex} + \textrm{age} + \textrm{SNP},
+\end{equation*}
+running the program with the option \lstinline{--interaction=2} will model
+\begin{equation*}
+  \textrm{trait} \sim \textrm{sex} + \textrm{age} + \textrm{SNP} +
+  \textrm{age} \times \mathrm{SNP}.
+\end{equation*}
+In this case, the \lstinline{chi2_SNP} column in the output file contains
+the $\chi_2^2$ statistic taken from the Likelihood ratio test. This
+LRT statistic is calculated based on a full model that contains all
+terms (sex, age, SNP and age$\times$SNP). The null model does not
+contain the terms that include the SNP.
+
+
+\subsubsection{\lstinline{--robust}}
+\label{sec:robust}
+The option \lstinline{--robust} allows you to compute so-called
+``robust'' (a.k.a.~``sandwich'', a.k.a.~Hubert-White) standard errors
+(cf.~section \ref{sec:methodology} ``Methodology'' for details).
 
 
 \subsection{Running multiple analyses at once: \texttt{probabel}}
