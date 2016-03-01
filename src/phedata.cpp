@@ -48,11 +48,6 @@ phedata::phedata(const char * fname, const int noutc, const int npeople,
     setphedata(fname, noutc, npeople, interaction, iscox);
 }
 
-void phedata::set_is_interaction_excluded(const bool int_exl)
-{
-    is_interaction_excluded = int_exl;
-}
-
 
 /**
  * Read phenotype data from file.
@@ -160,12 +155,6 @@ void phedata::setphedata(const char * fname, const int noutc,
         for (int i = (2 + noutcomes); i < nphenocols; i++)
         {
             infile >> tmp;
-            if (n_model_terms == interaction && is_interaction_excluded)
-               {
-                   interaction_cov_name = tmp;
-                   n_model_terms++;
-                   continue;
-               }
 
             model = model + " + ";
             model = model + tmp;
@@ -177,27 +166,13 @@ void phedata::setphedata(const char * fname, const int noutc,
     {
         if (iscox)
         {
-           if (!is_interaction_excluded)
-           {
-               model = model + " + "
-                   + model_terms[interaction - 1]
-                   + "*SNP_A1";
-           }
-           else
-           {
-               model = model + " + " + interaction_cov_name + "*SNP_A1";
-           }
+            model = model + " + "
+                + model_terms[interaction - 1]
+                + "*SNP_A1";
         }
         else
         {
-            if (!is_interaction_excluded)
-            {
-                model = model + " + " + model_terms[interaction] + "*SNP_A1";
-            }
-            else
-            {
-                model = model + " + " + interaction_cov_name + "*SNP_A1";
-            }
+            model = model + " + " + model_terms[interaction] + "*SNP_A1";
         }
     }
     model_terms[n_model_terms++] = "SNP_A1";

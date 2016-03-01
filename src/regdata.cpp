@@ -57,7 +57,6 @@ regdata::regdata()
     ncov                    = 0;
     ngpreds                 = 0;
     noutcomes               = 0;
-    is_interaction_excluded = false;
     gcount                  = 0;
     freq                    = 0;
 }
@@ -79,7 +78,6 @@ regdata::regdata(const regdata &obj) : masked_data(obj.masked_data),
     noutcomes = obj.noutcomes;
     gcount = obj.gcount;
     freq = obj.freq;
-    is_interaction_excluded = obj.is_interaction_excluded;
 }
 
 
@@ -93,11 +91,10 @@ regdata::regdata(const regdata &obj) : masked_data(obj.masked_data),
  * be added to the design matrix regdata::X. When set to a number < 0
  * no SNP data is added to the design matrix (e.g. when calculating
  * the null model).
- * \param ext_is_interaction_excluded Boolean that shows whether
- * interactions are excluded.
  */
-regdata::regdata(const phedata &phed, const gendata &gend, const int snpnum,
-                 const bool ext_is_interaction_excluded)
+regdata::regdata(const phedata &phed,
+                 const gendata &gend,
+                 const int snpnum)
 {
     freq        = 0;
     gcount      = 0;
@@ -147,7 +144,6 @@ regdata::regdata(const phedata &phed, const gendata &gend, const int snpnum,
         // for (int i=0;i<nids;i++)
         //     for (int j=0;j<ngpreds;j++)
         //       X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+j));
-    is_interaction_excluded = ext_is_interaction_excluded;
 }
 
 
@@ -260,7 +256,6 @@ regdata regdata::get_unmasked_data() const
     to.ncov                    = ncov;
     to.ngpreds                 = ngpreds;
     to.noutcomes               = noutcomes;
-    to.is_interaction_excluded = is_interaction_excluded;
     int dim2Y = Y.ncol;
     int dim2X = X.ncol;
     (to.X).reinit(to.nids, dim2X);

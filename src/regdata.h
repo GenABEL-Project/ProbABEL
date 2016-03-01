@@ -74,14 +74,6 @@ class regdata {
     int noutcomes;
 
     /**
-     * \brief Boolean that indicates whether the command line option
-     * --interaction_only was set.
-     *
-     * See cmdvars::is_interaction_excluded.
-     */
-    bool is_interaction_excluded;
-
-    /**
      * \brief A vector that contains ones/zeros to indicate which data
      * points should be omitted because no genetic data is present.
      *
@@ -122,8 +114,7 @@ class regdata {
     // Constructors and destructors
     regdata();
     regdata(const regdata &obj);
-    regdata(const phedata &phed, const gendata &gend, const int snpnum,
-            const bool ext_is_interaction_excluded);
+    regdata(const phedata &phed, const gendata &gend, const int snpnum);
     //~regdata();
 
 
