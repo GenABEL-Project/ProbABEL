@@ -51,8 +51,6 @@ class cmdvars
     int npeople;
     int ngpreds;
     int interaction;
-    int interaction_excluded;
-    bool is_interaction_excluded;
     int robust;
     string chrom;
     string sep;
@@ -82,8 +80,6 @@ class cmdvars
         npeople = -1;
         ngpreds = 1;
         interaction = 0;
-        interaction_excluded = 0;
-        is_interaction_excluded = false; //Oh Holy Matrix, forgive me for this!
         robust = 0;
         chrom = "-1";
         str_genfilename = "";
@@ -125,7 +121,6 @@ class cmdvars
     string getStrGenfilename() const;
 
     void printinfo();
-    bool isIsInteractionExcluded() const;
 };
 
 #endif /* COMMAND_LINE_SETTINGS_H_ */

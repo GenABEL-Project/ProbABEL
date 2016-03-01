@@ -50,7 +50,6 @@ class phedata {
  public:
     phedata()
     {
-        is_interaction_excluded = 0;
         nids_all                = 0;
         nids                    = 0;
         noutcomes               = 0;
@@ -69,10 +68,6 @@ class phedata {
 
     void setphedata(const char * fname, const int noutc, const int npeople,
                     const int interaction, const bool iscox);
-    void set_is_interaction_excluded(const bool inter_excluded);
-
-
-    bool is_interaction_excluded;
 
     /**
      * \brief The total number of individuals in the phenotype file,

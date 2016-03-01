@@ -486,7 +486,6 @@ Options:
          --no-head : do not report header line
          --allcov  : report estimates for all covariates (large outputs!)
          --interaction: Which covariate to use for interaction with SNP analysis (default is no interaction, 0)
-         --interaction_only: like previous but without covariate acting in interaction with SNP (default is no interaction, 0)
          --mmscore : score test in samples of related individuals. File with inverse of variance-covariance matrix (for palinear) or inverse correlation (for palogist) as input parameter
          --robust  : report robust (aka sandwich, aka Hubert-White) standard errors
          --help    : print help
@@ -604,20 +603,6 @@ suggest that any covariates explaining an essential proportion of
 variance should be fit as part of \GA{}'s
 \texttt{polygenic} procedure.
 
-The option \lstinline{--interaction_only} is like \lstinline{--interaction}
-but does not include the main effect of the covariate which is acting
-in interaction with SNP into the model. For example, if \texttt{age}
-is the second covariate in the phenotype file, using the option
-\lstinline{--interaction_only=2} leads to the following model:
-\begin{equation*}
-  \textrm{trait} \sim \textrm{sex} + \textrm{SNP} +
-  \textrm{age} \times \mathrm{SNP}.
-\end{equation*}
-
-This option is useful when
-running \lstinline{--mmscore}, in which case the main effect should
-normally estimated in the polygenic model and only the interaction
-term in the \PA{} analysis.
 
 \subsection{Running multiple analyses at once: \texttt{probabel}}
 The \texttt{bin/probabel} script is a handy wraper for the \PA{}

@@ -140,7 +140,7 @@ int main(int argc, char * argv[])
 #if COXPH
     coxph_data nrgd = coxph_data(phd, gtd, -1);
 #else
-    regdata nrgd = regdata(phd, gtd, -1, input_var.isIsInteractionExcluded());
+    regdata nrgd = regdata(phd, gtd, -1);
 #endif
 
     std::cout << " loaded null data..." << std::flush;
@@ -175,7 +175,7 @@ int main(int argc, char * argv[])
 #if COXPH
     coxph_data rgd(phd, gtd, 0);
 #else
-    regdata rgd(phd, gtd, 0, input_var.isIsInteractionExcluded());
+    regdata rgd(phd, gtd, 0);
 #endif
     std::cout << " formed regression object...\n";
 

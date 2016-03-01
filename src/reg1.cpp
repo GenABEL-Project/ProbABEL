@@ -59,9 +59,6 @@
  * interaction term.
  * @param ngpreds Number of genetic predictors (1 for dosage data, 2
  * for probability data).
- * @param is_interaction_excluded Indicates whether the main term for
- * the covariate used in the interaction term should be excluded from
- * the model.
  * @param iscox Indicates whether a CoxPH regression is being done.
  * @param nullmodel Indicates whether the null model is being analysed.
  *
@@ -71,7 +68,6 @@ mematrix<double> apply_model(const mematrix<double>& X,
                              const int model,
                              const int interaction,
                              const int ngpreds,
-                             const bool is_interaction_excluded,
                              const bool iscox,
                              const int nullmodel)
 {
@@ -134,36 +130,6 @@ mematrix<double> apply_model(const mematrix<double>& X,
                 }
             }
 
-            if (is_interaction_excluded)
-            {
-                mematrix<double> nX_without_interact_phe;
-                nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
-
-                for (int row = 0; row < nX.nrow; row++)
-                {
-                    // Han Chen
-                    int col_new = -1;
-                    for (int col = 0; col < nX.ncol; col++)
-                    {
-                        if (col != interaction && !iscox)
-                        {
-                            col_new++;
-                            nX_without_interact_phe[row
-                               * nX_without_interact_phe.ncol + col_new] =
-                                nX[row * nX.ncol + col];
-                        }
-                        if (col != interaction - 1 && iscox)
-                        {
-                            col_new++;
-                            nX_without_interact_phe[row
-                               * nX_without_interact_phe.ncol + col_new] =
-                                nX[row * nX.ncol + col];
-                        }
-                    } // interaction_only, model==0
-                    // Oct 26, 2009
-                }
-                return nX_without_interact_phe;
-            }  // End of is_interaction_excluded
             return (nX);
         } // End if (interaction !=0)
         else
@@ -218,33 +184,6 @@ mematrix<double> apply_model(const mematrix<double>& X,
                     * nX[i * nX.ncol + c1];  // Maksim: interaction with SNP
     }
 
-    //Han Chen
-    if (is_interaction_excluded)
-    {
-        mematrix<double> nX_without_interact_phe;
-        nX_without_interact_phe.reinit(nX.nrow, nX.ncol - 1);
-
-        for (int row = 0; row < nX.nrow; row++)
-        {
-            int col_new = -1;
-            for (int col = 0; col < nX.ncol; col++)
-            {
-                if (col != interaction && !iscox)
-                {
-                    col_new++;
-                    nX_without_interact_phe[row * nX_without_interact_phe.ncol
-                            + col_new] = nX[row * nX.ncol + col];
-                }
-                if (col != interaction - 1 && iscox)
-                {
-                    col_new++;
-                    nX_without_interact_phe[row * nX_without_interact_phe.ncol
-                            + col_new] = nX[row * nX.ncol + col];
-                }
-            }
-        }
-        return nX_without_interact_phe;
-    }  // interaction_only, model!=0, ngpreds==2
     return nX;
 }
 
@@ -278,13 +217,9 @@ mematrix<double> t_apply_model(const mematrix<double>& X,
                                const bool iscox,
                                const int nullmodel)
 {
-    /* TODO: Why does this function not have a param called
-       is_interaction_excluded like t_apply_model has? Currently the
-       interaction parameter value is passed to apply_model() in that
-       slot. */
     mematrix<double> tmpX = transpose(X);
     mematrix<double> nX = apply_model(tmpX, model, interaction, ngpreds,
-            interaction, iscox, nullmodel);
+                                      iscox, nullmodel);
     mematrix<double> out = transpose(nX);
     return out;
 }
@@ -318,7 +253,7 @@ void base_reg::base_score(const mematrix<double>& resid,
                           const int nullmodel) {
     mematrix<double> oX = reg_data.extract_genotypes();
     mematrix<double> X = apply_model(oX, model, interaction, ngpreds,
-            reg_data.is_interaction_excluded, false, nullmodel);
+                                     false, nullmodel);
     beta.reinit(X.ncol, 1);
     sebeta.reinit(X.ncol, 1);
     int length_beta = X.ncol;
@@ -571,8 +506,6 @@ void linear_reg::estimate(const int verbose,
 
     if (verbose)
     {
-        cout << reg_data.is_interaction_excluded
-                << " <-rdata.is_interaction_excluded\n";
         // std::cout << "invvarmatrix:\n";
         // invvarmatrixin.masked_data->print();
         std::cout << "rdata.X:\n";
@@ -580,7 +513,7 @@ void linear_reg::estimate(const int verbose,
     }
 
     mematrix<double> X = apply_model(reg_data.X, model, interaction, ngpreds,
-            reg_data.is_interaction_excluded, false, nullmodel);
+                                     false, nullmodel);
     if (verbose)
     {
         std::cout << "X:\n";
@@ -718,8 +651,7 @@ void logistic_reg::estimate(const int verbose,
         invvarmatrixin.update_mask(reg_data.masked_data);
     }
     mematrix<double> X = apply_model(reg_data.X, model, interaction, ngpreds,
-                                     reg_data.is_interaction_excluded, false,
-                                     nullmodel);
+                                     false, nullmodel);
     int length_beta = X.ncol;
     beta.reinit(length_beta, 1);
     sebeta.reinit(length_beta, 1);

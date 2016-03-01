@@ -114,7 +114,6 @@ void open_files_for_output(std::vector<std::ofstream*>& outfile,
 
 int create_phenotype(phedata& phd, const cmdvars& input_var)
 {
-    phd.set_is_interaction_excluded(input_var.isIsInteractionExcluded());
     phd.setphedata(input_var.getPhefilename(),
                    input_var.getNoutcomes(),
                    input_var.getNpeople(),
