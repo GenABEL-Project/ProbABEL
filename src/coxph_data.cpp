@@ -1,5 +1,12 @@
-/*
- * coxph_data.cpp
+/**
+ * \file coxph_data.cpp
+ * \author Yurii S. Aulchenko
+ * \author L.C. Karssen
+ * \author M. Kooyman
+ * \author Maksim V. Struchalin
+ *
+ * \brief Describes functions of the coxphdata class for Cox PH
+ * regression objects
  *
  *  Created on: Mar 31, 2012
  *      Author: mkooyman
@@ -288,7 +295,7 @@ void coxph_data::update_snp(const gendata *gend, const int snpnum) {
      * 'ncov-j' changes to 'ncov-j-1'
      */
 
-    // reset counter for frequency since it is a new SNP
+    // Reset counter for frequency since it is a new SNP
     gcount = 0;
     freq   = 0.0;
 
@@ -302,7 +309,7 @@ void coxph_data::update_snp(const gendata *gend, const int snpnum) {
             X.put(snpdata[i], (ncov - j), order[i]);
             if (std::isnan(snpdata[i])) {
                 masked_data[order[i]] = true;
-                // snp not masked
+                // SNP not masked
             } else {
                 // check for first predictor
                 if (j == 0) {

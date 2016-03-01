@@ -1,5 +1,11 @@
-/*
- * phedata.h
+/**
+ * \file phedata.h
+ * \author Y.S. Aulchenko
+ * \author L.C. Karssen
+ * \author M. Kooyman
+ * \author Maksim V. Struchalin
+ *
+ * \brief Describes the phdata class containing the phenotype data.
  *
  *  Created on: Mar 6, 2012
  *      Author: mkooyman

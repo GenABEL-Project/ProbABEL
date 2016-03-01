@@ -170,9 +170,9 @@ void regdata::update_snp(const gendata *gend, const int snpnum)
 {
     // Reset counter for frequency since it is a new SNP
     gcount = 0;
-    freq = 0.0;
+    freq   = 0.0;
 
-    // Add genotypic data (dosage or probabilities) to the design
+    // Add genotype data (dosage or probabilities) to the design
     // matrix X. Start filling from the last column, so for
     // probability data (ngpreds==2) the order of the two
     // probabilities is reversed.
@@ -214,7 +214,7 @@ void regdata::update_snp(const gendata *gend, const int snpnum)
 /**
  * \brief Remove SNP information from the design matrix regdata::X.
  *
- * update_snp() adds SNP information to the design matrix. This
+ * \ref update_snp adds SNP information to the design matrix. This
  * function allows you to strip that information from X again.
  * This is used for example when calculating the null model.
  */
