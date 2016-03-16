@@ -438,7 +438,7 @@ int main(int argc, char * argv[])
                          * equation just below Eq.(4) in the ProbABEL
                          * paper. TODO LCK
                          */
-                        *chi2[model] << "NaN";
+                        *chi2[model] << NAN;
                     }
                     else
                     {
@@ -483,9 +483,9 @@ int main(int argc, char * argv[])
                 for (int pos = 0; pos < end_pos; pos++)
                 {
                     *beta_sebeta[model] << input_var.getSep()
-                            << "NaN"
+                            << NAN
                             << input_var.getSep()
-                            << "NaN";
+                            << NAN;
                 }
 
                 if (input_var.getNgpreds() == 2)
@@ -497,16 +497,16 @@ int main(int argc, char * argv[])
                     {
                         if (model == 0)
                         {
-                            *covvalue[model] << "NaN"
+                            *covvalue[model] << NAN
                                              << input_var.getSep()
-                                             << "NaN";
+                                             << NAN;
                         } else{
-                            *covvalue[model] << "NaN";
+                            *covvalue[model] << NAN;
                         }
                     }
 #endif
                     // Oct 26, 2009
-                    *chi2[model] << "NaN";
+                    *chi2[model] << NAN;
                 } else{
                     // ngpreds==1 (and SNP is rare)
                     if (input_var.getInverseFilename() == NULL)
@@ -516,12 +516,12 @@ int main(int argc, char * argv[])
                         if (!input_var.getAllcov()
                                 && input_var.getInteraction() != 0)
                         {
-                            *covvalue[model] << "NaN";
+                            *covvalue[model] << NAN;
                         }
 #endif
                         // Oct 26, 2009
                     }  // END if getInverseFilename == NULL
-                    *chi2[model] << "NaN";
+                    *chi2[model] << NAN;
                 }  // END ngpreds == 1 (and SNP is rare)
             }  // END else: SNP is rare
         }  // END of model cycle
