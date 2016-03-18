@@ -309,6 +309,13 @@ void coxph_data::update_snp(const gendata *gend,
 
     for (int j = 0; j < ngpreds; j++)
     {
+        // Row in X that  (note X is transposed when doing Cox
+        // regression) contains the SNP data we are updating
+        int snprow = ncov - j;
+        // Double check: The number of rows in the X matrix should be
+        // equal to ncov + 1 for mu.
+        assert(snprow == X.nrow - 1 - j);
+
         double *snpdata = new double[nids];
         masked_data = std::vector<bool>(nids, false);
 
@@ -337,16 +344,16 @@ void coxph_data::update_snp(const gendata *gend,
                 if (ngpreds == 1)
                 {
                     // Dosage data
-                    X.put(2 - snpdata[i], (ncov - j), order[i]);
+                    X.put(2 - snpdata[i], snprow, order[i]);
                 }
                 else if (ngpreds == 2 && j == 0) {
                     // Probability data, first probability (= P_A1A1)
-                    X.put(1 - snpdata[i] - PA1A2[i], (ncov - j), order[i]);
+                    X.put(1 - snpdata[i] - PA1A2[i], snprow, order[i]);
                 }
                 else if (ngpreds == 2 && j == 1)
                 {
                     // Probability data, second probability
-                    X.put(snpdata[i], (ncov - j), order[i]);
+                    X.put(snpdata[i], snprow, order[i]);
                 }
                 else {
                     // You should never come here...
@@ -360,7 +367,7 @@ void coxph_data::update_snp(const gendata *gend,
             {
                 // No flipping needed, simply copy the genetic data to the
                 // snpdata array.
-                X.put(snpdata[i], (ncov - j), order[i]);
+                X.put(snpdata[i], snprow, order[i]);
             }
 
             if (std::isnan(snpdata[i])) {
