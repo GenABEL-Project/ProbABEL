@@ -553,7 +553,9 @@ void coxph_reg::estimate(const coxph_data &cdatain,
     // Check the results of the Cox fit; mirrored from the same checks
     // in coxph.fit.S and coxph.R from the R survival package.
 
-    bool setToNAN = false;
+    // A vector to indicate for which covariates the betas/se_betas
+    // should be set to NAN.
+    std::vector<bool> setToNAN = std::vector<bool>(X.nrow, false);
 
     // Based on coxph.fit.S lines with 'which.sing' and coxph.R line
     // with if(any(is.NA(coefficients))). These lines set coefficients
@@ -566,19 +568,26 @@ void coxph_reg::estimate(const coxph_data &cdatain,
         MatrixXd imateigen = imat.data;
         VectorXd imatdiag = imateigen.diagonal();
 
-        // Start at i=1 to exclude the beta coefficient for the
-        // (constant) mean from the check.
-        for (int i=1; i < imatdiag.size(); i++)
+        for (int i=0; i < imatdiag.size(); i++)
         {
             if (imatdiag[i] == 0)
-                {
-                    which_sing = i;
-                    setToNAN = true;
+            {
+                which_sing = i;
+                setToNAN[which_sing] = true;
+                if (i != 0) {
+                    // Don't warn for i=0 to exclude the beta
+                    // coefficient for the (constant) mean from the
+                    // check. For Cox regression the constant terms
+                    // are ignored. However, we leave it in the
+                    // calculations because otherwise the null model
+                    // calculation will fail in case there are no
+                    // other covariates than the SNP.
                     std::cerr << "Warning for " << snpinfo.name[cursnp]
                               << ", model " << modelNames[model]
                               << ": X matrix deemed to be singular (variable "
                               << which_sing + 1 << ")" << std::endl;
                 }
+            }
         }
     }
 
@@ -596,14 +605,14 @@ void coxph_reg::estimate(const coxph_data &cdatain,
              << ", model " << modelNames[model]
              << ": Cox regression ran out of iterations and did not converge,"
              << " setting beta and se to 'NaN'\n";
-        setToNAN = true;
+
+        std::fill(setToNAN.begin(), setToNAN.end(), true);
     } else {
         VectorXd ueigen = u.data;
         MatrixXd imateigen = imat.data;
         VectorXd infs = ueigen.transpose() * imateigen;
         infs = infs.cwiseAbs();
         VectorXd betaeigen = beta.data;
-        bool problems = false;
 
         assert(betaeigen.size() == infs.size());
 
@@ -613,24 +622,21 @@ void coxph_reg::estimate(const coxph_data &cdatain,
         for (int i = 0; i < infs.size(); i++) {
             if (infs[i] > EPS &&
                 infs[i] > sqrt(EPS) * abs(betaeigen[i])) {
-                problems = true;
+                setToNAN[i] = true;
+                cerr << "Warning for " << snpinfo.name[cursnp]
+                     << ", model " << modelNames[model]
+                     << ": beta for covariate " << i + 1 << " may be infinite,"
+                     << " setting beta and se to 'NaN'\n";
             }
-        }
-
-        if (problems) {
-            cerr << "Warning for " << snpinfo.name[cursnp]
-                 << ": beta may be infinite,"
-                 << " setting beta and se to 'NaN'\n";
-
-            setToNAN = true;
         }
     }
 
     for (int i = 0; i < X.nrow; i++)
     {
-        if (setToNAN)
+        if (setToNAN[i])
         {
-            // Cox regression failed
+            // Cox regression failed somewhere, set results to NAN for
+            // this X row (covariate or SNP)
             sebeta[i] = NAN;
             beta[i]   = NAN;
             loglik    = NAN;
