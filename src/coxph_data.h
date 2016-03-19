@@ -202,6 +202,7 @@ class coxph_reg {
 
     // Member functions
     void estimate(const coxph_data &cdatain, const int model,
+                  const std::vector<std::string> &modelNames,
                   const int interaction, const int ngpreds, const bool iscox,
                   const int nullmodel, const mlinfo &snpinfo, const int cursnp);
 

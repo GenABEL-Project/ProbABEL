@@ -492,6 +492,7 @@ coxph_reg::coxph_reg(const coxph_data &cdatain)
 
 void coxph_reg::estimate(const coxph_data &cdatain,
                          const int model,
+                         const std::vector<std::string> &modelNames,
                          const int interaction, const int ngpreds,
                          const bool iscox, const int nullmodel,
                          const mlinfo &snpinfo, const int cursnp)
@@ -574,6 +575,7 @@ void coxph_reg::estimate(const coxph_data &cdatain,
                     which_sing = i;
                     setToNAN = true;
                     std::cerr << "Warning for " << snpinfo.name[cursnp]
+                              << ", model " << modelNames[model]
                               << ": X matrix deemed to be singular (variable "
                               << which_sing + 1 << ")" << std::endl;
                 }
@@ -583,6 +585,7 @@ void coxph_reg::estimate(const coxph_data &cdatain,
     if (niter >= MAXITER)
     {
         cerr << "Warning for " << snpinfo.name[cursnp]
+             << ", model " << modelNames[model]
              << ": nr of iterations > the maximum (" << MAXITER << "): "
              << niter << endl;
     }
@@ -590,6 +593,7 @@ void coxph_reg::estimate(const coxph_data &cdatain,
     if (flag == 1000)
     {
         cerr << "Warning for " << snpinfo.name[cursnp]
+             << ", model " << modelNames[model]
              << ": Cox regression ran out of iterations and did not converge,"
              << " setting beta and se to 'NaN'\n";
         setToNAN = true;

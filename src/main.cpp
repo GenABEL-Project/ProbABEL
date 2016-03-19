@@ -138,6 +138,28 @@ int main(int argc, char * argv[])
     }
 
 
+    // Set the number and names of the genetic models that will be
+    // analysed.
+    // The total number of genetic models
+    int maxmod = 0;
+    // The human readable names of the genetic models
+    std::vector<std::string> modelNames;
+
+    if (input_var.getNgpreds() == 1) {
+        // For dosage data we can only run the additive model.
+        maxmod = 1;
+        modelNames.push_back("additive");
+    } else if (input_var.getNgpreds() == 2) {
+        maxmod = 5;             // Only with probability data can we
+                                // run all of them.
+        modelNames.push_back("2df");
+        modelNames.push_back("additive");
+        modelNames.push_back("dominant");
+        modelNames.push_back("recessive");
+        modelNames.push_back("overdominant");
+    }
+
+
     // estimate null model
 #if COXPH
     coxph_data nrgd = coxph_data(phd, gtd, -1);
@@ -166,7 +188,7 @@ int main(int argc, char * argv[])
                  input_var.getRobust(), 1);
 #elif COXPH
     coxph_reg nrd = coxph_reg(nrgd);
-    nrd.estimate(nrgd, 0,
+    nrd.estimate(nrgd, 0, modelNames,
                  input_var.getInteraction(), input_var.getNgpreds(),
                  true, 1, mli, 0);
 #endif
@@ -215,14 +237,6 @@ int main(int argc, char * argv[])
             create_header(outfile, input_var, phd, interaction_cox);
         }
     }  // END else: we have dosage data => only one file
-
-
-    int maxmod = 5;             // Total number of models (in random
-                                // order: additive, recessive,
-                                // dominant, over_dominant, 2df). Only
-                                // with probability data can we run
-                                // all of them. For dosage data we can
-                                // only run the additive model.
 
     int start_pos, end_pos;
 
@@ -282,8 +296,6 @@ int main(int argc, char * argv[])
             int file = 0;
             write_mlinfo(outfile, file, mli, csnp, input_var,
                          rgd.gcount, rgd.freq);
-            maxmod = 1;         // We can only calculate the additive
-                                // model with dosage data
         }
 
         // Run regression for each model for the current SNP
@@ -316,6 +328,7 @@ int main(int argc, char * argv[])
                 }
 #else
                 rd.estimate(rgd, model,
+                            modelNames,
                             input_var.getInteraction(),
                             input_var.getNgpreds(), true, 0, mli, csnp);
 #endif
@@ -410,7 +423,7 @@ int main(int argc, char * argv[])
 #else
                             coxph_reg new_null_rd(new_rgd);
                             new_null_rd.estimate(new_rgd,
-                                                 model,
+                                                 model, modelNames,
                                                  input_var.getInteraction(),
                                                  input_var.getNgpreds(),
                                                  true, 1, mli, csnp);
