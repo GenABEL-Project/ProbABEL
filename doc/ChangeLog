@@ -3,8 +3,23 @@
   Eigen has been removed.
 * Fixed issue Github #16: "Too many NANs for SNPs with low `Rsq` when some
   commandline options are specified"
-* Not-a-number values in the output are now printed as "NaN" instead of
-  "nan".
+* Added --flipmaf command line option to palinear, pacoxph and palogist.
+  If this option is selected, ProbABEL will 'flip' the alleles A1 and A2
+  for those variants for which the Freq1 value in the info file is less
+  than 0.5. Changing the reference and effect allele in this way can
+  sometimes (for some genetic models and low MAF), reduce regression
+  errors and thus result in proper estimates which otherwise be set to
+  NaN. Many thanks for the group of Prof. Kiemeney at the dept. of Health
+  Evidence Radboud UMC in Nijmegen (NL) for sponsoring the work on this
+  feature! Also thanks to Tessel Galesloot from the same group for
+  extensive testing of this release.
+* Don't set the betas and se_betas for all covariates in case Cox
+  regression problems like singularities occur, but only the beta/se_beta
+  of the corresponding covariate. Also make the corresponding warning
+  messages more clear by including the name of the genetic model that is
+  being tested.
+* Not-a-number values in the output are now printed as "nan" instead of
+  "NaN".
 * Linear regression mmscore option is 2 times faster
 * Speedup of Linear regression: (measured with multiple runs with 2 covariates,
   33815 SNP and 3485 people (using all) compared to v.0.4.3)
