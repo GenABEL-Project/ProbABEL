@@ -97,7 +97,17 @@ coxph_prob_fv_over_domin.out.txt coxph_prob_fv_domin.out.txt		\
 coxph_prob_over_domin.out.txt coxph_prob_fv_add.out.txt			\
 coxph_prob_fv_recess.out.txt coxph_prob_domin.out.txt			\
 coxph_prob_recess.out.txt coxph_prob_add.out.txt			\
-coxph_prob_2df.out.txt coxph_prob_fv_2df.out.txt
+coxph_prob_2df.out.txt coxph_prob_fv_2df.out.txt			\
+coxph_prob_allcov_recess.out.txt					\
+coxph_prob_allcov_fv_2df.out.txt					\
+coxph_prob_allcov_2df.out.txt						\
+coxph_prob_allcov_domin.out.txt						\
+coxph_prob_allcov_fv_over_domin.out.txt					\
+coxph_prob_allcov_over_domin.out.txt					\
+coxph_prob_allcov_fv_add.out.txt					\
+coxph_prob_allcov_fv_recess.out.txt					\
+coxph_prob_allcov_add.out.txt						\
+coxph_prob_allcov_fv_domin.out.txt
 
 cleanfiles_cox_nocovar = coxph_dose_nocovar_add.out.txt	\
 coxph_dose_nocovar_fv_add.out.txt			\

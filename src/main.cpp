@@ -94,7 +94,9 @@ int main(int argc, char * argv[])
     input_var.printinfo();
 
     cout << "Reading info data...\n" << flush;
-    mlinfo mli(input_var.getMlinfofilename(), input_var.getMapfilename());
+    mlinfo mli(input_var.getMlinfofilename(),
+               input_var.getMapfilename(),
+               input_var.getFlipMAF());
     int nsnps = mli.nsnps;
     phedata phd;
     cout << "Reading phenotype data...\n" << flush;
@@ -136,6 +138,28 @@ int main(int argc, char * argv[])
     }
 
 
+    // Set the number and names of the genetic models that will be
+    // analysed.
+    // The total number of genetic models
+    int maxmod = 0;
+    // The human readable names of the genetic models
+    std::vector<std::string> modelNames;
+
+    if (input_var.getNgpreds() == 1) {
+        // For dosage data we can only run the additive model.
+        maxmod = 1;
+        modelNames.push_back("additive");
+    } else if (input_var.getNgpreds() == 2) {
+        maxmod = 5;             // Only with probability data can we
+                                // run all of them.
+        modelNames.push_back("2df");
+        modelNames.push_back("additive");
+        modelNames.push_back("dominant");
+        modelNames.push_back("recessive");
+        modelNames.push_back("overdominant");
+    }
+
+
     // estimate null model
 #if COXPH
     coxph_data nrgd = coxph_data(phd, gtd, -1);
@@ -164,7 +188,7 @@ int main(int argc, char * argv[])
                  input_var.getRobust(), 1);
 #elif COXPH
     coxph_reg nrd = coxph_reg(nrgd);
-    nrd.estimate(nrgd, 0,
+    nrd.estimate(nrgd, 0, modelNames,
                  input_var.getInteraction(), input_var.getNgpreds(),
                  true, 1, mli, 0);
 #endif
@@ -214,14 +238,6 @@ int main(int argc, char * argv[])
         }
     }  // END else: we have dosage data => only one file
 
-
-    int maxmod = 5;             // Total number of models (in random
-                                // order: additive, recessive,
-                                // dominant, over_dominant, 2df). Only
-                                // with probability data can we run
-                                // all of them. For dosage data we can
-                                // only run the additive model.
-
     int start_pos, end_pos;
 
     std::vector<std::ostringstream *> beta_sebeta;
@@ -252,7 +268,7 @@ int main(int argc, char * argv[])
     // Here we start the analysis for each SNP.
     for (int csnp = 0; csnp < nsnps; csnp++)
     {
-        rgd.update_snp(&gtd, csnp);
+        rgd.update_snp(&gtd, csnp, mli, input_var.getFlipMAF());
 
 
         int poly = 1;
@@ -280,8 +296,6 @@ int main(int argc, char * argv[])
             int file = 0;
             write_mlinfo(outfile, file, mli, csnp, input_var,
                          rgd.gcount, rgd.freq);
-            maxmod = 1;         // We can only calculate the additive
-                                // model with dosage data
         }
 
         // Run regression for each model for the current SNP
@@ -314,6 +328,7 @@ int main(int argc, char * argv[])
                 }
 #else
                 rd.estimate(rgd, model,
+                            modelNames,
                             input_var.getInteraction(),
                             input_var.getNgpreds(), true, 0, mli, csnp);
 #endif
@@ -408,7 +423,7 @@ int main(int argc, char * argv[])
 #else
                             coxph_reg new_null_rd(new_rgd);
                             new_null_rd.estimate(new_rgd,
-                                                 model,
+                                                 model, modelNames,
                                                  input_var.getInteraction(),
                                                  input_var.getNgpreds(),
                                                  true, 1, mli, csnp);
@@ -436,7 +451,7 @@ int main(int argc, char * argv[])
                          * equation just below Eq.(4) in the ProbABEL
                          * paper. TODO LCK
                          */
-                        *chi2[model] << "NaN";
+                        *chi2[model] << NAN;
                     }
                     else
                     {
@@ -447,34 +462,43 @@ int main(int argc, char * argv[])
             }  // END first part of if(poly); allele not too rare
             else
             {   // SNP is rare: beta, sebeta, chi2 = NaN
-                int number_of_rows_or_columns = rgd.X.ncol;
-                start_pos = get_start_position(input_var, model,
-                        number_of_rows_or_columns);
 
-                if (input_var.getInteraction() != 0 && !input_var.getAllcov()
-                    && input_var.getNgpreds() != 2)
+                // Find out how many columns of nan need to be
+                // printed.
+                end_pos = 1;    // One entry for the SNP term
+
+                if (input_var.getAllcov())
                 {
-                    start_pos++;
+                    end_pos += phd.n_model_terms - 1;
                 }
 
-                if (input_var.getNgpreds() == 0)
+                if(input_var.getNgpreds() == 2 && model == 0)
                 {
-                    end_pos = rgd.X.ncol;
-                } else{
-                    end_pos = rgd.X.ncol - 1;
-                }
-
-                if (input_var.getInteraction() != 0)
-                {
+                    // The 2df model needs an extra entry for the
+                    // second genotype coefficient.
                     end_pos++;
                 }
 
-                for (int pos = start_pos; pos <= end_pos; pos++)
+                if(input_var.getInteraction() != 0)
+                {
+                    // There's an interaction term, add an extra entry
+                    // for its coefficient.
+                    end_pos++;
+                    if(input_var.getNgpreds() == 2 && model == 0)
+                    {
+                        // For interaction + 2df model another entry
+                        // needs to be added, because each of the
+                        // genotype coefficients for the interaction.
+                        end_pos++;
+                    }
+                }
+
+                for (int pos = 0; pos < end_pos; pos++)
                 {
                     *beta_sebeta[model] << input_var.getSep()
-                            << "NaN"
+                            << NAN
                             << input_var.getSep()
-                            << "NaN";
+                            << NAN;
                 }
 
                 if (input_var.getNgpreds() == 2)
@@ -486,16 +510,16 @@ int main(int argc, char * argv[])
                     {
                         if (model == 0)
                         {
-                            *covvalue[model] << "NaN"
+                            *covvalue[model] << NAN
                                              << input_var.getSep()
-                                             << "NaN";
+                                             << NAN;
                         } else{
-                            *covvalue[model] << "NaN";
+                            *covvalue[model] << NAN;
                         }
                     }
 #endif
                     // Oct 26, 2009
-                    *chi2[model] << "NaN";
+                    *chi2[model] << NAN;
                 } else{
                     // ngpreds==1 (and SNP is rare)
                     if (input_var.getInverseFilename() == NULL)
@@ -505,12 +529,12 @@ int main(int argc, char * argv[])
                         if (!input_var.getAllcov()
                                 && input_var.getInteraction() != 0)
                         {
-                            *covvalue[model] << "NaN";
+                            *covvalue[model] << NAN;
                         }
 #endif
                         // Oct 26, 2009
                     }  // END if getInverseFilename == NULL
-                    *chi2[model] << "NaN";
+                    *chi2[model] << NAN;
                 }  // END ngpreds == 1 (and SNP is rare)
             }  // END else: SNP is rare
         }  // END of model cycle
