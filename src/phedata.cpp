@@ -164,16 +164,9 @@ void phedata::setphedata(const char * fname, const int noutc,
     model = model + " + SNP_A1";
     if (interaction != 0)
     {
-        if (iscox)
-        {
             model = model + " + "
-                + model_terms[interaction - 1]
+                + model_terms[interaction]
                 + "*SNP_A1";
-        }
-        else
-        {
-            model = model + " + " + model_terms[interaction] + "*SNP_A1";
-        }
     }
     model_terms[n_model_terms++] = "SNP_A1";
 
