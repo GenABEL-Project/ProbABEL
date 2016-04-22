@@ -1,4 +1,4 @@
-***** v.0.5.0 (2016.)
+***** v.0.5.0 (2016.05.04)
 * ProbABEL now depends on the Eigen library. The option to compile without
   Eigen has been removed. Eigen 3.2.1 is included with ProbABEL. The
   directory src/eigen-3.2.1 contains header files we need. The full Eigen
@@ -18,7 +18,7 @@
   NaN. Many thanks for the group of Prof. Kiemeney at the dept. of Health
   Evidence Radboud UMC in Nijmegen (NL) for sponsoring the work on this
   feature! Also thanks to Tessel Galesloot from the same group for
-  extensive testing of this release.
+  extensive testing of this release. (Pull Request #24, also fixes bug #5).
 * Don't set the betas and se_betas for all covariates in case Cox
   regression problems like singularities occur, but only the beta/se_beta
   of the corresponding covariate. Also make the corresponding warning
@@ -35,7 +35,8 @@
 * Handles multiple variants of NaN (NA,Na,Nan,na,nan) correct while reading of
   mldose/mlprob files
 * Fixed Issue #21: Remove "interaction_only" option. According to Yurii's
-  post on the forum this option never worked as expected.
+  post on the forum this option never worked as expected (Pull Request
+  #23). Thanks to Matthias Wuttke for reminding us of this bug.
 * Fixed bugs #5883 & #6010 (on R-forge): The main effect is displayed in
   the output with the  `interaction_only` option. Thanks to Maksim
   Struchalin & Lennart Karssen for fixing it and to Farid Radmanesh for
