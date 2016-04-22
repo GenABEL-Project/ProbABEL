@@ -50,7 +50,10 @@ if BUILD_palogist
 check_SCRIPTS += test_bt.sh test_flipmaf_palogist.sh
 endif
 if BUILD_pacoxph
-check_SCRIPTS += test_cox.sh test_cox_nocovar.sh test_flipmaf_pacoxph.sh
+check_SCRIPTS += test_cox.sh			\
+ test_cox_nocovar.sh				\
+ test_cox_interactions.sh			\
+ test_flipmaf_pacoxph.sh
 endif
 
 AM_TESTS_ENVIRONMENT= \
@@ -189,6 +192,26 @@ coxph_prob_nocovar_add.out.txt				\
 coxph_prob_nocovar_2df.out.txt				\
 coxph_prob_nocovar_fv_2df.out.txt
 
+cleanfiles_cox_interaction = coxph_dose_int1_add.out.txt	\
+coxph_prob_int1_over_domin.out.txt				\
+coxph_prob_int1_domin.out.txt					\
+coxph_prob_int1_recess.out.txt					\
+coxph_prob_int1_add.out.txt					\
+coxph_prob_int1_2df.out.txt					\
+coxph_dose_int2_add.out.txt					\
+coxph_prob_int2_over_domin.out.txt				\
+coxph_prob_int2_domin.out.txt					\
+coxph_prob_int2_recess.out.txt					\
+coxph_prob_int2_add.out.txt					\
+coxph_prob_int2_2df.out.txt					\
+coxph_dose_int3_add.out.txt					\
+coxph_prob_int3_over_domin.out.txt				\
+coxph_prob_int3_domin.out.txt					\
+coxph_prob_int3_recess.out.txt					\
+coxph_prob_int3_add.out.txt					\
+coxph_prob_int3_2df.out.txt
+
+
 cleanfiles_cox_flipmaf = coxph_flipmaf_add.out.txt	\
 coxph_flipmaf_fv_add.out.txt				\
 coxph_prob_flipmaf_2df.out.txt				\
@@ -236,4 +259,5 @@ cleanfiles_dose_check = test.mldose
 CLEANFILES = $(cleanfiles_probabel_check) $(cleanfiles_dose_check)	\
  $(cleanfiles_bt) $(cleanfiles_bt_flipmaf) $(cleanfiles_qt)		\
  $(cleanfiles_qt_flipmaf) $(cleanfiles_mms) $(cleanfiles_cox)		\
- $(cleanfiles_cox_nocovar) $(cleanfiles_cox_flipmaf)
+ $(cleanfiles_cox_nocovar) $(cleanfiles_cox_interaction)		\
+ $(cleanfiles_cox_flipmaf)

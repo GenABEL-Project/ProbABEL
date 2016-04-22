@@ -1,6 +1,10 @@
 ***** v.0.5.0 (2016.)
 * ProbABEL now depends on the Eigen library. The option to compile without
   Eigen has been removed.
+* Fixed Issue #15: Coxph interactions not working; when using the
+  --interaction option the name of the model was wrong (e.g. for
+  --interaction=1, the interaction term was shown as mu * SNP_A1, which
+  obviously is not what we meant to do).
 * Fixed issue Github #16: "Too many NANs for SNPs with low `Rsq` when some
   commandline options are specified"
 * Added --flipmaf command line option to palinear, pacoxph and palogist.

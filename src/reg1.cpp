@@ -102,31 +102,15 @@ mematrix<double> apply_model(const mematrix<double>& X,
 
             for (int i = 0; i < nX.nrow; i++)
             {
-                if (iscox)
+                // Maksim: interaction with SNP;;
+                nX[i * nX.ncol + c1] =
+                    X[i * X.ncol + csnp_p1]
+                    * X[i * X.ncol + interaction];
+                if (ngpreds == 2)
                 {
-                    // Maksim: interaction with SNP;;
-                    nX[i * nX.ncol + c1] =
-                        X[i * X.ncol + csnp_p1]
-                        * X[i * X.ncol + interaction - 1];
-                    if (ngpreds == 2)
-                    {
-                        nX[i * nX.ncol + c2] =
-                            X[i * X.ncol + csnp_p2]
-                            * X[i * X.ncol + interaction - 1];
-                    }
-                }
-                else
-                {
-                    // Maksim: interaction with SNP;;
-                    nX[i * nX.ncol + c1] =
-                        X[i * X.ncol + csnp_p1]
+                    nX[i * nX.ncol + c2] =
+                        X[i * X.ncol + csnp_p2]
                         * X[i * X.ncol + interaction];
-                    if (ngpreds == 2)
-                    {
-                        nX[i * nX.ncol + c2] =
-                            X[i * X.ncol + csnp_p2]
-                            * X[i * X.ncol + interaction];
-                    }
                 }
             }
 
