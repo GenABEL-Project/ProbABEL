@@ -8,7 +8,7 @@
  * <tt>.info</tt> or <tt>.mlinfo</tt> files.
  *
  */
-/* Copyright (C) 2009--2015 Various members of the GenABEL team. See
+/* Copyright (C) 2009--2016 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
  *
  * This program is free software; you can redistribute it and/or
