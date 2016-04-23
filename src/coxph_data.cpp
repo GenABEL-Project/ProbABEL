@@ -584,7 +584,7 @@ void coxph_reg::estimate(const coxph_data &cdatain,
                     // calculation will fail in case there are no
                     // other covariates than the SNP.
                     std::cerr << "Warning for " << snpinfo.name[cursnp]
-                              << ", model " << modelNames[model]
+                              << ", " << modelNames[model] << " model"
                               << ": X matrix deemed to be singular (variable "
                               << which_sing + 1 << ")" << std::endl;
                 }
@@ -595,7 +595,7 @@ void coxph_reg::estimate(const coxph_data &cdatain,
     if (niter >= MAXITER)
     {
         cerr << "Warning for " << snpinfo.name[cursnp]
-             << ", model " << modelNames[model]
+             << ", " << modelNames[model] << " model"
              << ": nr of iterations > the maximum (" << MAXITER << "): "
              << niter << endl;
     }
@@ -603,7 +603,7 @@ void coxph_reg::estimate(const coxph_data &cdatain,
     if (flag == 1000)
     {
         cerr << "Warning for " << snpinfo.name[cursnp]
-             << ", model " << modelNames[model]
+             << ", " << modelNames[model] << " model"
              << ": Cox regression ran out of iterations and did not converge,"
              << " setting beta and se to 'NaN'\n";
 
@@ -625,7 +625,7 @@ void coxph_reg::estimate(const coxph_data &cdatain,
                 infs[i] > sqrt(EPS) * abs(betaeigen[i])) {
                 setToNAN[i] = true;
                 cerr << "Warning for " << snpinfo.name[cursnp]
-                     << ", model " << modelNames[model]
+                     << ", " << modelNames[model] << " model"
                      << ": beta for covariate " << i + 1 << " may be infinite,"
                      << " setting beta and se to 'NaN'\n";
             }
