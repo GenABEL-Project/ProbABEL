@@ -113,19 +113,11 @@ int main(int argc, char * argv[])
     cout << "Reading genotype data... " << flush;
     if (!input_var.getIsFvf())
     {
-        // TODO(maartenk): remove timing code
-        // make clock to time loading of the non filevector file
-        std::clock_t    start;
-        start = std::clock();
-
         // use the non-filevector input format
         gtd.re_gendata(input_var.getGenfilename(), nsnps,
                        input_var.getNgpreds(), phd.nids_all, phd.nids,
                        phd.allmeasured, input_var.getSkipd(), phd.idnames);
 
-        // TODO(maartenk): remove timing code
-        double millisec=((std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000))/1000;
-        cout << "done in "<< millisec<< " seconds.\n" << flush;
     }
     else
     {
