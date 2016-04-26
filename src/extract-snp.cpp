@@ -3,7 +3,7 @@
  * This program extracts a given row (dosages for all individuals for a given
  * SNP) from filevector files.
  *
- * (C) 2012 L.C. Karssen
+ * (C) 2016 L.C. Karssen
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
 
     if (listIDs || debug)
     {
-        if(debug)
+        if (debug)
         {
             cout << "---------- List of IDs ----------" << endl;
         }
@@ -167,12 +167,12 @@ int main(int argc, char* argv[])
 
         cout << endl;
 
-        if(debug)
+        if (debug)
         {
             cout << "---------- End of IDs ----------" << endl;
         }
 
-        if(!debug) exit(0);
+        if (!debug) exit(0);
     }
 
 
@@ -189,7 +189,7 @@ int main(int argc, char* argv[])
 
 
     // Look at the SNPs (rows) first
-    if(debug)
+    if (debug)
     {
         cout << "---------- List of SNP names ----------" << endl;
     }

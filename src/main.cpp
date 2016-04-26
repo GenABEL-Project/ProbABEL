@@ -453,7 +453,8 @@ int main(int argc, char * argv[])
                 }
             }  // END first part of if(poly); allele not too rare
             else
-            {   // SNP is rare: beta, sebeta, chi2 = NaN
+            {
+                // SNP is rare: beta, sebeta, chi2 = NaN
 
                 // Find out how many columns of nan need to be
                 // printed.
@@ -464,19 +465,19 @@ int main(int argc, char * argv[])
                     end_pos += phd.n_model_terms - 1;
                 }
 
-                if(input_var.getNgpreds() == 2 && model == 0)
+                if (input_var.getNgpreds() == 2 && model == 0)
                 {
                     // The 2df model needs an extra entry for the
                     // second genotype coefficient.
                     end_pos++;
                 }
 
-                if(input_var.getInteraction() != 0)
+                if (input_var.getInteraction() != 0)
                 {
                     // There's an interaction term, add an extra entry
                     // for its coefficient.
                     end_pos++;
-                    if(input_var.getNgpreds() == 2 && model == 0)
+                    if (input_var.getNgpreds() == 2 && model == 0)
                     {
                         // For interaction + 2df model another entry
                         // needs to be added, because each of the
