@@ -71,7 +71,6 @@ void phedata::setphedata(const char * fname, const int noutc,
     std::ifstream myfile(fname);
     char *line = new char[BFS];
     char *tmp  = new char[BFS];
-    std::string interaction_cov_name;
     noutcomes = noutc;
 
     int nphenocols = 0;

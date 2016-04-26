@@ -113,19 +113,11 @@ int main(int argc, char * argv[])
     cout << "Reading genotype data... " << flush;
     if (!input_var.getIsFvf())
     {
-        // TODO(maartenk): remove timing code
-        // make clock to time loading of the non filevector file
-        std::clock_t    start;
-        start = std::clock();
-
         // use the non-filevector input format
         gtd.re_gendata(input_var.getGenfilename(), nsnps,
                        input_var.getNgpreds(), phd.nids_all, phd.nids,
                        phd.allmeasured, input_var.getSkipd(), phd.idnames);
 
-        // TODO(maartenk): remove timing code
-        double millisec=((std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000))/1000;
-        cout << "done in "<< millisec<< " seconds.\n" << flush;
     }
     else
     {
@@ -461,7 +453,8 @@ int main(int argc, char * argv[])
                 }
             }  // END first part of if(poly); allele not too rare
             else
-            {   // SNP is rare: beta, sebeta, chi2 = NaN
+            {
+                // SNP is rare: beta, sebeta, chi2 = NaN
 
                 // Find out how many columns of nan need to be
                 // printed.
@@ -472,19 +465,19 @@ int main(int argc, char * argv[])
                     end_pos += phd.n_model_terms - 1;
                 }
 
-                if(input_var.getNgpreds() == 2 && model == 0)
+                if (input_var.getNgpreds() == 2 && model == 0)
                 {
                     // The 2df model needs an extra entry for the
                     // second genotype coefficient.
                     end_pos++;
                 }
 
-                if(input_var.getInteraction() != 0)
+                if (input_var.getInteraction() != 0)
                 {
                     // There's an interaction term, add an extra entry
                     // for its coefficient.
                     end_pos++;
-                    if(input_var.getNgpreds() == 2 && model == 0)
+                    if (input_var.getNgpreds() == 2 && model == 0)
                     {
                         // For interaction + 2df model another entry
                         // needs to be added, because each of the

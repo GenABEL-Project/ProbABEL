@@ -355,7 +355,8 @@ void coxph_data::update_snp(const gendata *gend,
                     // Probability data, second probability
                     X.put(snpdata[i], snprow, order[i]);
                 }
-                else {
+                else
+                {
                     // You should never come here...
                     std::cerr << "Error: "
                               << "ngpreds != 1 or 2 while reading genetic data"
@@ -568,7 +569,7 @@ void coxph_reg::estimate(const coxph_data &cdatain,
         MatrixXd imateigen = imat.data;
         VectorXd imatdiag = imateigen.diagonal();
 
-        for (int i=0; i < imatdiag.size(); i++)
+        for (int i = 0; i < imatdiag.size(); i++)
         {
             if (imatdiag[i] == 0)
             {
