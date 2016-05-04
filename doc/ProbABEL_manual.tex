@@ -157,12 +157,17 @@ Linux.
   and install it from there. The PPA can be found at
   \url{https://launchpad.net/~l.c.karssen/+archive/genabel-ppa}. Instructions
   on how to add the PPA can also be found there.
-\item If your computer runs Debian Linux\footnote{At the moment \PA{}
-    is only available in Debian testing and unstable.} (and you have
+\item If your computer runs Debian Linux (and you have
   administrative rights on it), you can install ProbABEL like this:
   \begin{lstlisting}[basicstyle=\footnotesize\ttfamily,]
-user@server:~$ apt-get install probabel
+user@server:~$ sudo apt install probabel probabel-examples
   \end{lstlisting}
+  Note that since Debian has a relatively slow release cycle the
+  ProbABEL version in the Debian repositories may be relatively
+  old\footnote{The Debian package tracker
+    (\url{https://tracker.debian.org/pkg/probabel}) lists the \PA{}
+    versions currently in the Debian stable, testing and unstable
+    releases.}.
 \item Zip files with pre-compiled binaries (if available) can be found
   on the ProbABEL web page
   (\url{http://www.genabel.org/packages/ProbABEL}).
@@ -217,20 +222,12 @@ gpg: BAD signature from "L.C. Karssen (GPG key for personal stuff) <lennart@kars
 \end{lstlisting}
 
 Before continuing, it is important to mention that \PA{} needs the
-EIGEN library\footnote{EIGEN is a library for fast matrix
-  multiplication. In ProbABEL versions before v0.5.0 EIGEN was not
-  required (but still recommended).}. In order to download the
-library, go to \url{http://eigen.tuxfamily.org} and download the
-\texttt{tar.gz} file of the latest version of EIGEN (3.2.4 at the time
-of writing). Extract the files:
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,]
-user@server:~$ tar -xzf 3.2.4.tar.gz
-\end{lstlisting}
-This will create a directory called \texttt{eigen-eigen} followed by a
-series of letters and digits. For simplicity we rename it to EIGEN
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,]
-user@server:~$ mv eigen-eigen-10219c95fe65 EIGEN
-\end{lstlisting}
+Eigen library\footnote{Eigen is a library for fast matrix
+  multiplication. The Eigen website can be found at
+  \url{http://eigen.tuxfamily.org}. In ProbABEL versions before v0.5.0
+  Eigen was not required (but still recommended).}. The required
+source code for Eigen v3.2.1 is included in the ProbABEL
+\lstinline{.tar.gz} file in the \lstinline{src/eigen-3.2.1} directory.
 
 Now it's time to extract the \PA{} source code and move into the
 directory that is created:
@@ -238,14 +235,12 @@ directory that is created:
 user@server:~$ tar -xzf probabel-0.5.0.tar.gz
 user@server:~$ cd probabel-0.5.0
 \end{lstlisting}
-With the following command we will indicate where the EIGEN files can
-be found and where we want to install \PA{}. Let's install in a
-subdirectory of your home directory,
+With the following command we will indicate where we want to install
+\PA{}. Let's install in a subdirectory of your home directory,
 e.g.~\texttt{/home/yourusername/ProbABEL}:
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily,]
 user@server:~$ ./configure \
-   --prefix=/home/yourusername/ProbABEL/ \
-   --with-eigen-include-path=/home/yourusername/EIGEN
+   --prefix=/home/yourusername/ProbABEL/
 \end{lstlisting}
 This will be followed by a series of checks to see if all tools
 required for compilation and installation are present on your
@@ -1135,6 +1130,18 @@ as implemented by T. Lumley.
 
 %Iteratively re-weighted least squares are used to obtain parameters'
 %estimates.
+
+\section{Licence}
+\PA{} is licenced under the GNU Public Licence (GPL) v2.0, which
+means it is free/libre open source software, basically allowing you to
+the freedoms to run, study, share, and modify the software. The full
+text of the licence can be found in the file \lstinline{doc/COPYING}
+or on \url{https://gnu.org/licenses/old-licenses/gpl-2.0.html}.
+
+The Eigen library that is included with \PA{} is licenced under the
+Mozilla Public Licence (MPL) v2.0. The full text of this licence can
+be found in the file \lstinline{lib/eigen-3.2.1/COPYING.MPL2} or on
+\url{https://www.mozilla.org/en-US/MPL/2.0/}.
 
 \printindex
 

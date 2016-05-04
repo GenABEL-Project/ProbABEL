@@ -7,9 +7,13 @@ The ProbABEL manual (in .tex or .pdf format) also contains detailed
 ** The Eigen library
    ProbABEL has one external dependency that has to be met before
    compilation will succeed: it depends on the Eigen library
-   (http://eigen.tuxfamily.org) for fast matrix manipulation. On
-   Debian/Ubuntu systems the Eigen library can be installed in the
-   following way: apt-get install libeigen3-dev
+   (http://eigen.tuxfamily.org) for fast matrix manipulation.
+
+   Eigen v3.2.1 is distributed with the ProbABEL source code, so by
+   default no extra steps are needed.
+
+   Alternatively, on Debian/Ubuntu systems the Eigen library can be
+   installed in the following way: apt-get install libeigen3-dev
 
    If you install the eigen library by hand (e.g. after downloading
    the files from the aforementioned website) you have to specify the

@@ -75,17 +75,30 @@ AC_CHECK_HEADERS([float.h inttypes.h libintl.h limits.h stddef.h \
 # Option that lets the user specify a path to the EIGEN include files.
 AC_ARG_WITH([eigen-include-path],
     [AS_HELP_STRING([--with-eigen-include-path],
-      [location of the Eigen headers, defaults to /usr/include/eigen3])],
-    [CPPFLAGS+=" -I${withval}"],
-    [CPPFLAGS+=' -I/usr/include/eigen3'])
+      [location of the Eigen headers, defaults to src/eigen-3.2.1])],
+    [EIGEN_PATH=${withval}; EXTERNAL_EIGEN=yes],
+    [EIGEN_PATH="src/eigen-3.2.1"])
 
-# Check for the EIGEN header files
-AC_CHECK_HEADERS([Eigen/Dense Eigen/LU])
+# Inform AutoMake that an eigen path has been specified using the
+# --with-eigen-include-dir option so that AutoMake doesn't prepend
+# ${top_srcdir} to the path
+AM_CONDITIONAL([EXTERNAL_EIGEN], test -n "$EXTERNAL_EIGEN")
 
-if test x$ac_cv_header_Eigen_Dense = xno; then
-  AC_MSG_ERROR([Could not find the Eigen header files. Did you specify \
---with-eigen-include-path correctly?])
+AC_SUBST(EIGEN_PATH)
+
+# Check for the EIGEN header files (make backup of CPPFLAGS first)
+CPPFLAGS_BACKUP=${CPPFLAGS}
+if test -z "$EXTERNAL_EIGEN"; then
+  CPPFLAGS+=" -I${srcdir}/${EIGEN_PATH}"
+else
+  CPPFLAGS+=" -I${EIGEN_PATH}"
 fi
+AC_CHECK_HEADERS([Eigen/Dense Eigen/LU],
+                 [],
+                 [AC_MSG_ERROR([Could not find the Eigen header files. \
+Did you specify --with-eigen-include-path correctly?])]
+                 )
+CPPFLAGS=${CPPFLAGS_BACKUP}
 
 
 # Checks for typedefs, structures, and compiler characteristics.
