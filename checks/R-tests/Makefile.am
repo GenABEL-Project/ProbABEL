@@ -29,6 +29,9 @@ TESTS = $(check_SCRIPTS)
 
 ## The palogist R test still doesn't run correctly.
 XFAIL_TESTS = run_R_test_palogist.sh
+# The pacoxph R test started to fail after the R survival package was
+# upgraded to v2.39.2 (see issue #27)
+XFAIL_TESTS += run_R_test_pacox.sh
 
 EXTRA_DIST = $(check_SCRIPTS) $(R_test_files)
 
