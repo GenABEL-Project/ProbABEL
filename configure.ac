@@ -38,13 +38,13 @@ if test "x$devoptions" = "xyes"; then
       # User did not set CPPFLAGS, so we can put in our own defaults
       CPPFLAGS="-Wall"
    fi
-   CXXFLAGS+=" -g"
+   CXXFLAGS+=" -g -std=c++11"
 fi
 
 if test "x$devoptions" = "xno"; then
    if test -z "$CXXFLAGS"; then
       # User did not set CXXFLAGS, so we can put in our own defaults
-      CXXFLAGS="-O2"
+      CXXFLAGS="-O2 -std=c++11"
    fi
    if test -z "$CPPFLAGS"; then
       # User did not set CPPFLAGS, so we can put in our own defaults
