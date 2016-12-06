@@ -220,13 +220,13 @@ class coxph_reg {
      * Iteration continues until the percent change in loglikelihood
      * is <= EPS.
      */
-    static const double EPS = 1e-9;
+    static constexpr double EPS = 1e-9;
 
     /**
      * \brief Constant containing the precision for the Cholesky
      * decomposition.
      */
-    static const double CHOLTOL = 1.5e-12;
+    static constexpr double CHOLTOL = 1.5e-12;
 };
 
 #endif /* COXPH_DATA_H_ */

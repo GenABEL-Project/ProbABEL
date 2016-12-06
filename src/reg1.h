@@ -185,7 +185,7 @@ class logistic_reg: public base_reg {
      * Iteration continues until the percent change in loglikelihood
      * is <= EPS.
      */
-    static const double EPS = 1e-8;
+    static constexpr double EPS = 1e-8;
 };
 
 #endif // REG1_H_
