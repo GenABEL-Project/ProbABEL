@@ -390,6 +390,7 @@ void coxph_data::update_snp(const gendata *gend,
             }    // end std::isnan(snpdata[i]) snp
         }    // end for loop: i=0 to nids
 
+        delete[] PA1A2;
         delete[] snpdata;
     }    // End for loop: j=0 to ngpreds
 
