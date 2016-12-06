@@ -255,6 +255,7 @@ void regdata::update_snp(const gendata *gend,
             }  // End if std::isnan(snpdata[i]) snp
         }  // End for loop: i = 0 to nids
 
+        delete[] PA1A2;
         delete[] snpdata;
     }  // End for loop: j = 0 to ngpreds
 
