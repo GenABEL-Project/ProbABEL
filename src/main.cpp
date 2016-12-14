@@ -126,9 +126,8 @@ int main(int argc, char * argv[])
         gtd.re_gendata(input_var.getStrGenfilename(), nsnps,
                        input_var.getNgpreds(), phd.nids_all, phd.nids,
                        phd.allmeasured, phd.idnames);
-        cout << "done.\n" << flush;
     }
-
+    cout << "done.\n" << flush;
 
     // Set the number and names of the genetic models that will be
     // analysed.
