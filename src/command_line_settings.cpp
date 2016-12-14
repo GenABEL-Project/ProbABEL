@@ -316,17 +316,24 @@ void cmdvars::printinfo()
     }
 
     str_genfilename = genfilename;
+
     if (str_genfilename.find(FILEVECTOR_INDEX_FILE_SUFFIX) != string::npos
             || str_genfilename.find(FILEVECTOR_DATA_FILE_SUFFIX)
                     != string::npos)
+    {
         isFVF = 1;
+    }
 
     cout << "Options in effect:\n";
     cout << "\t --pheno       = "      << phefilename << endl;
     cout << "\t --info        = "      << mlinfofilename << endl;
     cout << "\t --dose        = "      << genfilename << endl;
+
     if (isFVF)
+    {
         cout << "\t             (using FVF data)" << endl;
+    }
+
     cout << "\t --ntraits     = "      << noutcomes << endl;
     cout << "\t --ngpreds     = "      << ngpreds << endl;
     cout << "\t --interaction = "      << interaction << endl;
