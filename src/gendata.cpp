@@ -264,8 +264,8 @@ void gendata::re_gendata(const string filename,
 /**
  * \brief Read genotype data from plain text files.
  *
- * @param fname File name of the filevector file (either .fvi or .fvd)
- * that contains the genotype data.
+ * @param fname File name of the text file in MaCH/minimac format that
+ * contains the genotype data.
  * @param insnps The number of SNPs/genetic variants to read; usually
  * inferred from the .info files.
  * @param ingpreds The number of genomic predictors (1 for dosage
