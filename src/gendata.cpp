@@ -277,7 +277,8 @@ void gendata::re_gendata(const string filename,
  * @param allmeasured Array indicating which individuals have complete
  * phenotype data (value: 1) and which haven't (0); usually inferred
  * from the phenotype data (see phedata::allmeasured).
- * @param skipd
+ * @param skipd Number of columns to skip in the genotype file (the 
+   default is 2).
  * @param idnames Array of strings containing the names of the
  * individuals used in the analysis; usually inferred from the
  * phenotype data (phedata::idnames).
