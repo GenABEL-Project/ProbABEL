@@ -12,6 +12,9 @@ if [ -z ${srcdir} ]; then
     srcdir="."
     PA_BINDIR=${scriptdir}/../src/
 fi
+if [ -z ${WITH_BOOST_IOSTREAMS} ]; then
+   WITH_BOOST_IOSTREAMS=false
+fi
 
 . ${scriptdir}/run_diff.sh
 
@@ -47,6 +50,19 @@ $pacoxph \
 run_diff coxph_dose_add.out.txt coxph_dose_fv_add.out.txt \
     "pacoxph check: dose vs. dose_fv"
 
+if [ "x${WITH_BOOST_IOSTREAMS}" = "xtrue" ]; then
+    $pacoxph \
+        -p ${inputdir}/coxph_data.txt \
+        -d ${inputdir}/test.mldose.gz \
+        -i ${inputdir}/test.mlinfo \
+        -m ${inputdir}/test.map \
+        -c 19 \
+        -o coxph_dose_gz \
+        >& 3
+
+    run_diff coxph_dose_add.out.txt coxph_dose_gz_add.out.txt \
+             "pacoxph check: dose vs. dose_gz"
+fi
 
 $pacoxph \
     -p ${inputdir}/coxph_data.txt \
@@ -77,6 +93,25 @@ for model in add domin recess over_domin 2df; do
         coxph_prob_fv_${model}.out.txt \
         "pacoxph check ($model model): prob vs. prob_fv"
 done
+
+if [ "x${WITH_BOOST_IOSTREAMS}" = "xtrue" ]; then
+    $pacoxph \
+        -p ${inputdir}/coxph_data.txt \
+        -d ${inputdir}/test.mlprob.gz \
+        -i ${inputdir}/test.mlinfo \
+        -m ${inputdir}/test.map \
+        --ngpreds=2 \
+        -c 19 \
+        -o coxph_prob_gz \
+        >& 3
+
+    for model in add domin recess over_domin 2df; do
+        run_diff coxph_prob_${model}.out.txt \
+                 coxph_prob_gz_${model}.out.txt \
+                 "pacoxph check ($model model): prob vs. prob_gz"
+    done
+fi
+
 
 echo "Option --ngp=2 --allcov"
 $pacoxph \
