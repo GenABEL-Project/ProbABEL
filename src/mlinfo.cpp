@@ -47,7 +47,7 @@ mlinfo::mlinfo(const char * filename,
                const char * mapname,
                const bool flipMAF)
 {
-    char tmp[1048576];
+    std::string tmp;
     unsigned int nlin = 0;
     std::ifstream infile(filename);
     if (infile.is_open())
@@ -106,13 +106,13 @@ mlinfo::mlinfo(const char * filename,
         infile >> tmp;
         A2[i] = tmp;
         infile >> tmp;
-        Freq1[i] = atof(tmp);
+        Freq1[i] = std::stod(tmp);
         infile >> tmp;
-        MAF[i] = atof(tmp);
+        MAF[i] = std::stod(tmp);
         infile >> tmp;
-        Quality[i] = atof(tmp);
+        Quality[i] = std::stod(tmp);
         infile >> tmp;
-        Rsq[i] = atof(tmp);
+        Rsq[i] = std::stod(tmp);
         map[i] = "-999";
     }
     infile.close();
@@ -120,9 +120,7 @@ mlinfo::mlinfo(const char * filename,
     if (mapname != NULL)
     {
         std::ifstream instr(mapname);
-        int BFS = 1048576;
-        char *line = new char[BFS];
-        char *tmp  = new char[BFS];
+        std::string(line);
 
         if (!instr.is_open())
         {
@@ -131,19 +129,16 @@ mlinfo::mlinfo(const char * filename,
             exit(1);
         }
 
-        instr.getline(line, BFS);
+        std::getline(instr, line);
 
         for (int i = 0; i < nsnps; i++)
         {
-            instr.getline(line, BFS);
+            std::getline(instr, line);
             std::stringstream line_stream(line);
             line_stream >> tmp >> map[i];
         }
 
         instr.close();
-
-        delete[] line;
-        delete[] tmp;
     }
 }
 
