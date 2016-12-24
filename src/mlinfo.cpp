@@ -32,6 +32,10 @@
 #include <iostream>
 #include "mlinfo.h"
 
+using std::cout;
+using std::cerr;
+using std::endl;
+
 
 /**
  * \brief Constructor that reads SNP information from an
@@ -47,112 +51,90 @@ mlinfo::mlinfo(const char * filename,
                const char * mapname,
                const bool flipMAF)
 {
+    nsnps = 0;
+    std::string line;
     std::string tmp;
-    unsigned int nlin = 0;
     std::ifstream infile(filename);
-    if (infile.is_open())
+
+    if (!infile.is_open())
     {
-        while (infile.good())
-        {
-            infile >> tmp;
-            nlin++;
-        }
-        nlin--; // Subtract one, the previous loop added 1 too much
-    } else {
-        std::cerr << "mlinfo: cannot open info file "
-                  << filename << std::endl;
+        cerr << "mlinfo: cannot open info file "
+                  << filename << endl;
         exit(1);
     }
+
+    /* Read the header and discard it */
+    std::getline(infile, tmp);
+
+    /* Read the remaining lines from the info file */
+    while (std::getline(infile, line))
+    {
+        if (infile.eof()) break;
+
+        std::stringstream line_stream(line);
+        line_stream >> tmp;
+        name.push_back(tmp);
+        line_stream >> tmp;
+        A1.push_back(tmp);
+        line_stream >> tmp;
+        A2.push_back(tmp);
+        line_stream >> tmp;
+        Freq1.push_back(std::stod(tmp));
+        line_stream >> tmp;
+        MAF.push_back(std::stod(tmp));
+        line_stream >> tmp;
+        Quality.push_back(std::stod(tmp));
+        line_stream >> tmp;
+        Rsq.push_back(std::stod(tmp));
+        map.push_back("-999");
+        nsnps++;
+    }
+
+    cout << "Number of SNPs = " << nsnps << endl;
+
     infile.close();
 
-    if (nlin % 7)
-    {
-        std::cerr << "mlinfo: number of columns != 7 in "
-                  << filename << std::endl;
-        exit(1);
-    }
-    nsnps = static_cast<int>((nlin / 7) - 1);
-    std::cout << "Number of SNPs = " << nsnps << std::endl;
-    name    = new std::string[nsnps];
-    A1      = new std::string[nsnps];
-    A2      = new std::string[nsnps];
-    Freq1   = new double[nsnps];
-    MAF     = new double[nsnps];
-    Quality = new double[nsnps];
-    Rsq     = new double[nsnps];
-    map     = new std::string[nsnps];
     if (flipMAF)
     {
         allelesFlipped = std::vector<bool>(nsnps, false);
     }
 
-    infile.open(filename);
-    if (!infile)
-    { // file couldn't be opened
-        std::cerr << "mlinfo: cannot open info file "
-                  << filename << std::endl;
-        exit(1);
-    }
-    /* Read the header and discard it */
-    for (int i = 0; i < 7; i++)
-        infile >> tmp;
-
-    for (int i = 0; i < nsnps; i++)
-    {
-        infile >> tmp;
-        name[i] = tmp;
-        infile >> tmp;
-        A1[i] = tmp;
-        infile >> tmp;
-        A2[i] = tmp;
-        infile >> tmp;
-        Freq1[i] = std::stod(tmp);
-        infile >> tmp;
-        MAF[i] = std::stod(tmp);
-        infile >> tmp;
-        Quality[i] = std::stod(tmp);
-        infile >> tmp;
-        Rsq[i] = std::stod(tmp);
-        map[i] = "-999";
-    }
-    infile.close();
-
     if (mapname != NULL)
     {
-        std::ifstream instr(mapname);
-        std::string(line);
+        std::ifstream mapfile_in(mapname);
 
-        if (!instr.is_open())
+        if (!mapfile_in.is_open())
         {
-            std::cerr << "mlinfo: cannot open map file "
-                      << mapname << std::endl;
+            cerr << "mlinfo: cannot open map file "
+                      << mapname << endl;
             exit(1);
         }
 
-        std::getline(instr, line);
+        /* Read the header line and discard it */
+        std::getline(mapfile_in, line);
 
         for (int i = 0; i < nsnps; i++)
         {
-            std::getline(instr, line);
+            std::getline(mapfile_in, line);
+
+            if (mapfile_in.eof())
+            {
+                cerr << "mlinfo: reached end of map file; read "
+                     << i << " SNPs instead of " << nsnps << endl;
+            }
+
             std::stringstream line_stream(line);
             line_stream >> tmp >> map[i];
         }
 
-        instr.close();
+        mapfile_in.close();
     }
 }
 
+
 /**
- * \brief Destructor. Delete all allocated arrays.
+ * \brief Destructor.
  */
 mlinfo::~mlinfo()
 {
-    delete[] mlinfo::name;
-    delete[] mlinfo::A1;
-    delete[] mlinfo::A2;
-    delete[] mlinfo::Freq1;
-    delete[] mlinfo::MAF;
-    delete[] mlinfo::Quality;
-    delete[] mlinfo::Rsq;
-    delete[] mlinfo::map;
 }

@@ -53,35 +53,35 @@ class mlinfo {
      *
      * As read from the info file.
      */
-    std::string * name;
+    std::vector<std::string> name;
 
     /**
      * \brief Array with the first allele for each SNP.
      *
      * As read from the info file.
      */
-    std::string * A1;
+    std::vector<std::string> A1;
 
     /**
      * \brief Array with the first allele for each SNP.
      *
      * As read from the info file.
      */
-    std::string * A2;
+    std::vector<std::string> A2;
 
     /**
      * \brief Array with the frequency of the mlinfo::A1 allele for each SNP.
      *
      * As read from the info file.
      */
-    double * Freq1;
+    std::vector<double> Freq1;
 
     /**
      * \brief Array with the minor allele frequency for each SNP.
      *
      * As read from the info file.
      */
-    double * MAF;
+    std::vector<double> MAF;
 
     /**
      * \brief Array with the imputation quality metric for each SNP
@@ -89,21 +89,21 @@ class mlinfo {
      * As read from the info file. Note that the MaCH website recommends the
      * use of mlinfo::Rsq.
      */
-    double * Quality;
+    std::vector<double> Quality;
 
     /**
      * \brief Array The imputation \f$R^2\f$ for each SNP
      *
      * As read from the info file.
      */
-    double * Rsq;
+    std::vector<double> Rsq;
 
     /**
      * \brief Array with the SNP positions for each SNP.
      *
      * As read from the info file.
      */
-    std::string * map;
+    std::vector<std::string> map;
 
     /**
      * \brief Vector indicating whether the mlinfo::A1 and mlinfo::A2
@@ -122,16 +122,16 @@ class mlinfo {
      */
     mlinfo()
     {
-        Freq1 = NULL;
-        MAF = NULL;
-        Quality = NULL;
-        Rsq = NULL;
-        nsnps = 0;
-        A1 = NULL;
-        A2 = NULL;
-        name = NULL;
-        map = NULL;
-        allelesFlipped = std::vector<bool>(1, false);
+        /* Freq1 = NULL; */
+        /* MAF = NULL; */
+        /* Quality = NULL; */
+        /* Rsq = NULL; */
+        /* nsnps = 0; */
+        /* A1 = NULL; */
+        /* A2 = NULL; */
+        /* name = NULL; */
+        /* map = NULL; */
+        /* allelesFlipped = std::vector<bool>(1, false); */
     }
 
     mlinfo(const char * filename,

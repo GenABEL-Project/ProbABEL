@@ -1,3 +1,8 @@
+***** v.0.x.0 ()
+* Removed the requirement on having 7 columns in the info file. However,
+  it is the user's responsibility to make sure the first 7 columns contain
+  the right information.
+
 ***** v.0.5.0 (2016.05.04)
 * ProbABEL now depends on the Eigen library. The option to compile without
   Eigen has been removed. Eigen 3.2.1 is included with ProbABEL. The
