@@ -56,7 +56,7 @@ if [ "x${WITH_BOOST_IOSTREAMS}" = "xtrue" ]; then
     $palinear \
         -p ${inputdir}/height.txt \
         -d ${inputdir}/test.mldose.gz \
-        -i ${inputdir}/test.mlinfo \
+        -i ${inputdir}/test.mlinfo.gz \
         -m ${inputdir}/test.map \
         -c 19 \
         -o linear_base_gz \
@@ -194,7 +194,7 @@ if [ "x${WITH_BOOST_IOSTREAMS}" = "xtrue" ]; then
     $palinear \
         -p ${inputdir}/height.txt \
         -d ${inputdir}/test.mlprob.gz \
-        -i ${inputdir}/test.mlinfo \
+        -i ${inputdir}/test.mlinfo.gz \
         -m ${inputdir}/test.map \
         -c 19 --ngpreds=2 \
         -o linear_ngp2_gz \

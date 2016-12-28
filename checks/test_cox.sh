@@ -54,7 +54,7 @@ if [ "x${WITH_BOOST_IOSTREAMS}" = "xtrue" ]; then
     $pacoxph \
         -p ${inputdir}/coxph_data.txt \
         -d ${inputdir}/test.mldose.gz \
-        -i ${inputdir}/test.mlinfo \
+        -i ${inputdir}/test.mlinfo.gz \
         -m ${inputdir}/test.map \
         -c 19 \
         -o coxph_dose_gz \
@@ -98,7 +98,7 @@ if [ "x${WITH_BOOST_IOSTREAMS}" = "xtrue" ]; then
     $pacoxph \
         -p ${inputdir}/coxph_data.txt \
         -d ${inputdir}/test.mlprob.gz \
-        -i ${inputdir}/test.mlinfo \
+        -i ${inputdir}/test.mlinfo.gz \
         -m ${inputdir}/test.map \
         --ngpreds=2 \
         -c 19 \
