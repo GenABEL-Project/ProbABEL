@@ -67,17 +67,16 @@ void phedata::setphedata(const char * fname, const int noutc,
                          const int npeople, const int interaction,
                          const bool iscox)
 {
-    static const unsigned int BFS = 1048576;
     std::ifstream myfile(fname);
-    char *line = new char[BFS];
-    char *tmp  = new char[BFS];
+    std::string line;
+    std::string tmp;
     noutcomes = noutc;
 
     int nphenocols = 0;
     int nrpeople = 0;
     if (myfile.is_open())
     {
-        myfile.getline(line, BFS);
+        std::getline(myfile, line);
         std::stringstream line_stream(line);
         // std::cout << line << "\n ";
         while (line_stream >> tmp)
@@ -86,7 +85,7 @@ void phedata::setphedata(const char * fname, const int noutc,
             // std::cout << tmp << " " << nphenocols << " ";
         }
 
-        while (myfile.getline(line, BFS))
+        while (std::getline(myfile, line))
         {
             int tmplins = 0;
             std::stringstream line_stream(line);
@@ -232,12 +231,12 @@ void phedata::setphedata(const char * fname, const int noutc,
             for (int j = 0; j < noutcomes; j++)
             {
                 infile >> tmp;
-                Y.put(atof(tmp), m, j);
+                Y.put(std::stod(tmp), m, j);
             }
             for (int j = (1 + noutcomes); j < nphenocols; j++)
             {
                 infile >> tmp;
-                X.put(atof(tmp), m, (j - 1 - noutcomes));
+                X.put(std::stod(tmp), m, (j - 1 - noutcomes));
             }
             m++;
         }
@@ -247,9 +246,6 @@ void phedata::setphedata(const char * fname, const int noutc,
                 infile >> tmp;
         }
     infile.close();
-
-    delete[] line;
-    delete[] tmp;
 }
 
 
