@@ -13,6 +13,9 @@ if [ -z ${srcdir} ]; then
     srcdir="."
     PA_BINDIR=${scriptdir}/../src/
 fi
+if [ -z ${WITH_BOOST_IOSTREAMS} ]; then
+   WITH_BOOST_IOSTREAMS=false
+fi
 
 . ${scriptdir}/run_diff.sh
 
@@ -49,6 +52,21 @@ run_diff mmscore_dose_add.out.txt \
     mmscore_dose_fv_add.out.txt \
     "mmscore check: dose vs. dose_fv"
 
+if [ "x${WITH_BOOST_IOSTREAMS}" = "xtrue" ]; then
+    $palinear \
+        -p ${inputdir}/mmscore_pheno.PHE \
+        -i ${inputdir}/mmscore_gen.mlinfo.gz \
+        -d ${inputdir}/mmscore_gen.mldose.gz \
+        --sep="," \
+        -o mmscore_dose_gz \
+        --mmscore ${inputdir}/mmscore_InvSigma_aj.sex.age.dat \
+        >& 3
+
+    run_diff mmscore_dose_add.out.txt \
+             mmscore_dose_gz_add.out.txt \
+             "mmscore check: dose vs. dose_gz"
+fi
+
 
 echo "Option --ngp=2, mlprob file"
 $palinear \
@@ -82,3 +100,20 @@ run_diff mmscore_prob_add.out.txt \
 run_diff mmscore_prob_fv_add.out.txt \
     mmscore_dose_fv_add.out.txt \
     "mmscore check: prob_fv vs. dose_fv"
+
+if [ "x${WITH_BOOST_IOSTREAMS}" = "xtrue" ]; then
+    $palinear \
+        -p ${inputdir}/mmscore_pheno.PHE \
+        -i ${inputdir}/mmscore_gen.mlinfo.gz \
+        -d ${inputdir}/mmscore_gen.mlprob.gz \
+        --ngpreds=2 --sep="," \
+        -o mmscore_prob_gz \
+        --mmscore ${inputdir}/mmscore_InvSigma_aj.sex.age.dat \
+        >& 3
+
+    for model in add domin over_domin recess 2df; do
+        run_diff mmscore_prob_${model}.out.txt \
+                 mmscore_prob_gz_${model}.out.txt \
+                 "mmscore check ($model model): prob vs. prob_gz"
+    done
+fi
