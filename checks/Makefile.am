@@ -28,6 +28,7 @@ genofiles =						\
  $(input_files_dir)/test.mlinfo				\
  $(input_files_dir)/test.mlinfo.gz			\
  $(input_files_dir)/test.map				\
+ $(input_files_dir)/test.map.gz				\
  $(input_files_dir)/test.dose.fvi			\
  $(input_files_dir)/test.dose.fvd			\
  $(input_files_dir)/test.prob.fvi			\

@@ -127,11 +127,37 @@ mlinfo::mlinfo(const char * fname,
         allelesFlipped = std::vector<bool>(nsnps, false);
     }
 
+
+    /*
+     * Read the SNP positions if a map file was specified on the
+     * command line
+     */
     if (mapname != NULL)
     {
-        std::ifstream mapfile_in(mapname);
+#if WITH_BOOST_IOSTREAMS
+        std::ifstream mapfile(mapname, std::ios_base::in | std::ios_base::binary);
+        boost::iostreams::filtering_istream mapfile_in;
+        std::string mapfilename = mapname;
+        // Note: a better check would be to read the first two bytes of
+        // the file and check for the gzip signature: 0x1f8b
+        // W.r.t. endianness and byte width: compare each byte separately,
+        // see the comment to this SE answer:
+        // http://stackoverflow.com/a/6059342/881084
+        if (mapfilename.compare(mapfilename.length() - 2, 2, "gz") == 0)
+        {
+            mapfile_in.push(boost::iostreams::gzip_decompressor());
+            cout << "map data is gzip compressed..." << endl;
+        }
+        mapfile_in.push(mapfile);
+#else
+        std::ifstream mapfile;
+        mapfile.open(mapname);
+        // small hack to make object "infile" available, so no additional
+        // pre-process if/else statements should be introduced
+        std::ifstream &mapfile_in = mapfile;
+#endif
 
-        if (!mapfile_in.is_open())
+        if (!mapfile.is_open())
         {
             cerr << "mlinfo: cannot open map file "
                       << mapname << endl;
@@ -139,13 +165,13 @@ mlinfo::mlinfo(const char * fname,
         }
 
         /* Read the header line and discard it */
-        std::getline(mapfile_in, line);
+        std::getline(mapfile_in, tmp);
 
         for (int i = 0; i < nsnps; i++)
         {
             std::getline(mapfile_in, line);
 
-            if (mapfile_in.eof())
+            if (mapfile.eof())
             {
                 cerr << "mlinfo: reached end of map file; read "
                      << i << " SNPs instead of " << nsnps << endl;
@@ -155,7 +181,7 @@ mlinfo::mlinfo(const char * fname,
             line_stream >> tmp >> map[i];
         }
 
-        mapfile_in.close();
+        mapfile.close();
     }
 }
 

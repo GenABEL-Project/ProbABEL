@@ -58,7 +58,7 @@ if [ "x${WITH_BOOST_IOSTREAMS}" = "xtrue" ]; then
         -p ${inputdir}/logist_data.txt \
         -d ${inputdir}/test.mldose.gz \
         -i ${inputdir}/test.mlinfo.gz \
-        -m ${inputdir}/test.map \
+        -m ${inputdir}/test.map.gz \
         -c 19 \
         -o logist_gz \
         >& 3
@@ -99,7 +99,7 @@ if [ "x${WITH_BOOST_IOSTREAMS}" = "xtrue" ]; then
         -p ${inputdir}/logist_data.txt \
         -d ${inputdir}/test.mlprob.gz \
         -i ${inputdir}/test.mlinfo.gz \
-        -m ${inputdir}/test.map \
+        -m ${inputdir}/test.map.gz \
         --ngpreds=2 \
         -c 19 \
         -o logist_prob_gz \
