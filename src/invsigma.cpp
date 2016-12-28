@@ -52,7 +52,7 @@ InvSigma::InvSigma(const char * filename_, const phedata& phe) : filename(filena
 {
     npeople = phe.nids;
     std::ifstream myfile(filename_);
-    char * line = new char[MAXIMUM_PEOPLE_AMOUNT];
+    std::string line;
     std::string id;
 
     matrix.reinit(npeople, npeople);
@@ -63,7 +63,7 @@ InvSigma::InvSigma(const char * filename_, const phedata& phe) : filename(filena
     {
         double val;
         unsigned row = 0;
-        while (myfile.getline(line, MAXIMUM_PEOPLE_AMOUNT))
+        while (std::getline(myfile, line))
         {
             std::stringstream line_stream(line);
             line_stream >> id;
@@ -99,8 +99,6 @@ InvSigma::InvSigma(const char * filename_, const phedata& phe) : filename(filena
         std::cerr << "error: inv file: cannot open file '"
                   << filename_ << "'\n";
     }
-
-    delete[] line;
 }
 
 
