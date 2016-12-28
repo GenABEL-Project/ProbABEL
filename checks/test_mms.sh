@@ -59,7 +59,7 @@ if [ "x${WITH_BOOST_IOSTREAMS}" = "xtrue" ]; then
         -d ${inputdir}/mmscore_gen.mldose.gz \
         --sep="," \
         -o mmscore_dose_gz \
-        --mmscore ${inputdir}/mmscore_InvSigma_aj.sex.age.dat \
+        --mmscore ${inputdir}/mmscore_InvSigma_aj.sex.age.dat.gz \
         >& 3
 
     run_diff mmscore_dose_add.out.txt \
@@ -108,7 +108,7 @@ if [ "x${WITH_BOOST_IOSTREAMS}" = "xtrue" ]; then
         -d ${inputdir}/mmscore_gen.mlprob.gz \
         --ngpreds=2 --sep="," \
         -o mmscore_prob_gz \
-        --mmscore ${inputdir}/mmscore_InvSigma_aj.sex.age.dat \
+        --mmscore ${inputdir}/mmscore_InvSigma_aj.sex.age.dat.gz \
         >& 3
 
     for model in add domin over_domin recess 2df; do

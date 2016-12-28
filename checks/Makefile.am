@@ -35,11 +35,15 @@ genofiles =						\
  $(input_files_dir)/mmscore_gen.mlinfo			\
  $(input_files_dir)/mmscore_gen.mldose			\
  $(input_files_dir)/mmscore_gen.mlprob			\
+ $(input_files_dir)/mmscore_gen.mlinfo.gz		\
+ $(input_files_dir)/mmscore_gen.mldose.gz		\
+ $(input_files_dir)/mmscore_gen.mlprob.gz		\
  $(input_files_dir)/mmscore_gen.dose.fvi		\
  $(input_files_dir)/mmscore_gen.dose.fvd		\
  $(input_files_dir)/mmscore_gen.prob.fvi		\
  $(input_files_dir)/mmscore_gen.prob.fvd		\
- $(input_files_dir)/mmscore_InvSigma_aj.sex.age.dat
+ $(input_files_dir)/mmscore_InvSigma_aj.sex.age.dat	\
+ $(input_files_dir)/mmscore_InvSigma_aj.sex.age.dat.gz
 
 input_files = $(phenofiles) $(genofiles) run_diff.sh test_all.sh
 
@@ -189,6 +193,16 @@ mmscore_prob_over_domin.out.txt mmscore_prob_fv_add.out.txt		\
 mmscore_prob_fv_recess.out.txt mmscore_prob_domin.out.txt		\
 mmscore_prob_recess.out.txt mmscore_prob_add.out.txt			\
 mmscore_prob_2df.out.txt mmscore_prob_fv_2df.out.txt
+
+if WITH_BOOST_IOSTREAMS
+cleanfiles_mms +=				\
+mmscore_dose_gz_add.out.txt			\
+mmscore_prob_gz_2df.out.txt			\
+mmscore_prob_gz_add.out.txt			\
+mmscore_prob_gz_domin.out.txt			\
+mmscore_prob_gz_over_domin.out.txt		\
+mmscore_prob_gz_recess.out.txt
+endif
 
 cleanfiles_cox = pacoxph_nocovar_add.out.txt			\
 coxph_data.txt							\
