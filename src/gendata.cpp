@@ -323,15 +323,15 @@ void gendata::re_gendata(const char * fname,
     if (filename.compare(filename.length() - 2, 2, "gz") == 0)
     {
         infile.push(boost::iostreams::gzip_decompressor());
-        cout << "data is gzip compressed..." << endl;
+        cout << "genotype data is gzip compressed..." << endl;
     }
     infile.push(file);
 #else
-    std::ifstream infile;
-    infile.open(fname);
+    std::ifstream file;
+    file.open(fname);
     // small hack to make object "file" available, so no additional
     // pre-process if/else statements should be introduced
-    std::ifstream  &file = infile;
+    std::ifstream  &infile = file;
 #endif
 
     if (!file)
