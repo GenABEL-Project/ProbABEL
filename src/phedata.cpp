@@ -114,11 +114,11 @@ void phedata::setphedata(const char * fname, const int noutc,
     if (npeople > 0)
     {
         nrpeople = npeople;
-        std::cout << "; using only " << nrpeople << " first\n";
+        cout << "; using only the first " << nrpeople << "\n";
     }
     else
     {
-        std::cout << "; using all of these\n";
+        cout << "; using all of these\n";
     }
 
     nids_all = nrpeople;
