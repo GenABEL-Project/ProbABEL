@@ -29,6 +29,7 @@
 #ifndef GENDATA_H_
 #define GENDATA_H_
 #include <string>
+#include <vector>
 #include "fvlib/FileVector.h"
 
 #include "eigen_mematrix.h"
@@ -50,7 +51,7 @@ class gendata {
                     const unsigned int ingpreds,
                     const unsigned int npeople,
                     const unsigned int nmeasured,
-                    const unsigned short int * allmeasured,
+                    const std::vector<bool>& allmeasured,
                     const int skipd,
                     const std::string * idnames);
 
@@ -59,7 +60,7 @@ class gendata {
                     const unsigned int ingpreds,
                     const unsigned int npeople,
                     const unsigned int nmeasured,
-                    const unsigned short int * allmeasured,
+                    const std::vector<bool>& allmeasured,
                     const std::string * idnames);
 
     void get_var(const int var, double * data) const;

@@ -196,9 +196,9 @@ gendata::gendata() : nsnps(0), nids(0), ngpreds(0), DAG(NULL), DAGmask(NULL)
  * inferred from the phenotype data (see phedata::nids_all).
  * @param nmeasured The number of individuals with complete phenotype
  * data; usually inferred from the phenotype data (see phedata::nids).
- * @param allmeasured Array indicating which individuals have complete
- * phenotype data (value: 1) and which haven't (0); usually inferred
- * from the phenotype data (see phedata::allmeasured).
+ * @param allmeasured Boolean vector indicating which individuals have
+ * complete phenotype data and which haven't; usually inferred from
+ * the phenotype data (see phedata::allmeasured).
  * @param idnames Array of strings containing the names of the
  * individuals used in the analysis; usually inferred from the
  * phenotype data (phedata::idnames).
@@ -208,7 +208,7 @@ void gendata::re_gendata(const string filename,
                          const unsigned int ingpreds,
                          const unsigned int npeople,
                          const unsigned int nmeasured,
-                         const unsigned short int * allmeasured,
+                         const std::vector<bool>& allmeasured,
                          const std::string * idnames)
 {
     nsnps = insnps;
@@ -225,7 +225,7 @@ void gendata::re_gendata(const string filename,
 
     for (unsigned int i = 0; i < npeople; i++)
     {
-        if (allmeasured[i] == 0)
+        if (!allmeasured[i])
         {
             DAGmask[i] = 1;
         }
@@ -274,10 +274,10 @@ void gendata::re_gendata(const string filename,
  * inferred from the phenotype data (see phedata::nids_all).
  * @param nmeasured The number of individuals with complete phenotype
  * data; usually inferred from the phenotype data (see phedata::nids).
- * @param allmeasured Array indicating which individuals have complete
- * phenotype data (value: 1) and which haven't (0); usually inferred
- * from the phenotype data (see phedata::allmeasured).
- * @param skipd Number of columns to skip in the genotype file (the 
+ * @param allmeasured Boolean vector indicating which individuals have
+ * complete phenotype data and which haven't; usually inferred from
+ * the phenotype data (see phedata::allmeasured).
+ * @param skipd Number of columns to skip in the genotype file (the
    default is 2).
  * @param idnames Array of strings containing the names of the
  * individuals used in the analysis; usually inferred from the
@@ -288,7 +288,7 @@ void gendata::re_gendata(const char * fname,
                          const unsigned int ingpreds,
                          const unsigned int npeople,
                          const unsigned int nmeasured,
-                         const unsigned short int * allmeasured,
+                         const std::vector<bool>& allmeasured,
                          const int skipd,
                          const std::string * idnames)
 {
@@ -314,7 +314,7 @@ void gendata::re_gendata(const char * fname,
     int k = 0;
     for (unsigned int i = 0; i < npeople; i++)
     {
-        if (allmeasured[i] == 1)
+        if (allmeasured[i])
         {
             if (skipd > 0)
             {

@@ -35,6 +35,8 @@
 #ifndef PHEDATA_H_
 #define PHEDATA_H_
 
+#include <string>
+#include <vector>
 #include "eigen_mematrix.h"
 #include "eigen_mematrix.cpp"
 
@@ -55,9 +57,9 @@ class phedata {
         noutcomes               = 0;
         ncov                    = 0;
         n_model_terms           = 0;
-        allmeasured             = NULL;
         idnames                 = NULL;
         model_terms             = NULL;
+        std::vector<bool> allmeasured;
     }
 
     phedata(const char * fname, const int noutc, const int npeople,
@@ -124,24 +126,24 @@ class phedata {
     int n_model_terms;
 
     /**
-     * \brief An array of length #nids_all indicating if the
+     * \brief A vector of length #nids_all indicating if the
      * phenotype and covariate data for the given individual is
      * present or not.
      *
-     * An element in the array is set to 1 if none of the columns in
-     * the phenotype file for that individual has starts with an 'N'
-     * or 'n'. This detects NA's in the phenotype/covariate data. If
-     * one of the values is NA, the #allmeasured row corresponding
-     * to this individual is set to 0.
+     * An element in the vector is set to <tt>true</tt> if none of the
+     * columns in the phenotype file for that individual starts with
+     * an 'N' or 'n'. This detects NA's in the phenotype/covariate
+     * data. If one of the values is NA, the #allmeasured row
+     * corresponding to this individual is set to false.
      */
-    unsigned short int * allmeasured;
+    std::vector<bool> allmeasured;
 
     /**
      * \brief An array of strings containing the individuals IDs for
      * those individuals that are included in the analysis.
      *
      * Length is #nids, so people with incomplete phenotype
-     * information (see <tt>allmeasured</tt>) are not in this array.
+     * information (see #allmeasured) are not in this array.
      */
     std::string * idnames;
 
