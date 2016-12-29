@@ -3,7 +3,8 @@
   genotype data. This requires that the Boost IOStream library is
   installed when compiling. For clarity: reading from gzipped
   DatABEL/filevector files is not supported (as it would defeat the
-  purpose of fast access to the data).
+  purpose of fast access to the data). This closes Issue #12 "Allow 
+  reading of gzipped files". 
 * Removed the requirement on having 7 columns in the info file. However,
   it is the user's responsibility to make sure the first 7 columns contain
   the right information.
