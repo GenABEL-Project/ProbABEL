@@ -5,7 +5,7 @@
  *      Author: mkooyman
  *
  *
- * Copyright (C) 2009--2015 Various members of the GenABEL team. See
+ * Copyright (C) 2009--2016 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
  *
  * This program is free software; you can redistribute it and/or
@@ -110,11 +110,20 @@ void gendata::mldose_line_to_matrix(const int k,
     }
 }
 
-
+/**
+ * \brief Read the genetic data for all individuals for a given SNP
+ * and store in the array @data.
+ *
+ * Only one 'column' is extracted, so in case the number of genomic
+ * predictors is 2 (probability data) this function must be called
+ * twice.
+ *
+ * @param var Number of the SNP to read from the genetic data object
+ * @param data Pointer to an array in which the results will be
+ * returned.
+ */
 void gendata::get_var(const int var, double * data) const
 {
-    // Read the genetic data for SNP 'var' and store in the array 'data'
-
     if (DAG == NULL)            // Read from text file
     {
         for (int i = 0; i < G.nrow; i++)
@@ -172,17 +181,40 @@ void gendata::get_var(const int var, double * data) const
 }
 
 
+/**
+ * Constructor. Initialises all variables to zero/NULL
+ */
 gendata::gendata() : nsnps(0), nids(0), ngpreds(0), DAG(NULL), DAGmask(NULL)
 {
 }
 
 
+/**
+ * \brief Read genotype data from filevector files.
+ *
+ * @param filename File name of the filevector file (either .fvi or
+ * .fvd) that contains the genotype data.
+ * @param insnps The number of SNPs/genetic variants to read; usually
+ * inferred from the .info files.
+ * @param ingpreds The number of genomic predictors (1 for dosage
+ * data, 2 for probability data); usually given on the command line.
+ * @param npeople The total number of individuals to expect; usually
+ * inferred from the phenotype data (see phedata::nids_all).
+ * @param nmeasured The number of individuals with complete phenotype
+ * data; usually inferred from the phenotype data (see phedata::nids).
+ * @param allmeasured Boolean vector indicating which individuals have
+ * complete phenotype data and which haven't; usually inferred from
+ * the phenotype data (see phedata::allmeasured).
+ * @param idnames Array of strings containing the names of the
+ * individuals used in the analysis; usually inferred from the
+ * phenotype data (phedata::idnames).
+ */
 void gendata::re_gendata(const string filename,
                          const unsigned int insnps,
                          const unsigned int ingpreds,
                          const unsigned int npeople,
                          const unsigned int nmeasured,
-                         const unsigned short int * allmeasured,
+                         const std::vector<bool>& allmeasured,
                          const std::string * idnames)
 {
     nsnps = insnps;
@@ -199,7 +231,7 @@ void gendata::re_gendata(const string filename,
 
     for (unsigned int i = 0; i < npeople; i++)
     {
-        if (allmeasured[i] == 0)
+        if (!allmeasured[i])
         {
             DAGmask[i] = 1;
         }
@@ -235,12 +267,34 @@ void gendata::re_gendata(const string filename,
 }
 
 
+/**
+ * \brief Read genotype data from plain text files.
+ *
+ * @param fname File name of the text file in MaCH/minimac format that
+ * contains the genotype data.
+ * @param insnps The number of SNPs/genetic variants to read; usually
+ * inferred from the .info files.
+ * @param ingpreds The number of genomic predictors (1 for dosage
+ * data, 2 for probability data); usually given on the command line.
+ * @param npeople The total number of individuals to expect; usually
+ * inferred from the phenotype data (see phedata::nids_all).
+ * @param nmeasured The number of individuals with complete phenotype
+ * data; usually inferred from the phenotype data (see phedata::nids).
+ * @param allmeasured Boolean vector indicating which individuals have
+ * complete phenotype data and which haven't; usually inferred from
+ * the phenotype data (see phedata::allmeasured).
+ * @param skipd Number of columns to skip in the genotype file (the
+   default is 2).
+ * @param idnames Array of strings containing the names of the
+ * individuals used in the analysis; usually inferred from the
+ * phenotype data (phedata::idnames).
+ */
 void gendata::re_gendata(const char * fname,
                          const unsigned int insnps,
                          const unsigned int ingpreds,
                          const unsigned int npeople,
                          const unsigned int nmeasured,
-                         const unsigned short int * allmeasured,
+                         const std::vector<bool>& allmeasured,
                          const int skipd,
                          const std::string * idnames)
 {
@@ -290,7 +344,7 @@ void gendata::re_gendata(const char * fname,
     int k = 0;
     for (unsigned int i = 0; i < npeople; i++)
     {
-        if (allmeasured[i] == 1)
+        if (allmeasured[i])
         {
             if (skipd > 0)
             {
@@ -310,7 +364,7 @@ void gendata::re_gendata(const char * fname,
                 if (tmpid != idnames[k])
                 {
                     cerr << "phenotype file and dose or probability file "
-                            << "did not match at line " << i + 2 << " ("
+                            << "did not match at line " << i + 1 << " ("
                             << tmpid << " != " << idnames[k] << ")" << endl;
                     file.close();
                     exit(1);
@@ -345,7 +399,11 @@ void gendata::re_gendata(const char * fname,
     file.close();
 }
 
+
 // HERE NEED A NEW CONSTRUCTOR BASED ON DATABELBASECPP OBJECT
+/**
+ * Destructor
+ */
 gendata::~gendata()
 {
     if (DAG != NULL)

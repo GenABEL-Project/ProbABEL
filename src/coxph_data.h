@@ -12,7 +12,7 @@
  *  Created on: Mar 31, 2012
  *
  *
- * Copyright (C) 2009--2015 Various members of the GenABEL team. See
+ * Copyright (C) 2009--2016 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
  *
  * This program is free software; you can redistribute it and/or
@@ -35,6 +35,8 @@
 
 #ifndef COXPH_DATA_H_
 #define COXPH_DATA_H_
+
+#include <vector>
 
 #include "eigen_mematrix.h"
 #include "gendata.h"
@@ -174,7 +176,10 @@ class coxph_data {
 
     // Member functions
     coxph_data get_unmasked_data() const;
-    void update_snp(const gendata *gend, const int snpnum);
+    void update_snp(const gendata *gend,
+                    const int snpnum,
+                    mlinfo &snpinfo,
+                    const bool flipMAF);
     void remove_snp_from_X();
 };
 
@@ -197,6 +202,7 @@ class coxph_reg {
 
     // Member functions
     void estimate(const coxph_data &cdatain, const int model,
+                  const std::vector<std::string> &modelNames,
                   const int interaction, const int ngpreds, const bool iscox,
                   const int nullmodel, const mlinfo &snpinfo, const int cursnp);
 
@@ -214,13 +220,13 @@ class coxph_reg {
      * Iteration continues until the percent change in loglikelihood
      * is <= EPS.
      */
-    static const double EPS = 1e-8;
+    static constexpr double EPS = 1e-9;
 
     /**
      * \brief Constant containing the precision for the Cholesky
      * decomposition.
      */
-    static const double CHOLTOL = 1.5e-12;
+    static constexpr double CHOLTOL = 1.5e-12;
 };
 
 #endif /* COXPH_DATA_H_ */

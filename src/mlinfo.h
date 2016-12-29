@@ -4,11 +4,11 @@
  *
  * \brief Contains the class information for the mlinfo class.
  *
- * The mlinfo class contains the information read from the .info of
- * .mlinfo files.
+ * The mlinfo class contains the information read from the
+ * <tt>.info</tt> or <tt>.mlinfo</tt> files.
  *
  */
-/* Copyright (C) 2009--2015 Various members of the GenABEL team. See
+/* Copyright (C) 2009--2016 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
  *
  * This program is free software; you can redistribute it and/or
@@ -31,39 +31,113 @@
 #ifndef MLINFO_H_
 #define MLINFO_H_
 #include <string>
+#include <vector>
 #include <cstdlib>
 
 /**
- * \brief Data from the mlinfo file.
+ * \brief Information about the genetic variants that are being
+ * analysed.
  *
+ * Most of this data is read from the <tt>.info</tt> or
+ * <tt>.mlinfo</tt> files created by the imputation tool.
  */
 class mlinfo {
  public:
-    int nsnps;                  /**< Number of SNPs */
-    std::string * name;         /**< Array of SNP names */
-    std::string * A1;           /**< Array with the first allele */
-    std::string * A2;           /**< Array with the second allele */
-    double * Freq1;
-    double * MAF;               /**< The minor allele frequency */
-    double * Quality;           /**< The imputation quality metric */
-    double * Rsq;               /**< The imputation \f$R^2\f$ */
-    std::string * map;          /**< Array with the SNP positions */
+    /**
+     * \brief Total number of SNPs in the info file.
+     */
+    int nsnps;
+
+    /**
+     * \brief Array of SNP names for each SNP.
+     *
+     * As read from the info file.
+     */
+    std::vector<std::string> name;
+
+    /**
+     * \brief Array with the first allele for each SNP.
+     *
+     * As read from the info file.
+     */
+    std::vector<std::string> A1;
+
+    /**
+     * \brief Array with the first allele for each SNP.
+     *
+     * As read from the info file.
+     */
+    std::vector<std::string> A2;
+
+    /**
+     * \brief Array with the frequency of the mlinfo::A1 allele for each SNP.
+     *
+     * As read from the info file.
+     */
+    std::vector<double> Freq1;
+
+    /**
+     * \brief Array with the minor allele frequency for each SNP.
+     *
+     * As read from the info file.
+     */
+    std::vector<double> MAF;
+
+    /**
+     * \brief Array with the imputation quality metric for each SNP
+     *
+     * As read from the info file. Note that the MaCH website recommends the
+     * use of mlinfo::Rsq.
+     */
+    std::vector<double> Quality;
+
+    /**
+     * \brief Array The imputation \f$R^2\f$ for each SNP
+     *
+     * As read from the info file.
+     */
+    std::vector<double> Rsq;
+
+    /**
+     * \brief Array with the SNP positions for each SNP.
+     *
+     * As read from the info file.
+     */
+    std::vector<std::string> map;
+
+    /**
+     * \brief Vector indicating whether the mlinfo::A1 and mlinfo::A2
+     * alleles have been flipped.
+     *
+     * This is used when the <tt>--flipmaf</tt> command line option
+     * has been specified by the user. See also cmdvars::getFlipMAF
+     * and cmdvars::flipMAF.
+     */
+    std::vector<bool> allelesFlipped;
 
 
     // Constructors and destructors
+    /**
+     * \brief Constructor. Sets all pointers to NULL.
+     */
     mlinfo()
     {
-        Freq1 = NULL;
-        MAF = NULL;
-        Quality = NULL;
-        Rsq = NULL;
-        nsnps = 0;
-        A1 = NULL;
-        A2 = NULL;
-        name = NULL;
-        map = NULL;
+        /* Freq1 = NULL; */
+        /* MAF = NULL; */
+        /* Quality = NULL; */
+        /* Rsq = NULL; */
+        /* nsnps = 0; */
+        /* A1 = NULL; */
+        /* A2 = NULL; */
+        /* name = NULL; */
+        /* map = NULL; */
+        /* allelesFlipped = std::vector<bool>(1, false); */
     }
-    mlinfo(char * filename, char * mapname);
+
+    mlinfo(const char * filename,
+           const char * mapname,
+           const bool flipMAF);
+
     ~mlinfo();
 };
 

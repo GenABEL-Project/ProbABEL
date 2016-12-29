@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2009--2015 Various members of the GenABEL team. See
+ * Copyright (C) 2009--2016 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
  *
  * This program is free software; you can redistribute it and/or
@@ -73,6 +73,9 @@ void print_usage(char * program_name, int exit_code)
          << endl;
     cout << "\t --separat : [optional] character to separate fields "
          << "(default is space)"
+         << endl;
+    cout << "\t --flipmaf : [optional] swap/flip reference and effect allele"
+         << " based on MAF"
          << endl;
     cout << "\t --score   : use score test" << endl;
     cout << "\t --no-head : do not report header line" << endl;

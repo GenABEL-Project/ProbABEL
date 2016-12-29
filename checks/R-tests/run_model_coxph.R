@@ -10,10 +10,12 @@
 ##' @param snpcomponent2 String telling how the second SNP term is
 ##' defined (only used in the 2 df model). By default this term is
 ##' constant ("1")
+##' @param verbose Logical indicating whether extra debug messages
+##'     should be printed. Default: FALSE
 ##' @return A data frame containing the coefficients from the
 ##' regression analysis and some other variables, such that this
 ##' output can be compared to the ProbABEL output.
-##' @author L.C. Larsen
+##' @author L.C. Karssen
 run.model <- function(model0.txt, model.txt,
                       snpcomponent1, snpcomponent2="1",
                       verbose=FALSE) {
@@ -29,6 +31,7 @@ run.model <- function(model0.txt, model.txt,
 
     for (i in 3:dim(dose)[2]) {
         if (verbose) print(paste("------- new iteration: i =", i))
+
         indexHom <- 3 + ( i - 3 ) * 2
         indexHet <- indexHom + 1
         snp1     <- eval(parse(text=snpcomponent1))
@@ -37,6 +40,11 @@ run.model <- function(model0.txt, model.txt,
         mu       <- rep(1., length(snp)) # Add a constant mean
 
         noNA    <- which( !is.na(snp) )
+        if (verbose) {
+            print(paste("Null model:", model0.txt))
+            print(paste("Alt. model:", model.txt))
+        }
+
         model.0 <- eval(parse(text=model0.txt))
 
         ## Check the imputation R^2, if below threshold ProbABEL will
@@ -75,12 +83,12 @@ run.model <- function(model0.txt, model.txt,
 
         if (verbose) print(model)
 
-        if ( grepl("Inf", model[[2]]$message) |
+        if (grepl("Inf", model[[2]]$message) |
             grepl("infinite", model[[2]]$message) |
             grepl("iterations", model[[2]]$message) |
-            ( grepl("singular", model[[2]]$message) &
-                 (regexpr("variable 1$", model[[2]]$message)[[1]] != 33)
-             )
+            (grepl("singular", model[[2]]$message) &
+             (regexpr("variable 1$", model[[2]]$message)[[1]] != 33)
+            )
             ) {
             ## The model did not converge or some other
             ## errors/warnings occurred, fill the coefficients with

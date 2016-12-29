@@ -77,3 +77,27 @@ for model in add domin recess over_domin 2df; do
         coxph_prob_fv_${model}.out.txt \
         "pacoxph check ($model model): prob vs. prob_fv"
 done
+
+echo "Option --ngp=2 --allcov"
+$pacoxph \
+    -p ${inputdir}/coxph_data.txt \
+    -d ${inputdir}/test.mlprob \
+    -i ${inputdir}/test.mlinfo \
+    -m ${inputdir}/test.map \
+    -c 19 --ngp=2 --allcov \
+    -o coxph_prob_allcov \
+    >& 3
+$pacoxph \
+    -p ${inputdir}/coxph_data.txt \
+    -d ${inputdir}/test.prob.fvi \
+    -i ${inputdir}/test.mlinfo \
+    -m ${inputdir}/test.map \
+    -c 19 --ngp=2 --allcov \
+    -o coxph_prob_allcov_fv \
+    >& 3
+
+for model in add domin over_domin recess 2df; do
+    run_diff coxph_prob_allcov_${model}.out.txt \
+        coxph_prob_allcov_fv_${model}.out.txt \
+        "pacoxph check ($model model): prob vs. prob_fv"
+done

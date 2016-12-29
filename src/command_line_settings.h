@@ -5,7 +5,7 @@
  *      Author: mkooyman
  *
  *
- * Copyright (C) 2009--2015 Various members of the GenABEL team. See
+ * Copyright (C) 2009--2016 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
  *
  * This program is free software; you can redistribute it and/or
@@ -50,9 +50,26 @@ class cmdvars
     int score;
     int npeople;
     int ngpreds;
+
+    /**
+     * \brief Boolean to indicate that allele coding should be flipped
+     * based on Minor Allele Frequency (MAF).
+     *
+     * Set to false by default, which means regression is done using
+     * A2 as reference allele (i.e. the dosage in the genetic
+     * predictor files code the dosage of the A1 allele in the info
+     * file). Setting this to true (using the <tt>-f/\--flipmaf</tt>
+     * command line option) will lead to a change in this behaviour
+     * such that the reference and effect allele are recoded in such a
+     * way that the minor allele as specified in the info file is used
+     * as predictor allele. To be explicit, this option uses the MAF
+     * as recorded in the info file to decide whether to flip the
+     * alleles (if necessary), not the actual MAF in the sample that
+     * is analysed.
+     */
+    bool flipMAF;
+
     int interaction;
-    int interaction_excluded;
-    bool is_interaction_excluded;
     int robust;
     string chrom;
     string sep;
@@ -81,9 +98,8 @@ class cmdvars
         score   = 0;
         npeople = -1;
         ngpreds = 1;
+        flipMAF = false;
         interaction = 0;
-        interaction_excluded = 0;
-        is_interaction_excluded = false; //Oh Holy Matrix, forgive me for this!
         robust = 0;
         chrom = "-1";
         str_genfilename = "";
@@ -103,6 +119,7 @@ class cmdvars
     char* getPhefilename() const;
     int getAllcov() const;
     string getChrom() const;
+    bool getFlipMAF() const;
     char* getGenfilename() const;
     int getInteraction() const;
     char* getInverseFilename() const;
@@ -125,7 +142,6 @@ class cmdvars
     string getStrGenfilename() const;
 
     void printinfo();
-    bool isIsInteractionExcluded() const;
 };
 
 #endif /* COMMAND_LINE_SETTINGS_H_ */

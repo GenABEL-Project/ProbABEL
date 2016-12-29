@@ -12,7 +12,7 @@
  *      Author: mkooyman
  *
  *
- * Copyright (C) 2009--2015 Various members of the GenABEL team. See
+ * Copyright (C) 2009--2016 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
  *
  * This program is free software; you can redistribute it and/or
@@ -40,6 +40,7 @@
 #include "eigen_mematrix.cpp"
 #include "gendata.h"
 #include "phedata.h"
+#include "mlinfo.h"
 
 
 /**
@@ -72,14 +73,6 @@ class regdata {
       * \brief Number of outcomes, taken from phedata::noutcomes.
       */
     int noutcomes;
-
-    /**
-     * \brief Boolean that indicates whether the command line option
-     * --interaction_only was set.
-     *
-     * See cmdvars::is_interaction_excluded.
-     */
-    bool is_interaction_excluded;
 
     /**
      * \brief A vector that contains ones/zeros to indicate which data
@@ -122,13 +115,15 @@ class regdata {
     // Constructors and destructors
     regdata();
     regdata(const regdata &obj);
-    regdata(const phedata &phed, const gendata &gend, const int snpnum,
-            const bool ext_is_interaction_excluded);
+    regdata(const phedata &phed, const gendata &gend, const int snpnum);
     //~regdata();
 
 
     // Member functions.
-    void update_snp(const gendata *gend, const int snpnum);
+    void update_snp(const gendata *gend,
+                    const int snpnum,
+                    mlinfo &snpinfo,
+                    const bool flipMAF);
     void remove_snp_from_X();
     regdata get_unmasked_data() const;
     mematrix<double> extract_genotypes();

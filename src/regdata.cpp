@@ -12,7 +12,7 @@
  *      Author: mkooyman
  *
  *
- * Copyright (C) 2009--2015 Various members of the GenABEL team. See
+ * Copyright (C) 2009--2016 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
  *
  * This program is free software; you can redistribute it and/or
@@ -57,7 +57,6 @@ regdata::regdata()
     ncov                    = 0;
     ngpreds                 = 0;
     noutcomes               = 0;
-    is_interaction_excluded = false;
     gcount                  = 0;
     freq                    = 0;
 }
@@ -79,7 +78,6 @@ regdata::regdata(const regdata &obj) : masked_data(obj.masked_data),
     noutcomes = obj.noutcomes;
     gcount = obj.gcount;
     freq = obj.freq;
-    is_interaction_excluded = obj.is_interaction_excluded;
 }
 
 
@@ -93,11 +91,10 @@ regdata::regdata(const regdata &obj) : masked_data(obj.masked_data),
  * be added to the design matrix regdata::X. When set to a number < 0
  * no SNP data is added to the design matrix (e.g. when calculating
  * the null model).
- * \param ext_is_interaction_excluded Boolean that shows whether
- * interactions are excluded.
  */
-regdata::regdata(const phedata &phed, const gendata &gend, const int snpnum,
-                 const bool ext_is_interaction_excluded)
+regdata::regdata(const phedata &phed,
+                 const gendata &gend,
+                 const int snpnum)
 {
     freq        = 0;
     gcount      = 0;
@@ -147,7 +144,6 @@ regdata::regdata(const phedata &phed, const gendata &gend, const int snpnum,
         // for (int i=0;i<nids;i++)
         //     for (int j=0;j<ngpreds;j++)
         //       X.put((gend.G).get(i,(snpnum*ngpreds+j)),i,(ncov-ngpreds+1+j));
-    is_interaction_excluded = ext_is_interaction_excluded;
 }
 
 
@@ -161,18 +157,26 @@ regdata::regdata(const phedata &phed, const gendata &gend, const int snpnum,
  * the input file. Mach stores the probabilities as \f$P_{A_1A_1}\f$
  * \f$P_{A_1A_2}\f$.
  *
- * @param gend Object that contains the genetic data from which the
+ * \param gend Object that contains the genetic data from which the
  * dosages/probabilities will be added to the design matrix.
- * @param snpnum Number of the SNP for which the dosage/probability
+ * \param snpnum Number of the SNP for which the dosage/probability
  * data will be extracted from the gend object.
+ * \param snpinfo An object of \ref mlinfo class that contains
+ * information as read from the info file.
+ * \param flipMAF A boolean indicating whether the reference and
+ * coding alleles should be flipped based on Minor Allele Frequency
+ * (as read from the \a snpinfo object). See also cmdvars::flipMAF.
  */
-void regdata::update_snp(const gendata *gend, const int snpnum)
+void regdata::update_snp(const gendata *gend,
+                         const int snpnum,
+                         mlinfo &snpinfo,
+                         const bool flipMAF)
 {
     // Reset counter for frequency since it is a new SNP
     gcount = 0;
-    freq = 0.0;
+    freq   = 0.0;
 
-    // Add genotypic data (dosage or probabilities) to the design
+    // Add genotype data (dosage or probabilities) to the design
     // matrix X. Start filling from the last column, so for
     // probability data (ngpreds==2) the order of the two
     // probabilities is reversed.
@@ -183,8 +187,55 @@ void regdata::update_snp(const gendata *gend, const int snpnum)
 
         gend->get_var(snpnum * ngpreds + j, snpdata);
 
+        double *PA1A2 = new double[nids];
+        if (flipMAF && ngpreds == 2 && j == 0) {
+            // Read next genotype column because we need
+            // P_A1A2 as well to calculate P_A2A2
+            gend->get_var(snpnum * ngpreds + j + 1, PA1A2);
+        }
+
         for (int i = 0; i < nids; i++) {
-            X.put(snpdata[i], i, (ncov - j));
+            if (flipMAF && (snpinfo.Freq1[snpnum] > 0.5)){
+                // Flip the allele coding.
+                snpinfo.allelesFlipped[snpnum] = true;
+                // For dosage data: dosage is dosage_A1 (MaCH tutorial)
+                //  so: dosage_A2 = 2 - dosage_A1
+                //
+                // For probability data:
+                //   P_1 == P_A1A1  (MaCH tutorial)
+                //   P_2 == P_A1A2  (MaCH tutorial)
+                // and d_A1 = P_A1A2 + 2 P_A1A1, so when flipping:
+                //   P_1 = P_A2A2 = 1 - P_A1A1 - P_A1A2 == 1 - P_1 - P_2
+                //   P_2 = P_A2A1 = P_A1A2 = P_2
+                if (ngpreds == 1)
+                {
+                    // Dosage data
+                    X.put(2 - snpdata[i], i, (ncov - j));
+                }
+                else if (ngpreds == 2 && j == 0) {
+                    // Probability data, first probability (= P_A1A1)
+                    X.put(1 - snpdata[i] - PA1A2[i], i, (ncov - j));
+                }
+                else if (ngpreds == 2 && j == 1)
+                {
+                    // Probability data, second probability
+                    X.put(snpdata[i], i, (ncov - j));
+                }
+                else {
+                    // You should never come here...
+                    std::cerr << "Error: "
+                              << "ngpreds != 1 or 2 while reading genetic data"
+                              << std::endl;
+                    exit(1);
+                }
+            } // end if (flipMAF && Freq1 > 0.5)
+            else
+            {
+                // No flipping needed, simply copy the genetic data to the
+                // snpdata array.
+                X.put(snpdata[i], i, (ncov - j));
+            }
+
             if (std::isnan(snpdata[i])) {
                 masked_data[i] = true;
             } else {
@@ -198,12 +249,13 @@ void regdata::update_snp(const gendata *gend, const int snpnum)
                         freq += snpdata[i];
                     }
                 } else if (j == 1) {
-                    // Add second genotype in two predicor data form
+                    // Add second genotype in two predictor data form
                     freq += snpdata[i] * 0.5;
                 }
             }  // End if std::isnan(snpdata[i]) snp
         }  // End for loop: i = 0 to nids
 
+        delete[] PA1A2;
         delete[] snpdata;
     }  // End for loop: j = 0 to ngpreds
 
@@ -214,7 +266,7 @@ void regdata::update_snp(const gendata *gend, const int snpnum)
 /**
  * \brief Remove SNP information from the design matrix regdata::X.
  *
- * update_snp() adds SNP information to the design matrix. This
+ * \ref update_snp adds SNP information to the design matrix. This
  * function allows you to strip that information from X again.
  * This is used for example when calculating the null model.
  */
@@ -260,7 +312,6 @@ regdata regdata::get_unmasked_data() const
     to.ncov                    = ncov;
     to.ngpreds                 = ngpreds;
     to.noutcomes               = noutcomes;
-    to.is_interaction_excluded = is_interaction_excluded;
     int dim2Y = Y.ncol;
     int dim2X = X.ncol;
     (to.X).reinit(to.nids, dim2X);

@@ -1,20 +1,52 @@
-***** v.0.5.0 (2015.)
+***** v.0.x.0 ()
+* Removed the requirement on having 7 columns in the info file. However,
+  it is the user's responsibility to make sure the first 7 columns contain
+  the right information.
+
+***** v.0.5.0 (2016.05.04)
 * ProbABEL now depends on the Eigen library. The option to compile without
-  Eigen has been removed.
-* Not-a-number values in the output are now printed as "NaN" instead of
-  "nan".
+  Eigen has been removed. Eigen 3.2.1 is included with ProbABEL. The
+  directory src/eigen-3.2.1 contains header files we need. The full Eigen
+  source code tar-ball is included as src/3.2.1.tar.bz2.
+* Fixed Issue #15: Coxph interactions not working; when using the
+  --interaction option the name of the model was wrong (e.g. for
+  --interaction=1, the interaction term was shown as mu * SNP_A1, which
+  obviously is not what we meant to do).
+* Fixed Github issue #16: "Too many NANs for SNPs with low `Rsq` when some
+  commandline options are specified"
+* Added --flipmaf command line option to palinear, pacoxph and palogist.
+  If this option is selected, ProbABEL will 'flip' the alleles A1 and A2
+  for those variants for which the Freq1 value in the info file is less
+  than 0.5. Changing the reference and effect allele in this way can
+  sometimes (for some genetic models and low MAF), reduce regression
+  errors and thus result in proper estimates which otherwise be set to
+  NaN. Many thanks for the group of Prof. Kiemeney at the dept. of Health
+  Evidence Radboud UMC in Nijmegen (NL) for sponsoring the work on this
+  feature! Also thanks to Tessel Galesloot from the same group for
+  extensive testing of this release. (Pull Request #24, also fixes bug #5).
+* Don't set the betas and se_betas for all covariates in case Cox
+  regression problems like singularities occur, but only the beta/se_beta
+  of the corresponding covariate. Also make the corresponding warning
+  messages more clear by including the name of the genetic model that is
+  being tested.
+* Not-a-number values in the output are now printed as "nan" instead of
+  "NaN".
 * Linear regression mmscore option is 2 times faster
-* Speedup of Linear regression:(measured with multiple runs with 2 covariates,
-  33815 SNP and 3485 people(using all) compares to v.0.4.3)
+* Speedup of Linear regression: (measured with multiple runs with 2 covariates,
+  33815 SNP and 3485 people (using all) compared to v.0.4.3)
 ** Reading mldose/mlprob files 14 times faster
 ** Calculation of regression is more than 3.5 faster
-** Overall runtime using above settings is 5
+** Overall runtime using above settings is 5 times faster
 * Handles multiple variants of NaN (NA,Na,Nan,na,nan) correct while reading of
   mldose/mlprob files
-* Fixed bugs #5883 & #6010: The main effect is displayed in the output with the
-  `interaction_only` option. Thanks to Maksim Struchalin & Lennart Karssen for
-  fixing it and to Farid Radmanesh for reporting it. This was only a display
-  error, computations were not affected.
+* Fixed Issue #21: Remove "interaction_only" option. According to Yurii's
+  post on the forum this option never worked as expected (Pull Request
+  #23). Thanks to Matthias Wuttke for reminding us of this bug.
+* Fixed bugs #5883 & #6010 (on R-forge): The main effect is displayed in
+  the output with the  `interaction_only` option. Thanks to Maksim
+  Struchalin & Lennart Karssen for fixing it and to Farid Radmanesh for
+  reporting it. This was only a display error, computations were not
+  affected.
 * Fixed bug #5982: ProbABEL's make install fails on MacOS X and FreeBSD
   with sed error. Thanks to forum user mmold for reporting the bug.
 

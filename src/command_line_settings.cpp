@@ -5,7 +5,7 @@
  *      Author: mkooyman
 *
  *
- * Copyright (C) 2009--2015 Various members of the GenABEL team. See
+ * Copyright (C) 2009--2016 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
  *
  * This program is free software; you can redistribute it and/or
@@ -56,6 +56,11 @@ int cmdvars::getAllcov() const
 string cmdvars::getChrom() const
 {
     return chrom;
+}
+
+bool cmdvars::getFlipMAF() const
+{
+    return flipMAF;
 }
 
 char* cmdvars::getGenfilename() const
@@ -159,7 +164,7 @@ char* cmdvars::getPhefilename() const
 void cmdvars::set_variables(int argc, char * argv[])
 {
     int next_option;
-    const char * const short_options = "p:i:d:m:n:c:o:s:t:g:a:relhb:k:v:u";
+    const char * const short_options = "p:i:d:m:fn:c:o:s:t:g:a:relhb:v:u";
     // b - interaction parameter
     // ADD --fv FLAG (FILEVECTOR), IN WHICH CASE USE ALTERNATIVE
     // CONSTRUCTOR FOR GENDATA
@@ -169,6 +174,7 @@ void cmdvars::set_variables(int argc, char * argv[])
     { "info", 1, NULL, 'i' },
     { "dose", 1, NULL, 'd' },
     { "map", 1, NULL, 'm' },
+    { "flipmaf", 0, NULL, 'f'},
     { "nids", 1, NULL, 'n' },
     { "chrom", 1, NULL, 'c' },
     { "out", 1, NULL, 'o' },
@@ -181,7 +187,6 @@ void cmdvars::set_variables(int argc, char * argv[])
     { "allcov", 0, NULL, 'l' },
     { "help", 0, NULL, 'h' },
     { "interaction", 1, NULL, 'b' },
-    { "interaction_only", 1, NULL, 'k' },
     { "mmscore", 1, NULL, 'v' },
     { "robust", 0, NULL, 'u' },
     { NULL, 0, NULL, 0 } };
@@ -211,6 +216,9 @@ void cmdvars::set_variables(int argc, char * argv[])
             break;
         case 'm':
             mapfilename = optarg;
+            break;
+        case 'f':
+            flipMAF = true;
             break;
         case 'n':
             npeople = atoi(optarg);
@@ -252,16 +260,12 @@ void cmdvars::set_variables(int argc, char * argv[])
         case 'b':
             interaction = atoi(optarg);
             break;
-        case 'k':
-            interaction_excluded = atoi(optarg);
-            break;
         case 'v':
             inverse_filename = optarg;
             break;
         case 'u':
             robust = 1;
             break;
-
         case '?':
             print_usage(program_name, 2);
         case -1:
@@ -271,12 +275,6 @@ void cmdvars::set_variables(int argc, char * argv[])
         }  // end of switch
     } while (next_option != -1);  // end of while
 }  // end of function
-
-
-bool cmdvars::isIsInteractionExcluded() const
-{
-    return is_interaction_excluded;
-}
 
 
 void cmdvars::printinfo()
@@ -318,21 +316,27 @@ void cmdvars::printinfo()
     }
 
     str_genfilename = genfilename;
+
     if (str_genfilename.find(FILEVECTOR_INDEX_FILE_SUFFIX) != string::npos
             || str_genfilename.find(FILEVECTOR_DATA_FILE_SUFFIX)
                     != string::npos)
+    {
         isFVF = 1;
+    }
 
     cout << "Options in effect:\n";
     cout << "\t --pheno       = "      << phefilename << endl;
     cout << "\t --info        = "      << mlinfofilename << endl;
     cout << "\t --dose        = "      << genfilename << endl;
+
     if (isFVF)
+    {
         cout << "\t             (using FVF data)" << endl;
+    }
+
     cout << "\t --ntraits     = "      << noutcomes << endl;
     cout << "\t --ngpreds     = "      << ngpreds << endl;
     cout << "\t --interaction = "      << interaction << endl;
-    cout << "\t --interaction_only = " << interaction_excluded << endl;
 
     if (inverse_filename != NULL)
         cout << "\t --mmscore = "      << inverse_filename << endl;
@@ -357,6 +361,10 @@ void cmdvars::printinfo()
         cout << "\t --out     = "      << "regression.out.txt" << endl;
     cout << "\t --skipd   = "          << skipd << endl;
     cout << "\t --separat = \""        << sep << "\"" << endl;
+    if (flipMAF)
+        cout << "\t --flipmaf = ON"    << endl;
+    else
+        cout << "\t --flipmaf = OFF"   << endl;
     if (score)
         cout << "\t --score   = ON"    << endl;
     else
@@ -381,11 +389,6 @@ void cmdvars::printinfo()
         exit(1);
     }
 
-    if (interaction_excluded != 0)
-    {
-        interaction = interaction_excluded;  // ups
-        is_interaction_excluded = true;
-    }
     if (outfilename.compare("") == 0)
     {
         outfilename = string("regression");

@@ -1,11 +1,18 @@
-/*
- * coxph_data.cpp
+/**
+ * \file coxph_data.cpp
+ * \author Yurii S. Aulchenko
+ * \author L.C. Karssen
+ * \author M. Kooyman
+ * \author Maksim V. Struchalin
+ *
+ * \brief Describes functions of the coxphdata class for Cox PH
+ * regression objects
  *
  *  Created on: Mar 31, 2012
  *      Author: mkooyman
  *
  *
- * Copyright (C) 2009--2015 Various members of the GenABEL team. See
+ * Copyright (C) 2009--2016 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
  *
  * This program is free software; you can redistribute it and/or
@@ -143,7 +150,8 @@ coxph_data::coxph_data(const phedata &phed, const gendata &gend,
         exit(1);
     }
 
-    X.reinit(nids, (ncov + 1));
+    X.reinit(nids, (ncov + 1)); // Note: ncov takes ngpreds into
+                                // account, see above!
     stime.reinit(nids, 1);
     sstat.reinit(nids, 1);
     weights.reinit(nids, 1);
@@ -170,6 +178,8 @@ coxph_data::coxph_data(const phedata &phed, const gendata &gend,
         X.put(1., i, 0);
     }
 
+    // Insert the covariate data into X (note we use phed.ncov and not
+    // ncov, which includes ngpreds is not computing the null model!)
     for (int j = 1; j <= phed.ncov; j++)
     {
         for (int i = 0; i < nids; i++)
@@ -178,7 +188,7 @@ coxph_data::coxph_data(const phedata &phed, const gendata &gend,
         }
     }
 
-
+    // Insert the genotype data into X
     if (snpnum > 0)
     {
         for (int j = 0; j < ngpreds; j++)
@@ -235,6 +245,7 @@ coxph_data::coxph_data(const phedata &phed, const gendata &gend,
             exit(1);
         }
     }
+
     stime   = reorder(stime, order);
     sstat   = reorder(sstat, order);
     weights = reorder(weights, order);
@@ -263,12 +274,20 @@ coxph_data::coxph_data(const phedata &phed, const gendata &gend,
  * Adds the genetic information for a new SNP to the design
  * matrix.
  *
- * @param gend Object that contains the genetic data from which the
+ * \param gend Object that contains the genetic data from which the
  * dosages/probabilities will be added to the design matrix.
- * @param snpnum Number of the SNP for which the dosage/probability
+ * \param snpnum Number of the SNP for which the dosage/probability
  * data will be extracted from the gend object.
- */
-void coxph_data::update_snp(const gendata *gend, const int snpnum) {
+ * \param snpinfo An object of \ref mlinfo class that contains
+ * information as read from the info file.
+ * \param flipMAF A boolean indicating whether the reference and
+ * coding alleles should be flipped based on Minor Allele Frequency
+ * (as read from the \a snpinfo object). See also cmdvars::flipMAF.
+*/
+void coxph_data::update_snp(const gendata *gend,
+                            const int snpnum,
+                            mlinfo &snpinfo,
+                            const bool flipMAF) {
     /*
      * This is the main part of the fix of bug #1846
      * (C) of the fix:
@@ -284,21 +303,77 @@ void coxph_data::update_snp(const gendata *gend, const int snpnum) {
      * 'ncov-j' changes to 'ncov-j-1'
      */
 
-    // reset counter for frequency since it is a new SNP
+    // Reset counter for frequency since it is a new SNP
     gcount = 0;
     freq   = 0.0;
 
-    for (int j = 0; j < ngpreds; j++) {
+    for (int j = 0; j < ngpreds; j++)
+    {
+        // Row in X that  (note X is transposed when doing Cox
+        // regression) contains the SNP data we are updating
+        int snprow = ncov - j;
+        // Double check: The number of rows in the X matrix should be
+        // equal to ncov + 1 for mu.
+        assert(snprow == X.nrow - 1 - j);
+
         double *snpdata = new double[nids];
         masked_data = std::vector<bool>(nids, false);
 
         gend->get_var(snpnum * ngpreds + j, snpdata);
 
+        double *PA1A2 = new double[nids];
+        if (flipMAF && ngpreds == 2 && j == 0) {
+            // Read next genotype column because we need
+            // P_A1A2 as well to calculate P_A2A2
+            gend->get_var(snpnum * ngpreds + j + 1, PA1A2);
+        }
+
         for (int i = 0; i < nids; i++) {
-            X.put(snpdata[i], (ncov - j), order[i]);
+            if (flipMAF && (snpinfo.Freq1[snpnum] > 0.5)){
+                // Flip the allele coding.
+                snpinfo.allelesFlipped[snpnum] = true;
+                // For dosage data: dosage is dosage_A1 (MaCH tutorial)
+                //  so: dosage_A2 = 2 - dosage_A1
+                //
+                // For probability data:
+                //   P_1 == P_A1A1  (MaCH tutorial)
+                //   P_2 == P_A1A2  (MaCH tutorial)
+                // and d_A1 = P_A1A2 + 2 P_A1A1, so when flipping:
+                //   P_1 = P_A2A2 = 1 - P_A1A1 - P_A1A2== 1 - P_1 - P_2
+                //   P_2 = P_A2A1 = P_A1A2 = P_2
+                if (ngpreds == 1)
+                {
+                    // Dosage data
+                    X.put(2 - snpdata[i], snprow, order[i]);
+                }
+                else if (ngpreds == 2 && j == 0) {
+                    // Probability data, first probability (= P_A1A1)
+                    X.put(1 - snpdata[i] - PA1A2[i], snprow, order[i]);
+                }
+                else if (ngpreds == 2 && j == 1)
+                {
+                    // Probability data, second probability
+                    X.put(snpdata[i], snprow, order[i]);
+                }
+                else
+                {
+                    // You should never come here...
+                    std::cerr << "Error: "
+                              << "ngpreds != 1 or 2 while reading genetic data"
+                              << std::endl;
+                    exit(1);
+                }
+            } // end if (flipMAF && Freq1 > 0.5)
+            else
+            {
+                // No flipping needed, simply copy the genetic data to the
+                // snpdata array.
+                X.put(snpdata[i], snprow, order[i]);
+            }
+
             if (std::isnan(snpdata[i])) {
                 masked_data[order[i]] = true;
-                // snp not masked
+                // SNP not masked
             } else {
                 // check for first predictor
                 if (j == 0) {
@@ -309,12 +384,13 @@ void coxph_data::update_snp(const gendata *gend, const int snpnum) {
                         freq += snpdata[i];
                     }
                 } else if (j == 1) {
-                    // Add second genotype in two predicor data form
+                    // Add second genotype in two predictor data form
                     freq += snpdata[i] * 0.5;
                 }
             }    // end std::isnan(snpdata[i]) snp
         }    // end for loop: i=0 to nids
 
+        delete[] PA1A2;
         delete[] snpdata;
     }    // End for loop: j=0 to ngpreds
 
@@ -418,6 +494,7 @@ coxph_reg::coxph_reg(const coxph_data &cdatain)
 
 void coxph_reg::estimate(const coxph_data &cdatain,
                          const int model,
+                         const std::vector<std::string> &modelNames,
                          const int interaction, const int ngpreds,
                          const bool iscox, const int nullmodel,
                          const mlinfo &snpinfo, const int cursnp)
@@ -478,7 +555,9 @@ void coxph_reg::estimate(const coxph_data &cdatain,
     // Check the results of the Cox fit; mirrored from the same checks
     // in coxph.fit.S and coxph.R from the R survival package.
 
-    bool setToNAN = false;
+    // A vector to indicate for which covariates the betas/se_betas
+    // should be set to NAN.
+    std::vector<bool> setToNAN = std::vector<bool>(X.nrow, false);
 
     // Based on coxph.fit.S lines with 'which.sing' and coxph.R line
     // with if(any(is.NA(coefficients))). These lines set coefficients
@@ -491,24 +570,33 @@ void coxph_reg::estimate(const coxph_data &cdatain,
         MatrixXd imateigen = imat.data;
         VectorXd imatdiag = imateigen.diagonal();
 
-        // Start at i=1 to exclude the beta coefficient for the
-        // (constant) mean from the check.
-        for (int i=1; i < imatdiag.size(); i++)
+        for (int i = 0; i < imatdiag.size(); i++)
         {
             if (imatdiag[i] == 0)
-                {
-                    which_sing = i;
-                    setToNAN = true;
+            {
+                which_sing = i;
+                setToNAN[which_sing] = true;
+                if (i != 0) {
+                    // Don't warn for i=0 to exclude the beta
+                    // coefficient for the (constant) mean from the
+                    // check. For Cox regression the constant terms
+                    // are ignored. However, we leave it in the
+                    // calculations because otherwise the null model
+                    // calculation will fail in case there are no
+                    // other covariates than the SNP.
                     std::cerr << "Warning for " << snpinfo.name[cursnp]
+                              << ", " << modelNames[model] << " model"
                               << ": X matrix deemed to be singular (variable "
                               << which_sing + 1 << ")" << std::endl;
                 }
+            }
         }
     }
 
     if (niter >= MAXITER)
     {
         cerr << "Warning for " << snpinfo.name[cursnp]
+             << ", " << modelNames[model] << " model"
              << ": nr of iterations > the maximum (" << MAXITER << "): "
              << niter << endl;
     }
@@ -516,16 +604,17 @@ void coxph_reg::estimate(const coxph_data &cdatain,
     if (flag == 1000)
     {
         cerr << "Warning for " << snpinfo.name[cursnp]
+             << ", " << modelNames[model] << " model"
              << ": Cox regression ran out of iterations and did not converge,"
              << " setting beta and se to 'NaN'\n";
-        setToNAN = true;
+
+        std::fill(setToNAN.begin(), setToNAN.end(), true);
     } else {
         VectorXd ueigen = u.data;
         MatrixXd imateigen = imat.data;
         VectorXd infs = ueigen.transpose() * imateigen;
         infs = infs.cwiseAbs();
         VectorXd betaeigen = beta.data;
-        bool problems = false;
 
         assert(betaeigen.size() == infs.size());
 
@@ -535,24 +624,21 @@ void coxph_reg::estimate(const coxph_data &cdatain,
         for (int i = 0; i < infs.size(); i++) {
             if (infs[i] > EPS &&
                 infs[i] > sqrt(EPS) * abs(betaeigen[i])) {
-                problems = true;
+                setToNAN[i] = true;
+                cerr << "Warning for " << snpinfo.name[cursnp]
+                     << ", " << modelNames[model] << " model"
+                     << ": beta for covariate " << i + 1 << " may be infinite,"
+                     << " setting beta and se to 'NaN'\n";
             }
-        }
-
-        if (problems) {
-            cerr << "Warning for " << snpinfo.name[cursnp]
-                 << ": beta may be infinite,"
-                 << " setting beta and se to 'NaN'\n";
-
-            setToNAN = true;
         }
     }
 
     for (int i = 0; i < X.nrow; i++)
     {
-        if (setToNAN)
+        if (setToNAN[i])
         {
-            // Cox regression failed
+            // Cox regression failed somewhere, set results to NAN for
+            // this X row (covariate or SNP)
             sebeta[i] = NAN;
             beta[i]   = NAN;
             loglik    = NAN;

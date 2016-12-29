@@ -5,7 +5,7 @@
  *      Author: mkooyman
  *
  *
- * Copyright (C) 2009--2015 Various members of the GenABEL team. See
+ * Copyright (C) 2009--2016 Various members of the GenABEL team. See
  * the SVN commit logs for more details.
  *
  * This program is free software; you can redistribute it and/or
@@ -29,6 +29,7 @@
 #ifndef GENDATA_H_
 #define GENDATA_H_
 #include <string>
+#include <vector>
 #include "fvlib/FileVector.h"
 
 #include "eigen_mematrix.h"
@@ -50,15 +51,16 @@ class gendata {
                     const unsigned int ingpreds,
                     const unsigned int npeople,
                     const unsigned int nmeasured,
-                    const unsigned short int * allmeasured,
+                    const std::vector<bool>& allmeasured,
                     const int skipd,
                     const std::string * idnames);
 
-    void re_gendata(const string filename, const unsigned int insnps,
+    void re_gendata(const string filename,
+                    const unsigned int insnps,
                     const unsigned int ingpreds,
                     const unsigned int npeople,
                     const unsigned int nmeasured,
-                    const unsigned short int * allmeasured,
+                    const std::vector<bool>& allmeasured,
                     const std::string * idnames);
 
     void get_var(const int var, double * data) const;
@@ -69,8 +71,31 @@ class gendata {
     // ANOTHER PRIVATE OBJECT IS A POINTER TO DATABELBASECPP
     // UPDATE SNP, ALL REGRESSION METHODS: ACCOUNT FOR MISSING
  private:
+    /**
+     * \brief Matrix containing the genotype data.
+     *
+     * - Nr of rows: nr. of individuals (usually phedata::nids).
+     * - Nr. of columns: nr. of SNPs \f[\times\f] nr. of genomic
+     *   predictors.
+     */
     mematrix<double> G;
+
+    /**
+     * \brief Object of FileVector class that "links" to the genotype
+     * information in the filevector file.
+     *
+     * Only used when reading genotype data from filevector files
+     * (obviously).
+     */
     AbstractMatrix * DAG;
+
+    /**
+     * \brief Array that masks individuals with incomplete phenotype
+     * information.
+     *
+     * Only used when reading genotype data from filevector files.
+     */
+
     unsigned short int * DAGmask;
 };
 

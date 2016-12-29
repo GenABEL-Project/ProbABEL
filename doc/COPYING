@@ -1,4 +1,18 @@
-		    GNU GENERAL PUBLIC LICENSE
+ProbABEL consists of two parts:
+1) The ProbABEL source code, which is licensed under the GPL
+2) The source code for the Eigen library v.3.2.1
+   (http://eigen.tuxfamily.org), which is licensed under the MPL 2.0.
+
+Note: the MPL allows distribution of unmodified MPL source code in a
+GPL-ed larger work (see
+https://www.mozilla.org/en-US/MPL/2.0/combining-mpl-and-gpl/)
+
+The licence text for the MPL can be found in the file
+lib/eigen-3.2.1/COPYING.MPL2
+The licence text for the GPL is reproduced below.
+
+
+                    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
 
  Copyright (C) 1989, 1991 Free Software Foundation, Inc.
