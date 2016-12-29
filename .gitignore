@@ -16,6 +16,16 @@
 # /doc/
 /doc/Makefile.in
 /doc/doxygen-docs
+/doc/ProbABEL_manual.aux
+/doc/ProbABEL_manual.idx
+/doc/ProbABEL_manual.ilg
+/doc/ProbABEL_manual.ind
+/doc/ProbABEL_manual.log
+/doc/ProbABEL_manual.out
+/doc/ProbABEL_manual.pdf
+/doc/ProbABEL_manual.synctex.gz
+/doc/ProbABEL_manual.toc
+/doc/auto/
 
 # /examples/
 /examples/Makefile.in
