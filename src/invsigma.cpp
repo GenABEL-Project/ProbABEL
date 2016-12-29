@@ -31,6 +31,11 @@
 #include <sstream>
 #include <fstream>
 
+#if WITH_BOOST_IOSTREAMS
+#include <boost/iostreams/filtering_stream.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
+#endif
+
 #include "fvlib/AbstractMatrix.h"
 #include "fvlib/CastUtils.h"
 #include "fvlib/const.h"
@@ -48,22 +53,50 @@
 #include "utilities.h"
 
 
-InvSigma::InvSigma(const char * filename_, const phedata& phe) : filename(filename_)
+InvSigma::InvSigma(const char * filename_,
+                   const phedata& phe) : filename(filename_)
 {
     npeople = phe.nids;
-    std::ifstream myfile(filename_);
     std::string line;
     std::string id;
+
+#if WITH_BOOST_IOSTREAMS
+    std::ifstream file(filename_, std::ios_base::in | std::ios_base::binary);
+    boost::iostreams::filtering_istream infile;
+
+    // Note: a better check would be to read the first two bytes of
+    // the file and check for the gzip signature: 0x1f8b
+    // W.r.t. endianness and byte width: compare each byte separately,
+    // see the comment to this SE answer:
+    // http://stackoverflow.com/a/6059342/881084
+    if (filename.compare(filename.length() - 2, 2, "gz") == 0)
+    {
+        infile.push(boost::iostreams::gzip_decompressor());
+        cout << "invsigma data is gzip compressed..." << endl;
+    }
+    infile.push(file);
+#else
+    std::ifstream file;
+    file.open(filename_);
+    // small hack to make object "infile" available, so no additional
+    // pre-process if/else statements should be introduced
+    std::ifstream &infile = file;
+#endif
 
     matrix.reinit(npeople, npeople);
 
     // idnames[k], if (allmeasured[i]==1)
 
-    if (myfile.is_open())
+    if (!file.is_open())
+    {
+        cerr << "error: inv file: cannot open file '"
+             << filename_ << "'\n";
+    }
+    else
     {
         double val;
         unsigned row = 0;
-        while (std::getline(myfile, line))
+        while (std::getline(infile, line))
         {
             std::stringstream line_stream(line);
             line_stream >> id;
@@ -89,15 +122,12 @@ InvSigma::InvSigma(const char * filename_, const phedata& phe) : filename(filena
                 std::cerr << "error: inv file: Number of columns in row "
                           << row << " equals to " << col
                           << " but number of people is " << npeople << "\n";
-                myfile.close();
+                file.close();
                 exit(1);
             }
             row++;
         }
-        myfile.close();
-    } else {
-        std::cerr << "error: inv file: cannot open file '"
-                  << filename_ << "'\n";
+        file.close();
     }
 }
 

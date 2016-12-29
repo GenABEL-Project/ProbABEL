@@ -42,6 +42,10 @@
 #include <boost/iostreams/filter/gzip.hpp>
 #endif
 
+using std::cout;
+using std::cerr;
+using std::endl;
+
 void gendata::mldose_line_to_matrix(const int k,
                                     const char *all_numbers,
                                     const int amount_of_numbers){
@@ -248,10 +252,10 @@ void gendata::re_gendata(const string filename,
         }
 
         // if (allmeasured[i] && idnames[j] != DAGobsname)
-        //  std::cerr << "names do not match for observation at phenofile "
-        //            << "line (phe/geno) " << i+1 << "/+1 ("
-        //            << idnames[i].c_str() << "/"
-        //            << DAGobsname.c_str() << ")\n";
+        //  cerr << "names do not match for observation at phenofile "
+        //       << "line (phe/geno) " << i+1 << "/+1 ("
+        //       << idnames[i].c_str() << "/"
+        //       << DAGobsname.c_str() << ")\n";
         // fix thanks to Vadym Pinchuk
         if (allmeasured[i] && idnames[j] != DAGobsname)
         {
@@ -261,7 +265,7 @@ void gendata::re_gendata(const string filename,
         }
     }
     nids = j + 1;
-    // std::cout << "in INI: " << nids << " " << npeople << "\n";
+    // cout << "in INI: " << nids << " " << npeople << "\n";
     if (nids != nmeasured)
         report_error("nids != mneasured (%i != %i)\n", nids, nmeasured);
 }
@@ -313,29 +317,26 @@ void gendata::re_gendata(const char * fname,
     std::string filename = fname;
     // Note: a better check would be to read the first two bytes of
     // the file and check for the gzip signature: 0x1f8b
-    // W.r.t. endianness and bytt width: compare each byte separately,
+    // W.r.t. endianness and byte width: compare each byte separately,
     // see the comment to this SE answer:
     // http://stackoverflow.com/a/6059342/881084
     if (filename.compare(filename.length() - 2, 2, "gz") == 0)
     {
         infile.push(boost::iostreams::gzip_decompressor());
-    }
-    else
-    {
-        std::cout << "no gziped:" << ":\n";
+        cout << "genotype data is gzip compressed..." << endl;
     }
     infile.push(file);
 #else
-    std::ifstream infile;
-    infile.open(fname);
-    // small hack to make object "file" available, so no aditional prepocces
-    // if/else statements should be introduced
-    std::ifstream  &file = infile;
+    std::ifstream file;
+    file.open(fname);
+    // small hack to make object "file" available, so no additional
+    // pre-process if/else statements should be introduced
+    std::ifstream  &infile = file;
 #endif
 
     if (!file)
     {
-        std::cerr << "gendata: cannot open file " << fname << endl;
+        cerr << "gendata: cannot open file " << fname << endl;
         exit(1);
     }
 

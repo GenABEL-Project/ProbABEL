@@ -20,10 +20,15 @@ phenofiles = $(input_files_dir)/height.txt	\
  $(input_files_dir)/coxph_data_nocovar.txt	\
  $(input_files_dir)/mmscore_pheno.PHE
 
-genofiles = $(input_files_dir)/test.mldose		\
+genofiles =						\
+ $(input_files_dir)/test.mldose				\
+ $(input_files_dir)/test.mldose.gz			\
  $(input_files_dir)/test.mlprob				\
+ $(input_files_dir)/test.mlprob.gz			\
  $(input_files_dir)/test.mlinfo				\
+ $(input_files_dir)/test.mlinfo.gz			\
  $(input_files_dir)/test.map				\
+ $(input_files_dir)/test.map.gz				\
  $(input_files_dir)/test.dose.fvi			\
  $(input_files_dir)/test.dose.fvd			\
  $(input_files_dir)/test.prob.fvi			\
@@ -31,11 +36,15 @@ genofiles = $(input_files_dir)/test.mldose		\
  $(input_files_dir)/mmscore_gen.mlinfo			\
  $(input_files_dir)/mmscore_gen.mldose			\
  $(input_files_dir)/mmscore_gen.mlprob			\
+ $(input_files_dir)/mmscore_gen.mlinfo.gz		\
+ $(input_files_dir)/mmscore_gen.mldose.gz		\
+ $(input_files_dir)/mmscore_gen.mlprob.gz		\
  $(input_files_dir)/mmscore_gen.dose.fvi		\
  $(input_files_dir)/mmscore_gen.dose.fvd		\
  $(input_files_dir)/mmscore_gen.prob.fvi		\
  $(input_files_dir)/mmscore_gen.prob.fvd		\
- $(input_files_dir)/mmscore_InvSigma_aj.sex.age.dat
+ $(input_files_dir)/mmscore_InvSigma_aj.sex.age.dat	\
+ $(input_files_dir)/mmscore_InvSigma_aj.sex.age.dat.gz
 
 input_files = $(phenofiles) $(genofiles) run_diff.sh test_all.sh
 
@@ -56,10 +65,16 @@ check_SCRIPTS += test_cox.sh			\
  test_flipmaf_pacoxph.sh
 endif
 
-AM_TESTS_ENVIRONMENT= \
-	AWK=$(AWK) \
-	SED=$(SED) \
+AM_TESTS_ENVIRONMENT =				\
+	AWK=$(AWK)				\
+	SED=$(SED)				\
 	PA_BINDIR=$(top_builddir)/src
+
+if WITH_BOOST_IOSTREAMS
+AM_TESTS_ENVIRONMENT +=				\
+	WITH_BOOST_IOSTREAMS=true
+endif
+
 TESTS = $(check_SCRIPTS)
 
 ## Dependencies for the test scripts
@@ -85,6 +100,16 @@ logist_prob_fv_domin.out.txt logist_prob_add.out.txt		\
 logist_prob_fv_add.out.txt logist_prob_over_domin.out.txt	\
 logist_prob_domin.out.txt logist_prob_fv_recess.out.txt		\
 logist_prob_fv_over_domin.out.txt logist_prob_recess.out.txt
+
+if WITH_BOOST_IOSTREAMS
+cleanfiles_bt +=				\
+logist_gz_add.out.txt				\
+logist_prob_gz_2df.out.txt			\
+logist_prob_gz_add.out.txt			\
+logist_prob_gz_domin.out.txt			\
+logist_prob_gz_over_domin.out.txt		\
+logist_prob_gz_recess.out.txt
+endif
 
 cleanfiles_bt_flipmaf = logist_flipmaf_add.out.txt	\
 logist_flipmaf_fv_add.out.txt				\
@@ -140,6 +165,16 @@ linear_ngp2_robust_int1_fv_2df.out.txt					\
 linear_ngp2_allcov_fv_2df.out.txt linear_ngp2_robust_fv_add.out.txt	\
 linear_ngp2_allcov_2df.out.txt
 
+if WITH_BOOST_IOSTREAMS
+cleanfiles_qt +=				\
+linear_base_gz_add.out.txt			\
+linear_ngp2_gz_2df.out.txt			\
+linear_ngp2_gz_add.out.txt			\
+linear_ngp2_gz_domin.out.txt			\
+linear_ngp2_gz_over_domin.out.txt		\
+linear_ngp2_gz_recess.out.txt
+endif
+
 cleanfiles_qt_flipmaf = linear_flipmaf_add.out.txt	\
 linear_flipmaf_fv_add.out.txt				\
 linear_ngp2_flipmaf_2df.out.txt				\
@@ -160,6 +195,16 @@ mmscore_prob_fv_recess.out.txt mmscore_prob_domin.out.txt		\
 mmscore_prob_recess.out.txt mmscore_prob_add.out.txt			\
 mmscore_prob_2df.out.txt mmscore_prob_fv_2df.out.txt
 
+if WITH_BOOST_IOSTREAMS
+cleanfiles_mms +=				\
+mmscore_dose_gz_add.out.txt			\
+mmscore_prob_gz_2df.out.txt			\
+mmscore_prob_gz_add.out.txt			\
+mmscore_prob_gz_domin.out.txt			\
+mmscore_prob_gz_over_domin.out.txt		\
+mmscore_prob_gz_recess.out.txt
+endif
+
 cleanfiles_cox = pacoxph_nocovar_add.out.txt			\
 coxph_data.txt							\
 coxph_dose_add.out.txt coxph_dose_fv_add.out.txt		\
@@ -178,6 +223,17 @@ coxph_prob_flipmaf_allcov_fv_add.out.txt			\
 coxph_prob_flipmaf_allcov_add.out.txt				\
 coxph_prob_allcov_fv_domin.out.txt				\
 coxph_prob_allcov_fv_recess.out.txt
+
+if WITH_BOOST_IOSTREAMS
+cleanfiles_cox +=				\
+coxph_prob_allcov_fv_recess.out.txt		\
+coxph_dose_gz_add.out.txt			\
+coxph_prob_gz_2df.out.txt			\
+coxph_prob_gz_add.out.txt			\
+coxph_prob_gz_domin.out.txt			\
+coxph_prob_gz_over_domin.out.txt		\
+coxph_prob_gz_recess.out.txt
+endif
 
 cleanfiles_cox_nocovar = coxph_dose_nocovar_add.out.txt	\
 coxph_dose_nocovar_fv_add.out.txt			\

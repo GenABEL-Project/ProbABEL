@@ -13,6 +13,9 @@ if [ -z ${srcdir} ]; then
     srcdir="."
     PA_BINDIR=${scriptdir}/../src/
 fi
+if [ -z ${WITH_BOOST_IOSTREAMS} ]; then
+   WITH_BOOST_IOSTREAMS=false
+fi
 
 . ${scriptdir}/run_diff.sh
 
@@ -48,6 +51,21 @@ $palinear \
 run_diff linear_base_add.out.txt \
     linear_base_fv_add.out.txt \
     "QT check: dose vs. dose_fv"
+
+if [ "x${WITH_BOOST_IOSTREAMS}" = "xtrue" ]; then
+    $palinear \
+        -p ${inputdir}/height.txt \
+        -d ${inputdir}/test.mldose.gz \
+        -i ${inputdir}/test.mlinfo.gz \
+        -m ${inputdir}/test.map.gz \
+        -c 19 \
+        -o linear_base_gz \
+        >& 3
+
+    run_diff linear_base_add.out.txt \
+             linear_base_gz_add.out.txt \
+             "QT check: dose vs. dose.gz"
+fi
 
 
 echo "Option --allcov"
@@ -170,6 +188,24 @@ for model in add domin over_domin recess 2df; do
         linear_ngp2_fv_${model}.out.txt \
         "QT check ($model model): prob vs. prob_fv"
 done
+
+
+if [ "x${WITH_BOOST_IOSTREAMS}" = "xtrue" ]; then
+    $palinear \
+        -p ${inputdir}/height.txt \
+        -d ${inputdir}/test.mlprob.gz \
+        -i ${inputdir}/test.mlinfo.gz \
+        -m ${inputdir}/test.map.gz \
+        -c 19 --ngpreds=2 \
+        -o linear_ngp2_gz \
+        >& 3
+
+    for model in add domin over_domin recess 2df; do
+        run_diff linear_ngp2_${model}.out.txt \
+                 linear_ngp2_gz_${model}.out.txt \
+                 "QT check ($model model): prob vs. prob_gz"
+    done
+fi
 
 
 echo "Option --ngp=2 --allcov"
