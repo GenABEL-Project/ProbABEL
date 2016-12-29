@@ -271,21 +271,29 @@ directory \texttt{/home/yourusername/ProbABEL/bin/}. You are now ready
 to analyse your data!
 
 \section{Input files}
-\PA{} takes three files as input: a file containing SNP
-information (e.g.~the MLINFO file of MaCH), a file with genome- or
-chromosome-wide predictor information (e.g.~the MLDOSE or MLPROB file
-of MaCH or \texttt{minimac}),
-and a file containing the phenotype of interest and covariates.
+\PA{} takes three files as input: a file containing SNP information
+(e.g.~the MLINFO file of MaCH), a file with genome- or chromosome-wide
+predictor information (e.g.~the MLDOSE or MLPROB file of MaCH or
+\texttt{minimac}), and a file containing the phenotype of interest and
+covariates. Optionally, a file with map information can be supplied
+(e.g.~the "legend" files of HapMap). Except for the phenotype file,
+each of these files may be gzipped to save disk space\footnote{This
+  requires that the Boost IOStream library is present when ProbABEL is
+  compiled from source (see \url{http://www.boost.org/doc/libs/}).}.
 
-Optionally, the map information can be supplied (e.g.~the "legend"
-files of HapMap).
-
-The dose/probability file may be supplied in filevector format
-in which case \PA{} will operate much faster, and
-in low-RAM mode (approx.~128 MB). See the R libraries \GA{} and
-\DA{} on how to convert MaCH and IMPUTE2 files to
-filevector format (functions: \texttt{mach2databel()} and
+As an alternative to (gzipped) text files, the dose/probability file
+may be supplied in filevector format\footnote{Note that filevector
+  files should not be gzipped. ProbABEL won't be able to read gzipped
+  filevector files. Compressing filevector files in a simple manner as
+  gzip does will remove the speed benefit that filevector files have
+  over text files (gzipped or not).} in which case \PA{} will operate
+much faster, and in low-RAM mode (approx.~128 MB). See the R libraries
+\GA{} and \DA{} on how to convert MaCH and IMPUTE2 files to filevector
+format (functions: \texttt{mach2databel()} and
 \texttt{impute2databel()}, respectively).
+
+More information on each of these input files can be found in the following
+subsections.
 
 \subsection{SNP information file}
 \label{ssec:infoin}
