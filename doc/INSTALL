@@ -48,10 +48,10 @@ The ProbABEL manual (in .tex or .pdf format) also contains detailed
 
 
 * Compiling for Linux
-  If you downloaded the source from SVN (this is not necessary when
-  installing from the distributed .tar.gz file), run:
+  If you cloned the source code from Github, run:
 autoreconf -i
-  to generate the ./configure script and some other files.
+  to generate the ./configure script and some other files (this is 
+  not necessary when installing from the distributed .tar.gz file).
 
   Now, you are ready to compile and install the package. Run the
   following commands:
