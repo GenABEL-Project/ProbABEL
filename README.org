@@ -4,6 +4,11 @@
   ProbABEL is a tool for genome-wide association analysis of imputed
   genetic data. It is part of the GenABEL Suite of tools developed by
   within [[http://www.genabel.org][the GenABEL Project]].
+** IMPORTANT NOTICE
+   Early 2018, PolyOmica, the main sponsor of the GenABEL project announced that it would discontinue its support. 
+   As PolyOmica was our only sponsor, we regretfully have to announce the likely discontinuation of the GenABEL 
+   Project in its current form, unless a new sponsor steps up or someone takes over maintenance and futher 
+   development of (some of) the tools. 
 ** Installation
    Please see the =INSTALL= file in the =doc= directory for more
    information on how to install ProbABEL.
